@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { Img } from "react-image";
 import { Link } from "react-router-dom";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -19,7 +19,7 @@ export function RestaurantCard({
   return (
     <Card className="overflow-hidden transition-all hover:shadow-lg">
       <CardContent className="p-0">
-        <Image
+        <Img
           src={imageUrl}
           alt={name}
           width={300}
