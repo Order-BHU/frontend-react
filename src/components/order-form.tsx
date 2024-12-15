@@ -1,18 +1,18 @@
-import { useState } from "'react'"
-import { Button } from "'@/components/ui/button'"
-import { Input } from "'@/components/ui/input'"
-import { Label } from "'@/components/ui/label'"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 export function OrderForm() {
-  const [address, setAddress] = useState("''")
+  const [address, setAddress] = useState("''");
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     // Here you would typically send the order to your backend
-    console.log("'Order submitted with address:'", address)
-    alert("'Order submitted successfully!'")
-    setAddress("''")
-  }
+    console.log("'Order submitted with address:'", address);
+    alert("'Order submitted successfully!'");
+    setAddress("''");
+  };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -29,6 +29,5 @@ export function OrderForm() {
       </div>
       <Button type="submit">Place Order</Button>
     </form>
-  )
+  );
 }
-

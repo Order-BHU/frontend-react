@@ -1,38 +1,40 @@
-"'use client'"
+"use client";
 
-import { useState } from "'react'"
-import Link from "'next/link'"
-import { Header } from "'../components/header'"
-import { Button } from "'@/components/ui/button'"
-import { Input } from "'@/components/ui/input'"
-import { Label } from "'@/components/ui/label'"
-import { Separator } from "@/components/ui/separator"
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { Header } from "@/components/header";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
 
 export default function SignUpPage() {
   const [formData, setFormData] = useState({
-    name: "''",
-    email: "''",
-    password: "''",
-  })
+    name: "",
+    email: "",
+    password: "",
+  });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
-    setFormData(prev => ({ ...prev, [name]: value }))
-  }
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     // Here you would typically send the sign-up data to your backend
-    console.log("'Sign-up submitted:'", formData)
-    alert("'Sign-up successful!'")
-  }
+    console.log("Sign-up submitted:", formData);
+    alert("Sign-up successful!");
+  };
 
   return (
     <div className="min-h-screen bg-gray-100">
       <Header />
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-md mx-auto bg-white p-8 rounded-lg shadow-md">
-          <h1 className="text-3xl font-bold mb-6 text-center text-orange-600">Sign Up</h1>
+          <h1 className="text-3xl font-bold mb-6 text-center text-orange-600">
+            Sign Up
+          </h1>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <Label htmlFor="name">Name</Label>
@@ -67,11 +69,17 @@ export default function SignUpPage() {
                 required
               />
             </div>
-            <Button type="submit" className="w-full">Sign Up</Button>
+            <Button type="submit" className="w-full">
+              Sign Up
+            </Button>
           </form>
           <div className="mt-6">
             <Separator className="my-4" />
-            <Button variant="outline" className="w-full" onClick={() => alert("'Google sign-up not implemented'")}>
+            <Button
+              variant="outline"
+              className="w-full"
+              onClick={() => alert("Google sign-up not implemented")}
+            >
               <svg className="w-5 h-5 mr-2" viewBox="0 24">
                 <path
                   fill="currentColor"
@@ -95,14 +103,13 @@ export default function SignUpPage() {
             </Button>
           </div>
           <p className="mt-6 text-center text-sm text-gray-600">
-            Already have an account?{"'"}
-            <Link href="/login" className="text-orange-600 hover:underline">
+            Already have an account?{""}
+            <Link to="/login" className="text-orange-600 hover:underline">
               Log in
             </Link>
           </p>
         </div>
       </main>
     </div>
-  )
+  );
 }
-
