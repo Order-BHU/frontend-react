@@ -9,7 +9,7 @@ export default function LandingPage() {
     <div className="min-h-screen flex flex-col">
       <Header />
       <main className="flex-grow">
-        <section className="bg-gradient-to-r from-orange-100 to-orange-200 py-20">
+        <section className="bg-gradient-to-r from-orange-light to-orange-dark py-20">
           <div className="container mx-auto px-4 text-center">
             <h1 className="text-5xl font-bold mb-6 text-gray-800">
               Welcome to FoodDelivery
@@ -34,12 +34,12 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section className="py-20">
-          <div className="container mx-auto px-4">
+        <section className="py-20 justify-center flex">
+          <div className="container mx-0 text-center px-0">
             <h2 className="text-3xl font-semibold mb-12 text-center">
               How it works
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
               {[
                 {
                   icon: Utensils,

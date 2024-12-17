@@ -1,16 +1,47 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { Bars3Icon } from "@heroicons/react/24/solid";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBurger } from "@fortawesome/free-solid-svg-icons";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export function Header() {
   return (
-    <header className="bg-white shadow-sm">
-      <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+    <header className="bg-white shadow-sm flex justify-center">
+      <div className="container py-4 flex justify-between items-center w-full px-0">
         <Link
           to="/"
           className="text-2xl font-bold text-stone-900 dark:text-stone-50"
         >
-          FoodDelivery
+          Order
         </Link>
+        <DropdownMenu>
+          <DropdownMenuTrigger
+            asChild
+            className="block md:hidden ml-auto mr-[1rem]"
+          >
+            <button>
+              <FontAwesomeIcon
+                icon={faBurger}
+                className="w-7 h-7 text-opacity-70"
+              />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem>Home</DropdownMenuItem>
+            <DropdownMenuItem>Restaurants</DropdownMenuItem>
+            <DropdownMenuItem>My Orders</DropdownMenuItem>
+            <DropdownMenuItem>Contact Us</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
         <nav className="hidden md:flex space-x-4">
           <Link
             to="/"
