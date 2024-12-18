@@ -3,6 +3,9 @@ import { Button } from "@/components/ui/button";
 import { Bars3Icon } from "@heroicons/react/24/solid";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBurger } from "@fortawesome/free-solid-svg-icons";
+import UseAuthStore from "@/stores/useAuthStore";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,6 +16,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 export function Header() {
+  const { isLoggedIn, logIn, logOut } = UseAuthStore();
   return (
     <header className="bg-white shadow-sm flex justify-center">
       <div className="container py-4 flex justify-between items-center w-full px-0">
@@ -36,10 +40,18 @@ export function Header() {
           </DropdownMenuTrigger>
           <DropdownMenuContent>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>Home</DropdownMenuItem>
-            <DropdownMenuItem>Restaurants</DropdownMenuItem>
-            <DropdownMenuItem>My Orders</DropdownMenuItem>
-            <DropdownMenuItem>Contact Us</DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link to="/">Home</Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link to="/restaurants">Restaurants</Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link to="/cart">Cart</Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link to="/contact">Contact Us</Link>
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
         <nav className="hidden md:flex space-x-4">
@@ -56,10 +68,10 @@ export function Header() {
             Restaurants
           </Link>
           <Link
-            to="/my-orders"
+            to="cart"
             className="text-sm font-medium text-gray-600 hover:text-stone-900 dark:hover:text-stone-50"
           >
-            My Orders
+            Cart
           </Link>
           <Link
             to="/contact"
@@ -68,7 +80,11 @@ export function Header() {
             Contact Us
           </Link>
         </nav>
-        <div className="flex items-center space-x-2">
+        <div
+          className={`flex items-center space-x-2${
+            isLoggedIn ? " hidden" : ""
+          }`}
+        >
           <Button variant="ghost" asChild>
             <Link to="/login">Log In</Link>
           </Button>
@@ -76,6 +92,16 @@ export function Header() {
             <Link to="/signup">Sign Up</Link>
           </Button>
         </div>
+        {isLoggedIn && (
+          <Link to="/profile">
+            <Avatar className="h-16 w-16 mr-[2rem]">
+              <AvatarImage src="https://github.com/shadcn.png" />
+              <AvatarFallback>
+                CN{/*make this the username first letters */}
+              </AvatarFallback>
+            </Avatar>
+          </Link>
+        )}
       </div>
     </header>
   );
