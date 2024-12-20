@@ -40,7 +40,7 @@ export function RestaurantCard({
       </CardContent>
       <CardFooter className="bg-gray-50 border-t border-gray-100 p-4">
         <Button asChild className="w-full">
-          <Link to={`/restaurants/${id}`}>View Menu</Link>
+          <Link to={`/menu/${id}`}>View Menu</Link>
         </Button>
       </CardFooter>
     </Card>

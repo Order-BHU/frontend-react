@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Bars3Icon } from "@heroicons/react/24/solid";
+import { Badge } from "@/components/ui/badge";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBurger } from "@fortawesome/free-solid-svg-icons";
 import UseAuthStore from "@/stores/useAuthStore";
@@ -16,7 +16,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 export function Header() {
-  const { isLoggedIn, logIn, logOut } = UseAuthStore();
+  const { isLoggedIn, role, logIn, logOut, setRole } = UseAuthStore();
+
   return (
     <header className="bg-white shadow-sm flex justify-center">
       <div className="container py-4 flex justify-between items-center w-full px-0">
@@ -68,7 +69,7 @@ export function Header() {
             Restaurants
           </Link>
           <Link
-            to="cart"
+            to="/cart"
             className="text-sm font-medium text-gray-600 hover:text-stone-900 dark:hover:text-stone-50"
           >
             Cart
@@ -93,7 +94,19 @@ export function Header() {
           </Button>
         </div>
         {isLoggedIn && (
-          <Link to="/profile">
+          <Link
+            to={
+              role === "owner"
+                ? "/restaurant-dashboard"
+                : role === "rider"
+                ? "/rider-dashboard"
+                : role === "user"
+                ? "/user-dashboard"
+                : role === "admin"
+                ? "/admin-dashboard"
+                : "/"
+            }
+          >
             <Avatar className="h-16 w-16 mr-[2rem]">
               <AvatarImage src="https://github.com/shadcn.png" />
               <AvatarFallback>
