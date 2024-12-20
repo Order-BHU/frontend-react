@@ -193,8 +193,10 @@ export default function UserDashboardPage() {
 
         <Tabs defaultValue="orders" className="space-y-4">
           <TabsList>
-            <TabsTrigger value="orders">Recent Orders</TabsTrigger>
-            <TabsTrigger value="activity">Activity</TabsTrigger>
+            <PageWrapper>
+              <TabsTrigger value="orders">Recent Orders</TabsTrigger>
+              <TabsTrigger value="activity">Activity</TabsTrigger>
+            </PageWrapper>
           </TabsList>
           <TabsContent value="orders">
             <PageWrapper>
