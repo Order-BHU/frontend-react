@@ -2,6 +2,7 @@ import { Header } from "../components/header";
 import { Footer } from "../components/footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { PageWrapper } from "@/components/pagewrapper";
 
 // This would typically come from an API or database
 const orders = [
@@ -39,34 +40,40 @@ export default function CartPage() {
         <h1 className="text-3xl font-bold mb-6 text-gray-800">My Orders</h1>
         <div className="space-y-4">
           {orders.map((order) => (
-            <Card key={order.id}>
-              <CardHeader>
-                <CardTitle className="flex justify-between items-center">
-                  <span>{order.restaurant}</span>
-                  <Badge
-                    variant={
-                      order.status === "Delivered" ? "secondary" : "default"
-                    }
-                  >
-                    {order.status}
-                  </Badge>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-gray-500 mb-2">
-                  Order ID: {order.id}
-                </p>
-                <p className="text-sm text-gray-500 mb-2">Date: {order.date}</p>
-                <ul className="list-disc list-inside mb-2">
-                  {order.items.map((item, index) => (
-                    <li key={index} className="text-sm text-gray-700">
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-                <p className="font-semibold text-right">Total: {order.total}</p>
-              </CardContent>
-            </Card>
+            <PageWrapper key={order.id}>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex justify-between items-center">
+                    <span>{order.restaurant}</span>
+                    <Badge
+                      variant={
+                        order.status === "Delivered" ? "secondary" : "default"
+                      }
+                    >
+                      {order.status}
+                    </Badge>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-gray-500 mb-2">
+                    Order ID: {order.id}
+                  </p>
+                  <p className="text-sm text-gray-500 mb-2">
+                    Date: {order.date}
+                  </p>
+                  <ul className="list-disc list-inside mb-2">
+                    {order.items.map((item, index) => (
+                      <li key={index} className="text-sm text-gray-700">
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                  <p className="font-semibold text-right">
+                    Total: {order.total}
+                  </p>
+                </CardContent>
+              </Card>
+            </PageWrapper>
           ))}
         </div>
       </main>

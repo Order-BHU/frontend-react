@@ -14,7 +14,6 @@ import RestaurantDashboardPage from "./pages/RestaurantDashboard";
 import UserDashboardPage from "./pages/UserDashboard";
 import RestaurantMenuPage from "./pages/Menupage";
 import AdminDashboardPage from "./pages/Adminpage";
-import PageWrapper from "./components/pagewrapper";
 
 function App() {
   return (

@@ -1,28 +1,27 @@
-import React, { ReactNode } from "react";
 import { motion } from "framer-motion";
+import { useInView } from "react-intersection-observer";
 
-interface props {
-  children: ReactNode;
+interface PageWrapperProps {
+  children: React.ReactNode;
+  className?: string;
 }
 
-const PageWrapper: React.FC<props> = ({ children }) => {
-  const pageVariants = {
-    initial: { opacity: 0, y: 20 },
-    animate: { opacity: 1, y: 0 },
-    exit: { opacity: 0, y: 20 },
-  };
+//this component controls the animated sections
+export function PageWrapper({ children, className }: PageWrapperProps) {
+  const [ref, inView] = useInView({
+    triggerOnce: true,
+    threshold: 0.1,
+  });
 
   return (
     <motion.div
-      initial="initial"
-      animate="animate"
-      exit="exit"
-      variants={pageVariants}
-      transition={{ duration: 0.5, ease: "easeOut" }}
+      ref={ref}
+      initial={{ opacity: 0, y: 50 }}
+      animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
+      transition={{ duration: 0.5 }}
+      className={className}
     >
       {children}
     </motion.div>
   );
-};
-
-export default PageWrapper;
+}

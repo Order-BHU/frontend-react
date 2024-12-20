@@ -18,6 +18,7 @@ import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
 import { Plus, Minus, ShoppingCart } from "lucide-react";
 import { orbit } from "ldrs";
+import { PageWrapper } from "@/components/pagewrapper";
 
 // Mock database of restaurant menus
 const restaurantMenus = {
@@ -173,71 +174,78 @@ export default function RestaurantMenuPage() {
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Header />
       <main className="flex-grow container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-6 text-gray-800">
-          {menu.name} Menu
-        </h1>
+        <PageWrapper>
+          <h1 className="text-3xl font-bold mb-6 text-gray-800">
+            {menu.name} Menu
+          </h1>
+        </PageWrapper>
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {menu.items.map((item) => (
-            <Card key={item.id} className="overflow-hidden">
-              <div className="relative h-48 w-full">
-                <Img
-                  className="object-cover"
-                  src={item.image}
-                  alt={item.name}
-                  unloader={
-                    <div className="flex justify-center p-5 h-[200px] items-center">
-                      <l-orbit size="35" speed="1.5" color="black"></l-orbit>
-                    </div>
-                  }
-                />
-              </div>
-              <CardHeader>
-                <CardTitle className="flex justify-between items-center">
-                  <span>{item.name}</span>
-                  <Badge>{item.category}</Badge>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-gray-600 mb-2">{item.description}</p>
-                <p className="font-semibold">{item.price}</p>
-              </CardContent>
-              <CardFooter className="flex justify-between items-center">
-                <div className="flex items-center space-x-2">
-                  <Button
-                    size="icon"
-                    variant="outline"
-                    onClick={() => handleQuantityChange(item.id, -1)}
-                    disabled={!quantities[item.id]}
-                  >
-                    <Minus className="h-4 w-4" />
-                  </Button>
-                  <Input
-                    type="number"
-                    value={quantities[item.id] || 0}
-                    onChange={(e) =>
-                      setQuantities((prev) => ({
-                        ...prev,
-                        [item.id]: parseInt(e.target.value) || 0,
-                      }))
+            <PageWrapper key={item.id}>
+              <Card className="overflow-hidden">
+                <div className="relative h-48 w-full">
+                  <Img
+                    className="object-cover"
+                    src={item.image}
+                    alt={item.name}
+                    unloader={
+                      <div className="flex justify-center p-5 h-[200px] items-center">
+                        <l-orbit size="35" speed="1.5" color="black"></l-orbit>
+                      </div>
                     }
-                    className="w-16 text-center"
                   />
-                  <Button
-                    size="icon"
-                    variant="outline"
-                    onClick={() => handleQuantityChange(item.id, 1)}
-                  >
-                    <Plus className="h-4 w-4" />
-                  </Button>
                 </div>
-                {/*<Button
+                <CardHeader>
+                  <CardTitle className="flex justify-between items-center">
+                    <span>{item.name}</span>
+                    <Badge>{item.category}</Badge>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-gray-600 mb-2">
+                    {item.description}
+                  </p>
+                  <p className="font-semibold">{item.price}</p>
+                </CardContent>
+                <CardFooter className="flex justify-between items-center">
+                  <div className="flex items-center space-x-2">
+                    <Button
+                      size="icon"
+                      variant="outline"
+                      onClick={() => handleQuantityChange(item.id, -1)}
+                      disabled={!quantities[item.id]}
+                    >
+                      <Minus className="h-4 w-4" />
+                    </Button>
+                    <Input
+                      type="number"
+                      value={quantities[item.id] || 0}
+                      onChange={(e) =>
+                        setQuantities((prev) => ({
+                          ...prev,
+                          [item.id]: parseInt(e.target.value) || 0,
+                        }))
+                      }
+                      className="w-16 text-center"
+                    />
+                    <Button
+                      size="icon"
+                      variant="outline"
+                      onClick={() => handleQuantityChange(item.id, 1)}
+                    >
+                      <Plus className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  {/*<Button
                   onClick={() => handleAddToCart(item)}
                   disabled={!quantities[item.id]}
                 >
                   Add to Cart
                 </Button>*/}
-              </CardFooter>
-            </Card>
+                </CardFooter>
+              </Card>
+            </PageWrapper>
           ))}
         </div>
         <div className="mt-8 flex justify-between items-center">

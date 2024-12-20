@@ -3,13 +3,14 @@ import { Header } from "@/components/header";
 import { Button } from "@/components/ui/button";
 import { Footer } from "@/components/footer";
 import { ArrowRight, Utensils, Clock, Truck } from "lucide-react";
+import { PageWrapper } from "@/components/pagewrapper";
 
 export default function LandingPage() {
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
       <main className="flex-grow">
-        <section className="bg-gradient-to-r from-orange-light to-orange-dark py-20">
+        <PageWrapper className="bg-gradient-to-r from-orange-light to-orange-dark py-20">
           <div className="container mx-auto px-4 text-center">
             <h1 className="text-5xl font-bold mb-6 text-gray-800">
               Welcome to FoodDelivery
@@ -32,9 +33,9 @@ export default function LandingPage() {
               </Button>
             </div>
           </div>
-        </section>
+        </PageWrapper>
 
-        <section className="py-20 justify-center flex">
+        <PageWrapper className="py-20 justify-center flex">
           <div className="container mx-0 text-center px-0">
             <h2 className="text-3xl font-semibold mb-12 text-center">
               How it works
@@ -67,9 +68,9 @@ export default function LandingPage() {
               ))}
             </div>
           </div>
-        </section>
+        </PageWrapper>
 
-        <section className="bg-gray-50 py-20">
+        <PageWrapper className="bg-gray-50 py-20">
           <div className="container mx-auto px-4">
             <h2 className="text-3xl font-semibold mb-6 text-center">
               About Us
@@ -90,9 +91,9 @@ export default function LandingPage() {
               </p>
             </div>
           </div>
-        </section>
+        </PageWrapper>
 
-        <section className="py-20">
+        <PageWrapper className="py-20">
           <div className="container mx-auto px-4">
             <h2 className="text-3xl font-semibold mb-12 text-center">
               Our Goals
@@ -131,9 +132,9 @@ export default function LandingPage() {
               ))}
             </div>
           </div>
-        </section>
+        </PageWrapper>
 
-        <section className="bg-stone-900 text-white py-20 dark:bg-stone-50">
+        <PageWrapper className="bg-stone-900 text-white py-20 dark:bg-stone-50">
           <div className="container mx-auto px-4 text-center">
             <h2 className="text-3xl font-semibold mb-6">Become a Driver</h2>
             <p className="text-xl mb-8 max-w-2xl mx-auto">
@@ -145,7 +146,7 @@ export default function LandingPage() {
               <Link to="/driver-signup">Sign Up as a Driver</Link>
             </Button>
           </div>
-        </section>
+        </PageWrapper>
       </main>
       <Footer />
     </div>

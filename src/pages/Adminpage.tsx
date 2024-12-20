@@ -5,6 +5,7 @@ import { Header } from "../components/header";
 import { Footer } from "../components/footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { PageWrapper } from "@/components/pagewrapper";
 import {
   Table,
   TableBody,
@@ -81,217 +82,236 @@ export default function AdminDashboardPage() {
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Header />
       <main className="flex-grow container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-6 text-gray-800">
-          Admin Dashboard
-        </h1>
+        <PageWrapper>
+          <h1 className="text-3xl font-bold mb-6 text-gray-800">
+            Admin Dashboard
+          </h1>
+        </PageWrapper>
 
         <Tabs defaultValue="restaurants" className="space-y-4">
-          <TabsList>
-            <TabsTrigger value="restaurants">Restaurants</TabsTrigger>
-            <TabsTrigger value="drivers">Drivers</TabsTrigger>
-            <TabsTrigger value="revenue">Revenue</TabsTrigger>
-          </TabsList>
+          <PageWrapper>
+            <TabsList>
+              <TabsTrigger value="restaurants">Restaurants</TabsTrigger>
+              <TabsTrigger value="drivers">Drivers</TabsTrigger>
+              <TabsTrigger value="revenue">Revenue</TabsTrigger>
+            </TabsList>
+          </PageWrapper>
 
           <TabsContent value="restaurants">
-            <Card>
-              <CardHeader>
-                <CardTitle>Restaurant Performance</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Restaurant Name</TableHead>
-                      <TableHead>Total Orders</TableHead>
-                      <TableHead>Completed Orders</TableHead>
-                      <TableHead>Completion Rate</TableHead>
-                      <TableHead>Revenue (₦)</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {restaurantOrders.map((restaurant) => (
-                      <TableRow key={restaurant.id}>
-                        <TableCell>{restaurant.name}</TableCell>
-                        <TableCell>{restaurant.totalOrders}</TableCell>
-                        <TableCell>{restaurant.completedOrders}</TableCell>
-                        <TableCell>
-                          {(
-                            (restaurant.completedOrders /
-                              restaurant.totalOrders) *
-                            100
-                          ).toFixed(2)}
-                          %
-                        </TableCell>
-                        <TableCell>
-                          {restaurant.revenue.toLocaleString()}
-                        </TableCell>
+            <PageWrapper>
+              <Card>
+                <CardHeader>
+                  <CardTitle>Restaurant Performance</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Restaurant Name</TableHead>
+                        <TableHead>Total Orders</TableHead>
+                        <TableHead>Completed Orders</TableHead>
+                        <TableHead>Completion Rate</TableHead>
+                        <TableHead>Revenue (₦)</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
-            <Card className="mt-6">
-              <CardHeader>
-                <CardTitle>Restaurant Revenue Comparison</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <BarChart data={restaurantOrders}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend />
-                    <Bar dataKey="revenue" fill="hsl(24 9.8% 10%)" />
-                  </BarChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
+                    </TableHeader>
+                    <TableBody>
+                      {restaurantOrders.map((restaurant) => (
+                        <TableRow key={restaurant.id}>
+                          <TableCell>{restaurant.name}</TableCell>
+                          <TableCell>{restaurant.totalOrders}</TableCell>
+                          <TableCell>{restaurant.completedOrders}</TableCell>
+                          <TableCell>
+                            {(
+                              (restaurant.completedOrders /
+                                restaurant.totalOrders) *
+                              100
+                            ).toFixed(2)}
+                            %
+                          </TableCell>
+                          <TableCell>
+                            {restaurant.revenue.toLocaleString()}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </CardContent>
+              </Card>
+            </PageWrapper>
+
+            <PageWrapper>
+              <Card className="mt-6">
+                <CardHeader>
+                  <CardTitle>Restaurant Revenue Comparison</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <BarChart data={restaurantOrders}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="name" />
+                      <YAxis />
+                      <Tooltip />
+                      <Legend />
+                      <Bar dataKey="revenue" fill="hsl(24 9.8% 10%)" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
+            </PageWrapper>
           </TabsContent>
 
           <TabsContent value="drivers">
-            <Card>
-              <CardHeader>
-                <CardTitle>Driver Performance</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Driver Name</TableHead>
-                      <TableHead>Total Orders</TableHead>
-                      <TableHead>Completed Orders</TableHead>
-                      <TableHead>Completion Rate</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {driverOrders.map((driver) => (
-                      <TableRow key={driver.id}>
-                        <TableCell>{driver.name}</TableCell>
-                        <TableCell>{driver.totalOrders}</TableCell>
-                        <TableCell>{driver.completedOrders}</TableCell>
-                        <TableCell>
-                          {(
-                            (driver.completedOrders / driver.totalOrders) *
-                            100
-                          ).toFixed(2)}
-                          %
-                        </TableCell>
+            <PageWrapper>
+              <Card>
+                <CardHeader>
+                  <CardTitle>Driver Performance</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Driver Name</TableHead>
+                        <TableHead>Total Orders</TableHead>
+                        <TableHead>Completed Orders</TableHead>
+                        <TableHead>Completion Rate</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
-            <Card className="mt-6">
-              <CardHeader>
-                <CardTitle>Driver Order Completion Comparison</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <BarChart data={driverOrders}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend />
-                    <Bar dataKey="totalOrders" fill="hsl(24 9.8% 10%)" />
-                    <Bar dataKey="completedOrders" fill="hsl(24 9.8% 30%)" />
-                  </BarChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
+                    </TableHeader>
+                    <TableBody>
+                      {driverOrders.map((driver) => (
+                        <TableRow key={driver.id}>
+                          <TableCell>{driver.name}</TableCell>
+                          <TableCell>{driver.totalOrders}</TableCell>
+                          <TableCell>{driver.completedOrders}</TableCell>
+                          <TableCell>
+                            {(
+                              (driver.completedOrders / driver.totalOrders) *
+                              100
+                            ).toFixed(2)}
+                            %
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </CardContent>
+              </Card>
+            </PageWrapper>
+
+            <PageWrapper>
+              <Card className="mt-6">
+                <CardHeader>
+                  <CardTitle>Driver Order Completion Comparison</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <BarChart data={driverOrders}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="name" />
+                      <YAxis />
+                      <Tooltip />
+                      <Legend />
+                      <Bar dataKey="totalOrders" fill="hsl(24 9.8% 10%)" />
+                      <Bar dataKey="completedOrders" fill="hsl(24 9.8% 30%)" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
+            </PageWrapper>
           </TabsContent>
 
           <TabsContent value="revenue">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex justify-between items-center">
-                  <span>App Revenue</span>
-                  <Select
-                    value={revenueTimeframe}
-                    onValueChange={setRevenueTimeframe}
-                  >
-                    <SelectTrigger className="w-[180px]">
-                      <SelectValue placeholder="Select timeframe" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="daily">Daily</SelectItem>
-                      <SelectItem value="weekly">Weekly</SelectItem>
-                      <SelectItem value="monthly">Monthly</SelectItem>
-                      <SelectItem value="yearly">Yearly</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <LineChart data={revenueData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend />
-                    <Line
-                      type="monotone"
-                      dataKey={revenueTimeframe}
-                      stroke="hsl(24 9.8% 30%)"
-                      activeDot={{ r: 8 }}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-            <Card className="mt-6">
-              <CardHeader>
-                <CardTitle>Revenue Breakdown</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Timeframe</TableHead>
-                      <TableHead>Revenue (₦)</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    <TableRow>
-                      <TableCell>Today</TableCell>
-                      <TableCell>
-                        {revenueData[
-                          revenueData.length - 1
-                        ].daily.toLocaleString()}
-                      </TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell>This Week</TableCell>
-                      <TableCell>
-                        {revenueData[
-                          revenueData.length - 1
-                        ].weekly.toLocaleString()}
-                      </TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell>This Month</TableCell>
-                      <TableCell>
-                        {revenueData[
-                          revenueData.length - 1
-                        ].monthly.toLocaleString()}
-                      </TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell>This Year</TableCell>
-                      <TableCell>
-                        {revenueData[
-                          revenueData.length - 1
-                        ].yearly.toLocaleString()}
-                      </TableCell>
-                    </TableRow>
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
+            <PageWrapper>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex justify-between items-center">
+                    <span>App Revenue</span>
+                    <Select
+                      value={revenueTimeframe}
+                      onValueChange={setRevenueTimeframe}
+                    >
+                      <SelectTrigger className="w-[180px]">
+                        <SelectValue placeholder="Select timeframe" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="daily">Daily</SelectItem>
+                        <SelectItem value="weekly">Weekly</SelectItem>
+                        <SelectItem value="monthly">Monthly</SelectItem>
+                        <SelectItem value="yearly">Yearly</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <LineChart data={revenueData}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="name" />
+                      <YAxis />
+                      <Tooltip />
+                      <Legend />
+                      <Line
+                        type="monotone"
+                        dataKey={revenueTimeframe}
+                        stroke="hsl(24 9.8% 30%)"
+                        activeDot={{ r: 8 }}
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
+            </PageWrapper>
+
+            <PageWrapper>
+              <Card className="mt-6">
+                <CardHeader>
+                  <CardTitle>Revenue Breakdown</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Timeframe</TableHead>
+                        <TableHead>Revenue (₦)</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      <TableRow>
+                        <TableCell>Today</TableCell>
+                        <TableCell>
+                          {revenueData[
+                            revenueData.length - 1
+                          ].daily.toLocaleString()}
+                        </TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell>This Week</TableCell>
+                        <TableCell>
+                          {revenueData[
+                            revenueData.length - 1
+                          ].weekly.toLocaleString()}
+                        </TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell>This Month</TableCell>
+                        <TableCell>
+                          {revenueData[
+                            revenueData.length - 1
+                          ].monthly.toLocaleString()}
+                        </TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell>This Year</TableCell>
+                        <TableCell>
+                          {revenueData[
+                            revenueData.length - 1
+                          ].yearly.toLocaleString()}
+                        </TableCell>
+                      </TableRow>
+                    </TableBody>
+                  </Table>
+                </CardContent>
+              </Card>
+            </PageWrapper>
           </TabsContent>
         </Tabs>
       </main>

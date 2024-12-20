@@ -1,6 +1,7 @@
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { RestaurantCard } from "@/components/restaurant-card";
+import { PageWrapper } from "@/components/pagewrapper";
 
 // This would typically come from an API or database
 const restaurants = [
@@ -48,12 +49,17 @@ export default function RestaurantsPage() {
       <Header />
       <main className="flex-grow bg-gray-50 py-12">
         <div className="container mx-auto px-4">
-          <h1 className="text-3xl font-bold mb-8 text-center text-gray-800">
-            Popular Restaurants
-          </h1>
+          <PageWrapper>
+            <h1 className="text-3xl font-bold mb-8 text-center text-gray-800">
+              Popular Restaurants
+            </h1>
+          </PageWrapper>
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {restaurants.map((restaurant) => (
-              <RestaurantCard key={restaurant.id} {...restaurant} />
+              <PageWrapper>
+                <RestaurantCard key={restaurant.id} {...restaurant} />
+              </PageWrapper>
             ))}
           </div>
         </div>
