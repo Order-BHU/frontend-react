@@ -13,7 +13,7 @@ export default function LandingPage() {
         <PageWrapper className="bg-gradient-to-r from-orange-light to-orange-dark py-20">
           <div className="container mx-auto px-4 text-center">
             <h1 className="text-5xl font-bold mb-6 text-gray-800">
-              Welcome to FoodDelivery
+              Welcome to Order
             </h1>
             <p className="text-xl mb-8 text-gray-600">
               Delicious food delivered to your doorstep
@@ -77,10 +77,10 @@ export default function LandingPage() {
             </h2>
             <div className="max-w-3xl mx-auto text-center">
               <p className="text-gray-600 mb-4">
-                FoodDelivery is your go-to platform for convenient, delicious
-                meals delivered straight to your door. Founded in 2023, we've
-                quickly become a favorite among food lovers and busy
-                professionals alike.
+                Order is your go-to platform for convenient, delicious meals
+                delivered straight to your door. Founded in 2023, we've quickly
+                become a favorite among food lovers and busy professionals
+                alike.
               </p>
               <p className="text-gray-600">
                 Our mission is to connect you with the best local restaurants,
