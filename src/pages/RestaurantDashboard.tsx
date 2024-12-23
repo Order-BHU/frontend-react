@@ -18,16 +18,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  CreditCard,
-  DollarSign,
-  Package,
-  TrendingUp,
-  Utensils,
-  Clock,
-  ShoppingBag,
-} from "lucide-react";
+import { CreditCard, DollarSign, Package } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {

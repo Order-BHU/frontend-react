@@ -1,8 +1,6 @@
 import "./App.css";
 import "./index.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { Header } from "./components/header";
-import { Footer } from "./components/footer";
 import LandingPage from "./pages/Landingpage";
 import RestaurantsPage from "./pages/Restaurants";
 import ContactPage from "./pages/Contact";

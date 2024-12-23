@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBurger } from "@fortawesome/free-solid-svg-icons";
 import UseAuthStore from "@/stores/useAuthStore";
@@ -10,13 +9,12 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
 export function Header() {
-  const { isLoggedIn, role, logIn, logOut, setRole } = UseAuthStore();
+  const { isLoggedIn, role } = UseAuthStore();
 
   return (
     <header className="bg-white shadow-sm flex justify-center">

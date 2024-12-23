@@ -148,7 +148,7 @@ export default function RestaurantMenuPage() {
     }));
   };
 
-  const handleAddToCart = (item: any) => {
+  /* const handleAddToCart = (item: any) => {
     //to be used with button that i commented out for now. Might be removed totally
     const quantity = quantities[item.id] || 0;
     if (quantity > 0) {
@@ -161,7 +161,7 @@ export default function RestaurantMenuPage() {
       // Reset quantity after adding to cart
       setQuantities((prev) => ({ ...prev, [item.id]: 0 }));
     }
-  };
+  };*/
   const handleCheckout = () => {
     // In a real app, this would initiate the checkout process
     console.log("Proceeding to checkout");
