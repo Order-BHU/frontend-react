@@ -122,7 +122,7 @@ export default function LandingPage() {
               ].map((goal, index) => (
                 <div
                   key={index}
-                  className="bg-white p-6 rounded-lg shadow-sm border border-stone-200 border-gray-100 dark:border-stone-800"
+                  className="bg-white p-6 rounded-lg shadow-sm border border-stone-200 dark:border-stone-800"
                 >
                   <h3 className="text-xl font-semibold mb-2 text-stone-900 dark:text-stone-50">
                     {goal.title}
