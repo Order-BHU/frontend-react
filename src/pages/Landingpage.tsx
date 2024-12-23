@@ -16,7 +16,7 @@ export default function LandingPage() {
               Welcome to Order
             </h1>
             <p className="text-xl mb-8 text-gray-600">
-              Delicious food delivered to your mom's house
+              Delicious food delivered to your doorstep
             </p>
             <div className="space-x-4">
               <Button
