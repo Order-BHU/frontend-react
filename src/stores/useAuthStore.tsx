@@ -11,8 +11,8 @@ interface AuthState {
 
 // Create the Zustand store
 const useAuthStore = create<AuthState>((set) => ({
-  isLoggedIn: false, // Initial state
-  role: null,
+  isLoggedIn: true, // Initial state
+  role: "rider",
   logIn: (role) => {
     set({ isLoggedIn: true, role });
   },

@@ -23,10 +23,10 @@ export default function LandingPage() {
     Autoplay({ delay: 2000, stopOnInteraction: true })
   );
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col dark:bg-cbg-dark dark:text-cfont-dark">
       <Header />
       <main className="flex-grow">
-        <PageWrapper className="bg-gradient-to-r from-orange-light to-orange-dark py-20">
+        <PageWrapper className="bg-gradient-to-r from-orange-light to-orange-dark  dark:from-orange-light dark:to-cbg-dark py-20">
           <div className="container mx-auto px-4 text-center">
             <h1 className="text-5xl font-bold mb-6 text-gray-800">
               Welcome to Order
@@ -55,7 +55,7 @@ export default function LandingPage() {
           </div>
         </PageWrapper>
 
-        <PageWrapper className="py-20 justify-center bg-gray-50">
+        <PageWrapper className="py-20 justify-center bg-gray-50 dark:bg-cbg-darkaccent">
           <h2 className="text-3xl font-semibold mb-12 text-center">
             Our Services
           </h2>
@@ -91,12 +91,14 @@ export default function LandingPage() {
                     <CarouselItem key={index}>
                       <div key={index} className="text-center">
                         <div className="bg-orange-100 rounded-full p-6 inline-block mb-4">
-                          <step.icon className="h-8 w-8 text-stone-900 dark:text-stone-50" />
+                          <step.icon className="h-8 w-8 text-stone-900 dark:text-gray-900" />
                         </div>
                         <h3 className="text-xl font-semibold mb-2">
                           {step.title}
                         </h3>
-                        <p className="text-gray-600">{step.description}</p>
+                        <p className="text-gray-600 dark:text-cfont-dark">
+                          {step.description}
+                        </p>
                       </div>
                     </CarouselItem>
                   ))}
@@ -138,12 +140,14 @@ export default function LandingPage() {
                     <CarouselItem key={index}>
                       <div key={index} className="text-center">
                         <div className="bg-orange-100 rounded-full p-6 inline-block mb-4">
-                          <step.icon className="h-8 w-8 text-stone-900 dark:text-stone-50" />
+                          <step.icon className="h-8 w-8 text-stone-900 dark:text-gray-900" />
                         </div>
                         <h3 className="text-xl font-semibold mb-2">
                           {step.title}
                         </h3>
-                        <p className="text-gray-600">{step.description}</p>
+                        <p className="text-gray-600 dark:text-cfont-dark">
+                          {step.description}
+                        </p>
                       </div>
                     </CarouselItem>
                   ))}
@@ -153,19 +157,19 @@ export default function LandingPage() {
           </div>
         </PageWrapper>
 
-        <PageWrapper className="py-20">
+        <PageWrapper className="py-20 dark:text-cfont-dark">
           <div className="container mx-auto px-4">
             <h2 className="text-3xl font-semibold mb-6 text-center">
               About Us
             </h2>
             <div className="max-w-3xl mx-auto text-center">
-              <p className="text-gray-600 mb-4">
+              <p className="text-gray-600 mb-4 dark:text-cfont-dark">
                 Order is your go-to platform for convenient, delicious meals
                 delivered straight to your door. Founded in 2023, we've quickly
                 become a favorite among food lovers and busy professionals
                 alike.
               </p>
-              <p className="text-gray-600">
+              <p className="text-gray-600 dark:text-cfont-dark">
                 Our mission is to connect you with the best local restaurants,
                 ensuring that you have access to a wide variety of cuisines
                 without ever leaving your home or office. We partner with
@@ -176,7 +180,7 @@ export default function LandingPage() {
           </div>
         </PageWrapper>
 
-        <PageWrapper className="bg-gray-50 py-20">
+        <PageWrapper className="bg-gray-50 py-20 dark:bg-cbg-dark">
           <div className="container mx-auto px-4">
             <h2 className="text-3xl font-semibold mb-12 text-center">
               Our Goals
@@ -207,7 +211,7 @@ export default function LandingPage() {
                   key={index}
                   className="bg-white p-6 rounded-lg shadow-sm border border-stone-200 dark:border-stone-800"
                 >
-                  <h3 className="text-xl font-semibold mb-2 text-stone-900 dark:text-stone-50">
+                  <h3 className="text-xl font-semibold mb-2 text-stone-900 ">
                     {goal.title}
                   </h3>
                   <p className="text-gray-600">{goal.description}</p>
@@ -217,7 +221,7 @@ export default function LandingPage() {
           </div>
         </PageWrapper>
 
-        <PageWrapper className="bg-stone-900 text-white py-20 dark:bg-stone-50">
+        <PageWrapper className="bg-stone-900 text-white py-20 dark:bg-cbg-darkaccent">
           <div className="container mx-auto px-4 text-center">
             <h2 className="text-3xl font-semibold mb-6">Become a Driver</h2>
             <p className="text-xl mb-8 max-w-2xl mx-auto">

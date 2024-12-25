@@ -108,7 +108,7 @@ export default function RestaurantDashboardPage() {
                 <DialogTrigger asChild>
                   <Button variant="outline">Edit Profile</Button>
                 </DialogTrigger>
-                <DialogContent>
+                <DialogContent className="dark:text-cfont-dark">
                   <DialogHeader>
                     <DialogTitle>Edit Restaurant Profile</DialogTitle>
                   </DialogHeader>
@@ -120,11 +120,17 @@ export default function RestaurantDashboardPage() {
                     className="space-y-4"
                   >
                     <div>
-                      <Label htmlFor="restaurantPhoto">Restaurant Photo</Label>
+                      <Label
+                        htmlFor="restaurantPhoto"
+                        className="dark:text-cfont-dark"
+                      >
+                        Restaurant Photo
+                      </Label>
                       <Input
                         id="restaurantPhoto"
                         type="file"
                         accept="image/*"
+                        className="dark:text-cfont-dark"
                         onChange={(e) => {
                           const file = e.target.files?.[0];
                           if (file) {
@@ -141,10 +147,16 @@ export default function RestaurantDashboardPage() {
                       />
                     </div>
                     <div>
-                      <Label htmlFor="restaurantName">Restaurant Name</Label>
+                      <Label
+                        htmlFor="restaurantName"
+                        className="dark:text-cfont-dark"
+                      >
+                        Restaurant Name
+                      </Label>
                       <Input
                         id="restaurantName"
                         value={restaurant.name}
+                        className="dark:text-cfont-dark"
                         onChange={(e) =>
                           setRestaurant({ ...restaurant, name: e.target.value })
                         }

@@ -53,39 +53,48 @@ export default function SignUpPage() {
     <div className="min-h-screen bg-gray-100">
       <Header />
       <main className="container mx-auto px-4 py-8">
-        <div className="max-w-md mx-auto bg-white p-8 rounded-lg shadow-md">
+        <div className="max-w-md mx-auto bg-white p-8 rounded-lg shadow-md dark:bg-cbg-darkaccent">
           <h1 className="text-3xl font-bold mb-6 text-center text-orange-600">
             Sign Up
           </h1>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <Label htmlFor="name">Name</Label>
+              <Label htmlFor="name" className="dark:text-cfont-dark">
+                Name
+              </Label>
               <Input
                 type="text"
                 id="name"
                 name="name"
+                className="dark:text-cfont-dark"
                 value={formData.name}
                 onChange={handleChange}
                 required
               />
             </div>
             <div>
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email" className="dark:text-cfont-dark">
+                Email
+              </Label>
               <Input
                 type="email"
                 id="email"
                 name="email"
+                className="dark:text-cfont-dark"
                 value={formData.email}
                 onChange={handleChange}
                 required
               />
             </div>
             <div>
-              <Label htmlFor="phone">Phone Number</Label>
+              <Label htmlFor="phone" className="dark:text-cfont-dark">
+                Phone Number
+              </Label>
               <Input
                 type="tel"
                 id="phone"
                 name="phone"
+                className="dark:text-cfont-dark"
                 value={formData.phone}
                 onChange={handleChange}
                 required
@@ -112,22 +121,28 @@ export default function SignUpPage() {
               </div>
             </div>
             <div>
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password" className="dark:text-cfont-dark">
+                Password
+              </Label>
               <Input
                 type="password"
                 id="password"
                 name="password"
+                className="dark:text-cfont-dark"
                 value={formData.password}
                 onChange={handleChange}
                 required
               />
             </div>
             <div>
-              <Label htmlFor="confirmPassword">Confirm Password</Label>
+              <Label htmlFor="confirmPassword" className="dark:text-cfont-dark">
+                Confirm Password
+              </Label>
               <Input
                 type="password"
                 id="confirmPassword"
                 name="confirmPassword"
+                className="dark:text-cfont-dark"
                 value={formData.confirmPassword}
                 onChange={handleChange}
                 required

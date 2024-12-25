@@ -28,28 +28,34 @@ export default function LoginPage() {
     <div className="min-h-screen bg-gray-100">
       <Header />
       <main className="container mx-auto px-4 py-8">
-        <div className="max-w-md mx-auto bg-white p-8 rounded-lg shadow-md">
+        <div className="max-w-md mx-auto bg-white p-8 rounded-lg shadow-md dark:bg-cbg-darkaccent">
           <h1 className="text-3xl font-bold mb-6 text-center text-orange-600">
             Log In
           </h1>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email" className="dark:text-cfont-dark">
+                Email
+              </Label>
               <Input
                 type="email"
                 id="email"
                 name="email"
+                className="dark:text-cfont-dark"
                 value={formData.email}
                 onChange={handleChange}
                 required
               />
             </div>
             <div>
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password" className="dark:text-cfont-dark">
+                Password
+              </Label>
               <Input
                 type="password"
                 id="password"
                 name="password"
+                className="dark:text-cfont-dark"
                 value={formData.password}
                 onChange={handleChange}
                 required

@@ -45,10 +45,10 @@ const restaurants = [
 
 export default function RestaurantsPage() {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col ">
       <Header />
-      <main className="flex-grow bg-gray-50 py-12">
-        <div className="container mx-auto px-4">
+      <main className="flex-grow bg-gray-50 py-12 ">
+        <div className="container mx-auto px-4 ">
           <PageWrapper>
             <h1 className="text-3xl font-bold mb-8 text-center text-gray-800">
               Popular Restaurants

@@ -214,7 +214,7 @@ export default function UserDashboardPage() {
                     View Order History
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-4xl">
+                <DialogContent className="max-w-4xl dark:text-cfont-dark">
                   <DialogHeader>
                     <DialogTitle>Order History</DialogTitle>
                   </DialogHeader>
@@ -231,7 +231,10 @@ export default function UserDashboardPage() {
                     </TableHeader>
                     <TableBody>
                       {allUserOrders.map((order) => (
-                        <TableRow key={order.id}>
+                        <TableRow
+                          key={order.id}
+                          className="dark:text-cfont-dark"
+                        >
                           <TableCell>{order.id}</TableCell>
                           <TableCell>{order.restaurant}</TableCell>
                           <TableCell>{order.items.join(", ")}</TableCell>

@@ -14,28 +14,38 @@ export default function ContactPage() {
           <h1 className="text-4xl font-bold mb-8 text-center text-gray-800">
             Contact Us
           </h1>
-          <div className="max-w-2xl mx-auto bg-white p-8 rounded-lg shadow-sm border border-stone-200 border-gray-200 dark:border-stone-800">
+          <div className="max-w-2xl mx-auto bg-white p-8 rounded-lg shadow-sm border border-stone-200 dark:border-stone-800 dark:bg-cbg-darkaccent">
             <form className="space-y-6">
               <div>
-                <Label htmlFor="name">Name</Label>
-                <Input id="name" placeholder="Your name" className="mt-1" />
+                <Label htmlFor="name" className="dark:text-cfont-dark">
+                  Name
+                </Label>
+                <Input
+                  id="name"
+                  placeholder="Your name"
+                  className="mt-1 dark:text-cfont-dark"
+                />
               </div>
               <div>
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email" className="dark:text-cfont-dark">
+                  Email
+                </Label>
                 <Input
                   id="email"
                   type="email"
                   placeholder="Your email"
-                  className="mt-1"
+                  className="mt-1 dark:text-cfont-dark"
                 />
               </div>
               <div>
-                <Label htmlFor="message">Message</Label>
+                <Label htmlFor="message" className="dark:text-cfont-dark">
+                  Message
+                </Label>
                 <Textarea
                   id="message"
                   placeholder="Your message"
                   rows={5}
-                  className="mt-1"
+                  className="mt-1 dark:text-cfont-dark"
                 />
               </div>
               <Button type="submit" className="w-full">
