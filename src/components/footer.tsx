@@ -8,7 +8,7 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
             <h2 className="text-2xl font-bold text-stone-900 mb-4 dark:text-stone-50">
-              FoodDelivery
+              Order
             </h2>
             <p className="text-sm">Delicious food, delivered to you.</p>
           </div>
@@ -40,12 +40,12 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link
-                  to="/driver-signup"
+                <a
+                  href="mailto:bhuorder@gmail.com"
                   className="hover:text-stone-900 transition-colors dark:hover:text-stone-50"
                 >
                   Become a Driver
-                </Link>
+                </a>
               </li>
             </ul>
           </div>
@@ -83,9 +83,7 @@ export function Footer() {
           </div>
         </div>
         <div className="mt-8 pt-8 border-t border-gray-200 text-center text-sm">
-          <p>
-            &copy; {new Date().getFullYear()} FoodDelivery. All rights reserved.
-          </p>
+          <p>&copy; {new Date().getFullYear()} Order. All rights reserved.</p>
         </div>
       </div>
     </footer>

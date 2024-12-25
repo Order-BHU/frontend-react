@@ -21,7 +21,7 @@ export function Header() {
       <div className="container py-4 flex justify-between items-center w-full px-0">
         <Link
           to="/"
-          className="text-2xl font-bold text-stone-900 dark:text-stone-50"
+          className="text-2xl font-bold text-stone-900 dark:text-stone-50 ml-9"
         >
           Order
         </Link>

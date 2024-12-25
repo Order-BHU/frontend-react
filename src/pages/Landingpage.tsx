@@ -2,8 +2,11 @@ import { Link } from "react-router-dom";
 import { Header } from "@/components/header";
 import { Button } from "@/components/ui/button";
 import { Footer } from "@/components/footer";
-import { ArrowRight, Utensils, Clock, Truck } from "lucide-react";
+import { Utensils, Clock, Truck, Package, MapPin } from "lucide-react";
 import { PageWrapper } from "@/components/pagewrapper";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBowlFood } from "@fortawesome/free-solid-svg-icons";
+import { faTruck } from "@fortawesome/free-solid-svg-icons";
 
 export default function LandingPage() {
   return (
@@ -25,11 +28,15 @@ export default function LandingPage() {
                 className="bg-stone-900 hover:bg-stone-900/90 dark:bg-stone-50 dark:hover:bg-stone-50/90"
               >
                 <Link to="/restaurants">
-                  Browse Restaurants <ArrowRight className="ml-2 h-4 w-4" />
+                  Order Food{" "}
+                  <FontAwesomeIcon icon={faBowlFood} className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
               <Button asChild size="lg" variant="outline">
-                <Link to="/signup">Sign Up</Link>
+                <Link to="/signup">
+                  Deliver Parcel{" "}
+                  <FontAwesomeIcon icon={faTruck} className="ml-2 h-4 w-4" />
+                </Link>
               </Button>
             </div>
           </div>
@@ -38,7 +45,7 @@ export default function LandingPage() {
         <PageWrapper className="py-20 justify-center flex">
           <div className="container mx-0 text-center px-0">
             <h2 className="text-3xl font-semibold mb-12 text-center">
-              How it works
+              How food delivery works
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
               {[
@@ -70,7 +77,45 @@ export default function LandingPage() {
           </div>
         </PageWrapper>
 
-        <PageWrapper className="bg-gray-50 py-20">
+        <PageWrapper className="bg-gray-50 py-20 justify-center flex">
+          <div className="container mx-auto px-4">
+            <h2 className="text-3xl font-semibold mb-12 text-center">
+              How Parcel Delivery Works
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {[
+                {
+                  icon: Package,
+                  title: "Request a Pickup",
+                  description:
+                    "Schedule a pickup for your parcel through our app",
+                },
+                {
+                  icon: Truck,
+                  title: "Dispatch Rider Collects",
+                  description:
+                    "Our dispatch rider will collect the parcel from your location",
+                },
+                {
+                  icon: MapPin,
+                  title: "Track and Deliver",
+                  description:
+                    "Track your parcel in real-time until it reaches its destination",
+                },
+              ].map((step, index) => (
+                <div key={index} className="text-center">
+                  <div className="bg-orange-100 rounded-full p-6 inline-block mb-4">
+                    <step.icon className="h-8 w-8 text-primary" />
+                  </div>
+                  <h3 className="text-xl font-semibold mb-2">{step.title}</h3>
+                  <p className="text-gray-600">{step.description}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </PageWrapper>
+
+        <PageWrapper className="py-20">
           <div className="container mx-auto px-4">
             <h2 className="text-3xl font-semibold mb-6 text-center">
               About Us
@@ -93,7 +138,7 @@ export default function LandingPage() {
           </div>
         </PageWrapper>
 
-        <PageWrapper className="py-20">
+        <PageWrapper className="bg-gray-50 py-20">
           <div className="container mx-auto px-4">
             <h2 className="text-3xl font-semibold mb-12 text-center">
               Our Goals
@@ -143,7 +188,7 @@ export default function LandingPage() {
               community.
             </p>
             <Button asChild size="lg" variant="secondary">
-              <Link to="/driver-signup">Sign Up as a Driver</Link>
+              <a href="mailto:orderbhu@gmail.com">Send An Email</a>
             </Button>
           </div>
         </PageWrapper>
