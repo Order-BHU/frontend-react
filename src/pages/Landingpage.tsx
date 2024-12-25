@@ -7,8 +7,21 @@ import { PageWrapper } from "@/components/pagewrapper";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBowlFood } from "@fortawesome/free-solid-svg-icons";
 import { faTruck } from "@fortawesome/free-solid-svg-icons";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+} from "@/components/ui/carousel";
+import * as React from "react";
+import Autoplay from "embla-carousel-autoplay";
 
 export default function LandingPage() {
+  const foodplugin = React.useRef(
+    Autoplay({ delay: 2000, stopOnInteraction: true })
+  );
+  const parcelplugin = React.useRef(
+    Autoplay({ delay: 2000, stopOnInteraction: true })
+  );
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
@@ -42,75 +55,100 @@ export default function LandingPage() {
           </div>
         </PageWrapper>
 
-        <PageWrapper className="py-20 justify-center flex">
-          <div className="container mx-0 text-center px-0">
-            <h2 className="text-3xl font-semibold mb-12 text-center">
-              How food delivery works
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-              {[
-                {
-                  icon: Utensils,
-                  title: "Choose a restaurant",
-                  description: "Browse our wide selection of restaurants",
-                },
-                {
-                  icon: Clock,
-                  title: "Select your meal",
-                  description: "Pick your favorite dishes from the menu",
-                },
-                {
-                  icon: Truck,
-                  title: "Enjoy your delivery",
-                  description: "We'll bring the food right to your door",
-                },
-              ].map((step, index) => (
-                <div key={index} className="text-center">
-                  <div className="bg-orange-100 rounded-full p-6 inline-block mb-4">
-                    <step.icon className="h-8 w-8 text-stone-900 dark:text-stone-50" />
-                  </div>
-                  <h3 className="text-xl font-semibold mb-2">{step.title}</h3>
-                  <p className="text-gray-600">{step.description}</p>
-                </div>
-              ))}
+        <PageWrapper className="py-20 justify-center bg-gray-50">
+          <h2 className="text-3xl font-semibold mb-12 text-center">
+            Our Services
+          </h2>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-11">
+            <div className="container mx-0 text-center px-0">
+              <h2 className="text-2xl font-semibold mb-12 text-center">
+                Food delivery
+              </h2>
+              <Carousel
+                plugins={[foodplugin.current]}
+                className=""
+                //onMouseEnter={plugin.current.stop}
+                onMouseLeave={foodplugin.current.reset}
+              >
+                <CarouselContent>
+                  {[
+                    {
+                      icon: Utensils,
+                      title: "Choose a restaurant",
+                      description: "Browse our wide selection of restaurants",
+                    },
+                    {
+                      icon: Clock,
+                      title: "Select your meal",
+                      description: "Pick your favorite dishes from the menu",
+                    },
+                    {
+                      icon: Truck,
+                      title: "Enjoy your delivery",
+                      description: "We'll bring the food right to your door",
+                    },
+                  ].map((step, index) => (
+                    <CarouselItem key={index}>
+                      <div key={index} className="text-center">
+                        <div className="bg-orange-100 rounded-full p-6 inline-block mb-4">
+                          <step.icon className="h-8 w-8 text-stone-900 dark:text-stone-50" />
+                        </div>
+                        <h3 className="text-xl font-semibold mb-2">
+                          {step.title}
+                        </h3>
+                        <p className="text-gray-600">{step.description}</p>
+                      </div>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+              </Carousel>
             </div>
-          </div>
-        </PageWrapper>
 
-        <PageWrapper className="bg-gray-50 py-20 justify-center flex">
-          <div className="container mx-auto px-4">
-            <h2 className="text-3xl font-semibold mb-12 text-center">
-              How Parcel Delivery Works
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {[
-                {
-                  icon: Package,
-                  title: "Request a Pickup",
-                  description:
-                    "Schedule a pickup for your parcel through our app",
-                },
-                {
-                  icon: Truck,
-                  title: "Dispatch Rider Collects",
-                  description:
-                    "Our dispatch rider will collect the parcel from your location",
-                },
-                {
-                  icon: MapPin,
-                  title: "Track and Deliver",
-                  description:
-                    "Track your parcel in real-time until it reaches its destination",
-                },
-              ].map((step, index) => (
-                <div key={index} className="text-center">
-                  <div className="bg-orange-100 rounded-full p-6 inline-block mb-4">
-                    <step.icon className="h-8 w-8 text-primary" />
-                  </div>
-                  <h3 className="text-xl font-semibold mb-2">{step.title}</h3>
-                  <p className="text-gray-600">{step.description}</p>
-                </div>
-              ))}
+            <div className="container mx-auto px-4">
+              <h2 className="text-2xl font-semibold mb-12 text-center">
+                Parcel Delivery
+              </h2>
+              <Carousel
+                plugins={[parcelplugin.current]}
+                className=""
+                //onMouseEnter={plugin.current.stop}
+                onMouseLeave={parcelplugin.current.reset}
+              >
+                <CarouselContent>
+                  {[
+                    {
+                      icon: Package,
+                      title: "Request a Pickup",
+                      description:
+                        "Schedule a pickup for your parcel through our app",
+                    },
+                    {
+                      icon: Truck,
+                      title: "Dispatch Rider Collects",
+                      description:
+                        "Our dispatch rider will collect the parcel from your location",
+                    },
+                    {
+                      icon: MapPin,
+                      title: "Track and Deliver",
+                      description:
+                        "Track your parcel in real-time until it reaches its destination",
+                    },
+                  ].map((step, index) => (
+                    <CarouselItem key={index}>
+                      <div key={index} className="text-center">
+                        <div className="bg-orange-100 rounded-full p-6 inline-block mb-4">
+                          <step.icon className="h-8 w-8 text-stone-900 dark:text-stone-50" />
+                        </div>
+                        <h3 className="text-xl font-semibold mb-2">
+                          {step.title}
+                        </h3>
+                        <p className="text-gray-600">{step.description}</p>
+                      </div>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+              </Carousel>
             </div>
           </div>
         </PageWrapper>
