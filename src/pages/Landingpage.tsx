@@ -68,7 +68,7 @@ export default function LandingPage() {
                 plugins={[foodplugin.current]}
                 className=""
                 //onMouseEnter={plugin.current.stop}
-                onMouseLeave={foodplugin.current.reset}
+                //onMouseLeave={foodplugin.current.reset}
               >
                 <CarouselContent>
                   {[
@@ -114,7 +114,7 @@ export default function LandingPage() {
                 plugins={[parcelplugin.current]}
                 className=""
                 //onMouseEnter={plugin.current.stop}
-                onMouseLeave={parcelplugin.current.reset}
+                //onMouseLeave={parcelplugin.current.reset}
               >
                 <CarouselContent>
                   {[
@@ -188,23 +188,24 @@ export default function LandingPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {[
                 {
-                  title: "Customer Satisfaction",
+                  title: "Create Opportunities",
                   description:
-                    "Ensure every order meets or exceeds expectations",
+                    "To provide on-campus employment for students and staff, fostering skill development and financial independence",
                 },
                 {
-                  title: "Support Local Businesses",
-                  description: "Partner with and promote local restaurants",
+                  title: "Drive Local Growth",
+                  description:
+                    "To support the campus economy by driving innovative, growth-focused business activities",
                 },
                 {
-                  title: "Eco-Friendly Practices",
+                  title: "Enhance Financial Well-being",
                   description:
-                    "Implement sustainable packaging and delivery methods",
+                    "To improve the economic stability of students and the campus community with fair wages and affordable services",
                 },
                 {
-                  title: "Community Engagement",
+                  title: "Support Public Resources",
                   description:
-                    "Actively participate in and give back to our communities",
+                    "To contribute responsibly to local and regional infrastructure, supporting services that benefit the campus and community",
                 },
               ].map((goal, index) => (
                 <div
