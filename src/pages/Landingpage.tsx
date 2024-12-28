@@ -26,29 +26,28 @@ export default function LandingPage() {
     <div className="min-h-screen flex flex-col dark:bg-cbg-dark dark:text-cfont-dark">
       <Header />
       <main className="flex-grow">
-        <PageWrapper className="bg-gradient-to-r from-orange-light to-orange-dark  dark:from-orange-light dark:to-cbg-dark py-20">
+        <PageWrapper className="bg-gradient-to-r from-orange-light to-orange-dark  dark:from-gradient-darkstart dark:to-gradient-darkend py-20 dark:rounded dark:mx-8 dark:mb-8 dark:box-content">
           <div className="container mx-auto px-4 text-center">
-            <h1 className="text-5xl font-bold mb-6 text-gray-800">
+            <h1 className="text-5xl font-bold mb-6 text-gray-800 dark:text-welcome-dark">
               Welcome to Order
             </h1>
-            <p className="text-xl mb-8 text-gray-600">
+            <p className="text-xl mb-8 text-gray-600 dark:text-welcome-dark">
               Delicious food delivered to your doorstep
             </p>
-            <div className="space-x-4">
+            <div className="">
               <Button
                 asChild
-                size="lg"
-                className="bg-stone-900 hover:bg-stone-900/90 dark:bg-stone-50 dark:hover:bg-stone-50/90"
+                className="bg-stone-900 hover:bg-stone-900/90 dark:bg-stone-50 dark:hover:bg-stone-50/90 mx-5 w-44 my-3"
               >
                 <Link to="/restaurants">
                   Order Food{" "}
-                  <FontAwesomeIcon icon={faBowlFood} className="ml-2 h-4 w-4" />
+                  <FontAwesomeIcon icon={faBowlFood} className="h-4 w-4" />
                 </Link>
               </Button>
-              <Button asChild size="lg" variant="outline">
+              <Button asChild variant="outline" className="mx-5 my-3 w-44">
                 <Link to="/signup">
                   Deliver Parcel{" "}
-                  <FontAwesomeIcon icon={faTruck} className="ml-2 h-4 w-4" />
+                  <FontAwesomeIcon icon={faTruck} className="h-4 w-4" />
                 </Link>
               </Button>
             </div>
@@ -90,7 +89,7 @@ export default function LandingPage() {
                   ].map((step, index) => (
                     <CarouselItem key={index}>
                       <div key={index} className="text-center">
-                        <div className="bg-orange-100 rounded-full p-6 inline-block mb-4">
+                        <div className="bg-orange-100 rounded-full p-6 inline-block mb-4 dark:bg-gradient-darkstart">
                           <step.icon className="h-8 w-8 text-stone-900 dark:text-gray-900" />
                         </div>
                         <h3 className="text-xl font-semibold mb-2">
@@ -139,7 +138,7 @@ export default function LandingPage() {
                   ].map((step, index) => (
                     <CarouselItem key={index}>
                       <div key={index} className="text-center">
-                        <div className="bg-orange-100 rounded-full p-6 inline-block mb-4">
+                        <div className="bg-orange-100 rounded-full p-6 inline-block mb-4 dark:bg-gradient-darkstart">
                           <step.icon className="h-8 w-8 text-stone-900 dark:text-gray-900" />
                         </div>
                         <h3 className="text-xl font-semibold mb-2">

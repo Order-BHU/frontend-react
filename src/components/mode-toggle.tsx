@@ -1,6 +1,4 @@
-import { Moon, Sun } from "lucide-react";
-
-import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,6 +6,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useTheme } from "@/components/theme-provider";
+import { Link } from "react-router-dom";
 
 export function ModeToggle() {
   const { setTheme } = useTheme();
@@ -15,13 +14,25 @@ export function ModeToggle() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="icon">
-          <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-          <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-          <span className="sr-only">Toggle theme</span>
-        </Button>
+        <div className="h-16 w-16 mr-[1rem]">
+          <Avatar className="w-full h-full">
+            <AvatarImage src="https://github.com/shadcn.png" />
+            <AvatarFallback>
+              CN{/*make this the username first letters */}
+            </AvatarFallback>
+          </Avatar>
+        </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
+        <DropdownMenuItem>
+          <Link to="/user-dashboard">User-DB</Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem>
+          <Link to="/restaurant-dashboard">Owner-DB</Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem>
+          <Link to="/rider-dashboard">Rider-DB</Link>
+        </DropdownMenuItem>
         <DropdownMenuItem onClick={() => setTheme("light")}>
           Light
         </DropdownMenuItem>

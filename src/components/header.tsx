@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBurger } from "@fortawesome/free-solid-svg-icons";
 import UseAuthStore from "@/stores/useAuthStore";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+//import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ModeToggle } from "./mode-toggle";
 
 import {
@@ -15,10 +15,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 export function Header() {
-  const { isLoggedIn, role } = UseAuthStore();
+  const { isLoggedIn /*role*/ } = UseAuthStore();
 
   return (
-    <header className="bg-white dark:bg-cbg-dark shadow-sm flex justify-center">
+    <header className="bg-white dark:bg-header-dark shadow-sm flex justify-center">
       <div className="container py-4 flex justify-between items-center w-full px-0">
         <Link
           to="/"
@@ -94,7 +94,7 @@ export function Header() {
             <Link to="/signup">Sign Up</Link>
           </Button>
         </div>
-        {isLoggedIn && (
+        {/*isLoggedIn && (
           <div className="h-16 w-16 mr-[1rem] md:ml-[20rem] lg:ml-[37rem]">
             <Link
               to={
@@ -112,12 +112,12 @@ export function Header() {
               <Avatar className="w-full h-full">
                 <AvatarImage src="https://github.com/shadcn.png" />
                 <AvatarFallback>
-                  CN{/*make this the username first letters */}
+                  CN{/*make this the username first letters /}
                 </AvatarFallback>
               </Avatar>
             </Link>
           </div>
-        )}
+        )*/}
         <ModeToggle />
       </div>
     </header>

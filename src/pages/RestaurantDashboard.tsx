@@ -82,11 +82,11 @@ export default function RestaurantDashboardPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
+    <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-cbg-dark">
       <Header />
       <main className="flex-grow container mx-auto px-4 py-8">
         <PageWrapper>
-          <h1 className="text-3xl font-bold mb-6 text-gray-800">
+          <h1 className="text-3xl font-bold mb-6 text-gray-800 dark:text-cfont-dark">
             Restaurant Dashboard
           </h1>
         </PageWrapper>

@@ -28,8 +28,8 @@ export default function LoginPage() {
     <div className="min-h-screen bg-gray-100">
       <Header />
       <main className="container mx-auto px-4 py-8">
-        <div className="max-w-md mx-auto bg-white p-8 rounded-lg shadow-md dark:bg-cbg-darkaccent">
-          <h1 className="text-3xl font-bold mb-6 text-center text-orange-600">
+        <div className="max-w-md mx-auto bg-white p-8 rounded-lg shadow-md dark:bg-cbg-dark">
+          <h1 className="text-3xl font-bold mb-6 text-center text-orange-600 dark:text-cfont-dark">
             Log In
           </h1>
           <form onSubmit={handleSubmit} className="space-y-4">

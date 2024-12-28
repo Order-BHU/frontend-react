@@ -47,10 +47,10 @@ export default function RestaurantsPage() {
   return (
     <div className="min-h-screen flex flex-col ">
       <Header />
-      <main className="flex-grow bg-gray-50 py-12 ">
+      <main className="flex-grow bg-gray-50 py-12 dark:bg-cbg-dark">
         <div className="container mx-auto px-4 ">
           <PageWrapper>
-            <h1 className="text-3xl font-bold mb-8 text-center text-gray-800">
+            <h1 className="text-3xl font-bold mb-8 text-center text-gray-800 dark:text-cfont-dark">
               Popular Restaurants
             </h1>
           </PageWrapper>

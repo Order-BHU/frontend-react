@@ -9,9 +9,9 @@ export default function ContactPage() {
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      <main className="flex-grow bg-gray-50 py-12">
+      <main className="flex-grow bg-gray-50 py-12 dark:bg-cbg-dark">
         <div className="container mx-auto px-4">
-          <h1 className="text-4xl font-bold mb-8 text-center text-gray-800">
+          <h1 className="text-4xl font-bold mb-8 text-center text-gray-800 dark:text-cfont-dark">
             Contact Us
           </h1>
           <div className="max-w-2xl mx-auto bg-white p-8 rounded-lg shadow-sm border border-stone-200 dark:border-stone-800 dark:bg-cbg-darkaccent">

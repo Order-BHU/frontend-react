@@ -50,12 +50,12 @@ export default function RiderDashboardPage() {
   const [isOnline, setIsOnline] = useState(true);
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
+    <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-cbg-dark">
       <Header />
       <main className="flex-grow container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-6">
           <PageWrapper>
-            <h1 className="text-3xl font-bold text-gray-800">
+            <h1 className="text-3xl font-bold text-gray-800 dark:text-cfont-dark">
               Rider Dashboard
             </h1>
           </PageWrapper>

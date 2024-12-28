@@ -54,7 +54,7 @@ export default function SignUpPage() {
       <Header />
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-md mx-auto bg-white p-8 rounded-lg shadow-md dark:bg-cbg-darkaccent">
-          <h1 className="text-3xl font-bold mb-6 text-center text-orange-600">
+          <h1 className="text-3xl font-bold mb-6 text-center text-orange-600 dark:text-cfont-dark">
             Sign Up
           </h1>
           <form onSubmit={handleSubmit} className="space-y-4">

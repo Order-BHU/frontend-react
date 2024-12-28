@@ -34,10 +34,12 @@ const orders = [
 
 export default function CartPage() {
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
+    <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-cbg-dark">
       <Header />
       <main className="flex-grow container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-6 text-gray-800">My Orders</h1>
+        <h1 className="text-3xl font-bold mb-6 text-gray-800 dark:text-cfont-dark">
+          My Orders
+        </h1>
         <div className="space-y-4">
           {orders.map((order) => (
             <PageWrapper key={order.id}>
@@ -63,7 +65,10 @@ export default function CartPage() {
                   </p>
                   <ul className="list-disc list-inside mb-2">
                     {order.items.map((item, index) => (
-                      <li key={index} className="text-sm text-gray-700">
+                      <li
+                        key={index}
+                        className="text-sm text-gray-700 dark:text-cfont-dark"
+                      >
                         {item}
                       </li>
                     ))}
