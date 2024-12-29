@@ -2,26 +2,19 @@ import { Link } from "react-router-dom";
 import { Header } from "@/components/header";
 import { Button } from "@/components/ui/button";
 import { Footer } from "@/components/footer";
-import { Utensils, Clock, Truck, Package, MapPin } from "lucide-react";
+import {
+  Utensils,
+  Clock,
+  Truck,
+  Package,
+  MapPin,
+  CheckCircle,
+} from "lucide-react";
 import { PageWrapper } from "@/components/pagewrapper";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBowlFood } from "@fortawesome/free-solid-svg-icons";
 import { faTruck } from "@fortawesome/free-solid-svg-icons";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-} from "@/components/ui/carousel";
-import * as React from "react";
-import Autoplay from "embla-carousel-autoplay";
-
 export default function LandingPage() {
-  const foodplugin = React.useRef(
-    Autoplay({ delay: 2000, stopOnInteraction: true })
-  );
-  const parcelplugin = React.useRef(
-    Autoplay({ delay: 2000, stopOnInteraction: true })
-  );
   return (
     <div className="min-h-screen flex flex-col dark:bg-cbg-dark dark:text-cfont-dark">
       <Header />
@@ -54,22 +47,17 @@ export default function LandingPage() {
           </div>
         </PageWrapper>
 
-        <PageWrapper className="py-20 justify-center bg-gray-50 dark:bg-cbg-darkaccent">
-          <h2 className="text-3xl font-semibold mb-12 text-center">
-            Our Services
-          </h2>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-11">
-            <div className="container mx-0 text-center px-0">
-              <h2 className="text-2xl font-semibold mb-12 text-center">
-                Food delivery
-              </h2>
-              <Carousel
-                plugins={[foodplugin.current]}
-                className=""
-                //onMouseEnter={plugin.current.stop}
-                //onMouseLeave={foodplugin.current.reset}
-              >
-                <CarouselContent>
+        <PageWrapper className="py-20 bg-gray-50 dark:bg-cbg-darkaccent">
+          <div className="container mx-auto px-4">
+            <h2 className="text-3xl font-semibold mb-12 text-center">
+              Our Services
+            </h2>
+            <div className="flex flex-col lg:flex-row gap-8">
+              <div className="flex-1 mb-8 lg:ml-32">
+                <h3 className="text-2xl font-semibold mb-6 text-left dark:text-welcome-dark">
+                  Food Delivery
+                </h3>
+                <div className="flex flex-col space-y-8">
                   {[
                     {
                       icon: Utensils,
@@ -87,71 +75,61 @@ export default function LandingPage() {
                       description: "We'll bring the food right to your door",
                     },
                   ].map((step, index) => (
-                    <CarouselItem key={index}>
-                      <div key={index} className="text-center">
-                        <div className="bg-orange-100 rounded-full p-6 inline-block mb-4 dark:bg-gradient-darkstart">
-                          <step.icon className="h-8 w-8 text-stone-900 dark:text-gray-900" />
-                        </div>
-                        <h3 className="text-xl font-semibold mb-2">
+                    <div key={index} className="flex items-center space-x-4">
+                      <div className="bg-orange-100 rounded-full p-4 flex-shrink-0">
+                        <step.icon className="h-6 w-6 text-primary text-stone-900 dark:text-gray-900" />
+                      </div>
+                      <div>
+                        <h4 className="text-lg font-semibold mb-1">
                           {step.title}
-                        </h3>
-                        <p className="text-gray-600 dark:text-cfont-dark">
+                        </h4>
+                        <p className="text-gray-600 dark:text-cfont-dark ">
                           {step.description}
                         </p>
                       </div>
-                    </CarouselItem>
+                    </div>
                   ))}
-                </CarouselContent>
-              </Carousel>
-            </div>
-
-            <div className="container mx-auto px-4">
-              <h2 className="text-2xl font-semibold mb-12 text-center">
-                Parcel Delivery
-              </h2>
-              <Carousel
-                plugins={[parcelplugin.current]}
-                className=""
-                //onMouseEnter={plugin.current.stop}
-                //onMouseLeave={parcelplugin.current.reset}
-              >
-                <CarouselContent>
+                </div>
+              </div>
+              <div className="flex-1 lg:ml-60">
+                <h3 className="text-2xl font-semibold mb-6 text-left dark:text-welcome-dark">
+                  Parcel Delivery
+                </h3>
+                <div className="flex flex-col space-y-8 ">
                   {[
                     {
                       icon: Package,
-                      title: "Request a Pickup",
-                      description:
-                        "Schedule a pickup for your parcel through our app",
-                    },
-                    {
-                      icon: Truck,
-                      title: "Dispatch Rider Collects",
-                      description:
-                        "Our dispatch rider will collect the parcel from your location",
+                      title: "Prepare your parcel",
+                      description: "Pack your item securely for safe transit",
                     },
                     {
                       icon: MapPin,
-                      title: "Track and Deliver",
+                      title: "Set pickup & delivery",
+                      description: "Enter the pickup and delivery addresses",
+                    },
+                    {
+                      icon: CheckCircle,
+                      title: "Track and receive",
                       description:
-                        "Track your parcel in real-time until it reaches its destination",
+                        "Track your parcel and receive it at the destination",
                     },
                   ].map((step, index) => (
-                    <CarouselItem key={index}>
-                      <div key={index} className="text-center">
-                        <div className="bg-orange-100 rounded-full p-6 inline-block mb-4 dark:bg-gradient-darkstart">
-                          <step.icon className="h-8 w-8 text-stone-900 dark:text-gray-900" />
-                        </div>
-                        <h3 className="text-xl font-semibold mb-2">
+                    <div key={index} className="flex items-center space-x-4">
+                      <div className="bg-blue-100 rounded-full p-4 flex-shrink-0">
+                        <step.icon className="h-6 w-6 text-blue-600 dark:text-gray-900" />
+                      </div>
+                      <div>
+                        <h4 className="text-lg font-semibold mb-1">
                           {step.title}
-                        </h3>
+                        </h4>
                         <p className="text-gray-600 dark:text-cfont-dark">
                           {step.description}
                         </p>
                       </div>
-                    </CarouselItem>
+                    </div>
                   ))}
-                </CarouselContent>
-              </Carousel>
+                </div>
+              </div>
             </div>
           </div>
         </PageWrapper>
