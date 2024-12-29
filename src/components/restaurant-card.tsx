@@ -29,7 +29,7 @@ export function RestaurantCard({
           className="w-full h-48 object-cover"
           unloader={
             <div className="flex justify-center p-5 h-[200px] items-center">
-              <l-orbit size="35" speed="1.5" color="black"></l-orbit>
+              <l-orbit size="35" speed="1.5" color="#6C757D"></l-orbit>
             </div>
           }
         />

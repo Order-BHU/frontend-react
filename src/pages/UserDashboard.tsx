@@ -86,9 +86,9 @@ const userActivity = [
 
 export default function UserDashboardPage() {
   const [user, setUser] = useState({
-    name: "John Doe",
-    email: "john.doe@example.com",
-    phone: "+234 123 456 7890",
+    name: "",
+    email: "",
+    phone: "",
     profilePicture: "/placeholder.svg?height=80&width=80",
   });
 
@@ -144,7 +144,7 @@ export default function UserDashboardPage() {
                 <DialogTrigger asChild>
                   <Button className="w-full mb-2">Edit Profile</Button>
                 </DialogTrigger>
-                <DialogContent>
+                <DialogContent className="dark: text-cfont-dark">
                   <DialogHeader>
                     <DialogTitle>Edit Profile</DialogTitle>
                   </DialogHeader>

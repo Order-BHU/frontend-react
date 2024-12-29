@@ -271,7 +271,7 @@ export default function RestaurantMenuPage() {
                               <l-orbit
                                 size="35"
                                 speed="1.5"
-                                color="black"
+                                color="#6C757D"
                               ></l-orbit>
                             </div>
                           }
