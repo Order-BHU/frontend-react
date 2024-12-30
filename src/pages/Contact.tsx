@@ -37,6 +37,18 @@ export default function ContactPage() {
                   className="mt-1 dark:text-cfont-dark"
                 />
               </div>
+
+              <div>
+                <Label htmlFor="subject" className="dark:text-cfont-dark">
+                  Email Subject
+                </Label>
+                <Input
+                  id="subject"
+                  placeholder="Your Reason For Reaching out"
+                  className="mt-1 dark:text-cfont-dark"
+                />
+              </div>
+
               <div>
                 <Label htmlFor="message" className="dark:text-cfont-dark">
                   Message

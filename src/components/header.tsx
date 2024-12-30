@@ -18,7 +18,7 @@ export function Header() {
   const { isLoggedIn /*role*/ } = UseAuthStore();
 
   return (
-    <header className="bg-white dark:bg-header-dark shadow-sm flex justify-center">
+    <header className="bg-white dark:bg-header-dark shadow-sm flex justify-center sticky z-10 top-0">
       <div className="container py-4 flex justify-between items-center w-full px-0">
         <Link
           to="/"

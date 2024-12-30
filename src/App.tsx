@@ -13,6 +13,7 @@ import UserDashboardPage from "./pages/UserDashboard";
 import RestaurantMenuPage from "./pages/Menupage";
 import AdminDashboardPage from "./pages/Adminpage";
 import { ThemeProvider } from "@/components/theme-provider";
+import VerifyOTPPage from "./pages/verifyOtpPage";
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
             <Route path="/signup" element={<SignUpPage />}></Route>
             <Route path="/cart" element={<CartPage />}></Route>
             <Route path="/menu/:id" element={<RestaurantMenuPage />}></Route>
+            <Route path="/verify-otp" element={<VerifyOTPPage />}></Route>
             <Route
               path="/rider-dashboard"
               element={<RiderDashboardPage />}

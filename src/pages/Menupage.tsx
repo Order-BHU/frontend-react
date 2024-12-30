@@ -238,13 +238,17 @@ export default function RestaurantMenuPage() {
     <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-cbg-dark">
       <Header />
 
-      <PageWrapper className="sticky top-0 z-10 bg-white shadow-md p-4 dark:bg-cbg-darkaccent">
+      <PageWrapper className="sticky top-[5rem] z-10 bg-white shadow-md p-4 dark:bg-cbg-darkaccent">
         <div className="container mx-auto flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-gray-800 dark:text-cfont-dark">
+          <h1 className="text-xl md:text-2xl font-bold text-gray-800 dark:text-cfont-dark">
             {menu.name} Menu
           </h1>
-          <Button onClick={() => console.log("Proceed to checkout")}>
-            <ShoppingCart className="mr-2 h-4 w-4" /> Checkout ({totalItems}{" "}
+          <Button
+            onClick={() => console.log("Proceed to checkout")}
+            className="w-32 sm:w-48 text-xs md:text-md overflow"
+          >
+            <ShoppingCart className="mr-2 h-4 w-4 text-md hidden sm:inline " />{" "}
+            <span className="hidden sm:inline">Checkout</span>({totalItems}{" "}
             items - ₦{totalPrice.toLocaleString()})
           </Button>
         </div>

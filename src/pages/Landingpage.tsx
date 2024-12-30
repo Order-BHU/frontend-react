@@ -201,14 +201,15 @@ export default function LandingPage() {
 
         <PageWrapper className="bg-stone-900 text-white py-20 dark:bg-cbg-darkaccent">
           <div className="container mx-auto px-4 text-center">
-            <h2 className="text-3xl font-semibold mb-6">Become a Driver</h2>
+            <h2 className="text-3xl font-semibold mb-6">Partner With Us</h2>
             <p className="text-xl mb-8 max-w-2xl mx-auto">
-              Join our team of delivery drivers and enjoy flexible hours,
-              competitive pay, and the opportunity to be part of our growing
-              community.
+              Join our team and become part of our growing network! Whether
+              you’re a driver ready to deliver, a restaurant owner looking to
+              reach more customers, or a sponsor eager to support our mission,
+              we’d love to have you onboard.
             </p>
             <Button asChild size="lg" variant="secondary">
-              <a href="mailto:orderbhu@gmail.com">Send An Email</a>
+              <Link to="/contact">Contact Us</Link>
             </Button>
           </div>
         </PageWrapper>

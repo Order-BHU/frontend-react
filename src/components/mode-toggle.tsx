@@ -14,7 +14,7 @@ export function ModeToggle() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <div className="h-16 w-16 mr-[1rem]">
+        <div className="h-12 w-12 mr-[1rem]">
           <Avatar className="w-full h-full">
             <AvatarImage src="https://github.com/shadcn.png" />
             <AvatarFallback>
