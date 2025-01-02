@@ -101,7 +101,9 @@ export default function AdminDashboardPage() {
             <PageWrapper>
               <Card>
                 <CardHeader>
-                  <CardTitle>Restaurant Performance</CardTitle>
+                  <CardTitle className="text-md">
+                    Restaurant Performance
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <Table>
@@ -142,7 +144,9 @@ export default function AdminDashboardPage() {
             <PageWrapper>
               <Card className="mt-6">
                 <CardHeader>
-                  <CardTitle>Restaurant Revenue Comparison</CardTitle>
+                  <CardTitle className="text-md">
+                    Restaurant Revenue Comparison
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <ResponsiveContainer width="100%" height={300}>
@@ -152,7 +156,15 @@ export default function AdminDashboardPage() {
                       <YAxis />
                       <Tooltip />
                       <Legend />
-                      <Bar dataKey="revenue" fill="hsl(24 9.8% 10%)" />
+                      <Bar
+                        dataKey="revenue"
+                        fill={
+                          window.matchMedia("(prefers-color-scheme: dark)")
+                            .matches
+                            ? "hsl(30 90% 60%)"
+                            : "hsl(24 9.8% 10%)"
+                        }
+                      />
                     </BarChart>
                   </ResponsiveContainer>
                 </CardContent>
@@ -164,7 +176,7 @@ export default function AdminDashboardPage() {
             <PageWrapper>
               <Card>
                 <CardHeader>
-                  <CardTitle>Driver Performance</CardTitle>
+                  <CardTitle className="text-md">Driver Performance</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <Table>
@@ -200,7 +212,9 @@ export default function AdminDashboardPage() {
             <PageWrapper>
               <Card className="mt-6">
                 <CardHeader>
-                  <CardTitle>Driver Order Completion Comparison</CardTitle>
+                  <CardTitle className="text-md">
+                    Driver Order Completion Comparison
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <ResponsiveContainer width="100%" height={300}>
@@ -210,8 +224,24 @@ export default function AdminDashboardPage() {
                       <YAxis />
                       <Tooltip />
                       <Legend />
-                      <Bar dataKey="totalOrders" fill="hsl(24 9.8% 10%)" />
-                      <Bar dataKey="completedOrders" fill="hsl(24 9.8% 30%)" />
+                      <Bar
+                        dataKey="totalOrders"
+                        fill={
+                          window.matchMedia("(prefers-color-scheme: dark)")
+                            .matches
+                            ? "hsl(30 90% 60%)"
+                            : "hsl(24 9.8% 10%)"
+                        }
+                      />
+                      <Bar
+                        dataKey="completedOrders"
+                        fill={
+                          window.matchMedia("(prefers-color-scheme: dark)")
+                            .matches
+                            ? "hsl(10 70% 30%)"
+                            : "hsl(24 9.8% 30%)"
+                        }
+                      />
                     </BarChart>
                   </ResponsiveContainer>
                 </CardContent>
@@ -223,7 +253,7 @@ export default function AdminDashboardPage() {
             <PageWrapper>
               <Card>
                 <CardHeader>
-                  <CardTitle className="flex justify-between items-center">
+                  <CardTitle className="flex justify-between items-center text-md">
                     <span>App Revenue</span>
                     <Select
                       value={revenueTimeframe}
@@ -252,7 +282,7 @@ export default function AdminDashboardPage() {
                       <Line
                         type="monotone"
                         dataKey={revenueTimeframe}
-                        stroke="hsl(24 9.8% 30%)"
+                        stroke="hsl(30 90% 60%)"
                         activeDot={{ r: 8 }}
                       />
                     </LineChart>
@@ -264,7 +294,7 @@ export default function AdminDashboardPage() {
             <PageWrapper>
               <Card className="mt-6">
                 <CardHeader>
-                  <CardTitle>Revenue Breakdown</CardTitle>
+                  <CardTitle className="text-md">Revenue Breakdown</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <Table>

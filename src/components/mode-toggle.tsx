@@ -25,6 +25,9 @@ export function ModeToggle() {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuItem>
+          <Link to="/admin-dashboard">Admin-DB</Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem>
           <Link to="/user-dashboard">User-DB</Link>
         </DropdownMenuItem>
         <DropdownMenuItem>
