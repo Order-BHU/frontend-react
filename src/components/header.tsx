@@ -18,13 +18,22 @@ export function Header() {
   const { isLoggedIn /*role*/ } = UseAuthStore();
 
   return (
-    <header className="bg-white dark:bg-header-dark shadow-sm flex justify-center sticky z-10 top-0">
+    <header className="bg-white dark:bg-header-dark shadow-sm flex justify-center sticky z-10 top-0 max-h-16">
       <div className="container py-4 flex justify-between items-center w-full px-0">
         <Link
           to="/"
           className="text-2xl font-bold text-stone-900 dark:text-cfont-dark ml-9"
         >
-          Order
+          <div className="w-20 h-20 overflow-hidden">
+            <img
+              src={
+                window.matchMedia("(prefers-color-scheme: dark)").matches
+                  ? "/DarkerOrderLogo.PNG"
+                  : "/orderLogo.JPG"
+              }
+              className="h-full"
+            ></img>
+          </div>
         </Link>
         <DropdownMenu>
           <DropdownMenuTrigger
