@@ -5,7 +5,6 @@ import { Header } from "../components/header";
 import { Footer } from "../components/footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { PageWrapper } from "@/components/pagewrapper";
 import {
   Table,
   TableBody,
@@ -14,6 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
 import {
   Select,
   SelectContent,
@@ -21,11 +21,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import {
   LineChart,
-  BarChart,
   Line,
-  Bar,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -33,317 +41,639 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
+import { Utensils, Bike, DollarSign } from "lucide-react";
+import { PageWrapper } from "@/components/pagewrapper";
 
-// Mock data
-const restaurantOrders = [
+// Mock data - in a real app, this would come from an API
+const revenueData = [
+  { name: "Mon", value: 4000 },
+  { name: "Tue", value: 3000 },
+  { name: "Wed", value: 5000 },
+  { name: "Thu", value: 2780 },
+  { name: "Fri", value: 1890 },
+  { name: "Sat", value: 2390 },
+  { name: "Sun", value: 3490 },
+];
+
+const restaurants = [
   {
     id: "1",
     name: "Burger Palace",
-    totalOrders: 150,
-    completedOrders: 145,
-    revenue: 450000,
+    stats: {
+      day: { totalOrders: 50, completedOrders: 48, totalRevenue: "₦150,000" },
+      week: {
+        totalOrders: 350,
+        completedOrders: 340,
+        totalRevenue: "₦1,050,000",
+      },
+      month: {
+        totalOrders: 1500,
+        completedOrders: 1450,
+        totalRevenue: "₦4,500,000",
+      },
+      year: {
+        totalOrders: 18000,
+        completedOrders: 17500,
+        totalRevenue: "₦54,000,000",
+      },
+    },
   },
   {
     id: "2",
     name: "Pizza Heaven",
-    totalOrders: 200,
-    completedOrders: 198,
-    revenue: 600000,
+    stats: {
+      day: { totalOrders: 40, completedOrders: 39, totalRevenue: "₦120,000" },
+      week: {
+        totalOrders: 280,
+        completedOrders: 275,
+        totalRevenue: "₦840,000",
+      },
+      month: {
+        totalOrders: 1200,
+        completedOrders: 1180,
+        totalRevenue: "₦3,600,000",
+      },
+      year: {
+        totalOrders: 14400,
+        completedOrders: 14200,
+        totalRevenue: "₦43,200,000",
+      },
+    },
   },
   {
     id: "3",
     name: "Sushi Sensation",
-    totalOrders: 100,
-    completedOrders: 97,
-    revenue: 350000,
+    stats: {
+      day: { totalOrders: 30, completedOrders: 29, totalRevenue: "₦105,000" },
+      week: {
+        totalOrders: 210,
+        completedOrders: 205,
+        totalRevenue: "₦735,000",
+      },
+      month: {
+        totalOrders: 900,
+        completedOrders: 880,
+        totalRevenue: "₦3,150,000",
+      },
+      year: {
+        totalOrders: 10800,
+        completedOrders: 10600,
+        totalRevenue: "₦37,800,000",
+      },
+    },
   },
 ];
 
-const driverOrders = [
-  { id: "1", name: "John Doe", totalOrders: 50, completedOrders: 48 },
-  { id: "2", name: "Jane Smith", totalOrders: 75, completedOrders: 73 },
-  { id: "3", name: "Mike Johnson", totalOrders: 60, completedOrders: 59 },
+const drivers = [
+  {
+    id: "1",
+    name: "John Doe",
+    totalOrders: 50,
+    completedOrders: 48,
+    totalEarnings: "₦75,000",
+  },
+  {
+    id: "2",
+    name: "Jane Smith",
+    totalOrders: 45,
+    completedOrders: 44,
+    totalEarnings: "₦68,000",
+  },
+  {
+    id: "3",
+    name: "Mike Johnson",
+    totalOrders: 40,
+    completedOrders: 39,
+    totalEarnings: "₦62,000",
+  },
 ];
 
-const revenueData = [
-  { name: "Mon", daily: 5000, weekly: 35000, monthly: 150000, yearly: 1800000 },
-  { name: "Tue", daily: 5500, weekly: 38000, monthly: 155000, yearly: 1850000 },
-  { name: "Wed", daily: 6000, weekly: 40000, monthly: 160000, yearly: 1900000 },
-  { name: "Thu", daily: 5800, weekly: 39000, monthly: 158000, yearly: 1880000 },
-  { name: "Fri", daily: 6500, weekly: 42000, monthly: 165000, yearly: 1950000 },
-  { name: "Sat", daily: 7000, weekly: 45000, monthly: 170000, yearly: 2000000 },
-  { name: "Sun", daily: 6800, weekly: 44000, monthly: 168000, yearly: 1980000 },
+const recentOrders = [
+  {
+    id: "1",
+    customer: "Alice Brown",
+    restaurant: "Burger Palace",
+    driver: "John Doe",
+    total: "₦3,500",
+    status: "Delivered",
+  },
+  {
+    id: "2",
+    customer: "Bob Wilson",
+    restaurant: "Pizza Heaven",
+    driver: "Jane Smith",
+    total: "₦4,200",
+    status: "In Transit",
+  },
+  {
+    id: "3",
+    customer: "Charlie Davis",
+    restaurant: "Sushi Sensation",
+    driver: "Mike Johnson",
+    total: "₦5,500",
+    status: "Preparing",
+  },
 ];
 
+type TimeRange = "day" | "week" | "month" | "year";
 export default function AdminDashboardPage() {
-  const [revenueTimeframe, setRevenueTimeframe] = useState("daily");
+  const [timeRange, setTimeRange] = useState<TimeRange>("week");
+  const [restaurantTimeRange, setRestaurantTimeRange] =
+    useState<TimeRange>("month");
+  const [newRestaurant, setNewRestaurant] = useState({
+    name: "",
+    email: "",
+    address: "",
+  });
+  const [newRider, setNewRider] = useState({ name: "", email: "", phone: "" });
+
+  const handleCreateRestaurant = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Here you would typically send the new restaurant data to your backend
+    console.log("New restaurant:", newRestaurant);
+    setNewRestaurant({ name: "", email: "", address: "" });
+    // You might want to add some feedback to the user here
+  };
+
+  const handleCreateRider = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Here you would typically send the new rider data to your backend
+    console.log("New rider:", newRider);
+    setNewRider({ name: "", email: "", phone: "" });
+    // You might want to add some feedback to the user here
+  };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
+    <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-cbg-dark">
       <Header />
-      <main className="flex-grow container mx-auto px-4 py-8">
+      <main className="flex-grow container mx-auto px-4 py-8 space-y-8">
         <PageWrapper>
-          <h1 className="text-3xl font-bold mb-6 text-gray-800">
+          <h1 className="text-2xl md:text-3xl font-bold mb-6 text-gray-800 dark:text-cfont-dark">
             Admin Dashboard
           </h1>
         </PageWrapper>
 
-        <Tabs defaultValue="restaurants" className="space-y-4">
-          <PageWrapper>
-            <TabsList>
-              <TabsTrigger value="restaurants">Restaurants</TabsTrigger>
-              <TabsTrigger value="drivers">Drivers</TabsTrigger>
-              <TabsTrigger value="revenue">Revenue</TabsTrigger>
+        <PageWrapper className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                Total Orders
+              </CardTitle>
+              <Utensils className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-xl md:text-2xl font-bold">1,234</div>
+              <p className="text-xs text-muted-foreground">
+                +20.1% from last month
+              </p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                Total Revenue
+              </CardTitle>
+              <DollarSign className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-xl md:text-2xl font-bold">₦1,234,567</div>
+              <p className="text-xs text-muted-foreground">
+                +15% from last month
+              </p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                Active Restaurants
+              </CardTitle>
+              <Utensils className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-xl md:text-2xl font-bold">56</div>
+              <p className="text-xs text-muted-foreground">
+                +3 from last month
+              </p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                Active Drivers
+              </CardTitle>
+              <Bike className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-xl md:text-2xl font-bold">89</div>
+              <p className="text-xs text-muted-foreground">
+                +7 from last month
+              </p>
+            </CardContent>
+          </Card>
+        </PageWrapper>
+
+        <PageWrapper>
+          <Card className="mb-8">
+            <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-2 sm:space-y-0">
+              <CardTitle className="text-lg md:text-xl font-semibold">
+                Revenue Overview
+              </CardTitle>
+              <Select
+                value={timeRange}
+                onValueChange={(value: TimeRange) => setTimeRange(value)}
+              >
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Select time range" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="day">Today</SelectItem>
+                  <SelectItem value="week">This Week</SelectItem>
+                  <SelectItem value="month">This Month</SelectItem>
+                  <SelectItem value="year">This Year</SelectItem>
+                </SelectContent>
+              </Select>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={300}>
+                <LineChart data={revenueData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" tick={{ fontSize: 12 }} />
+                  <YAxis tick={{ fontSize: 12 }} />
+                  <Tooltip contentStyle={{ fontSize: 12 }} />
+                  <Legend wrapperStyle={{ fontSize: 12 }} />
+                  <Line
+                    type="monotone"
+                    dataKey="value"
+                    stroke="#8884d8"
+                    activeDot={{ r: 8 }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+        </PageWrapper>
+
+        <PageWrapper>
+          <Tabs defaultValue="restaurants" className="space-y-4">
+            <TabsList className="flex flex-wrap mb-10 sm:mb-4 galaxy-fold:mb-16">
+              <TabsTrigger value="restaurants" className="flex-grow">
+                Restaurant Management
+              </TabsTrigger>
+              <TabsTrigger value="drivers" className="flex-grow">
+                Driver Management
+              </TabsTrigger>
+              <TabsTrigger value="orders" className="flex-grow">
+                Recent Orders
+              </TabsTrigger>
             </TabsList>
-          </PageWrapper>
-
-          <TabsContent value="restaurants">
-            <PageWrapper>
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-md">
-                    Restaurant Performance
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Restaurant Name</TableHead>
-                        <TableHead>Total Orders</TableHead>
-                        <TableHead>Completed Orders</TableHead>
-                        <TableHead>Completion Rate</TableHead>
-                        <TableHead>Revenue (₦)</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {restaurantOrders.map((restaurant) => (
-                        <TableRow key={restaurant.id}>
-                          <TableCell>{restaurant.name}</TableCell>
-                          <TableCell>{restaurant.totalOrders}</TableCell>
-                          <TableCell>{restaurant.completedOrders}</TableCell>
-                          <TableCell>
-                            {(
-                              (restaurant.completedOrders /
-                                restaurant.totalOrders) *
-                              100
-                            ).toFixed(2)}
-                            %
-                          </TableCell>
-                          <TableCell>
-                            {restaurant.revenue.toLocaleString()}
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </CardContent>
-              </Card>
-            </PageWrapper>
-
-            <PageWrapper>
-              <Card className="mt-6">
-                <CardHeader>
-                  <CardTitle className="text-md">
-                    Restaurant Revenue Comparison
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ResponsiveContainer width="100%" height={300}>
-                    <BarChart data={restaurantOrders}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="name" />
-                      <YAxis />
-                      <Tooltip />
-                      <Legend />
-                      <Bar
-                        dataKey="revenue"
-                        fill={
-                          window.matchMedia("(prefers-color-scheme: dark)")
-                            .matches
-                            ? "hsl(30 90% 60%)"
-                            : "hsl(24 9.8% 10%)"
-                        }
-                      />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </CardContent>
-              </Card>
-            </PageWrapper>
-          </TabsContent>
-
-          <TabsContent value="drivers">
-            <PageWrapper>
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-md">Driver Performance</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Driver Name</TableHead>
-                        <TableHead>Total Orders</TableHead>
-                        <TableHead>Completed Orders</TableHead>
-                        <TableHead>Completion Rate</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {driverOrders.map((driver) => (
-                        <TableRow key={driver.id}>
-                          <TableCell>{driver.name}</TableCell>
-                          <TableCell>{driver.totalOrders}</TableCell>
-                          <TableCell>{driver.completedOrders}</TableCell>
-                          <TableCell>
-                            {(
-                              (driver.completedOrders / driver.totalOrders) *
-                              100
-                            ).toFixed(2)}
-                            %
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </CardContent>
-              </Card>
-            </PageWrapper>
-
-            <PageWrapper>
-              <Card className="mt-6">
-                <CardHeader>
-                  <CardTitle className="text-md">
-                    Driver Order Completion Comparison
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ResponsiveContainer width="100%" height={300}>
-                    <BarChart data={driverOrders}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="name" />
-                      <YAxis />
-                      <Tooltip />
-                      <Legend />
-                      <Bar
-                        dataKey="totalOrders"
-                        fill={
-                          window.matchMedia("(prefers-color-scheme: dark)")
-                            .matches
-                            ? "hsl(30 90% 60%)"
-                            : "hsl(24 9.8% 10%)"
-                        }
-                      />
-                      <Bar
-                        dataKey="completedOrders"
-                        fill={
-                          window.matchMedia("(prefers-color-scheme: dark)")
-                            .matches
-                            ? "hsl(10 70% 30%)"
-                            : "hsl(24 9.8% 30%)"
-                        }
-                      />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </CardContent>
-              </Card>
-            </PageWrapper>
-          </TabsContent>
-
-          <TabsContent value="revenue">
-            <PageWrapper>
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex justify-between items-center text-md">
-                    <span>App Revenue</span>
+            <TabsContent value="restaurants">
+              <PageWrapper>
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg md:text-xl">
+                      Restaurant Performance
+                    </CardTitle>
                     <Select
-                      value={revenueTimeframe}
-                      onValueChange={setRevenueTimeframe}
+                      value={restaurantTimeRange}
+                      onValueChange={(value: TimeRange) =>
+                        setRestaurantTimeRange(value)
+                      }
                     >
                       <SelectTrigger className="w-[180px]">
-                        <SelectValue placeholder="Select timeframe" />
+                        <SelectValue placeholder="Select time range" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="daily">Daily</SelectItem>
-                        <SelectItem value="weekly">Weekly</SelectItem>
-                        <SelectItem value="monthly">Monthly</SelectItem>
-                        <SelectItem value="yearly">Yearly</SelectItem>
+                        <SelectItem value="day">Today</SelectItem>
+                        <SelectItem value="week">This Week</SelectItem>
+                        <SelectItem value="month">This Month</SelectItem>
+                        <SelectItem value="year">This Year</SelectItem>
                       </SelectContent>
                     </Select>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ResponsiveContainer width="100%" height={300}>
-                    <LineChart data={revenueData}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="name" />
-                      <YAxis />
-                      <Tooltip />
-                      <Legend />
-                      <Line
-                        type="monotone"
-                        dataKey={revenueTimeframe}
-                        stroke="hsl(30 90% 60%)"
-                        activeDot={{ r: 8 }}
-                      />
-                    </LineChart>
-                  </ResponsiveContainer>
-                </CardContent>
-              </Card>
-            </PageWrapper>
-
-            <PageWrapper>
-              <Card className="mt-6">
-                <CardHeader>
-                  <CardTitle className="text-md">Revenue Breakdown</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Timeframe</TableHead>
-                        <TableHead>Revenue (₦)</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      <TableRow>
-                        <TableCell>Today</TableCell>
-                        <TableCell>
-                          {revenueData[
-                            revenueData.length - 1
-                          ].daily.toLocaleString()}
-                        </TableCell>
-                      </TableRow>
-                      <TableRow>
-                        <TableCell>This Week</TableCell>
-                        <TableCell>
-                          {revenueData[
-                            revenueData.length - 1
-                          ].weekly.toLocaleString()}
-                        </TableCell>
-                      </TableRow>
-                      <TableRow>
-                        <TableCell>This Month</TableCell>
-                        <TableCell>
-                          {revenueData[
-                            revenueData.length - 1
-                          ].monthly.toLocaleString()}
-                        </TableCell>
-                      </TableRow>
-                      <TableRow>
-                        <TableCell>This Year</TableCell>
-                        <TableCell>
-                          {revenueData[
-                            revenueData.length - 1
-                          ].yearly.toLocaleString()}
-                        </TableCell>
-                      </TableRow>
-                    </TableBody>
-                  </Table>
-                </CardContent>
-              </Card>
-            </PageWrapper>
-          </TabsContent>
-        </Tabs>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="overflow-x-auto">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead className="whitespace-nowrap">
+                              Name
+                            </TableHead>
+                            <TableHead className="whitespace-nowrap">
+                              Total Orders
+                            </TableHead>
+                            <TableHead className="whitespace-nowrap">
+                              Completed Orders
+                            </TableHead>
+                            <TableHead className="whitespace-nowrap">
+                              Completion Rate
+                            </TableHead>
+                            <TableHead className="whitespace-nowrap">
+                              Total Revenue
+                            </TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {restaurants.map((restaurant) => (
+                            <TableRow key={restaurant.id}>
+                              <TableCell className="whitespace-nowrap">
+                                {restaurant.name}
+                              </TableCell>
+                              <TableCell>
+                                {
+                                  restaurant.stats[restaurantTimeRange]
+                                    .totalOrders
+                                }
+                              </TableCell>
+                              <TableCell>
+                                {
+                                  restaurant.stats[restaurantTimeRange]
+                                    .completedOrders
+                                }
+                              </TableCell>
+                              <TableCell>
+                                {(
+                                  (restaurant.stats[restaurantTimeRange]
+                                    .completedOrders /
+                                    restaurant.stats[restaurantTimeRange]
+                                      .totalOrders) *
+                                  100
+                                ).toFixed(2)}
+                                %
+                              </TableCell>
+                              <TableCell>
+                                {
+                                  restaurant.stats[restaurantTimeRange]
+                                    .totalRevenue
+                                }
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button className="mt-4 w-full sm:w-auto">
+                          Create New Restaurant Account
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="sm:max-w-[425px] dark:text-cfont-dark">
+                        <DialogHeader>
+                          <DialogTitle>
+                            Create New Restaurant Account
+                          </DialogTitle>
+                        </DialogHeader>
+                        <form
+                          onSubmit={handleCreateRestaurant}
+                          className="space-y-4 "
+                        >
+                          <div>
+                            <Label htmlFor="restaurantName">
+                              Restaurant Name
+                            </Label>
+                            <Input
+                              id="restaurantName"
+                              value={newRestaurant.name}
+                              onChange={(e) =>
+                                setNewRestaurant({
+                                  ...newRestaurant,
+                                  name: e.target.value,
+                                })
+                              }
+                              required
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="restaurantEmail">Email</Label>
+                            <Input
+                              id="restaurantEmail"
+                              type="email"
+                              value={newRestaurant.email}
+                              onChange={(e) =>
+                                setNewRestaurant({
+                                  ...newRestaurant,
+                                  email: e.target.value,
+                                })
+                              }
+                              required
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="restaurantAddress">Address</Label>
+                            <Input
+                              id="restaurantAddress"
+                              value={newRestaurant.address}
+                              onChange={(e) =>
+                                setNewRestaurant({
+                                  ...newRestaurant,
+                                  address: e.target.value,
+                                })
+                              }
+                              required
+                            />
+                          </div>
+                          <Button type="submit" className="w-full">
+                            Create Restaurant Account
+                          </Button>
+                        </form>
+                      </DialogContent>
+                    </Dialog>
+                  </CardContent>
+                </Card>
+              </PageWrapper>
+            </TabsContent>
+            <TabsContent value="drivers">
+              <PageWrapper>
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg md:text-xl">
+                      Driver Performance
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="overflow-x-auto">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead className="whitespace-nowrap">
+                              Name
+                            </TableHead>
+                            <TableHead className="whitespace-nowrap">
+                              Total Orders
+                            </TableHead>
+                            <TableHead className="whitespace-nowrap">
+                              Completed Orders
+                            </TableHead>
+                            <TableHead className="whitespace-nowrap">
+                              Completion Rate
+                            </TableHead>
+                            <TableHead className="whitespace-nowrap">
+                              Total Earnings
+                            </TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {drivers.map((driver) => (
+                            <TableRow key={driver.id}>
+                              <TableCell className="whitespace-nowrap">
+                                {driver.name}
+                              </TableCell>
+                              <TableCell>{driver.totalOrders}</TableCell>
+                              <TableCell>{driver.completedOrders}</TableCell>
+                              <TableCell>
+                                {(
+                                  (driver.completedOrders /
+                                    driver.totalOrders) *
+                                  100
+                                ).toFixed(2)}
+                                %
+                              </TableCell>
+                              <TableCell>{driver.totalEarnings}</TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button className="mt-4 w-full sm:w-auto">
+                          Create New Rider Account
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="sm:max-w-[425px] dark:text-cfont-dark">
+                        <DialogHeader>
+                          <DialogTitle>Create New Rider Account</DialogTitle>
+                        </DialogHeader>
+                        <form
+                          onSubmit={handleCreateRider}
+                          className="space-y-4"
+                        >
+                          <div>
+                            <Label htmlFor="riderName">Rider Name</Label>
+                            <Input
+                              id="riderName"
+                              value={newRider.name}
+                              onChange={(e) =>
+                                setNewRider({
+                                  ...newRider,
+                                  name: e.target.value,
+                                })
+                              }
+                              required
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="riderEmail">Email</Label>
+                            <Input
+                              id="riderEmail"
+                              type="email"
+                              value={newRider.email}
+                              onChange={(e) =>
+                                setNewRider({
+                                  ...newRider,
+                                  email: e.target.value,
+                                })
+                              }
+                              required
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="riderPhone">Phone</Label>
+                            <Input
+                              id="riderPhone"
+                              value={newRider.phone}
+                              onChange={(e) =>
+                                setNewRider({
+                                  ...newRider,
+                                  phone: e.target.value,
+                                })
+                              }
+                              required
+                            />
+                          </div>
+                          <Button type="submit" className="w-full">
+                            Create Rider Account
+                          </Button>
+                        </form>
+                      </DialogContent>
+                    </Dialog>
+                  </CardContent>
+                </Card>
+              </PageWrapper>
+            </TabsContent>
+            <TabsContent value="orders">
+              <PageWrapper>
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg md:text-xl">
+                      Recent Orders
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="overflow-x-auto">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead className="whitespace-nowrap">
+                              Order ID
+                            </TableHead>
+                            <TableHead className="whitespace-nowrap">
+                              Customer
+                            </TableHead>
+                            <TableHead className="whitespace-nowrap">
+                              Restaurant
+                            </TableHead>
+                            <TableHead className="whitespace-nowrap">
+                              Driver
+                            </TableHead>
+                            <TableHead className="whitespace-nowrap">
+                              Total
+                            </TableHead>
+                            <TableHead className="whitespace-nowrap">
+                              Status
+                            </TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {recentOrders.map((order) => (
+                            <TableRow key={order.id}>
+                              <TableCell className="whitespace-nowrap">
+                                {order.id}
+                              </TableCell>
+                              <TableCell className="whitespace-nowrap">
+                                {order.customer}
+                              </TableCell>
+                              <TableCell className="whitespace-nowrap">
+                                {order.restaurant}
+                              </TableCell>
+                              <TableCell className="whitespace-nowrap">
+                                {order.driver}
+                              </TableCell>
+                              <TableCell className="whitespace-nowrap">
+                                {order.total}
+                              </TableCell>
+                              <TableCell className="whitespace-nowrap">
+                                <Badge
+                                  variant={
+                                    order.status === "Delivered"
+                                      ? "default"
+                                      : "secondary"
+                                  }
+                                >
+                                  {order.status}
+                                </Badge>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  </CardContent>
+                </Card>
+              </PageWrapper>
+            </TabsContent>
+          </Tabs>
+        </PageWrapper>
       </main>
       <Footer />
     </div>

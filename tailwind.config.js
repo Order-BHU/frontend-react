@@ -21,6 +21,9 @@ export default {
         "welcome-dark": "hsl(30 60% 80%)",
         "header-dark": "hsl(0 0% 5%)",
       },
+      screens: {
+        "galaxy-fold": { max: "320px" },
+      },
     },
   },
   plugins: [tailwindcssAnimate],
