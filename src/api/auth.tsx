@@ -5,7 +5,7 @@ interface apiResponse {
   message: string;
 }
 interface email {
-  email: "string";
+  email: string;
 }
 
 type User = {
@@ -23,7 +23,6 @@ type existingUser = {
 };
 
 type Owner = {
-  name: string;
   email: string;
   password: string;
   phone_number: string;

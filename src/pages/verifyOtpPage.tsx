@@ -22,7 +22,7 @@ export default function VerifyOTPPage() {
   const [countdown, setCountdown] = useState(0);
   const [isResendDisabled, setIsResendDisabled] = useState(false);
   const location = useLocation();
-  const email = location.state?.formData.email; // Access the email from the state
+  const email = location.state?.formData.email;
   const navigate = useNavigate();
   const [otp, setOtp] = useState("");
   useEffect(() => {
