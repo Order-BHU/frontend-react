@@ -1,15 +1,43 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Header } from "@/components/header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { loginUser } from "@/api/auth";
+import { useMutation } from "@tanstack/react-query";
+import { useToast } from "@/hooks/use-toast";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
+  });
+  const [showPassword, setShowPassword] = useState(false);
+  const { toast } = useToast();
+  const navigate = useNavigate();
+  const { status, mutate } = useMutation({
+    mutationFn: loginUser,
+    onSuccess: () => {
+      navigate("/user-dashboard/");
+      toast({
+        title: "success!",
+        description: "you are now logged in",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+      if (error.message.includes("verified")) {
+        navigate("/verify-otp/", { state: { formData } });
+      }
+      return;
+    },
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -19,13 +47,14 @@ export default function LoginPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Here you would typically send the login data to your backend
-    console.log("Login submitted:", formData);
-    alert("Login successful!");
+    mutate({
+      email: formData.email,
+      password: formData.password,
+    });
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-gray-100 dark:text-cfont-dark">
       <Header />
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-md mx-auto bg-white p-8 rounded-lg shadow-md dark:bg-cbg-dark">
@@ -47,12 +76,12 @@ export default function LoginPage() {
                 required
               />
             </div>
-            <div>
+            <div className="relative">
               <Label htmlFor="password" className="dark:text-cfont-dark">
                 Password
               </Label>
               <Input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 id="password"
                 name="password"
                 className="dark:text-cfont-dark"
@@ -60,9 +89,29 @@ export default function LoginPage() {
                 onChange={handleChange}
                 required
               />
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="absolute right-0 top-2 h-full px-3 py-2 hover:bg-transparent"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? (
+                  <EyeOff className="h-4 w-4 text-gray-500" />
+                ) : (
+                  <Eye className="h-4 w-4 text-gray-500" />
+                )}
+                <span className="sr-only">
+                  {showPassword ? "Hide password" : "Show password"}
+                </span>
+              </Button>
             </div>
-            <Button type="submit" className="w-full">
-              Log In
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={status === "pending"}
+            >
+              {status === "pending" ? "Loading..." : "Log In"}
             </Button>
           </form>
           <div className="mt-6">

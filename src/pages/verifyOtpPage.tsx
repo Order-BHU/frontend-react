@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Header } from "../components/header";
 import { Footer } from "../components/footer";
 import { Button } from "@/components/ui/button";
@@ -14,28 +14,81 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { toast } from "@/hooks/use-toast";
+import { verifyAccount, getOtp } from "@/api/auth";
+import { useMutation } from "@tanstack/react-query";
+import { useNavigate, useLocation } from "react-router-dom";
 
 export default function VerifyOTPPage() {
+  const [countdown, setCountdown] = useState(0);
+  const [isResendDisabled, setIsResendDisabled] = useState(false);
+  const location = useLocation();
+  const email = location.state?.formData.email; // Access the email from the state
+  const navigate = useNavigate();
   const [otp, setOtp] = useState("");
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (otp.length !== 6) {
+  useEffect(() => {
+    if (countdown > 0) {
+      const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
+      return () => clearTimeout(timer);
+    } else if (countdown === 0 && isResendDisabled) {
+      setIsResendDisabled(false);
+    }
+  }, [countdown, isResendDisabled]);
+  const verifyMutation = useMutation({
+    mutationFn: verifyAccount,
+    onSuccess: () => {
+      navigate("/user-dashboard/");
+      console.log("OTP submitted:", otp);
       toast({
-        title: "Invalid OTP",
-        description: "Please enter a 6-digit OTP code.",
+        title: "OTP Submitted",
+        description: "Your OTP has been submitted for verification.",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message,
         variant: "destructive",
       });
       return;
-    }
-    // Here you would typically send the OTP to your backend for verification
-    console.log("OTP submitted:", otp);
-    toast({
-      title: "OTP Submitted",
-      description: "Your OTP has been submitted for verification.",
+    },
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    verifyMutation.mutate({
+      email: email,
+      otp: otp,
     });
     // Reset OTP input after submission
     setOtp("");
+  };
+
+  const resendMutation = useMutation({
+    mutationFn: getOtp,
+    onSuccess: () => {
+      navigate("/user-dashboard/");
+      console.log("request submitted:", otp);
+      toast({
+        title: "Sending an OTP",
+        description: "Check your email for an OTP",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+      return;
+    },
+  });
+
+  const handleClick = () => {
+    setIsResendDisabled(true);
+    setCountdown(59);
+    resendMutation.mutate({
+      email: email,
+    });
   };
 
   return (
@@ -48,7 +101,7 @@ export default function VerifyOTPPage() {
               Verify Your Account
             </CardTitle>
             <CardDescription className="text-center">
-              Please enter the 6-digit code sent to your phone or email.
+              Please enter the 4-digit code sent to your email.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -58,17 +111,21 @@ export default function VerifyOTPPage() {
                 <Input
                   type="text"
                   id="otp"
-                  placeholder="Enter 6-digit code"
+                  placeholder="Enter 4-digit code"
                   value={otp}
                   onChange={(e) =>
-                    setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))
+                    setOtp(e.target.value.replace(/\D/g, "").slice(0, 4))
                   }
                   className="text-center text-2xl tracking-widest"
                   required
                 />
               </div>
-              <Button type="submit" className="w-full">
-                Verify
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={verifyMutation.status === "pending"}
+              >
+                {verifyMutation.status === "pending" ? "loading..." : "Verify"}
               </Button>
             </form>
             <p className="mt-4 text-center text-sm text-gray-600">
@@ -76,15 +133,11 @@ export default function VerifyOTPPage() {
               <Button
                 variant="link"
                 className="p-0"
-                onClick={() =>
-                  toast({
-                    title: "New code sent",
-                    description:
-                      "A new verification code has been sent to your phone or email.",
-                  })
-                }
+                onClick={() => handleClick()}
+                disabled={isResendDisabled}
               >
                 Resend
+                {isResendDisabled && countdown > 0 && ` (${countdown}s)`}
               </Button>
             </p>
           </CardContent>

@@ -85,6 +85,7 @@ const userActivity = [
 ];
 
 export default function UserDashboardPage() {
+  const handleLogout = () => {};
   const [user, setUser] = useState({
     name: "",
     email: "",
@@ -352,6 +353,15 @@ export default function UserDashboardPage() {
               </Card>
             </PageWrapper>
           </TabsContent>
+          <PageWrapper className="flex justify-start">
+            <Button
+              onClick={handleLogout}
+              variant="destructive"
+              className="w-24 mt-2"
+            >
+              Logout
+            </Button>
+          </PageWrapper>
         </Tabs>
       </main>
       <Footer />
