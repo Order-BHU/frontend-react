@@ -7,9 +7,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useTheme } from "@/components/theme-provider";
 import { Link } from "react-router-dom";
+import UseAuthStore from "@/stores/useAuthStore";
 
 export function ModeToggle() {
   const { setTheme } = useTheme();
+  const { role } = UseAuthStore();
 
   return (
     <DropdownMenu>
@@ -24,26 +26,34 @@ export function ModeToggle() {
         </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuItem>
-          <Link to="/admin-dashboard">Admin-DB</Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem>
-          <Link to="/user-dashboard">User-DB</Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem>
-          <Link to="/restaurant-dashboard">Owner-DB</Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem>
-          <Link to="/rider-dashboard">Rider-DB</Link>
-        </DropdownMenuItem>
+        {role === "admin" && (
+          <DropdownMenuItem>
+            <Link to="/admin-dashboard">Admin-DB</Link>
+          </DropdownMenuItem>
+        )}
+        {role === "customer" && (
+          <DropdownMenuItem>
+            <Link to="/user-dashboard">User-DB</Link>
+          </DropdownMenuItem>
+        )}
+
+        {role === "restaurant" && (
+          <DropdownMenuItem>
+            <Link to="/restaurant-dashboard">Owner-DB</Link>
+          </DropdownMenuItem>
+        )}
+
+        {role === "driver" && (
+          <DropdownMenuItem>
+            <Link to="/rider-dashboard">Rider-DB</Link>
+          </DropdownMenuItem>
+        )}
+
         <DropdownMenuItem onClick={() => setTheme("light")}>
           Light
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => setTheme("dark")}>
           Dark
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("system")}>
-          System
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

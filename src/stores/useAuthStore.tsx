@@ -1,26 +1,24 @@
 import { create } from "zustand";
 
 // Define the type for the store's state and actions
+type role = "customer" | "driver" | "admin" | "restaurant" | null;
 interface AuthState {
   isLoggedIn: boolean;
-  role: string | null; // "user", "rider", "owner", or null if not logged in
-  logIn: (role: string) => void; // Pass the role on login
-  logOut: () => void;
-  setRole: (role: string) => void; // For updating the role dynamically
+  role: role; // "user", "rider", "owner", or null if not logged in
+  logIn: (role: role) => void; // Pass the role on login
+  logout: () => void;
 }
 
 // Create the Zustand store
 const useAuthStore = create<AuthState>((set) => ({
-  isLoggedIn: true, // Initial state
-  role: "rider",
+  isLoggedIn: false, // Initial state
+  role: null,
   logIn: (role) => {
     set({ isLoggedIn: true, role });
   },
-  logOut: () => {
+  logout: () => {
     set({ isLoggedIn: false, role: null });
-  },
-  setRole: (role) => {
-    set({ role });
+    localStorage.removeItem("token");
   },
 }));
 

@@ -26,12 +26,12 @@ export default function SignUpPage() {
 
   const { status, mutate } = useMutation({
     mutationFn: createUser,
-    onSuccess: () => {
+    onSuccess: (data) => {
       navigate("/verify-otp/", { state: { formData } });
       console.log("Sign-up submitted:", formData);
       toast({
         title: "Sign-up successful!",
-        description: "Verify your account",
+        description: data.message,
       });
     },
     onError: (error) => {

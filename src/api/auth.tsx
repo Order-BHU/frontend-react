@@ -4,6 +4,10 @@ import axios from "axios";
 interface apiResponse {
   message: string;
 }
+interface loginResponse {
+  message: string;
+  token: string;
+}
 interface email {
   email: string;
 }
@@ -39,10 +43,11 @@ type Otp = {
 
 export async function createUser(user: User) {
   return axios
-    .post("http://bhuorder.com.ng/api/register", user)
+    .post("http://bhuorder.com.ng/api/register", user, {
+      timeout: 90000,
+    })
     .then(function (response: AxiosResponse<apiResponse>) {
-      console.log(response);
-      return response;
+      return response.data;
     })
     .catch(function (error: AxiosError) {
       console.log(error);
@@ -52,10 +57,11 @@ export async function createUser(user: User) {
 
 export async function loginUser(user: existingUser) {
   return axios
-    .post("http://bhuorder.com.ng/api/login", user)
-    .then(function (response: AxiosResponse<apiResponse>) {
-      console.log(response);
-      return response;
+    .post("http://bhuorder.com.ng/api/login", user, {
+      timeout: 90000,
+    })
+    .then(function (response: AxiosResponse<loginResponse>) {
+      return response.data;
     })
     .catch(function (error: AxiosError) {
       console.log(error);
@@ -65,9 +71,11 @@ export async function loginUser(user: existingUser) {
 
 export async function createRestaurant(restaurant: Owner) {
   return axios
-    .post("http://bhuorder.com.ng/api/register", restaurant)
+    .post("http://bhuorder.com.ng/api/register", restaurant, {
+      timeout: 90000,
+    })
     .then(function (response: AxiosResponse<apiResponse>) {
-      console.log(response);
+      return response.data;
     })
     .catch(function (error: AxiosError) {
       console.log(error);
@@ -77,9 +85,11 @@ export async function createRestaurant(restaurant: Owner) {
 
 export async function verifyAccount(code: Otp) {
   return axios
-    .post("http://bhuorder.com.ng/api/verify-user", code)
+    .post("http://bhuorder.com.ng/api/verify-user", code, {
+      timeout: 90000,
+    })
     .then(function (response: AxiosResponse<apiResponse>) {
-      console.log(response);
+      return response.data;
     })
     .catch(function (error: AxiosError) {
       console.log(error);
@@ -89,9 +99,32 @@ export async function verifyAccount(code: Otp) {
 
 export async function getOtp(email: email) {
   return axios
-    .post("http://bhuorder.com.ng/api/get-otp", email)
+    .post("http://bhuorder.com.ng/api/get-otp", email, {
+      timeout: 90000,
+    })
     .then(function (response: AxiosResponse<apiResponse>) {
-      console.log(response);
+      return response.data;
+    })
+    .catch(function (error: AxiosError) {
+      console.log(error);
+      throw error.response?.data;
+    });
+}
+
+export async function logOut(token: string | null) {
+  return axios
+    .post(
+      "http://bhuorder.com.ng/api/logout",
+      {}, // empty body or whatever body your API expects
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        timeout: 90000,
+      }
+    )
+    .then(function (response: AxiosResponse<apiResponse>) {
+      return response.data;
     })
     .catch(function (error: AxiosError) {
       console.log(error);

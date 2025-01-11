@@ -35,12 +35,12 @@ export default function VerifyOTPPage() {
   }, [countdown, isResendDisabled]);
   const verifyMutation = useMutation({
     mutationFn: verifyAccount,
-    onSuccess: () => {
-      navigate("/user-dashboard/");
+    onSuccess: (data) => {
+      navigate("/login");
       console.log("OTP submitted:", otp);
       toast({
         title: "OTP Submitted",
-        description: "Your OTP has been submitted for verification.",
+        description: data.message,
       });
     },
     onError: (error) => {

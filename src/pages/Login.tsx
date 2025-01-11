@@ -9,8 +9,10 @@ import { loginUser } from "@/api/auth";
 import { useMutation } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { Eye, EyeOff } from "lucide-react";
+import UseAuthStore from "@/stores/useAuthStore";
 
 export default function LoginPage() {
+  const { logIn } = UseAuthStore();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -20,11 +22,13 @@ export default function LoginPage() {
   const navigate = useNavigate();
   const { status, mutate } = useMutation({
     mutationFn: loginUser,
-    onSuccess: () => {
+    onSuccess: (data) => {
+      localStorage.setItem("token", data.token);
+      logIn("customer");
       navigate("/user-dashboard/");
       toast({
         title: "success!",
-        description: "you are now logged in",
+        description: data.message,
       });
     },
     onError: (error) => {

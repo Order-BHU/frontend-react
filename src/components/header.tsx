@@ -103,31 +103,7 @@ export function Header() {
             <Link to="/signup">Sign Up</Link>
           </Button>
         </div>
-        {/*isLoggedIn && (
-          <div className="h-16 w-16 mr-[1rem] md:ml-[20rem] lg:ml-[37rem]">
-            <Link
-              to={
-                role === "owner"
-                  ? "/restaurant-dashboard"
-                  : role === "rider"
-                  ? "/rider-dashboard"
-                  : role === "user"
-                  ? "/user-dashboard"
-                  : role === "admin"
-                  ? "/admin-dashboard"
-                  : "/"
-              }
-            >
-              <Avatar className="w-full h-full">
-                <AvatarImage src="https://github.com/shadcn.png" />
-                <AvatarFallback>
-                  CN{/*make this the username first letters /}
-                </AvatarFallback>
-              </Avatar>
-            </Link>
-          </div>
-        )*/}
-        <ModeToggle />
+        {isLoggedIn && <ModeToggle />}
       </div>
     </header>
   );
