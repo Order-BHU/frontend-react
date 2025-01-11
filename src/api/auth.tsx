@@ -7,6 +7,8 @@ interface apiResponse {
 interface loginResponse {
   message: string;
   token: string;
+  account_type: string;
+  name: string;
 }
 interface email {
   email: string;
@@ -61,6 +63,7 @@ export async function loginUser(user: existingUser) {
       timeout: 90000,
     })
     .then(function (response: AxiosResponse<loginResponse>) {
+      console.log(response.data);
       return response.data;
     })
     .catch(function (error: AxiosError) {

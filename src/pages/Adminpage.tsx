@@ -182,7 +182,6 @@ export default function AdminDashboardPage() {
   const { toast } = useToast();
   const navigate = useNavigate();
   //creating restaurant details
-  //
 
   const { status, mutate } = useMutation({
     mutationFn: createRestaurant,

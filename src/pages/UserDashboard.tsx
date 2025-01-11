@@ -25,11 +25,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { PageWrapper } from "@/components/pagewrapper";
-import { logOut } from "@/api/auth";
-import { useMutation } from "@tanstack/react-query";
-import UseAuthStore from "@/stores/useAuthStore";
-import { useNavigate } from "react-router-dom";
-import { useToast } from "@/hooks/use-toast";
+
 // Mock data - in a real app, this would come from an API
 const allUserOrders = [
   {
@@ -89,40 +85,6 @@ const userActivity = [
 ];
 
 export default function UserDashboardPage() {
-  const { toast } = useToast();
-  const usertoken = localStorage.getItem("token");
-  const navigate = useNavigate();
-  const { logout } = UseAuthStore();
-  const { status, mutate } = useMutation({
-    mutationFn: logOut,
-    onSuccess: (data) => {
-      logout();
-      navigate("/login/");
-      toast({
-        title: "success!",
-        description: data.message,
-      });
-    },
-    onError: (error) => {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
-      return;
-    },
-  });
-  const handleLogout = () => {
-    if (!usertoken) {
-      toast({
-        title: "Error",
-        description: "Not authenticated",
-        variant: "destructive",
-      });
-      return;
-    }
-    mutate(usertoken);
-  };
   const [user, setUser] = useState({
     name: "",
     email: "",
@@ -390,16 +352,6 @@ export default function UserDashboardPage() {
               </Card>
             </PageWrapper>
           </TabsContent>
-          <PageWrapper className="flex justify-start">
-            <Button
-              disabled={status === "pending"}
-              onClick={handleLogout}
-              variant="destructive"
-              className="w-24 mt-2"
-            >
-              Logout
-            </Button>
-          </PageWrapper>
         </Tabs>
       </main>
       <Footer />

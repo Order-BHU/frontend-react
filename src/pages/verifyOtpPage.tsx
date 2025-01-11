@@ -23,6 +23,7 @@ export default function VerifyOTPPage() {
   const [isResendDisabled, setIsResendDisabled] = useState(false);
   const location = useLocation();
   const email = location.state?.formData.email;
+  const source = location.state.source;
   const navigate = useNavigate();
   const [otp, setOtp] = useState("");
   useEffect(() => {
@@ -36,7 +37,7 @@ export default function VerifyOTPPage() {
   const verifyMutation = useMutation({
     mutationFn: verifyAccount,
     onSuccess: (data) => {
-      navigate("/login");
+      if (source === "/login") navigate("/login");
       console.log("OTP submitted:", otp);
       toast({
         title: "OTP Submitted",

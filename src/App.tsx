@@ -45,7 +45,7 @@ function App() {
                 element={<RestaurantDashboardPage />}
               ></Route>
               <Route
-                path="/user-dashboard"
+                path="/customer-dashboard"
                 element={<UserDashboardPage />}
               ></Route>
               <Route

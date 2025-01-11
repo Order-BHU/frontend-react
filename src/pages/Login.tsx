@@ -24,8 +24,9 @@ export default function LoginPage() {
     mutationFn: loginUser,
     onSuccess: (data) => {
       localStorage.setItem("token", data.token);
-      logIn("customer");
-      navigate("/user-dashboard/");
+      localStorage.setItem("name", data.name);
+      logIn(`${data.account_type}`);
+      navigate(`/${data.account_type}-dashboard/`);
       toast({
         title: "success!",
         description: data.message,
@@ -38,7 +39,8 @@ export default function LoginPage() {
         variant: "destructive",
       });
       if (error.message.includes("verified")) {
-        navigate("/verify-otp/", { state: { formData } });
+        const source = "/login";
+        navigate("/verify-otp/", { state: { formData, source } });
       }
       return;
     },
@@ -51,10 +53,12 @@ export default function LoginPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    console.log("mutating");
     mutate({
       email: formData.email,
       password: formData.password,
     });
+    console.log("done mutating");
   };
 
   return (
