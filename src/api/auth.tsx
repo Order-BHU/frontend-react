@@ -42,7 +42,7 @@ type Otp = {
   email: string;
   otp: string;
 };
-const apiUrl = "https://bhuorder.com.ng/api/poo";
+const apiUrl = "https://bhuorder.com.ng/api";
 
 export async function createUser(user: User) {
   return axios
