@@ -42,10 +42,11 @@ type Otp = {
   email: string;
   otp: string;
 };
+const apiUrl = "https://bhuorder.com.ng/api/poo";
 
 export async function createUser(user: User) {
   return axios
-    .post("http://bhuorder.com.ng/api/register", user, {
+    .post(`${apiUrl}/register`, user, {
       timeout: 90000,
     })
     .then(function (response: AxiosResponse<apiResponse>) {
@@ -59,7 +60,7 @@ export async function createUser(user: User) {
 
 export async function loginUser(user: existingUser) {
   return axios
-    .post("http://bhuorder.com.ng/api/login", user, {
+    .post(`${apiUrl}/login`, user, {
       timeout: 90000,
     })
     .then(function (response: AxiosResponse<loginResponse>) {
@@ -74,7 +75,7 @@ export async function loginUser(user: existingUser) {
 
 export async function createRestaurant(restaurant: Owner) {
   return axios
-    .post("http://bhuorder.com.ng/api/register", restaurant, {
+    .post(`${apiUrl}/register`, restaurant, {
       timeout: 90000,
     })
     .then(function (response: AxiosResponse<apiResponse>) {
@@ -88,7 +89,7 @@ export async function createRestaurant(restaurant: Owner) {
 
 export async function verifyAccount(code: Otp) {
   return axios
-    .post("http://bhuorder.com.ng/api/verify-user", code, {
+    .post(`${apiUrl}/verify-user`, code, {
       timeout: 90000,
     })
     .then(function (response: AxiosResponse<apiResponse>) {
@@ -102,7 +103,7 @@ export async function verifyAccount(code: Otp) {
 
 export async function getOtp(email: email) {
   return axios
-    .post("http://bhuorder.com.ng/api/get-otp", email, {
+    .post(`${apiUrl}/get-otp`, email, {
       timeout: 90000,
     })
     .then(function (response: AxiosResponse<apiResponse>) {
@@ -117,7 +118,7 @@ export async function getOtp(email: email) {
 export async function logOut(token: string | null) {
   return axios
     .post(
-      "http://bhuorder.com.ng/api/logout",
+      `${apiUrl}/logout`,
       {}, // empty body or whatever body your API expects
       {
         headers: {

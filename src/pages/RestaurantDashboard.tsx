@@ -50,14 +50,14 @@ const orders = [
     customer: "Jane Smith",
     items: ["Egusi Soup", "Pounded Yam"],
     total: "₦4,200",
-    status: "Delivered",
+    status: "Preparing",
   },
   {
     id: "3",
     customer: "Mike Johnson",
     items: ["Suya", "Fries"],
     total: "₦2,800",
-    status: "In Transit",
+    status: "Ready",
   },
 ];
 

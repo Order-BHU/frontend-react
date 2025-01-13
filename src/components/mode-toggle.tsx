@@ -84,7 +84,7 @@ export function ModeToggle() {
 
         {role === "driver" && (
           <DropdownMenuItem>
-            <Link to="/rider-dashboard">Rider-DB</Link>
+            <Link to="/rider-dashboard">Dashboard</Link>
           </DropdownMenuItem>
         )}
 
