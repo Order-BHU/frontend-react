@@ -53,12 +53,10 @@ export default function LoginPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("mutating");
     mutate({
       email: formData.email,
       password: formData.password,
     });
-    console.log("done mutating");
   };
 
   return (

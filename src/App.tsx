@@ -17,6 +17,7 @@ import VerifyOTPPage from "./pages/verifyOtpPage";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Toaster } from "@/components/ui/toaster";
+import NotFound from "./pages/NotFound";
 
 function App() {
   const queryClient = new QueryClient();
@@ -24,10 +25,10 @@ function App() {
     <div className="app">
       <Toaster />
       <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-        <BrowserRouter>
+        <BrowserRouter future={{ v7_relativeSplatPath: true }}>
           <QueryClientProvider client={queryClient}>
             <Routes>
-              <Route path="*" element={<div>can't find item</div>}></Route>
+              <Route path="*" element={<NotFound />}></Route>
               <Route path="/" element={<LandingPage />}></Route>
               <Route path="/restaurants" element={<RestaurantsPage />}></Route>
               <Route path="/contact" element={<ContactPage />}></Route>
