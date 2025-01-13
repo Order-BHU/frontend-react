@@ -8,6 +8,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { PageWrapper } from "@/components/pagewrapper";
 import {
   Table,
@@ -79,6 +86,16 @@ export default function RestaurantDashboardPage() {
     // Here you would typically send the new menu item to your backend
     console.log("New menu item:", newMenuItem);
     setNewMenuItem({ name: "", price: "", category: "" });
+  };
+
+  const [orderStatuses, setOrderStatuses] = useState<{ [key: string]: string }>(
+    {}
+  );
+
+  const handleStatusChange = (orderId: string, newStatus: string) => {
+    setOrderStatuses((prev) => ({ ...prev, [orderId]: newStatus }));
+    // Here you would typically update the order status in your backend
+    console.log(`Order ${orderId} status updated to ${newStatus}`);
   };
 
   return (
@@ -272,18 +289,31 @@ export default function RestaurantDashboardPage() {
                             <TableCell>
                               <Badge
                                 variant={
-                                  order.status === "Delivered"
+                                  order.status === "Ready"
                                     ? "secondary"
                                     : "default"
                                 }
                               >
-                                {order.status}
+                                {orderStatuses[order.id] || order.status}
                               </Badge>
                             </TableCell>
                             <TableCell>
-                              <Button variant="outline" size="sm">
-                                Update Status
-                              </Button>
+                              <Select
+                                value={orderStatuses[order.id] || order.status}
+                                onValueChange={(value) =>
+                                  handleStatusChange(order.id, value)
+                                }
+                              >
+                                <SelectTrigger className="w-[180px]">
+                                  <SelectValue placeholder="Update Status" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="Preparing">
+                                    Preparing
+                                  </SelectItem>
+                                  <SelectItem value="Ready">Ready</SelectItem>
+                                </SelectContent>
+                              </Select>
                             </TableCell>
                           </TableRow>
                         ))}

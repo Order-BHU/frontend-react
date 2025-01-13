@@ -67,18 +67,18 @@ export function ModeToggle() {
       <DropdownMenuContent align="end">
         {role === "admin" && (
           <DropdownMenuItem>
-            <Link to="/admin-dashboard">Admin-DB</Link>
+            <Link to="/admin-dashboard">Dashboard</Link>
           </DropdownMenuItem>
         )}
         {role === "customer" && (
           <DropdownMenuItem>
-            <Link to="/customer-dashboard">User-DB</Link>
+            <Link to="/customer-dashboard">Dashboard</Link>
           </DropdownMenuItem>
         )}
 
         {role === "restaurant" && (
           <DropdownMenuItem>
-            <Link to="/restaurant-dashboard">Owner-DB</Link>
+            <Link to="/restaurant-dashboard">Dashboard</Link>
           </DropdownMenuItem>
         )}
 
