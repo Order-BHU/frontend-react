@@ -18,6 +18,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Toaster } from "@/components/ui/toaster";
 import NotFound from "./pages/NotFound";
+import ProtectedRoute from "./components/protectedRoute";
 
 function App() {
   const queryClient = new QueryClient();
@@ -39,19 +40,35 @@ function App() {
               <Route path="/verify-otp" element={<VerifyOTPPage />}></Route>
               <Route
                 path="/rider-dashboard"
-                element={<RiderDashboardPage />}
+                element={
+                  <ProtectedRoute allowedRoles={["rider"]}>
+                    <RiderDashboardPage />
+                  </ProtectedRoute>
+                }
               ></Route>
               <Route
                 path="/restaurant-dashboard"
-                element={<RestaurantDashboardPage />}
+                element={
+                  <ProtectedRoute allowedRoles={["restaurant"]}>
+                    <RestaurantDashboardPage />
+                  </ProtectedRoute>
+                }
               ></Route>
               <Route
                 path="/customer-dashboard"
-                element={<UserDashboardPage />}
+                element={
+                  <ProtectedRoute allowedRoles={["customer"]}>
+                    <UserDashboardPage />
+                  </ProtectedRoute>
+                }
               ></Route>
               <Route
                 path="/admin-dashboard"
-                element={<AdminDashboardPage />}
+                element={
+                  <ProtectedRoute allowedRoles={["admin"]}>
+                    <AdminDashboardPage />
+                  </ProtectedRoute>
+                }
               ></Route>
             </Routes>
             <ReactQueryDevtools />

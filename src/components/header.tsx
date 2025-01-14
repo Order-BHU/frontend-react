@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBurger } from "@fortawesome/free-solid-svg-icons";
-import UseAuthStore from "@/stores/useAuthStore";
+import useAuthStore from "@/stores/useAuthStore";
 //import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ModeToggle } from "./mode-toggle";
 
@@ -15,26 +15,32 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 export function Header() {
-  const { isLoggedIn /*role*/ } = UseAuthStore();
+  const { isLoggedIn /*role*/ } = useAuthStore();
 
   return (
     <header className="bg-white dark:bg-header-dark shadow-sm flex justify-center sticky z-10 top-0 max-h-16">
       <div className="container py-4 flex justify-between items-center w-full px-0">
-        <Link
-          to="/"
-          className="text-2xl font-bold text-stone-900 dark:text-cfont-dark ml-9"
-        >
-          <div className="w-20 h-20 overflow-hidden">
-            <img
-              src={
-                window.matchMedia("(prefers-color-scheme: dark)").matches
-                  ? "/DarkerOrderLogo.PNG"
-                  : "/orderLogo.JPG"
-              }
-              className="h-full"
-            ></img>
-          </div>
-        </Link>
+        <div className="flex flex-row ml-9 align-middle justify-end">
+          <span className="mt-7 font-semibold text-lg italic dark:text-gradient-darkstart text-right md:text-xl galaxy-fold:text-sm">
+            Order
+          </span>
+          <Link
+            to="/"
+            className="text-2xl font-bold text-stone-900 dark:text-cfont-dark "
+          >
+            <div className="w-20 h-20 overflow-hidden">
+              <img
+                src={
+                  window.matchMedia("(prefers-color-scheme: dark)").matches
+                    ? "/DarkerOrderLogo.PNG"
+                    : "/orderLogo.JPG"
+                }
+                className="h-full object-cover"
+              ></img>
+            </div>
+          </Link>
+        </div>
+
         <DropdownMenu>
           <DropdownMenuTrigger
             asChild
@@ -61,6 +67,16 @@ export function Header() {
             <DropdownMenuItem asChild>
               <Link to="/contact">Contact Us</Link>
             </DropdownMenuItem>
+            {!isLoggedIn && (
+              <div>
+                <DropdownMenuItem asChild>
+                  <Link to="/login">Login</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/signup">Sign Up</Link>
+                </DropdownMenuItem>
+              </div>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
         <nav className="hidden md:flex space-x-4">
@@ -90,7 +106,7 @@ export function Header() {
           </Link>
         </nav>
         <div
-          className={`flex items-center space-x-2${
+          className={`hidden md:flex items-center sm:hidden space-x-2${
             isLoggedIn ? " hidden" : ""
           }`}
         >

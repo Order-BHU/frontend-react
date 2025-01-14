@@ -66,7 +66,7 @@ const menuItems = [
   { id: "2", name: "Egusi Soup", price: "₦2,000", category: "Soup" },
   { id: "3", name: "Suya", price: "₦1,800", category: "Appetizer" },
 ];
-
+const username = localStorage.getItem("name")?.slice(0, 2).toUpperCase();
 export default function RestaurantDashboardPage() {
   const [newMenuItem, setNewMenuItem] = useState({
     name: "",
@@ -75,7 +75,7 @@ export default function RestaurantDashboardPage() {
   });
   const [restaurant, setRestaurant] = useState({
     name: "Tasty Bites Restaurant",
-    photo: "/placeholder.svg?height=100&width=100",
+    photo: "",
   });
   const [editingMenuItem, setEditingMenuItem] = useState<
     (typeof menuItems)[0] | null
@@ -115,8 +115,10 @@ export default function RestaurantDashboardPage() {
             </CardHeader>
             <CardContent className="flex items-center space-x-4 flex-col sm:flex-row sm:items-center sm:space-x-4 space-y-4 sm:space-y-0">
               <Avatar className="h-20 w-20">
-                <AvatarImage src={restaurant.photo} alt={restaurant.name} />
-                <AvatarFallback>{restaurant.name[0]}</AvatarFallback>
+                <AvatarImage src={restaurant.photo} />
+                <AvatarFallback className="text-white">
+                  {username}
+                </AvatarFallback>
               </Avatar>
               <div>
                 <h2 className="md:text-xl font-semibold sm:text-lg text-sm">

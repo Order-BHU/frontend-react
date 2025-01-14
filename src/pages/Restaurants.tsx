@@ -2,48 +2,21 @@ import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { RestaurantCard } from "@/components/restaurant-card";
 import { PageWrapper } from "@/components/pagewrapper";
+import { useQuery } from "@tanstack/react-query";
+import { getRestaurants } from "@/api/restaurant";
 
 // This would typically come from an API or database
-const restaurants = [
-  {
-    id: "1",
-    name: "Burger Palace",
-    cuisine: "American",
-    imageUrl: "/placeholder.svg?height=200&width=300",
-  },
-  {
-    id: "2",
-    name: "Pasta Paradise",
-    cuisine: "Italian",
-    imageUrl: "/placeholder.svg?height=200&width=300",
-  },
-  {
-    id: "3",
-    name: "Sushi Sensation",
-    cuisine: "Japanese",
-    imageUrl: "/placeholder.svg?height=200&width=300",
-  },
-  {
-    id: "4",
-    name: "Taco Town",
-    cuisine: "Mexican",
-    imageUrl: "/placeholder.svg?height=200&width=300",
-  },
-  {
-    id: "5",
-    name: "Curry House",
-    cuisine: "Indian",
-    imageUrl: "/placeholder.svg?height=200&width=300",
-  },
-  {
-    id: "6",
-    name: "Pizza Place",
-    cuisine: "Italian",
-    imageUrl: "/placeholder.svg?height=200&width=300",
-  },
-];
-
+interface restaurant {
+  id: number;
+  name: string;
+  cover_picture: string;
+}
 export default function RestaurantsPage() {
+  const { status, data: restaurants } = useQuery({
+    //change this to restaurants later
+    queryKey: ["restaurants"],
+    queryFn: getRestaurants,
+  });
   return (
     <div className="min-h-screen flex flex-col ">
       <Header />
@@ -55,13 +28,21 @@ export default function RestaurantsPage() {
             </h1>
           </PageWrapper>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {restaurants.map((restaurant) => (
-              <PageWrapper>
-                <RestaurantCard key={restaurant.id} {...restaurant} />
-              </PageWrapper>
-            ))}
-          </div>
+          {status === "pending" ? (
+            <PageWrapper>
+              <h3 className="text-xl font-bold mb-8 text-center text-gray-800 dark:text-cfont-dark italic m-8">
+                Loading Restaurants...
+              </h3>
+            </PageWrapper>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {restaurants.map((restaurant: restaurant) => (
+                <PageWrapper>
+                  <RestaurantCard key={restaurant.id} {...restaurant} />
+                </PageWrapper>
+              ))}
+            </div>
+          )}
         </div>
       </main>
       <Footer />

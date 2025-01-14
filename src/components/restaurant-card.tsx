@@ -5,24 +5,22 @@ import { Button } from "@/components/ui/button";
 import { orbit } from "ldrs";
 
 interface RestaurantCardProps {
-  id: string;
+  id: number;
   name: string;
-  cuisine: string;
-  imageUrl: string;
+  cover_picture: string;
 }
 
 export function RestaurantCard({
   id,
   name,
-  cuisine,
-  imageUrl,
+  cover_picture,
 }: RestaurantCardProps) {
   orbit.register();
   return (
     <Card className="overflow-hidden transition-all hover:shadow-lg">
       <CardContent className="p-0 justify-center">
         <Img
-          src={imageUrl}
+          src={cover_picture}
           alt={name}
           width={300}
           height={200}
@@ -35,7 +33,6 @@ export function RestaurantCard({
         />
         <div className="p-4">
           <h3 className="text-xl font-semibold mb-2">{name}</h3>
-          <p className="text-sm text-gray-600">{cuisine}</p>
         </div>
       </CardContent>
       <CardFooter className="bg-gray-50 border-t border-gray-100 p-4">

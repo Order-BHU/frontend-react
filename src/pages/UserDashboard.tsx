@@ -102,6 +102,7 @@ export default function UserDashboardPage() {
   };
 
   const recentOrders = allUserOrders.slice(0, 4);
+  const username = localStorage.getItem("name")?.slice(0, 2).toUpperCase();
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-cbg-dark">
@@ -120,12 +121,9 @@ export default function UserDashboardPage() {
             </CardHeader>
             <CardContent className="flex items-center space-x-4">
               <Avatar className="h-20 w-20">
-                <AvatarImage src={user.profilePicture} alt={user.name} />
-                <AvatarFallback>
-                  {user.name
-                    .split(" ")
-                    .map((n) => n[0])
-                    .join("")}
+                <AvatarImage src={user.profilePicture} alt={username} />
+                <AvatarFallback className="text-white">
+                  {username}
                 </AvatarFallback>
               </Avatar>
               <div>
