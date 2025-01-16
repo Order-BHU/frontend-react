@@ -16,8 +16,10 @@ import { Input } from "@/components/ui/input";
 import { Plus, Minus, ShoppingCart } from "lucide-react";
 import { orbit } from "ldrs";
 import { PageWrapper } from "@/components/pagewrapper";
+import { useQuery } from "@tanstack/react-query";
+import { getRestaurantMenu } from "@/api/restaurant";
 
-// Mock database of restaurant menus
+/* Mock database of restaurant menus
 const restaurantMenus = {
   "1": {
     name: "Burger Palace",
@@ -189,7 +191,7 @@ const restaurantMenus = {
       },
     ],
   },
-};
+};*/
 
 export default function RestaurantMenuPage() {
   orbit.register();

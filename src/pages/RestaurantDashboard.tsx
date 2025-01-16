@@ -66,8 +66,9 @@ const menuItems = [
   { id: "2", name: "Egusi Soup", price: "₦2,000", category: "Soup" },
   { id: "3", name: "Suya", price: "₦1,800", category: "Appetizer" },
 ];
-const username = localStorage.getItem("name")?.slice(0, 2).toUpperCase();
+
 export default function RestaurantDashboardPage() {
+  const username = localStorage.getItem("name")?.slice(0, 2).toUpperCase();
   const [newMenuItem, setNewMenuItem] = useState({
     name: "",
     price: "",
@@ -122,7 +123,7 @@ export default function RestaurantDashboardPage() {
               </Avatar>
               <div>
                 <h2 className="md:text-xl font-semibold sm:text-lg text-sm">
-                  {restaurant.name}
+                  {localStorage.getItem("name")}
                 </h2>
               </div>
               <Dialog>

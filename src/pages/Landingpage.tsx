@@ -22,10 +22,10 @@ export default function LandingPage() {
         <PageWrapper className="bg-gradient-to-r from-orange-light to-orange-dark  dark:from-gradient-darkstart dark:to-gradient-darkend py-20 dark:rounded dark:mx-8 dark:mb-8 dark:box-content">
           <div className="container mx-auto px-4 text-center">
             <h1 className="text-5xl font-bold mb-6 text-gray-800 dark:text-welcome-dark">
-              Welcome to Order
+              Order
             </h1>
-            <p className="text-xl mb-8 text-gray-600 dark:text-welcome-dark">
-              Delicious food delivered to your doorstep
+            <p className="text-xl mb-8 text-gray-600 dark:text-welcome-dark italic">
+              Where Restaurants meet students; One Delicious Order at a time
             </p>
             <div className="">
               <Button

@@ -29,6 +29,8 @@ const useAuthStore = create<AuthState>((set) => {
       const newState = { isLoggedIn: false, role: null };
       set(newState);
       localStorage.removeItem("authState");
+      localStorage.removeItem("token");
+      localStorage.removeItem("name");
     },
   };
 });

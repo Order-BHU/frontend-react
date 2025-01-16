@@ -106,9 +106,9 @@ export function Header() {
           </Link>
         </nav>
         <div
-          className={`hidden md:flex items-center sm:hidden space-x-2${
-            isLoggedIn ? " hidden" : ""
-          }`}
+          className={`${
+            isLoggedIn ? "hidden" : "md:flex"
+          } items-center sm:hidden space-x-2`}
         >
           <Button variant="ghost" asChild>
             <Link className="dark:text-cfont-dark" to="/login">

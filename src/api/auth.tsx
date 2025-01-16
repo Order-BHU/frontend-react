@@ -9,7 +9,9 @@ interface loginResponse {
   token: string;
   account_type: string;
   name: string;
+  restaurant_name: string;
 }
+
 interface email {
   email: string;
 }
@@ -68,6 +70,9 @@ export async function loginUser(user: existingUser) {
       return response.data;
     })
     .catch(function (error: AxiosError) {
+      if (error.code === "ERR_NETWORK") {
+        throw new Error("Network error: Unable to reach the server.");
+      }
       console.log(error);
       throw error.response?.data;
     });
@@ -82,6 +87,9 @@ export async function createRestaurant(restaurant: Owner) {
       return response.data;
     })
     .catch(function (error: AxiosError) {
+      if (error.code === "ERR_NETWORK") {
+        throw new Error("Network error: Unable to reach the server.");
+      }
       console.log(error);
       throw error.response?.data;
     });
@@ -96,6 +104,9 @@ export async function verifyAccount(code: Otp) {
       return response.data;
     })
     .catch(function (error: AxiosError) {
+      if (error.code === "ERR_NETWORK") {
+        throw new Error("Network error: Unable to reach the server.");
+      }
       console.log(error);
       throw error.response?.data;
     });
@@ -110,6 +121,9 @@ export async function getOtp(email: email) {
       return response.data;
     })
     .catch(function (error: AxiosError) {
+      if (error.code === "ERR_NETWORK") {
+        throw new Error("Network error: Unable to reach the server.");
+      }
       console.log(error);
       throw error.response?.data;
     });
@@ -131,6 +145,9 @@ export async function logOut(token: string | null) {
       return response.data;
     })
     .catch(function (error: AxiosError) {
+      if (error.code === "ERR_NETWORK") {
+        throw new Error("Network error: Unable to reach the server.");
+      }
       console.log(error);
       throw error.response?.data;
     });

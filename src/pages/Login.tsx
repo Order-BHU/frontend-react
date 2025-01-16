@@ -23,8 +23,13 @@ export default function LoginPage() {
   const { status, mutate } = useMutation({
     mutationFn: loginUser,
     onSuccess: (data) => {
+      if (data.account_type === "restaurant") {
+        localStorage.setItem("name", data.restaurant_name);
+      }
+      if (data.account_type === "customer") {
+        localStorage.setItem("name", data.name);
+      }
       localStorage.setItem("token", data.token);
-      localStorage.setItem("name", data.name);
       logIn(`${data.account_type}`);
       navigate(`/${data.account_type}-dashboard/`);
       toast({
