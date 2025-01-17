@@ -36,6 +36,13 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
+import { addMenu } from "@/api/restaurant";
+import { useMutation } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
+import { getCategories, getMenuItems } from "@/api/restaurant";
+import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
+import { category, menuItem } from "@/interfaces/restaurantType";
 // This would typically come from an API or database
 const orders = [
   {
@@ -43,37 +50,45 @@ const orders = [
     customer: "John Doe",
     items: ["Jollof Rice", "Chicken"],
     total: "₦3,500",
-    status: "Preparing",
+    categoryStatus: "Preparing",
   },
   {
     id: "2",
     customer: "Jane Smith",
     items: ["Egusi Soup", "Pounded Yam"],
     total: "₦4,200",
-    status: "Preparing",
+    categoryStatus: "Preparing",
   },
   {
     id: "3",
     customer: "Mike Johnson",
     items: ["Suya", "Fries"],
     total: "₦2,800",
-    status: "Ready",
+    categoryStatus: "Ready",
   },
 ];
 
-const menuItems = [
-  { id: "1", name: "Jollof Rice", price: "₦1,500", category: "Main Course" },
-  { id: "2", name: "Egusi Soup", price: "₦2,000", category: "Soup" },
-  { id: "3", name: "Suya", price: "₦1,800", category: "Appetizer" },
-];
+const { status: categoryStatus, data: categories } = useQuery({
+  queryKey: ["categories"],
+  queryFn: getCategories,
+});
 
 export default function RestaurantDashboardPage() {
   const username = localStorage.getItem("name")?.slice(0, 2).toUpperCase();
+  const restaurant_id = localStorage.getItem("restaurant_id");
+  const { toast } = useToast();
   const [newMenuItem, setNewMenuItem] = useState({
     name: "",
-    price: "",
-    category: "",
+    price: 0,
+    description: "",
+    image: null as File | null,
+    category_id: 0,
   });
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setNewMenuItem({ ...newMenuItem, image: e.target.files[0] });
+    }
+  };
   const [restaurant, setRestaurant] = useState({
     name: "Tasty Bites Restaurant",
     photo: "",
@@ -84,20 +99,56 @@ export default function RestaurantDashboardPage() {
 
   const handleAddMenuItem = (e: React.FormEvent) => {
     e.preventDefault();
-    // Here you would typically send the new menu item to your backend
     console.log("New menu item:", newMenuItem);
-    setNewMenuItem({ name: "", price: "", category: "" });
+    mutate({
+      name: newMenuItem.name,
+      description: newMenuItem.description,
+      category_id: newMenuItem.category_id,
+      price: newMenuItem.price,
+      image: newMenuItem.image,
+      id: Number(restaurant_id),
+      category: "",
+    });
   };
 
-  const [orderStatuses, setOrderStatuses] = useState<{ [key: string]: string }>(
-    {}
-  );
+  const [ordercategoryStatuses, setOrdercategoryStatuses] = useState<{
+    [key: string]: string;
+  }>({});
 
-  const handleStatusChange = (orderId: string, newStatus: string) => {
-    setOrderStatuses((prev) => ({ ...prev, [orderId]: newStatus }));
-    // Here you would typically update the order status in your backend
-    console.log(`Order ${orderId} status updated to ${newStatus}`);
+  const handlecategoryStatusChange = (
+    orderId: string,
+    newcategoryStatus: string
+  ) => {
+    setOrdercategoryStatuses((prev) => ({
+      ...prev,
+      [orderId]: newcategoryStatus,
+    }));
+    // Here you would typically update the order categoryStatus in your backend
   };
+
+  //APIs
+
+  const { /*status: menuStatus,*/ data: menuItems } = useQuery({
+    queryKey: ["menuItems", restaurant_id],
+    queryFn: () => getMenuItems(restaurant_id!),
+  });
+
+  const { status: mutateStatus, mutate } = useMutation({
+    mutationFn: addMenu,
+    onSuccess: (data) => {
+      toast({
+        title: "Success",
+        description: data.message,
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-cbg-dark">
@@ -278,7 +329,7 @@ export default function RestaurantDashboardPage() {
                           <TableHead>Customer</TableHead>
                           <TableHead>Items</TableHead>
                           <TableHead>Total</TableHead>
-                          <TableHead>Status</TableHead>
+                          <TableHead>categoryStatus</TableHead>
                           <TableHead>Action</TableHead>
                         </TableRow>
                       </TableHeader>
@@ -292,23 +343,27 @@ export default function RestaurantDashboardPage() {
                             <TableCell>
                               <Badge
                                 variant={
-                                  order.status === "Ready"
+                                  order.categoryStatus === "Ready"
                                     ? "secondary"
                                     : "default"
                                 }
                               >
-                                {orderStatuses[order.id] || order.status}
+                                {ordercategoryStatuses[order.id] ||
+                                  order.categoryStatus}
                               </Badge>
                             </TableCell>
                             <TableCell>
                               <Select
-                                value={orderStatuses[order.id] || order.status}
+                                value={
+                                  ordercategoryStatuses[order.id] ||
+                                  order.categoryStatus
+                                }
                                 onValueChange={(value) =>
-                                  handleStatusChange(order.id, value)
+                                  handlecategoryStatusChange(order.id, value)
                                 }
                               >
                                 <SelectTrigger className="w-[180px]">
-                                  <SelectValue placeholder="Update Status" />
+                                  <SelectValue placeholder="Update categoryStatus" />
                                 </SelectTrigger>
                                 <SelectContent>
                                   <SelectItem value="Preparing">
@@ -343,11 +398,11 @@ export default function RestaurantDashboardPage() {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {menuItems.map((item) => (
+                        {menuItems.map((item: menuItem) => (
                           <TableRow key={item.id}>
                             <TableCell>{item.name}</TableCell>
                             <TableCell>{item.price}</TableCell>
-                            <TableCell>{item.category}</TableCell>
+                            <TableCell>{item.category_id}</TableCell>
                             <TableCell>
                               <Dialog>
                                 <DialogTrigger asChild>
@@ -403,21 +458,6 @@ export default function RestaurantDashboardPage() {
                                           }
                                         />
                                       </div>
-                                      <div>
-                                        <Label htmlFor="itemCategory">
-                                          Category
-                                        </Label>
-                                        <Input
-                                          id="itemCategory"
-                                          value={editingMenuItem.category}
-                                          onChange={(e) =>
-                                            setEditingMenuItem({
-                                              ...editingMenuItem,
-                                              category: e.target.value,
-                                            })
-                                          }
-                                        />
-                                      </div>
                                       <Button type="submit">
                                         Update Menu Item
                                       </Button>
@@ -457,16 +497,79 @@ export default function RestaurantDashboardPage() {
                           <Input
                             id="price"
                             value={newMenuItem.price}
+                            onChange={(e) => {
+                              const { value } = e.target;
+
+                              setNewMenuItem({
+                                ...newMenuItem,
+                                price: Number(value.replace(/[^0-9]/g, "")),
+                              });
+                            }}
+                            required
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="description">Description</Label>
+                          <Textarea
+                            id="description"
+                            value={newMenuItem.description}
                             onChange={(e) =>
                               setNewMenuItem({
                                 ...newMenuItem,
-                                price: e.target.value,
+                                description: e.target.value,
                               })
                             }
                             required
                           />
                         </div>
+
                         <div>
+                          <Label htmlFor="image">Image</Label>
+                          <Input
+                            id="image"
+                            type="file"
+                            accept="image/*"
+                            onChange={handleImageChange}
+                            required
+                          />
+                        </div>
+
+                        <div>
+                          <Label htmlFor="category">Category</Label>
+                          <Select
+                            onValueChange={(value) => {
+                              setNewMenuItem({
+                                ...newMenuItem,
+                                category_id: Number(value),
+                              });
+                            }}
+                          >
+                            <SelectTrigger className="w-[180px]">
+                              <SelectValue placeholder="Choose Category" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {categoryStatus === "pending" ? (
+                                <SelectItem value="" disabled>
+                                  Loading categories...
+                                </SelectItem>
+                              ) : categoryStatus === "error" ? (
+                                <SelectItem value="" disabled>
+                                  Error loading categories
+                                </SelectItem>
+                              ) : (
+                                categories?.map((category: category) => (
+                                  <SelectItem
+                                    key={category.id}
+                                    value={String(category.id)}
+                                  >
+                                    {category.name}
+                                  </SelectItem>
+                                ))
+                              )}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        {/*<div>
                           <Label htmlFor="category">Category</Label>
                           <Input
                             id="category"
@@ -479,9 +582,14 @@ export default function RestaurantDashboardPage() {
                             }
                             required
                           />
-                        </div>
+                        </div>*/}
                       </div>
-                      <Button type="submit">Add Menu Item</Button>
+                      <Button
+                        type="submit"
+                        disabled={mutateStatus === "pending"}
+                      >
+                        Add Menu Item
+                      </Button>
                     </form>
                   </CardContent>
                 </Card>

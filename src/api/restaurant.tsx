@@ -1,15 +1,8 @@
 import { AxiosResponse, AxiosError } from "axios";
 import axios from "axios";
+import { menuItem } from "@/interfaces/restaurantType";
 
 const apiUrl = "http://bhuorder.com.ng/api";
-
-interface menuItem {
-  name: string;
-  description: string;
-  category_id: number;
-  price: number;
-  image: File;
-}
 
 export async function getRestaurants() {
   return axios
@@ -25,7 +18,21 @@ export async function getRestaurants() {
     });
 }
 
-export async function getRestaurantMenu(id: string) {
+export async function getCategories() {
+  return axios
+    .get(`${apiUrl}/categories`, {
+      timeout: 90000,
+    })
+    .then(function (response: AxiosResponse) {
+      console.log(response.data.categories);
+      return response.data.categories;
+    })
+    .catch(function (error: AxiosError) {
+      throw error.response?.data;
+    });
+}
+
+export async function getMenuItems(id: string) {
   return axios
     .get(`${apiUrl}/${id}/menu-list`, {
       timeout: 90000,
@@ -40,18 +47,16 @@ export async function getRestaurantMenu(id: string) {
     });
 }
 
-export async function addMenu(
-  token: string | null,
-  id: string,
-  menu: menuItem
-) {
+export async function addMenu(menu: menuItem) {
+  const token = localStorage.getItem("token");
   return axios
     .post(
-      `${apiUrl}/${id}/add-menu`,
+      `${apiUrl}/${menu.id}/add-menu`,
       menu, // empty body or whatever body your API expects
       {
         headers: {
           Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
         },
         timeout: 90000,
       }

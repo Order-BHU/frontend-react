@@ -25,6 +25,7 @@ export default function LoginPage() {
     onSuccess: (data) => {
       if (data.account_type === "restaurant") {
         localStorage.setItem("name", data.restaurant_name);
+        localStorage.setItem("restaurant_id", data.restaurant_id);
       }
       if (data.account_type === "customer") {
         localStorage.setItem("name", data.name);

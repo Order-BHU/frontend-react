@@ -1,49 +1,15 @@
 import { AxiosResponse, AxiosError } from "axios";
 import axios from "axios";
+import {
+  apiResponse,
+  loginResponse,
+  email,
+  User,
+  existingUser,
+  Owner,
+  Otp,
+} from "@/interfaces/user";
 
-interface apiResponse {
-  message: string;
-}
-interface loginResponse {
-  message: string;
-  token: string;
-  account_type: string;
-  name: string;
-  restaurant_name: string;
-}
-
-interface email {
-  email: string;
-}
-
-type User = {
-  name: string;
-  email: string;
-  password: string;
-  phone_number: string;
-  phone_number_type: "whatsapp" | "sms" | "both";
-  account_type: "customer";
-};
-
-type existingUser = {
-  email: string;
-  password: string;
-};
-
-type Owner = {
-  email: string;
-  password: string;
-  phone_number: string;
-  phone_number_type: "whatsapp" | "sms" | "both";
-  account_type: "restaurant";
-  owners_name: string;
-  restaurant_name: string;
-};
-
-type Otp = {
-  email: string;
-  otp: string;
-};
 const apiUrl = "https://bhuorder.com.ng/api";
 
 export async function createUser(user: User) {
