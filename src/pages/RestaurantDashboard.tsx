@@ -173,6 +173,24 @@ export default function RestaurantDashboardPage() {
     },
   });
 
+  const formatPrice = (price: number | string) => {
+    // Convert to number if it's a string
+    const numericPrice = typeof price === "string" ? parseFloat(price) : price;
+
+    // Check if it's a valid number
+    if (isNaN(numericPrice)) {
+      return "₦0.00";
+    }
+
+    // Format with Nigerian Naira and proper decimal places
+    return new Intl.NumberFormat("en-NG", {
+      style: "currency",
+      currency: "NGN",
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(numericPrice);
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-cbg-dark">
       <Header />
@@ -424,7 +442,7 @@ export default function RestaurantDashboardPage() {
                         {displayedMenuItems.map((item: menuItem) => (
                           <TableRow key={item.id}>
                             <TableCell>{item.name}</TableCell>
-                            <TableCell>{`₦${item.price}`}</TableCell>
+                            <TableCell>{formatPrice(item.price)}</TableCell>
                             <TableCell>{item.category}</TableCell>
                             <TableCell>
                               <Dialog>
