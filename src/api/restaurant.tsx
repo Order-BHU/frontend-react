@@ -38,8 +38,8 @@ export async function getMenuItems(id: string) {
       timeout: 90000,
     })
     .then(function (response: AxiosResponse) {
-      console.log(response.data);
-      return response.data.restaurant_list;
+      console.log("menuItems: ", response.data);
+      return response.data.menu;
     })
     .catch(function (error: AxiosError) {
       console.log(error);

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Header } from "../components/header";
 import { Footer } from "../components/footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -68,12 +68,8 @@ const orders = [
   },
 ];
 
-const { status: categoryStatus, data: categories } = useQuery({
-  queryKey: ["categories"],
-  queryFn: getCategories,
-});
-
 export default function RestaurantDashboardPage() {
+  const [displayedMenuItems, setDisplayedMenuItems] = useState<menuItem[]>([]);
   const username = localStorage.getItem("name")?.slice(0, 2).toUpperCase();
   const restaurant_id = localStorage.getItem("restaurant_id");
   const { toast } = useToast();
@@ -84,6 +80,35 @@ export default function RestaurantDashboardPage() {
     image: null as File | null,
     category_id: 0,
   });
+
+  //APIs
+  const { status: categoryStatus, data: categories } = useQuery({
+    queryKey: ["categories"],
+    queryFn: getCategories,
+  });
+  const { /*status: menuStatus,*/ data: menuItems } = useQuery({
+    queryKey: ["menuItems", restaurant_id],
+    queryFn: () => getMenuItems(restaurant_id!),
+  });
+
+  const setMenuCategory = (menuItem: menuItem) => {
+    const matchingCategory = categories?.find(
+      (category: category) => category.id === menuItem.category_id
+    );
+    return {
+      ...menuItem,
+      category: matchingCategory?.name || "Uncategorized",
+    };
+  };
+
+  useEffect(() => {
+    if (menuItems && categories) {
+      const processedItems = menuItems.map(setMenuCategory);
+      setDisplayedMenuItems(processedItems);
+      console.log("the menu items are: ", displayedMenuItems);
+    }
+  }, [menuItems, categories]);
+
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       setNewMenuItem({ ...newMenuItem, image: e.target.files[0] });
@@ -125,13 +150,6 @@ export default function RestaurantDashboardPage() {
     }));
     // Here you would typically update the order categoryStatus in your backend
   };
-
-  //APIs
-
-  const { /*status: menuStatus,*/ data: menuItems } = useQuery({
-    queryKey: ["menuItems", restaurant_id],
-    queryFn: () => getMenuItems(restaurant_id!),
-  });
 
   const { status: mutateStatus, mutate } = useMutation({
     mutationFn: addMenu,
@@ -398,11 +416,11 @@ export default function RestaurantDashboardPage() {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {menuItems.map((item: menuItem) => (
+                        {displayedMenuItems.map((item: menuItem) => (
                           <TableRow key={item.id}>
                             <TableCell>{item.name}</TableCell>
                             <TableCell>{item.price}</TableCell>
-                            <TableCell>{item.category_id}</TableCell>
+                            <TableCell>{item.category}</TableCell>
                             <TableCell>
                               <Dialog>
                                 <DialogTrigger asChild>
