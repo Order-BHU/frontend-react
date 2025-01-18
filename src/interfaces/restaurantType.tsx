@@ -12,3 +12,8 @@ export interface category {
   id: number;
   name: string;
 }
+
+export interface tempapiMenu {
+  //this type is for the restaurant menu thingy in the backend for me to get the api category to actually show what it's supposed to
+  menus: menuItem[];
+}

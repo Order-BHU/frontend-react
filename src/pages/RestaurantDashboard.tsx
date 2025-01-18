@@ -42,7 +42,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getCategories, getMenuItems } from "@/api/restaurant";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { category, menuItem } from "@/interfaces/restaurantType";
+import { category, menuItem, tempapiMenu } from "@/interfaces/restaurantType";
 // This would typically come from an API or database
 const orders = [
   {
@@ -91,21 +91,26 @@ export default function RestaurantDashboardPage() {
     queryFn: () => getMenuItems(restaurant_id!),
   });
 
-  const setMenuCategory = (menuItem: menuItem) => {
-    const matchingCategory = categories?.find(
-      (category: category) => category.id === menuItem.category_id
-    );
-    return {
-      ...menuItem,
-      category: matchingCategory?.name || "Uncategorized",
-    };
-  };
-
   useEffect(() => {
     if (menuItems && categories) {
-      const processedItems = menuItems.map(setMenuCategory);
+      // Flatten all menus from all categories into a single array
+      const allMenus = menuItems.reduce((acc: any[], category: tempapiMenu) => {
+        return [...acc, ...category.menus];
+      }, []);
+
+      // Process each menu item with its category
+      const processedItems = allMenus.map((menu: menuItem) => {
+        const menuCategory = menuItems.find(
+          (category: category) => category.id === Number(menu.category_id)
+        );
+        return {
+          ...menu,
+          category: menuCategory?.name || "Uncategorized",
+        };
+      });
+
       setDisplayedMenuItems(processedItems);
-      console.log("the menu items are: ", displayedMenuItems);
+      console.log("Processed menu items:", processedItems);
     }
   }, [menuItems, categories]);
 
@@ -419,7 +424,7 @@ export default function RestaurantDashboardPage() {
                         {displayedMenuItems.map((item: menuItem) => (
                           <TableRow key={item.id}>
                             <TableCell>{item.name}</TableCell>
-                            <TableCell>{item.price}</TableCell>
+                            <TableCell>{`₦${item.price}`}</TableCell>
                             <TableCell>{item.category}</TableCell>
                             <TableCell>
                               <Dialog>
