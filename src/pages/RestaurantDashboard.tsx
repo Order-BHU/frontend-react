@@ -110,7 +110,6 @@ export default function RestaurantDashboardPage() {
       });
 
       setDisplayedMenuItems(processedItems);
-      console.log("Processed menu items:", processedItems);
     }
   }, [menuItems, categories]);
 
@@ -129,7 +128,6 @@ export default function RestaurantDashboardPage() {
 
   const handleAddMenuItem = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("New menu item:", newMenuItem);
     mutate({
       name: newMenuItem.name,
       description: newMenuItem.description,
@@ -231,7 +229,6 @@ export default function RestaurantDashboardPage() {
                   <form
                     onSubmit={(e) => {
                       e.preventDefault();
-                      console.log("Restaurant profile updated:", restaurant);
                     }}
                     className="space-y-4"
                   >
@@ -439,7 +436,7 @@ export default function RestaurantDashboardPage() {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {displayedMenuItems.map((item: menuItem) => (
+                        {displayedMenuItems?.map((item: menuItem) => (
                           <TableRow key={item.id}>
                             <TableCell>{item.name}</TableCell>
                             <TableCell>{formatPrice(item.price)}</TableCell>
@@ -463,10 +460,7 @@ export default function RestaurantDashboardPage() {
                                     <form
                                       onSubmit={(e) => {
                                         e.preventDefault();
-                                        console.log(
-                                          "Menu item updated:",
-                                          editingMenuItem
-                                        );
+
                                         setEditingMenuItem(null);
                                       }}
                                       className="space-y-4"
