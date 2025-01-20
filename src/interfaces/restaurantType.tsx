@@ -4,7 +4,7 @@ export interface menuItem {
   category_id: number;
   category: string;
   price: number;
-  image: File | null;
+  image: File | null | string;
   id: number;
 }
 

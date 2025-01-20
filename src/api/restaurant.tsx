@@ -2,7 +2,7 @@ import { AxiosResponse, AxiosError } from "axios";
 import axios from "axios";
 import { menuItem } from "@/interfaces/restaurantType";
 
-const apiUrl = "http://bhuorder.com.ng/api";
+const apiUrl = "https://bhuorder.com.ng/api";
 
 export async function getRestaurants() {
   return axios
@@ -24,7 +24,6 @@ export async function getCategories() {
       timeout: 90000,
     })
     .then(function (response: AxiosResponse) {
-      console.log(response.data.categories);
       return response.data.categories;
     })
     .catch(function (error: AxiosError) {
@@ -38,7 +37,6 @@ export async function getMenuItems(id: string) {
       timeout: 90000,
     })
     .then(function (response: AxiosResponse) {
-      console.log("menuItems: ", response.data);
       return response.data.menu;
     })
     .catch(function (error: AxiosError) {

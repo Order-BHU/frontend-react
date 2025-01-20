@@ -436,7 +436,7 @@ export default function RestaurantDashboardPage() {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {displayedMenuItems?.map((item: menuItem) => (
+                        {displayedMenuItems.map((item: menuItem) => (
                           <TableRow key={item.id}>
                             <TableCell>{item.name}</TableCell>
                             <TableCell>{formatPrice(item.price)}</TableCell>

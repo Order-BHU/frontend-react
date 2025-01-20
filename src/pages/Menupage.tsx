@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Img } from "react-image";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import {
@@ -16,9 +16,12 @@ import { Input } from "@/components/ui/input";
 import { Plus, Minus, ShoppingCart } from "lucide-react";
 import { orbit } from "ldrs";
 import { PageWrapper } from "@/components/pagewrapper";
+import { getMenuItems, getCategories } from "@/api/restaurant";
+import { useQuery } from "@tanstack/react-query";
+import { category, tempapiMenu, menuItem } from "@/interfaces/restaurantType";
 
 // Mock database of restaurant menus
-const restaurantMenus = {
+/*const restaurantMenus = {
   "1": {
     name: "Burger Palace",
     items: [
@@ -189,16 +192,59 @@ const restaurantMenus = {
       },
     ],
   },
-};
+};*/
 
 export default function RestaurantMenuPage() {
   orbit.register();
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
-  const menu = restaurantMenus[id as keyof typeof restaurantMenus];
+  //const navigate = useNavigate();
   const [quantities, setQuantities] = useState<{ [key: string]: number }>({});
   const [totalItems, setTotalItems] = useState(0);
-  const [totalPrice, setTotalPrice] = useState(0);
+  //const [totalPrice, setTotalPrice] = useState(0);
+
+  const [displayedMenuItems, setDisplayedMenuItems] = useState<menuItem[]>([]);
+  const { status: menuStatus, data: menuItems } = useQuery({
+    queryKey: ["menuItems", id],
+    queryFn: () => getMenuItems(id!),
+  });
+
+  const { data: categories } = useQuery({
+    queryKey: ["categories"],
+    queryFn: () => getCategories(),
+  });
+  /*const allMenus = menuItems?.reduce((acc: menuItem[], category: tempapiMenu) => {
+    return [...acc, ...category.menus];
+  }, []);*/
+
+  useEffect(() => {
+    if (menuItems && categories) {
+      // Flatten all menus from all categories into a single array
+      const allMenus = menuItems.reduce(
+        (acc: menuItem[], category: tempapiMenu) => {
+          return [...acc, ...category.menus];
+        },
+        []
+      );
+
+      allMenus.map((menu: menuItem) => {
+        const visible: any = {};
+        visible[menu.category] = true;
+      });
+
+      // Process each menu item with its category
+      const processedItems = allMenus.map((menu: menuItem) => {
+        const menuCategory = menuItems.find(
+          (category: category) => category.id === Number(menu.category_id)
+        );
+        return {
+          ...menu,
+          category: menuCategory?.name || "Uncategorized",
+        } as menuItem;
+      });
+
+      setDisplayedMenuItems(processedItems);
+    }
+  }, [menuItems, categories]);
 
   useEffect(() => {
     const items = Object.values(quantities).reduce(
@@ -206,17 +252,25 @@ export default function RestaurantMenuPage() {
       0
     );
     setTotalItems(items);
+  }, [quantities]);
 
-    const price = menu.items.reduce((sum, item) => {
+  /*useEffect(() => {
+    const items = Object.values(quantities).reduce(
+      (sum, quantity) => sum + quantity,
+      0
+    );
+    setTotalItems(items);
+
+    const price = allMenus.reduce((sum: number, item: menuItem) => {
       return sum + (quantities[item.id] || 0) * item.price;
     }, 0);
     setTotalPrice(price);
-  }, [quantities, menu.items]);
+  }, [quantities, allMenus]);*/
 
-  if (!menu) {
+  /*if (!menu) {
     navigate("/404", { replace: true });
     return null;
-  }
+  }*/
   const handleQuantityChange = (itemId: string, change: number) => {
     setQuantities((prev) => ({
       ...prev,
@@ -224,15 +278,15 @@ export default function RestaurantMenuPage() {
     }));
   };
 
-  const groupedItems = menu.items.reduce((acc, item) => {
+  /*const groupedItems = menu.items?.reduce((acc, item) => {
     if (!acc[item.category]) {
       acc[item.category] = [];
     }
     acc[item.category].push(item);
     return acc;
-  }, {} as { [key: string]: typeof menu.items });
+  }, {} as { [key: string]: typeof menu.items });*/
 
-  const categoryOrder = ["Main Dish", "Protein", "Snacks", "Drinks"];
+  //const categoryOrder = ["Main Dish", "Protein", "Snacks", "Drinks"];
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-cbg-dark">
@@ -241,45 +295,56 @@ export default function RestaurantMenuPage() {
       <PageWrapper className="sticky top-[4rem] z-10 bg-white shadow-md p-4 dark:bg-cbg-darkaccent">
         <div className="container mx-auto flex justify-between items-center">
           <h1 className="text-xl md:text-2xl font-bold text-gray-800 dark:text-cfont-dark">
-            {menu.name} Menu
+            {/*allMenus.name*/} Menu
           </h1>
           <Button
             onClick={() => console.log("Proceed to checkout")}
             className="w-32 sm:w-48 text-xs md:text-md overflow"
           >
             <ShoppingCart className="mr-2 h-4 w-4 text-md hidden sm:inline " />{" "}
-            <span className="hidden sm:inline">Checkout</span>({totalItems}{" "}
-            items - ₦{totalPrice.toLocaleString()})
+            <span className="hidden sm:inline">View Cart</span>({totalItems} )
+            {/*items - ₦{totalPrice.toLocaleString()})*/}
           </Button>
         </div>
       </PageWrapper>
 
       <main className="flex-grow container mx-auto px-4 py-8">
-        {categoryOrder.map(
-          (category) =>
-            groupedItems[category] && (
-              <PageWrapper key={category} className="mb-8">
-                <h2 className="text-2xl font-semibold mb-4 text-gray-700 dark:text-cfont-dark">
-                  {category}
-                </h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                  {groupedItems[category].map((item) => (
+        {menuStatus === "pending" ? (
+          <h2 className="text-2xl font-semibold mb-4 text-gray-700 dark:text-cfont-dark">
+            Getting Meals...
+          </h2>
+        ) : (
+          categories?.map((category: category) => (
+            /*groupedItems[category] && */ <PageWrapper
+              key={category.id}
+              className="mb-8"
+            >
+              <h2 className="text-2xl font-semibold mb-4 text-gray-700 dark:text-cfont-dark">
+                {category.name}
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {displayedMenuItems.map((item: menuItem) =>
+                  Number(item.category_id) === Number(category.id) ? (
                     <Card key={item.id} className="flex flex-col">
                       <div className="relative h-48 w-full">
-                        <Img
-                          className="object-cover"
-                          src={item.image}
-                          alt={item.name}
-                          unloader={
-                            <div className="flex justify-center p-5 h-[200px] items-center">
-                              <l-orbit
-                                size="35"
-                                speed="1.5"
-                                color="#6C757D"
-                              ></l-orbit>
-                            </div>
-                          }
-                        />
+                        {
+                          <Img
+                            className="object-cover"
+                            src={`http://bhuorder.com.ng/api/${String(
+                              item.image!
+                            )}`}
+                            alt={item.name}
+                            unloader={
+                              <div className="flex justify-center p-5 h-[200px] items-center">
+                                <l-orbit
+                                  size="35"
+                                  speed="1.5"
+                                  color="#6C757D"
+                                ></l-orbit>
+                              </div>
+                            }
+                          />
+                        }
                       </div>
                       <CardHeader>
                         <CardTitle className="flex justify-between items-center">
@@ -292,7 +357,7 @@ export default function RestaurantMenuPage() {
                           {item.description}
                         </p>
                         <p className="font-semibold">
-                          ₦{item.price.toLocaleString()}
+                          ₦{Number(item.price).toLocaleString()}
                         </p>
                       </CardContent>
                       <CardFooter className="flex justify-between items-center">
@@ -300,7 +365,9 @@ export default function RestaurantMenuPage() {
                           <Button
                             size="icon"
                             variant="outline"
-                            onClick={() => handleQuantityChange(item.id, -1)}
+                            onClick={() =>
+                              handleQuantityChange(String(item.id), -1)
+                            }
                             disabled={!quantities[item.id]}
                           >
                             <Minus className="h-4 w-4" />
@@ -319,17 +386,22 @@ export default function RestaurantMenuPage() {
                           <Button
                             size="icon"
                             variant="outline"
-                            onClick={() => handleQuantityChange(item.id, 1)}
+                            onClick={() =>
+                              handleQuantityChange(String(item.id), 1)
+                            }
                           >
                             <Plus className="h-4 w-4" />
                           </Button>
                         </div>
                       </CardFooter>
                     </Card>
-                  ))}
-                </div>
-              </PageWrapper>
-            )
+                  ) : (
+                    <></>
+                  )
+                )}
+              </div>
+            </PageWrapper>
+          ))
         )}
       </main>
       <Footer />
