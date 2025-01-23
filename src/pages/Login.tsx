@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Header } from "@/components/header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,7 +12,10 @@ import { Eye, EyeOff } from "lucide-react";
 import UseAuthStore from "@/stores/useAuthStore";
 
 export default function LoginPage() {
+  const location = useLocation();
   const { logIn } = UseAuthStore();
+  const itemId = location.state?.itemId;
+  const restaurantId = location.state?.id;
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -30,13 +33,22 @@ export default function LoginPage() {
       if (data.account_type === "customer") {
         localStorage.setItem("name", data.name);
       }
+
       localStorage.setItem("token", data.token);
       logIn(`${data.account_type}`);
-      navigate(`/${data.account_type}-dashboard/`);
-      toast({
-        title: "success!",
-        description: data.message,
-      });
+      if (itemId) {
+        navigate(`/menu/${restaurantId}`, { state: { itemId } });
+        toast({
+          title: "success!",
+          description: data.message,
+        });
+      } else {
+        navigate(`/${data.account_type}-dashboard/`);
+        toast({
+          title: "success!",
+          description: data.message,
+        });
+      }
     },
     onError: (error) => {
       toast({

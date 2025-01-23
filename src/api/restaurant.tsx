@@ -71,3 +71,82 @@ export async function addMenu(menu: menuItem) {
       throw error.response?.data;
     });
 }
+
+export async function editMenu(menu: menuItem) {
+  const token = localStorage.getItem("token");
+  return axios
+    .post(
+      `${apiUrl}/${menu.id}/add-menu`,
+      menu, // empty body or whatever body your API expects
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+        timeout: 90000,
+      }
+    )
+    .then(function (response: AxiosResponse) {
+      console.log(response.data);
+      return response.data;
+    })
+    .catch(function (error: AxiosError) {
+      if (error.code === "ERR_NETWORK") {
+        throw new Error("Network error: Unable to reach the server.");
+      }
+      console.log(error);
+      throw error.response?.data;
+    });
+}
+
+export async function addToCart(menuid: number) {
+  const token = localStorage.getItem("token");
+  return axios
+    .post(
+      `${apiUrl}/${menuid}/add-to-cart`,
+      menuid, // empty body or whatever body your API expects
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        timeout: 90000,
+      }
+    )
+    .then(function (response: AxiosResponse) {
+      console.log(response.data);
+      return response.data;
+    })
+    .catch(function (error: AxiosError) {
+      if (error.code === "ERR_NETWORK") {
+        throw new Error("Network error: Unable to reach the server.");
+      }
+      console.log(error);
+      throw error.response?.data;
+    });
+}
+
+export async function removeCartItem(menuid: number) {
+  const token = localStorage.getItem("token");
+  return axios
+    .post(
+      `${apiUrl}/${menuid}/add-to-cart`,
+      menuid, // empty body or whatever body your API expects
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        timeout: 90000,
+      }
+    )
+    .then(function (response: AxiosResponse) {
+      console.log(response.data);
+      return response.data;
+    })
+    .catch(function (error: AxiosError) {
+      if (error.code === "ERR_NETWORK") {
+        throw new Error("Network error: Unable to reach the server.");
+      }
+      console.log(error);
+      throw error.response?.data;
+    });
+}

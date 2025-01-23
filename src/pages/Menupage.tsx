@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Img } from "react-image";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import {
@@ -16,9 +16,16 @@ import { Input } from "@/components/ui/input";
 import { Plus, Minus, ShoppingCart } from "lucide-react";
 import { orbit } from "ldrs";
 import { PageWrapper } from "@/components/pagewrapper";
-import { getMenuItems, getCategories } from "@/api/restaurant";
-import { useQuery } from "@tanstack/react-query";
+import {
+  getMenuItems,
+  getCategories,
+  addToCart,
+  //removeCartItem,
+} from "@/api/restaurant";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { category, tempapiMenu, menuItem } from "@/interfaces/restaurantType";
+import { useToast } from "@/hooks/use-toast";
+import useAuthStore from "@/stores/useAuthStore";
 
 // Mock database of restaurant menus
 /*const restaurantMenus = {
@@ -196,7 +203,9 @@ import { category, tempapiMenu, menuItem } from "@/interfaces/restaurantType";
 
 export default function RestaurantMenuPage() {
   orbit.register();
+  const location = useLocation();
   const { id } = useParams<{ id: string }>();
+  const previousId = location.state?.itemId;
   //const navigate = useNavigate();
   const [quantities, setQuantities] = useState<{ [key: string]: number }>({});
   const [totalItems, setTotalItems] = useState(0);
@@ -215,7 +224,7 @@ export default function RestaurantMenuPage() {
   /*const allMenus = menuItems?.reduce((acc: menuItem[], category: tempapiMenu) => {
     return [...acc, ...category.menus];
   }, []);*/
-
+  const navigate = useNavigate();
   useEffect(() => {
     if (menuItems && categories) {
       // Flatten all menus from all categories into a single array
@@ -254,6 +263,12 @@ export default function RestaurantMenuPage() {
     setTotalItems(items);
   }, [quantities]);
 
+  useEffect(() => {
+    if (previousId) {
+      handleAddToCart(previousId, 1);
+    }
+  }, []);
+
   /*useEffect(() => {
     const items = Object.values(quantities).reduce(
       (sum, quantity) => sum + quantity,
@@ -271,11 +286,40 @@ export default function RestaurantMenuPage() {
     navigate("/404", { replace: true });
     return null;
   }*/
-  const handleQuantityChange = (itemId: string, change: number) => {
-    setQuantities((prev) => ({
-      ...prev,
-      [itemId]: Math.max(0, (prev[itemId] || 0) + change),
-    }));
+
+  const { toast } = useToast();
+  const { isLoggedIn } = useAuthStore();
+  // const { status: removeCartStatus, mutate: removeCartMutate } = useMutation({
+  //   mutationFn: removeCartItem,
+  //   onError: (error) => {
+  //     toast({
+  //       title: "Error",
+  //       description: error.message,
+  //       variant: "destructive",
+  //     });
+  //   },
+  // });
+  const { status: cartStatus, mutate } = useMutation({
+    mutationFn: addToCart,
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+  const handleAddToCart = (itemId: string, change: number) => {
+    if (!isLoggedIn) {
+      navigate("/login/", { state: { itemId, id } });
+    }
+    if (cartStatus === "success") {
+      setQuantities((prev) => ({
+        ...prev,
+        [itemId]: Math.max(0, (prev[itemId] || 0) + change),
+      }));
+    }
+    mutate(Number(itemId));
   };
 
   /*const groupedItems = menu.items?.reduce((acc, item) => {
@@ -365,10 +409,10 @@ export default function RestaurantMenuPage() {
                           <Button
                             size="icon"
                             variant="outline"
-                            onClick={() =>
-                              handleQuantityChange(String(item.id), -1)
+                            onClick={() => handleAddToCart(String(item.id), -1)}
+                            disabled={
+                              !quantities[item.id] || cartStatus === "pending"
                             }
-                            disabled={!quantities[item.id]}
                           >
                             <Minus className="h-4 w-4" />
                           </Button>
@@ -386,9 +430,8 @@ export default function RestaurantMenuPage() {
                           <Button
                             size="icon"
                             variant="outline"
-                            onClick={() =>
-                              handleQuantityChange(String(item.id), 1)
-                            }
+                            disabled={cartStatus === "pending"}
+                            onClick={() => handleAddToCart(String(item.id), 1)}
                           >
                             <Plus className="h-4 w-4" />
                           </Button>
