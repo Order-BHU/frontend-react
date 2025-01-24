@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Header } from "../components/header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,6 +11,9 @@ import { useMutation } from "@tanstack/react-query";
 import { Eye, EyeOff } from "lucide-react";
 
 export default function SignUpPage() {
+  const location = useLocation();
+  const restaurantId = location.state?.restaurantId;
+  const itemId = location.state?.itemId;
   const { toast } = useToast();
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
@@ -27,7 +30,9 @@ export default function SignUpPage() {
   const { status, mutate } = useMutation({
     mutationFn: createUser,
     onSuccess: (data) => {
-      navigate("/verify-otp/", { state: { formData } });
+      navigate("/verify-otp/", {
+        state: { formData, ...(itemId && { itemId, restaurantId }) },
+      });
       console.log("Sign-up submitted:", formData);
       toast({
         title: "Sign-up successful!",

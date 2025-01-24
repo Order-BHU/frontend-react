@@ -342,7 +342,7 @@ export default function RestaurantMenuPage() {
             {/*allMenus.name*/} Menu
           </h1>
           <Button
-            onClick={() => console.log("Proceed to checkout")}
+            onClick={() => navigate("/cart/")}
             className="w-32 sm:w-48 text-xs md:text-md overflow"
           >
             <ShoppingCart className="mr-2 h-4 w-4 text-md hidden sm:inline " />{" "}

@@ -172,7 +172,11 @@ export default function LoginPage() {
           </div>
           <p className="mt-4 text-center text-sm text-gray-600">
             Don't have an account?{""}
-            <Link to="/signup" className="text-orange-600 hover:underline">
+            <Link
+              to="/signup"
+              className="text-orange-600 hover:underline"
+              state={itemId ? { itemId, restaurantId } : undefined}
+            >
               Sign up
             </Link>
           </p>

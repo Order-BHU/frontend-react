@@ -23,6 +23,8 @@ export default function VerifyOTPPage() {
   const [isResendDisabled, setIsResendDisabled] = useState(false);
   const location = useLocation();
   const email = location.state?.formData.email;
+  const itemId = location.state?.itemId;
+  const restaurantId = location.state?.restaurantId;
   const source = location.state.source;
   const navigate = useNavigate();
   const [otp, setOtp] = useState("");
@@ -40,7 +42,9 @@ export default function VerifyOTPPage() {
       if (source === "/login") {
         navigate("/");
       } else {
-        navigate("/login");
+        navigate("/login", {
+          state: { ...(itemId && { itemId, restaurantId }) },
+        });
       }
       toast({
         title: "OTP Submitted!",
