@@ -26,6 +26,14 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { category, tempapiMenu, menuItem } from "@/interfaces/restaurantType";
 import { useToast } from "@/hooks/use-toast";
 import useAuthStore from "@/stores/useAuthStore";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+} from "@/components/ui/dialog";
 
 // Mock database of restaurant menus
 /*const restaurantMenus = {
@@ -352,14 +360,26 @@ export default function RestaurantMenuPage() {
           <h1 className="text-xl md:text-2xl font-bold text-gray-800 dark:text-cfont-dark">
             {/*allMenus.name*/} Menu
           </h1>
-          <Button
-            onClick={() => navigate("/cart/")}
-            className="w-32 sm:w-48 text-xs md:text-md overflow"
-          >
-            <ShoppingCart className="mr-2 h-4 w-4 text-md hidden sm:inline " />{" "}
-            <span className="hidden sm:inline">View Cart</span>({totalItems} )
-            {/*items - ₦{totalPrice.toLocaleString()})*/}
-          </Button>
+          <Dialog>
+            <DialogTrigger>
+              <Button className="w-32 sm:w-48 text-xs md:text-md overflow">
+                <ShoppingCart className="mr-2 h-4 w-4 text-md hidden sm:inline " />{" "}
+                <span className="hidden sm:inline">View Cart</span>({totalItems}{" "}
+                ){/*items - ₦{totalPrice.toLocaleString()})*/}
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px] dark:text-cfont-dark">
+              <DialogHeader>
+                <DialogTitle>Your Orders</DialogTitle>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <div className="grid grid-cols-4 items-center gap-4"></div>
+              </div>
+              <DialogFooter>
+                <Button>CheckOut</Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </div>
       </PageWrapper>
 
