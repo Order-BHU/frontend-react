@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { Header } from "@/components/header";
 import { Button } from "@/components/ui/button";
 import { Footer } from "@/components/footer";
+import Typewriter from "@/hooks/typewriter";
 import {
   Utensils,
   Clock,
@@ -25,7 +26,10 @@ export default function LandingPage() {
               Order
             </h1>
             <p className="text-xl mb-8 text-gray-600 dark:text-welcome-dark italic">
-              Where Restaurants meet students; One Delicious Order at a time
+              <Typewriter
+                text=" Where Restaurants meet students; One Delicious Order at a time"
+                delay={30}
+              />
             </p>
             <div className="">
               <Button

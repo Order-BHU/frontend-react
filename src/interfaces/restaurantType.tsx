@@ -18,8 +18,10 @@ export interface tempapiMenu {
   menus: menuItem[];
 }
 export interface singularCartItem {
-  menu_id: number;
-  quantity: number;
+  item_description: string;
+  item_name: string;
+  item_picture: string;
+  quantity: string;
 }
 export interface cartItem {
   items: singularCartItem[];

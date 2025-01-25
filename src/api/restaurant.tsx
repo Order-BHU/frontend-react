@@ -164,7 +164,7 @@ export async function viewCart() {
       }
     )
     .then(function (response: AxiosResponse) {
-      console.log(response.data, " token: ", token);
+      console.log(response.data);
       return response.data;
     })
     .catch(function (error: AxiosError) {

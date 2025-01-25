@@ -34,6 +34,8 @@ import {
   DialogTrigger,
   DialogFooter,
 } from "@/components/ui/dialog";
+import { viewCart } from "@/api/restaurant";
+import { singularCartItem } from "@/interfaces/restaurantType";
 
 // Mock database of restaurant menus
 /*const restaurantMenus = {
@@ -211,12 +213,16 @@ import {
 
 export default function RestaurantMenuPage() {
   orbit.register();
+  const { data: cartItems, status: cartItemStatus } = useQuery({
+    queryFn: viewCart,
+    queryKey: ["cartItems"],
+  });
   const location = useLocation();
   const { id } = useParams<{ id: string }>();
   const previousId = location.state?.itemId;
   //const navigate = useNavigate();
   const [quantities, setQuantities] = useState<{ [key: string]: number }>({});
-  const [totalItems, setTotalItems] = useState(0);
+  const [totalItems, setTotalItems] = useState(cartItems?.cart_items?.length);
   //const [totalPrice, setTotalPrice] = useState(0);
 
   const [displayedMenuItems, setDisplayedMenuItems] = useState<menuItem[]>([]);
@@ -266,7 +272,7 @@ export default function RestaurantMenuPage() {
   useEffect(() => {
     const items = Object.values(quantities).reduce(
       (sum, quantity) => sum + quantity,
-      0
+      cartItems?.cart_items.length
     );
     setTotalItems(items);
   }, [quantities]);
@@ -370,10 +376,43 @@ export default function RestaurantMenuPage() {
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px] dark:text-cfont-dark">
               <DialogHeader>
-                <DialogTitle>Your Orders</DialogTitle>
+                <DialogTitle>My Orders</DialogTitle>
               </DialogHeader>
-              <div className="grid gap-4 py-4">
-                <div className="grid grid-cols-4 items-center gap-4"></div>
+              <div className="overflow-y-scroll max-h-[30rem]">
+                {cartItems?.cart_items.map((item: singularCartItem) => (
+                  <PageWrapper key={item.item_picture}>
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="flex justify-between items-center">
+                          <span>{item.item_name}</span>
+                          {Number(item.quantity) > 1 ? (
+                            <Badge variant="default">{item.quantity}</Badge>
+                          ) : (
+                            <></>
+                          )}
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <p className="text-sm text-gray-500 mb-2">
+                          {item.item_description}
+                        </p>
+                        {/* <ul className="list-disc list-inside mb-2">
+                        {order.items.map((item, index) => (
+                          <li
+                            key={index}
+                            className="text-sm text-gray-700 dark:text-cfont-dark"
+                          >
+                            {/* {item} 
+                          </li>
+                        ))}
+                      </ul>
+                      <p className="font-semibold text-right">
+                        Total: {order.total}
+                      </p> */}
+                      </CardContent>
+                    </Card>
+                  </PageWrapper>
+                ))}
               </div>
               <DialogFooter>
                 <Button>CheckOut</Button>
