@@ -129,7 +129,7 @@ export async function removeCartItem(menuid: number) {
   const token = localStorage.getItem("token");
   return axios
     .post(
-      `${apiUrl}/${menuid}/add-to-cart`,
+      `${apiUrl}/${menuid}/remove-cart-item`,
       menuid, // empty body or whatever body your API expects
       {
         headers: {
@@ -147,6 +147,31 @@ export async function removeCartItem(menuid: number) {
         throw new Error("Network error: Unable to reach the server.");
       }
       console.log(error);
+      throw error.response?.data;
+    });
+}
+
+export async function viewCart() {
+  const token = localStorage.getItem("token");
+  return axios
+    .get(
+      `${apiUrl}/view-cart`, // empty body or whatever body your API expects
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        timeout: 90000,
+      }
+    )
+    .then(function (response: AxiosResponse) {
+      console.log(response.data, " token: ", token);
+      return response.data;
+    })
+    .catch(function (error: AxiosError) {
+      if (error.code === "ERR_NETWORK") {
+        throw new Error("Network error: Unable to reach the server.");
+      }
+      console.log(error, "token: ", token);
       throw error.response?.data;
     });
 }

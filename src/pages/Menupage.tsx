@@ -20,7 +20,7 @@ import {
   getMenuItems,
   getCategories,
   addToCart,
-  //removeCartItem,
+  removeCartItem,
 } from "@/api/restaurant";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { category, tempapiMenu, menuItem } from "@/interfaces/restaurantType";
@@ -289,16 +289,16 @@ export default function RestaurantMenuPage() {
 
   const { toast } = useToast();
   const { isLoggedIn } = useAuthStore();
-  // const { status: removeCartStatus, mutate: removeCartMutate } = useMutation({
-  //   mutationFn: removeCartItem,
-  //   onError: (error) => {
-  //     toast({
-  //       title: "Error",
-  //       description: error.message,
-  //       variant: "destructive",
-  //     });
-  //   },
-  // });
+  const { status: removeCartStatus, mutate: removeCartMutate } = useMutation({
+    mutationFn: removeCartItem,
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
   const { status: cartStatus, mutate } = useMutation({
     mutationFn: addToCart,
     onError: (error) => {
@@ -320,6 +320,17 @@ export default function RestaurantMenuPage() {
       }));
     }
     mutate(Number(itemId));
+  };
+  const handleremoveCartItem = (itemId: string, change: number) => {
+    if (!isLoggedIn) {
+    }
+    if (cartStatus === "success") {
+      setQuantities((prev) => ({
+        ...prev,
+        [itemId]: Math.max(0, (prev[itemId] || 0) + change),
+      }));
+    }
+    removeCartMutate(Number(itemId));
   };
 
   /*const groupedItems = menu.items?.reduce((acc, item) => {
@@ -409,9 +420,12 @@ export default function RestaurantMenuPage() {
                           <Button
                             size="icon"
                             variant="outline"
-                            onClick={() => handleAddToCart(String(item.id), -1)}
+                            onClick={() =>
+                              handleremoveCartItem(String(item.id), -1)
+                            }
                             disabled={
-                              !quantities[item.id] || cartStatus === "pending"
+                              !quantities[item.id] ||
+                              removeCartStatus === "pending"
                             }
                           >
                             <Minus className="h-4 w-4" />

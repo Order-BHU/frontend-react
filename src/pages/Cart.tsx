@@ -3,9 +3,12 @@ import { Footer } from "../components/footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { PageWrapper } from "@/components/pagewrapper";
-
+import { viewCart, getRestaurants } from "@/api/restaurant";
+import { useQuery } from "@tanstack/react-query";
+import { cartItem, singularCartItem } from "@/interfaces/restaurantType";
+import { useState, useEffect } from "react";
 // This would typically come from an API or database
-const orders = [
+const items = [
   {
     id: "1",
     restaurant: "Burger Palace",
@@ -31,8 +34,45 @@ const orders = [
     date: "2023-05-13",
   },
 ];
+interface restaurant {
+  id: number;
+  name: string;
+  cover: string;
+}
+
+interface displayedOrder {
+  items: singularCartItem[];
+  restaurant_id: number;
+  total: number;
+  restaurantName: string;
+}
 
 export default function CartPage() {
+  const [displayedOrders, setDisplayedOrders] = useState([]);
+  const { data: cartItems, status } = useQuery({
+    queryFn: viewCart,
+    queryKey: ["cartItems"],
+  });
+
+  const { data: restaurants, status: restaurantStatus } = useQuery({
+    queryFn: getRestaurants,
+    queryKey: ["restaurants"],
+  });
+
+  useEffect(() => {
+    const cartItemsWithNames = cartItems?.items?.map((item: cartItem) => {
+      const restname = restaurants.find(
+        (rest: restaurant) => rest.id === Number(item.restaurant_id)
+      );
+      return {
+        ...item,
+        restaurantName: restname?.name || "Uncategorized",
+      };
+    });
+    setDisplayedOrders(cartItemsWithNames);
+    console.log("le orders: ", displayedOrders);
+  }, [cartItems]);
+
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-cbg-dark">
       <Header />
@@ -41,45 +81,51 @@ export default function CartPage() {
           My Orders
         </h1>
         <div className="space-y-4">
-          {orders.map((order) => (
-            <PageWrapper key={order.id}>
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex justify-between items-center">
-                    <span>{order.restaurant}</span>
-                    <Badge
+          {status === "pending" ? (
+            <h3>Loading...</h3>
+          ) : (
+            <div>
+              {displayedOrders?.map((order: displayedOrder) => (
+                <PageWrapper key={order.restaurant_id}>
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex justify-between items-center">
+                        <span>{order.restaurantName}</span>
+                        {/* <Badge
                       variant={
-                        order.status === "Delivered" ? "secondary" : "default"
+                        item.status === "Delivered" ? "secondary" : "default"
                       }
                     >
-                      {order.status}
-                    </Badge>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-gray-500 mb-2">
-                    Order ID: {order.id}
-                  </p>
-                  <p className="text-sm text-gray-500 mb-2">
-                    Date: {order.date}
-                  </p>
-                  <ul className="list-disc list-inside mb-2">
-                    {order.items.map((item, index) => (
-                      <li
-                        key={index}
-                        className="text-sm text-gray-700 dark:text-cfont-dark"
-                      >
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
-                  <p className="font-semibold text-right">
-                    Total: {order.total}
-                  </p>
-                </CardContent>
-              </Card>
-            </PageWrapper>
-          ))}
+                      {item.status}
+                    </Badge> */}
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-sm text-gray-500 mb-2">
+                        item ID: {order.restaurant_id}
+                      </p>
+                      {/* <p className="text-sm text-gray-500 mb-2">
+                    Date: {item.date}
+                  </p> */}
+                      <ul className="list-disc list-inside mb-2">
+                        {order.items.map((item, index) => (
+                          <li
+                            key={index}
+                            className="text-sm text-gray-700 dark:text-cfont-dark"
+                          >
+                            {/* {item} */}
+                          </li>
+                        ))}
+                      </ul>
+                      <p className="font-semibold text-right">
+                        Total: {order.total}
+                      </p>
+                    </CardContent>
+                  </Card>
+                </PageWrapper>
+              ))}
+            </div>
+          )}
         </div>
       </main>
       <Footer />

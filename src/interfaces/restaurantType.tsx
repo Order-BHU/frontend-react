@@ -17,3 +17,12 @@ export interface tempapiMenu {
   //this type is for the restaurant menu thingy in the backend for me to get the api category to actually show what it's supposed to
   menus: menuItem[];
 }
+export interface singularCartItem {
+  menu_id: number;
+  quantity: number;
+}
+export interface cartItem {
+  items: singularCartItem[];
+  restaurant_id: number;
+  total: number;
+}
