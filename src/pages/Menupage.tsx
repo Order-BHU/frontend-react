@@ -222,7 +222,7 @@ export default function RestaurantMenuPage() {
   const previousId = location.state?.itemId;
   //const navigate = useNavigate();
   const [quantities, setQuantities] = useState<{ [key: string]: number }>({});
-  const [totalItems, setTotalItems] = useState(cartItems?.cart_items?.length);
+  const [totalItems, setTotalItems] = useState(0);
   //const [totalPrice, setTotalPrice] = useState(0);
 
   const [displayedMenuItems, setDisplayedMenuItems] = useState<menuItem[]>([]);
@@ -270,16 +270,18 @@ export default function RestaurantMenuPage() {
   }, [menuItems, categories]);
 
   useEffect(() => {
-    const items = Object.values(quantities).reduce(
-      (sum, quantity) => sum + quantity,
-      cartItems?.cart_items.length
+    //This function will set the total items for the cart. It's just for viewing purposes so the cart icon also has the total number of items next to it
+    const items = cartItems?.cart_items.reduce(
+      (acc: number, quantity: singularCartItem) =>
+        acc + Number(quantity.quantity),
+      0
     );
     setTotalItems(items);
-  }, [quantities]);
+  }, []);
 
   useEffect(() => {
     if (previousId) {
-      handleAddToCart(previousId, 1);
+      handleAddToCart(previousId);
     }
   }, []);
 
@@ -323,26 +325,14 @@ export default function RestaurantMenuPage() {
       });
     },
   });
-  const handleAddToCart = (itemId: string, change: number) => {
+  const handleAddToCart = (itemId: string) => {
     if (!isLoggedIn) {
       navigate("/login/", { state: { itemId, id } });
     }
-    if (cartStatus === "success") {
-      setQuantities((prev) => ({
-        ...prev,
-        [itemId]: Math.max(0, (prev[itemId] || 0) + change),
-      }));
-    }
     mutate(Number(itemId));
   };
-  const handleremoveCartItem = (itemId: string, change: number) => {
+  const handleremoveCartItem = (itemId: string) => {
     if (!isLoggedIn) {
-    }
-    if (cartStatus === "success") {
-      setQuantities((prev) => ({
-        ...prev,
-        [itemId]: Math.max(0, (prev[itemId] || 0) + change),
-      }));
     }
     removeCartMutate(Number(itemId));
   };
@@ -480,18 +470,25 @@ export default function RestaurantMenuPage() {
                             size="icon"
                             variant="outline"
                             onClick={() =>
-                              handleremoveCartItem(String(item.id), -1)
+                              handleremoveCartItem(String(item.id))
                             }
                             disabled={
-                              !quantities[item.id] ||
-                              removeCartStatus === "pending"
+                              cartItems?.cart_items.find(
+                                (cartitem: singularCartItem) =>
+                                  cartitem.item_name === item.name
+                              )?.quantity < 1
                             }
                           >
                             <Minus className="h-4 w-4" />
                           </Button>
                           <Input
                             type="number"
-                            value={quantities[item.id] || 0}
+                            value={
+                              cartItems?.cart_items.find(
+                                (cartitem: singularCartItem) =>
+                                  cartitem.item_name === item.name
+                              )?.quantity || 0
+                            }
                             onChange={(e) =>
                               setQuantities((prev) => ({
                                 ...prev,
@@ -503,8 +500,7 @@ export default function RestaurantMenuPage() {
                           <Button
                             size="icon"
                             variant="outline"
-                            disabled={cartStatus === "pending"}
-                            onClick={() => handleAddToCart(String(item.id), 1)}
+                            onClick={() => handleAddToCart(String(item.id))}
                           >
                             <Plus className="h-4 w-4" />
                           </Button>
