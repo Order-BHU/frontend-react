@@ -6,7 +6,6 @@ import RestaurantsPage from "./pages/Restaurants";
 import ContactPage from "./pages/Contact";
 import LoginPage from "./pages/Login";
 import SignUpPage from "./pages/Signup";
-import CartPage from "./pages/Cart";
 import RiderDashboardPage from "./pages/RiderDashboard";
 import RestaurantDashboardPage from "./pages/RestaurantDashboard";
 import UserDashboardPage from "./pages/UserDashboard";
@@ -35,7 +34,6 @@ function App() {
               <Route path="/contact" element={<ContactPage />}></Route>
               <Route path="/login" element={<LoginPage />}></Route>
               <Route path="/signup" element={<SignUpPage />}></Route>
-              <Route path="/cart" element={<CartPage />}></Route>
               <Route path="/menu/:id" element={<RestaurantMenuPage />}></Route>
               <Route path="/verify-otp" element={<VerifyOTPPage />}></Route>
               <Route

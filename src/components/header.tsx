@@ -92,12 +92,7 @@ export function Header() {
           >
             Restaurants
           </Link>
-          <Link
-            to="/cart"
-            className="text-sm dark:text-cfont-dark font-medium text-gray-600 hover:text-stone-900 dark:hover:text-stone-50"
-          >
-            Cart
-          </Link>
+
           <Link
             to="/contact"
             className="text-sm dark:text-cfont-dark font-medium text-gray-600 hover:text-stone-900 dark:hover:text-stone-50"

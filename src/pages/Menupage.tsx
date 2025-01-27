@@ -37,183 +37,9 @@ import {
 import { viewCart } from "@/api/restaurant";
 import { singularCartItem } from "@/interfaces/restaurantType";
 
-// Mock database of restaurant menus
-/*const restaurantMenus = {
-  "1": {
-    name: "Burger Palace",
-    items: [
-      {
-        id: "1",
-        name: "Classic Burger",
-        description: "Beef patty with lettuce, tomato, and cheese",
-        price: 2500,
-        category: "Main Dish",
-        image: "/placeholder.svg?height=200&width=300",
-      },
-      {
-        id: "2",
-        name: "Chicken Wings",
-        description: "Spicy chicken wings with blue cheese dip",
-        price: 1800,
-        category: "Snacks",
-        image: "/placeholder.svg?height=200&width=300",
-      },
-      {
-        id: "3",
-        name: "Caesar Salad",
-        description: "Romaine lettuce with Caesar dressing and croutons",
-        price: 1500,
-        category: "Main Dish",
-        image: "/placeholder.svg?height=200&width=300",
-      },
-      {
-        id: "4",
-        name: "Fries",
-        description: "Crispy golden fries",
-        price: 800,
-        category: "Snacks",
-        image: "/placeholder.svg?height=200&width=300",
-      },
-      {
-        id: "5",
-        name: "Chocolate Milkshake",
-        description: "Rich and creamy chocolate milkshake",
-        price: 1200,
-        category: "Drinks",
-        image: "/placeholder.svg?height=200&width=300",
-      },
-      {
-        id: "6",
-        name: "Grilled Chicken Breast",
-        description: "Seasoned and grilled chicken breast",
-        price: 2200,
-        category: "Protein",
-        image: "/placeholder.svg?height=200&width=300",
-      },
-      {
-        id: "7",
-        name: "Veggie Burger",
-        description: "Plant-based patty with fresh vegetables",
-        price: 2300,
-        category: "Main Dish",
-        image: "/placeholder.svg?height=200&width=300",
-      },
-      {
-        id: "8",
-        name: "Onion Rings",
-        description: "Crispy battered onion rings",
-        price: 1000,
-        category: "Snacks",
-        image: "/placeholder.svg?height=200&width=300",
-      },
-      {
-        id: "9",
-        name: "Lemonade",
-        description: "Freshly squeezed lemonade",
-        price: 800,
-        category: "Drinks",
-        image: "/placeholder.svg?height=200&width=300",
-      },
-      {
-        id: "10",
-        name: "Grilled Salmon",
-        description: "Seasoned grilled salmon fillet",
-        price: 3500,
-        category: "Protein",
-        image: "/placeholder.svg?height=200&width=300",
-      },
-    ],
-  },
-  "2": {
-    name: "Pizza Heaven",
-    items: [
-      {
-        id: "1",
-        name: "Margherita Pizza",
-        description: "Classic pizza with tomato sauce, mozzarella, and basil",
-        price: 3500,
-        category: "Main Dish",
-        image: "/placeholder.svg?height=200&width=300",
-      },
-      {
-        id: "2",
-        name: "Pepperoni Pizza",
-        description: "Pizza topped with pepperoni and cheese",
-        price: 4000,
-        category: "Main Dish",
-        image: "/placeholder.svg?height=200&width=300",
-      },
-      {
-        id: "3",
-        name: "Garlic Bread",
-        description: "Toasted bread with garlic butter",
-        price: 1000,
-        category: "Snacks",
-        image: "/placeholder.svg?height=200&width=300",
-      },
-      {
-        id: "4",
-        name: "Greek Salad",
-        description: "Fresh salad with feta cheese and olives",
-        price: 1800,
-        category: "Main Dish",
-        image: "/placeholder.svg?height=200&width=300",
-      },
-      {
-        id: "5",
-        name: "Tiramisu",
-        description: "Classic Italian coffee-flavored dessert",
-        price: 1500,
-        category: "Snacks",
-        image: "/placeholder.svg?height=200&width=300",
-      },
-      {
-        id: "6",
-        name: "Chicken Wings",
-        description: "Spicy chicken wings with blue cheese dip",
-        price: 2200,
-        category: "Protein",
-        image: "/placeholder.svg?height=200&width=300",
-      },
-      {
-        id: "7",
-        name: "Soda",
-        description: "Assorted soft drinks",
-        price: 600,
-        category: "Drinks",
-        image: "/placeholder.svg?height=200&width=300",
-      },
-      {
-        id: "8",
-        name: "Iced Tea",
-        description: "Freshly brewed iced tea",
-        price: 700,
-        category: "Drinks",
-        image: "/placeholder.svg?height=200&width=300",
-      },
-      {
-        id: "9",
-        name: "Meatballs",
-        description: "Italian-style meatballs in tomato sauce",
-        price: 2500,
-        category: "Protein",
-        image: "/placeholder.svg?height=200&width=300",
-      },
-      {
-        id: "10",
-        name: "Caprese Salad",
-        description: "Fresh mozzarella, tomatoes, and basil",
-        price: 2000,
-        category: "Main Dish",
-        image: "/placeholder.svg?height=200&width=300",
-      },
-    ],
-  },
-};*/
-
 export default function RestaurantMenuPage() {
   orbit.register();
-  const { data: cartItems, status: cartItemStatus } = useQuery({
+  const { data: cartItems, refetch } = useQuery({
     queryFn: viewCart,
     queryKey: ["cartItems"],
   });
@@ -221,9 +47,7 @@ export default function RestaurantMenuPage() {
   const { id } = useParams<{ id: string }>();
   const previousId = location.state?.itemId;
   //const navigate = useNavigate();
-  const [quantities, setQuantities] = useState<{ [key: string]: number }>({});
   const [totalItems, setTotalItems] = useState(0);
-  //const [totalPrice, setTotalPrice] = useState(0);
 
   const [displayedMenuItems, setDisplayedMenuItems] = useState<menuItem[]>([]);
   const { status: menuStatus, data: menuItems } = useQuery({
@@ -235,9 +59,7 @@ export default function RestaurantMenuPage() {
     queryKey: ["categories"],
     queryFn: () => getCategories(),
   });
-  /*const allMenus = menuItems?.reduce((acc: menuItem[], category: tempapiMenu) => {
-    return [...acc, ...category.menus];
-  }, []);*/
+
   const navigate = useNavigate();
   useEffect(() => {
     if (menuItems && categories) {
@@ -277,36 +99,26 @@ export default function RestaurantMenuPage() {
       0
     );
     setTotalItems(items);
-  }, []);
+  }, [cartItems]);
 
   useEffect(() => {
+    // This function handles a situation where the user tried to add to cart before logging in. It gets the Id of what they tried to add(which was passed all the way to whatever page they're coming from) and adds it to the cart
     if (previousId) {
       handleAddToCart(previousId);
     }
   }, []);
 
-  /*useEffect(() => {
-    const items = Object.values(quantities).reduce(
-      (sum, quantity) => sum + quantity,
-      0
-    );
-    setTotalItems(items);
-
-    const price = allMenus.reduce((sum: number, item: menuItem) => {
-      return sum + (quantities[item.id] || 0) * item.price;
-    }, 0);
-    setTotalPrice(price);
-  }, [quantities, allMenus]);*/
-
-  /*if (!menu) {
-    navigate("/404", { replace: true });
-    return null;
-  }*/
-
   const { toast } = useToast();
   const { isLoggedIn } = useAuthStore();
-  const { status: removeCartStatus, mutate: removeCartMutate } = useMutation({
+  const { mutate: removeCartMutate } = useMutation({
     mutationFn: removeCartItem,
+    onSuccess: (data) => {
+      toast({
+        title: "Success",
+        description: data.message,
+      });
+      refetch();
+    },
     onError: (error) => {
       toast({
         title: "Error",
@@ -315,8 +127,15 @@ export default function RestaurantMenuPage() {
       });
     },
   });
-  const { status: cartStatus, mutate } = useMutation({
+  const { mutate } = useMutation({
     mutationFn: addToCart,
+    onSuccess: (data) => {
+      toast({
+        title: "Success",
+        description: data.message,
+      });
+      refetch();
+    },
     onError: (error) => {
       toast({
         title: "Error",
@@ -330,22 +149,15 @@ export default function RestaurantMenuPage() {
       navigate("/login/", { state: { itemId, id } });
     }
     mutate(Number(itemId));
+    console.log(itemId);
+    refetch();
   };
   const handleremoveCartItem = (itemId: string) => {
     if (!isLoggedIn) {
     }
     removeCartMutate(Number(itemId));
+    refetch();
   };
-
-  /*const groupedItems = menu.items?.reduce((acc, item) => {
-    if (!acc[item.category]) {
-      acc[item.category] = [];
-    }
-    acc[item.category].push(item);
-    return acc;
-  }, {} as { [key: string]: typeof menu.items });*/
-
-  //const categoryOrder = ["Main Dish", "Protein", "Snacks", "Drinks"];
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-cbg-dark">
@@ -360,7 +172,7 @@ export default function RestaurantMenuPage() {
             <DialogTrigger>
               <Button className="w-32 sm:w-48 text-xs md:text-md overflow">
                 <ShoppingCart className="mr-2 h-4 w-4 text-md hidden sm:inline " />{" "}
-                <span className="hidden sm:inline">View Cart</span>({totalItems}{" "}
+                <span className="hidden sm:inline">View Cart</span>({totalItems}
                 ){/*items - ₦{totalPrice.toLocaleString()})*/}
               </Button>
             </DialogTrigger>
@@ -368,41 +180,33 @@ export default function RestaurantMenuPage() {
               <DialogHeader>
                 <DialogTitle>My Orders</DialogTitle>
               </DialogHeader>
-              <div className="overflow-y-scroll max-h-[30rem]">
-                {cartItems?.cart_items.map((item: singularCartItem) => (
-                  <PageWrapper key={item.item_picture}>
-                    <Card>
-                      <CardHeader>
-                        <CardTitle className="flex justify-between items-center">
-                          <span>{item.item_name}</span>
-                          {Number(item.quantity) > 1 ? (
-                            <Badge variant="default">{item.quantity}</Badge>
-                          ) : (
-                            <></>
-                          )}
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-sm text-gray-500 mb-2">
-                          {item.item_description}
-                        </p>
-                        {/* <ul className="list-disc list-inside mb-2">
-                        {order.items.map((item, index) => (
+              <div>
+                <PageWrapper>
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex justify-between items-center">
+                        <span>Orders</span>
+                        {/* {Number(item.quantity) > 1 ? (
+                          <Badge variant="default">{item.quantity}</Badge>
+                        ) : (
+                          <></>
+                        )} */}
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <ul>
+                        {cartItems?.cart_items.map((item: singularCartItem) => (
                           <li
-                            key={index}
-                            className="text-sm text-gray-700 dark:text-cfont-dark"
+                            className="text-sm text-gray-500 mb-2"
+                            key={item.item_picture}
                           >
-                            {/* {item} 
+                            {item.item_name} ({`x${item.quantity}`})
                           </li>
                         ))}
                       </ul>
-                      <p className="font-semibold text-right">
-                        Total: {order.total}
-                      </p> */}
-                      </CardContent>
-                    </Card>
-                  </PageWrapper>
-                ))}
+                    </CardContent>
+                  </Card>
+                </PageWrapper>
               </div>
               <DialogFooter>
                 <Button>CheckOut</Button>
@@ -489,12 +293,7 @@ export default function RestaurantMenuPage() {
                                   cartitem.item_name === item.name
                               )?.quantity || 0
                             }
-                            onChange={(e) =>
-                              setQuantities((prev) => ({
-                                ...prev,
-                                [item.id]: parseInt(e.target.value) || 0,
-                              }))
-                            }
+                            onChange={(e) => e.preventDefault()}
                             className="w-16 text-center"
                           />
                           <Button
