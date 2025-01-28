@@ -114,6 +114,7 @@ export async function addToCart(menuid: number) {
     )
     .then(function (response: AxiosResponse) {
       console.log(response.data);
+      console.log(token);
       return response.data;
     })
     .catch(function (error: AxiosError) {

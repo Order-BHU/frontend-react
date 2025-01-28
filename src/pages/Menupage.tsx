@@ -72,6 +72,7 @@ export default function RestaurantMenuPage() {
 
   const navigate = useNavigate();
   useEffect(() => {
+    console.log(totalPrice);
     if (menuItems && categories) {
       // Flatten all menus from all categories into a single array
       const allMenus = menuItems.reduce(
@@ -188,6 +189,7 @@ export default function RestaurantMenuPage() {
   });
 
   const handleAddToCart = (itemId: string, price: number) => {
+    console.log("prices: ", totalPrice);
     if (!isLoggedIn) {
       navigate("/login/", { state: { itemId, id } });
       return;
@@ -210,7 +212,12 @@ export default function RestaurantMenuPage() {
 
       return newItems;
     });
-    setTotalPrice((prevPrice) => prevPrice + price);
+    setTotalPrice((prevPrice) => {
+      const currentPrice = Number(prevPrice); // Force convert to number. Somewhere along the line, it adds them as strings and i can't find where so i just fell back to this
+      const addPrice = Number(price); // Force convert to number
+      return currentPrice + addPrice;
+    });
+    console.log(totalPrice);
 
     // Move these after the state update
     Promise.resolve().then(() => {
