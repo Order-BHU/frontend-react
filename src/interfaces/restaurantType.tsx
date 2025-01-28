@@ -22,6 +22,7 @@ export interface singularCartItem {
   item_name: string;
   item_picture: string;
   quantity: string;
+  menu_id: number;
 }
 export interface cartItem {
   items: singularCartItem[];

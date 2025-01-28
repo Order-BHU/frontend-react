@@ -118,8 +118,14 @@ export default function RestaurantMenuPage() {
         restaurantID: 0,
       })
     );
+    const transformedItems: { menu_id: number; quantity: number }[] =
+      cartItems?.cart_items.map((item: singularCartItem) => ({
+        menu_id: item.menu_id,
+        quantity: Number(item.quantity),
+      }));
 
     setCartItems(modifiedItems);
+    setCheckoutItems(transformedItems); //so that we can get the user's checkout items so they can continue from when they left off in selecting in cart if they refresh the page or something.
   }, [cartItems]);
 
   useEffect(() => {
@@ -217,7 +223,7 @@ export default function RestaurantMenuPage() {
       const addPrice = Number(price); // Force convert to number
       return currentPrice + addPrice;
     });
-    console.log(totalPrice);
+    console.log("checkout items", checkoutItems);
 
     // Move these after the state update
     Promise.resolve().then(() => {
@@ -385,9 +391,11 @@ export default function RestaurantMenuPage() {
                             disabled={
                               //I know I'm not using the state here, but crunch mode. Can't be bothered to fix the error I'm getting when i try to change it right now
                               Number(
-                                cartItemArray?.find(
-                                  (cartitem: singularCartItem) =>
-                                    cartitem.item_name === item.name
+                                checkoutItems?.find(
+                                  (cItem: {
+                                    menu_id: number;
+                                    quantity: number;
+                                  }) => cItem.menu_id === item.id
                                 )?.quantity
                               ) < 1
                             }
