@@ -21,6 +21,7 @@ import {
   getCategories,
   addToCart,
   removeCartItem,
+  checkout,
 } from "@/api/restaurant";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { category, tempapiMenu, menuItem } from "@/interfaces/restaurantType";
@@ -37,6 +38,11 @@ import {
 import { viewCart } from "@/api/restaurant";
 import { singularCartItem } from "@/interfaces/restaurantType";
 
+interface CartItem extends singularCartItem {
+  menuID: string;
+  restaurantID: string;
+}
+
 export default function RestaurantMenuPage() {
   orbit.register();
   const { data: cartItems, refetch } = useQuery({
@@ -44,12 +50,16 @@ export default function RestaurantMenuPage() {
     queryKey: ["cartItems"],
   });
   const location = useLocation();
-  const { id } = useParams<{ id: string }>();
-  const previousId = location.state?.itemId;
+  const { id } = useParams<{ id: string }>(); //restaurant id container
+  var previousId = location.state?.itemId; //container for the id of item user tried to access before logging in
   //const navigate = useNavigate();
   const [totalItems, setTotalItems] = useState(0);
-
   const [displayedMenuItems, setDisplayedMenuItems] = useState<menuItem[]>([]);
+  const [cartItemArray, setCartItems] = useState<CartItem[]>([]); // this state is for the cartItems so we don't manipulate them directly. We'll use it to update quantity and whatnot
+  const [totalPrice, setTotalPrice] = useState(0); //this is here so we can pass the price during checkout
+  const [checkoutItems, setCheckoutItems] = useState<
+    { menu_id: number; quantity: number }[]
+  >([]); //every time a menu item gets added or removed(hitting the plus button) we'll set the state here so we can pass it to checkout route
   const { status: menuStatus, data: menuItems } = useQuery({
     queryKey: ["menuItems", id],
     queryFn: () => getMenuItems(id!),
@@ -99,12 +109,26 @@ export default function RestaurantMenuPage() {
       0
     );
     setTotalItems(items);
+    //function below makes it so we don't have to touch cart Items and gives them menu and restaurant IDs so we can pass those to checkout
+    const modifiedItems = cartItems?.cart_items.map(
+      (item: singularCartItem) => ({
+        ...item,
+        menuID: 0,
+        restaurantID: 0,
+      })
+    );
+
+    setCartItems(modifiedItems);
   }, [cartItems]);
 
   useEffect(() => {
     // This function handles a situation where the user tried to add to cart before logging in. It gets the Id of what they tried to add(which was passed all the way to whatever page they're coming from) and adds it to the cart
     if (previousId) {
-      handleAddToCart(previousId);
+      handleAddToCart(
+        previousId,
+        menuItems?.find((item: menuItem) => item.id === previousId)
+      );
+      previousId = undefined; //adding this so the code doesn't add previous id every time we refresh the page
     }
   }, []);
 
@@ -144,19 +168,89 @@ export default function RestaurantMenuPage() {
       });
     },
   });
-  const handleAddToCart = (itemId: string) => {
+
+  const { mutate: checkoutMutate, status: checkoutStatus } = useMutation({
+    mutationFn: checkout,
+    onSuccess: (data) => {
+      toast({
+        title: "Success",
+        description: data.message,
+      });
+      navigate("/user-dashboard/");
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleAddToCart = (itemId: string, price: number) => {
     if (!isLoggedIn) {
       navigate("/login/", { state: { itemId, id } });
+      return;
     }
-    mutate(Number(itemId));
-    console.log(itemId);
-    refetch();
+    //all this below sets the quantity for chekout items so we can... have the quantity
+
+    setCheckoutItems((prevItems) => {
+      const existingItemIndex = prevItems.findIndex(
+        (item) => item.menu_id === Number(itemId)
+      );
+
+      const newItems =
+        existingItemIndex !== -1
+          ? prevItems.map((item, index) =>
+              index === existingItemIndex
+                ? { ...item, quantity: item.quantity + 1 }
+                : item
+            )
+          : [...prevItems, { menu_id: Number(itemId), quantity: 1 }];
+
+      return newItems;
+    });
+    setTotalPrice((prevPrice) => prevPrice + price);
+
+    // Move these after the state update
+    Promise.resolve().then(() => {
+      mutate(Number(itemId));
+      refetch();
+    });
   };
-  const handleremoveCartItem = (itemId: string) => {
+  const handleremoveCartItem = (itemId: string, price: number) => {
     if (!isLoggedIn) {
+      return;
     }
+
+    setCheckoutItems((prevItems) => {
+      const existingItemIndex = prevItems.findIndex(
+        (item) => item.menu_id === Number(itemId)
+      );
+
+      if (
+        existingItemIndex !== -1 &&
+        prevItems[existingItemIndex].quantity > 0
+      ) {
+        return prevItems.map((item, index) =>
+          index === existingItemIndex
+            ? { ...item, quantity: item.quantity - 1 }
+            : item
+        );
+      }
+      return prevItems;
+    });
+    setTotalPrice((prevPrice) => prevPrice - price);
+
     removeCartMutate(Number(itemId));
     refetch();
+  };
+  const handleCheckout = (id: number) => {
+    checkoutMutate({
+      items: checkoutItems,
+      restaurant_id: id,
+      total: totalPrice,
+    });
   };
 
   return (
@@ -178,14 +272,14 @@ export default function RestaurantMenuPage() {
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px] dark:text-cfont-dark">
               <DialogHeader>
-                <DialogTitle>My Orders</DialogTitle>
+                <DialogTitle>My Cart</DialogTitle>
               </DialogHeader>
               <div>
                 <PageWrapper>
                   <Card>
                     <CardHeader>
                       <CardTitle className="flex justify-between items-center">
-                        <span>Orders</span>
+                        <span>Cart Items</span>
                         {/* {Number(item.quantity) > 1 ? (
                           <Badge variant="default">{item.quantity}</Badge>
                         ) : (
@@ -195,7 +289,7 @@ export default function RestaurantMenuPage() {
                     </CardHeader>
                     <CardContent>
                       <ul>
-                        {cartItems?.cart_items.map((item: singularCartItem) => (
+                        {cartItemArray?.map((item: CartItem) => (
                           <li
                             className="text-sm text-gray-500 mb-2"
                             key={item.item_picture}
@@ -209,7 +303,12 @@ export default function RestaurantMenuPage() {
                 </PageWrapper>
               </div>
               <DialogFooter>
-                <Button>CheckOut</Button>
+                <Button
+                  disabled={checkoutStatus === "pending"}
+                  onClick={() => handleCheckout(Number(id))}
+                >
+                  CheckOut
+                </Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>
@@ -274,13 +373,16 @@ export default function RestaurantMenuPage() {
                             size="icon"
                             variant="outline"
                             onClick={() =>
-                              handleremoveCartItem(String(item.id))
+                              handleremoveCartItem(String(item.id), item.price)
                             }
                             disabled={
-                              cartItems?.cart_items.find(
-                                (cartitem: singularCartItem) =>
-                                  cartitem.item_name === item.name
-                              )?.quantity < 1
+                              //I know I'm not using the state here, but crunch mode. Can't be bothered to fix the error I'm getting when i try to change it right now
+                              Number(
+                                cartItemArray?.find(
+                                  (cartitem: singularCartItem) =>
+                                    cartitem.item_name === item.name
+                                )?.quantity
+                              ) < 1
                             }
                           >
                             <Minus className="h-4 w-4" />
@@ -288,8 +390,8 @@ export default function RestaurantMenuPage() {
                           <Input
                             type="number"
                             value={
-                              cartItems?.cart_items.find(
-                                (cartitem: singularCartItem) =>
+                              cartItemArray?.find(
+                                (cartitem: CartItem) =>
                                   cartitem.item_name === item.name
                               )?.quantity || 0
                             }
@@ -299,7 +401,9 @@ export default function RestaurantMenuPage() {
                           <Button
                             size="icon"
                             variant="outline"
-                            onClick={() => handleAddToCart(String(item.id))}
+                            onClick={() =>
+                              handleAddToCart(String(item.id), item.price)
+                            }
                           >
                             <Plus className="h-4 w-4" />
                           </Button>

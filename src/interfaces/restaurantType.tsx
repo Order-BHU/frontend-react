@@ -28,3 +28,9 @@ export interface cartItem {
   restaurant_id: number;
   total: number;
 }
+
+export interface checkoutType {
+  items: { menu_id: number; quantity: number }[];
+  restaurant_id: number;
+  total: number;
+}
