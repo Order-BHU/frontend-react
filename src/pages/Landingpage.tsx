@@ -25,10 +25,10 @@ export default function LandingPage() {
             <h1 className="text-5xl font-bold mb-6 text-gray-800 dark:text-welcome-dark">
               Order
             </h1>
-            <p className="text-xl mb-8 text-gray-600 dark:text-welcome-dark italic">
+            <p className="text-[2rem] mb-8 text-gray-600 dark:text-welcome-dark">
               <Typewriter
-                text=" Where Restaurants meet students; One Delicious Order at a time"
-                delay={30}
+                text=" Where Restaurants meet students, One Delicious Order at a time"
+                delay={45}
               />
             </p>
             <div className="">

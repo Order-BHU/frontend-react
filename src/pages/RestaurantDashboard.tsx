@@ -1,5 +1,3 @@
-"use client";
-
 import { useState, useEffect } from "react";
 import { Header } from "../components/header";
 import { Footer } from "../components/footer";
@@ -42,6 +40,7 @@ import {
   getMenuItems,
   addMenu,
   editMenu,
+  myOrders,
 } from "@/api/restaurant";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
@@ -86,6 +85,11 @@ export default function RestaurantDashboardPage() {
   });
 
   //APIs
+  const ordertype: "pending" | "history" | "accepted" = "pending";
+  const { status: orderStatus, data: myorders } = useQuery({
+    queryKey: ["orders", ordertype],
+    queryFn: () => myOrders(ordertype),
+  });
   const { status: categoryStatus, data: categories } = useQuery({
     queryKey: ["categories"],
     queryFn: getCategories,
@@ -96,7 +100,8 @@ export default function RestaurantDashboardPage() {
   });
 
   useEffect(() => {
-    if (menuItems && categories) {
+    if (menuItems && categories && myorders) {
+      console.log("my orders: ", myorders);
       // Flatten all menus from all categories into a single array
       const allMenus = menuItems.reduce((acc: any[], category: tempapiMenu) => {
         return [...acc, ...category.menus];

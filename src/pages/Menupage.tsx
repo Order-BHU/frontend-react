@@ -37,13 +37,14 @@ import {
 } from "@/components/ui/dialog";
 import { viewCart } from "@/api/restaurant";
 import { singularCartItem } from "@/interfaces/restaurantType";
+import { waveform } from "ldrs";
 
-interface CartItem extends singularCartItem {
-  menuID: string;
-  restaurantID: string;
-}
+// interface CartItem extends singularCartItem {
+//   total: number
+// }
 
 export default function RestaurantMenuPage() {
+  waveform.register();
   orbit.register();
   const { data: cartItems, refetch } = useQuery({
     queryFn: viewCart,
@@ -55,7 +56,7 @@ export default function RestaurantMenuPage() {
   //const navigate = useNavigate();
   const [totalItems, setTotalItems] = useState(0);
   const [displayedMenuItems, setDisplayedMenuItems] = useState<menuItem[]>([]);
-  const [cartItemArray, setCartItems] = useState<CartItem[]>([]); // this state is for the cartItems so we don't manipulate them directly. We'll use it to update quantity and whatnot
+  const [cartItemArray, setCartItems] = useState<singularCartItem[]>([]); // this state is for the cartItems so we don't manipulate them directly. We'll use it to update quantity and whatnot
   const [totalPrice, setTotalPrice] = useState(0); //this is here so we can pass the price during checkout
   const [checkoutItems, setCheckoutItems] = useState<
     { menu_id: number; quantity: number }[]
@@ -109,7 +110,7 @@ export default function RestaurantMenuPage() {
         acc + Number(quantity.quantity),
       0
     );
-    setTotalItems(items);
+    isLoggedIn && setTotalItems(items);
     //function below makes it so we don't have to touch cart Items and gives them menu and restaurant IDs so we can pass those to checkout
     const modifiedItems = cartItems?.cart_items.map(
       (item: singularCartItem) => ({
@@ -123,19 +124,20 @@ export default function RestaurantMenuPage() {
         menu_id: item.menu_id,
         quantity: Number(item.quantity),
       }));
-
-    setCartItems(modifiedItems);
-    setCheckoutItems(transformedItems); //so that we can get the user's checkout items so they can continue from when they left off in selecting in cart if they refresh the page or something.
+    //so the values only update or show for logged in users
+    isLoggedIn && setCartItems(modifiedItems);
+    isLoggedIn && setCheckoutItems(transformedItems); //so that we can get the user's checkout items so they can continue from when they left off in selecting in cart if they refresh the page or something.
   }, [cartItems]);
 
   useEffect(() => {
     // This function handles a situation where the user tried to add to cart before logging in. It gets the Id of what they tried to add(which was passed all the way to whatever page they're coming from) and adds it to the cart
-    if (previousId) {
+    if (localStorage.getItem("previousId")) {
       handleAddToCart(
-        previousId,
+        localStorage.getItem("previousId")!,
         menuItems?.find((item: menuItem) => item.id === previousId)
       );
-      previousId = undefined; //adding this so the code doesn't add previous id every time we refresh the page
+      localStorage.removeItem("previousId");
+      localStorage.removeItem("restaurantId");
     }
   }, []);
 
@@ -165,7 +167,6 @@ export default function RestaurantMenuPage() {
         title: "Success",
         description: data.message,
       });
-      refetch();
     },
     onError: (error) => {
       toast({
@@ -194,22 +195,37 @@ export default function RestaurantMenuPage() {
     },
   });
 
-  const handleAddToCart = (itemId: string, price: number) => {
-    console.log("prices: ", totalPrice);
+  const handleAddToCart = async (itemId: string, price: number) => {
+    //this function updates the state for cartItems and that updates in the input field. the onError makes it refetch the data since cartItemarray get reset whenever cartitem from the api changes. If the data gets refetched, what failed won't display anymore
     if (!isLoggedIn) {
-      navigate("/login/", { state: { itemId, id } });
+      //save the id to local storage.
+      localStorage.setItem("previousId", itemId);
+      localStorage.setItem("restaurantId", String(id)); //gotta pass rest id so we can navigate back to said restaurant
+      navigate("/login/");
       return;
     }
     //all this below sets the quantity for chekout items so we can... have the quantity
 
+    setCartItems((prevItems: singularCartItem[]) => {
+      const existingItem = cartItemArray.find(
+        (item) => item.menu_id === Number(itemId)
+      );
+      if (!existingItem) return prevItems;
+
+      return prevItems.map((item) =>
+        item.menu_id === Number(itemId)
+          ? { ...item, quantity: Number(item.quantity) + 1 }
+          : item
+      );
+    });
     setCheckoutItems((prevItems) => {
-      const existingItemIndex = prevItems.findIndex(
+      const existingItemIndex = prevItems?.findIndex(
         (item) => item.menu_id === Number(itemId)
       );
 
       const newItems =
         existingItemIndex !== -1
-          ? prevItems.map((item, index) =>
+          ? prevItems?.map((item, index) =>
               index === existingItemIndex
                 ? { ...item, quantity: item.quantity + 1 }
                 : item
@@ -226,39 +242,69 @@ export default function RestaurantMenuPage() {
     console.log("checkout items", checkoutItems);
 
     // Move these after the state update
-    Promise.resolve().then(() => {
-      mutate(Number(itemId));
-      refetch();
-    });
+    try {
+      await mutate(Number(itemId));
+      await refetch(); // Refetch cart data to ensure sync with server
+    } catch (error) {
+      // Handle error case
+      console.error("Failed to update cart:", error);
+      refetch(); // Refetch to ensure UI shows correct state
+    }
   };
   const handleremoveCartItem = (itemId: string, price: number) => {
+    console.log("prices: ", totalPrice);
     if (!isLoggedIn) {
+      navigate("/login/", { state: { itemId, id } });
       return;
     }
+    //all this below sets the quantity for chekout items so we can... have the quantity
 
+    setCartItems((prevItems: singularCartItem[]) => {
+      const existingItem = cartItemArray.find(
+        (item) => item.menu_id === Number(itemId)
+      );
+      if (!existingItem) return prevItems;
+
+      return prevItems.map((item) =>
+        item.menu_id === Number(itemId)
+          ? { ...item, quantity: Number(item.quantity) - 1 }
+          : item
+      );
+    });
     setCheckoutItems((prevItems) => {
       const existingItemIndex = prevItems.findIndex(
         (item) => item.menu_id === Number(itemId)
       );
 
-      if (
-        existingItemIndex !== -1 &&
-        prevItems[existingItemIndex].quantity > 0
-      ) {
-        return prevItems.map((item, index) =>
-          index === existingItemIndex
-            ? { ...item, quantity: item.quantity - 1 }
-            : item
-        );
-      }
-      return prevItems;
-    });
-    setTotalPrice((prevPrice) => prevPrice - price);
+      const newItems =
+        existingItemIndex !== -1
+          ? prevItems.map((item, index) =>
+              index === existingItemIndex
+                ? { ...item, quantity: item.quantity - 1 }
+                : item
+            )
+          : [...prevItems, { menu_id: Number(itemId), quantity: 1 }];
 
-    removeCartMutate(Number(itemId));
-    refetch();
+      return newItems;
+    });
+    setTotalPrice((prevPrice) => {
+      const currentPrice = Number(prevPrice); // Force convert to number. Somewhere along the line, it adds them as strings and i can't find where so i just fell back to this
+      const negPrice = Number(price); // Force convert to number
+      return currentPrice - negPrice;
+    });
+    console.log("checkout items", checkoutItems);
+
+    // Move these after the state update
+    Promise.resolve().then(() => {
+      removeCartMutate(Number(itemId), {
+        onError: () => refetch,
+      });
+      refetch();
+    });
   };
   const handleCheckout = (id: number) => {
+    console.log("rest id: ", id);
+    console.log(checkoutItems);
     checkoutMutate({
       items: checkoutItems,
       restaurant_id: id,
@@ -302,7 +348,7 @@ export default function RestaurantMenuPage() {
                     </CardHeader>
                     <CardContent>
                       <ul>
-                        {cartItemArray?.map((item: CartItem) => (
+                        {cartItemArray?.map((item: singularCartItem) => (
                           <li
                             className="text-sm text-gray-500 mb-2"
                             key={item.item_picture}
@@ -311,6 +357,8 @@ export default function RestaurantMenuPage() {
                           </li>
                         ))}
                       </ul>
+                      <h2>Total: {cartItems?.total}</h2>
+                      {/*I accessed total directly here because virgo just sent the total and we have a deadline. Trying to figure out which interface i need to edit will take a while so i'll just stick to this for a while */}
                     </CardContent>
                   </Card>
                 </PageWrapper>
@@ -330,9 +378,17 @@ export default function RestaurantMenuPage() {
 
       <main className="flex-grow container mx-auto px-4 py-8">
         {menuStatus === "pending" ? (
-          <h2 className="text-2xl font-semibold mb-4 text-gray-700 dark:text-cfont-dark">
-            Getting Meals...
-          </h2>
+          <div className="flex flex-col justify-center items-center">
+            <l-waveform
+              size="35"
+              stroke="3.5"
+              speed="1"
+              color="white"
+            ></l-waveform>
+            <h3 className="text-l font-bold mb-8 text-center text-gray-800 dark:text-cfont-dark m-8">
+              Getting Meals
+            </h3>
+          </div>
         ) : (
           categories?.map((category: category) => (
             /*groupedItems[category] && */ <PageWrapper
@@ -391,7 +447,7 @@ export default function RestaurantMenuPage() {
                             disabled={
                               //I know I'm not using the state here, but crunch mode. Can't be bothered to fix the error I'm getting when i try to change it right now
                               Number(
-                                checkoutItems?.find(
+                                cartItemArray?.find(
                                   (cItem: {
                                     menu_id: number;
                                     quantity: number;
@@ -406,7 +462,7 @@ export default function RestaurantMenuPage() {
                             type="number"
                             value={
                               cartItemArray?.find(
-                                (cartitem: CartItem) =>
+                                (cartitem: singularCartItem) =>
                                   cartitem.item_name === item.name
                               )?.quantity || 0
                             }

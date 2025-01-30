@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Header } from "@/components/header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,10 +12,7 @@ import { Eye, EyeOff } from "lucide-react";
 import UseAuthStore from "@/stores/useAuthStore";
 
 export default function LoginPage() {
-  const location = useLocation();
   const { logIn } = UseAuthStore();
-  const itemId = location.state?.itemId;
-  const restaurantId = location.state?.id;
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -36,13 +33,15 @@ export default function LoginPage() {
 
       localStorage.setItem("token", data.token);
       logIn(`${data.account_type}`);
-      if (itemId) {
-        navigate(`/menu/${restaurantId}`, { state: { itemId } });
+      if (localStorage.getItem("itemId")) {
+        console.log("id exists");
+        navigate(`/menu/${Number(localStorage.getItem("restaurantId"))}`);
         toast({
           title: "success!",
           description: data.message,
         });
       } else {
+        console.log("no id");
         navigate(`/${data.account_type}-dashboard/`);
         toast({
           title: "success!",
@@ -172,11 +171,7 @@ export default function LoginPage() {
           </div>
           <p className="mt-4 text-center text-sm text-gray-600">
             Don't have an account?{""}
-            <Link
-              to="/signup"
-              className="text-orange-600 hover:underline"
-              state={itemId ? { itemId, restaurantId } : undefined}
-            >
+            <Link to="/signup" className="text-orange-600 hover:underline">
               Sign up
             </Link>
           </p>

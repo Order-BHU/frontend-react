@@ -177,10 +177,11 @@ export async function viewCart() {
     });
 }
 
-export async function checkout(checkoutItem: checkoutType) {
+export async function checkout(checkoutItems: checkoutType) {
   const token = localStorage.getItem("token");
   return axios
-    .post(`${apiUrl}/pending/checkout`, checkoutItem, {
+    .post(`${apiUrl}/${checkoutItems.restaurant_id}/checkout`, {
+      checkoutItems,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -195,6 +196,31 @@ export async function checkout(checkoutItem: checkoutType) {
         throw new Error("Network error: Unable to reach the server.");
       }
       console.log(error);
+      throw error.response?.data;
+    });
+}
+
+export async function myOrders(ordertype: "pending" | "history" | "accepted") {
+  const token = localStorage.getItem("token");
+  return axios
+    .get(
+      `${apiUrl}/${ordertype}/my-orders`, // empty body or whatever body your API expects
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        timeout: 90000,
+      }
+    )
+    .then(function (response: AxiosResponse) {
+      console.log(response.data);
+      return response.data;
+    })
+    .catch(function (error: AxiosError) {
+      if (error.code === "ERR_NETWORK") {
+        throw new Error("Network error: Unable to reach the server.");
+      }
+      console.log(error, "token: ", token);
       throw error.response?.data;
     });
 }

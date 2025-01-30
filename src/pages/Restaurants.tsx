@@ -5,12 +5,17 @@ import { PageWrapper } from "@/components/pagewrapper";
 import { useQuery } from "@tanstack/react-query";
 import { getRestaurants } from "@/api/restaurant";
 import { useToast } from "@/hooks/use-toast";
+import { waveform } from "ldrs";
+
+// Default values shown
+
 interface restaurant {
   id: number;
   name: string;
   cover_picture: string;
 }
 export default function RestaurantsPage() {
+  waveform.register();
   const { toast } = useToast();
   const {
     status,
@@ -40,9 +45,17 @@ export default function RestaurantsPage() {
 
           {status === "pending" ? (
             <PageWrapper>
-              <h3 className="text-xl font-bold mb-8 text-center text-gray-800 dark:text-cfont-dark italic m-8">
-                Loading Restaurants...
-              </h3>
+              <div className="flex flex-col justify-center items-center">
+                <l-waveform
+                  size="35"
+                  stroke="3.5"
+                  speed="1"
+                  color="white"
+                ></l-waveform>
+                <h3 className="text-l font-bold mb-8 text-center text-gray-800 dark:text-cfont-dark m-8">
+                  Getting Restaurants
+                </h3>
+              </div>
             </PageWrapper>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
