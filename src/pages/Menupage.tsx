@@ -184,7 +184,7 @@ export default function RestaurantMenuPage() {
         title: "Success",
         description: data.message,
       });
-      navigate("/user-dashboard/");
+      navigate("/customer-dashboard/");
     },
     onError: (error) => {
       toast({
@@ -308,7 +308,7 @@ export default function RestaurantMenuPage() {
     checkoutMutate({
       items: checkoutItems,
       restaurant_id: id,
-      total: totalPrice,
+      total: cartItems?.total,
     });
   };
 
