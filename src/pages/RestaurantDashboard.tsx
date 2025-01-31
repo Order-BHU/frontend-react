@@ -51,32 +51,10 @@ import {
   tempapiMenu,
   orderType,
 } from "@/interfaces/restaurantType";
-// This would typically come from an API or database
-// const orders = [
-//   {
-//     id: "1",
-//     customer: "John Doe",
-//     items: ["Jollof Rice", "Chicken"],
-//     total: "₦3,500",
-//     categoryStatus: "Preparing",
-//   },
-//   {
-//     id: "2",
-//     customer: "Jane Smith",
-//     items: ["Egusi Soup", "Pounded Yam"],
-//     total: "₦4,200",
-//     categoryStatus: "Preparing",
-//   },
-//   {
-//     id: "3",
-//     customer: "Mike Johnson",
-//     items: ["Suya", "Fries"],
-//     total: "₦2,800",
-//     categoryStatus: "Ready",
-//   },
-// ];
+import { waveform } from "ldrs";
 
 export default function RestaurantDashboardPage() {
+  waveform.register();
   const [displayedMenuItems, setDisplayedMenuItems] = useState<menuItem[]>([]);
   const [pendingOrderState, setPendingOrders] = useState<orderType[]>([]);
   const username = localStorage.getItem("name")?.slice(0, 2).toUpperCase();
@@ -95,7 +73,7 @@ export default function RestaurantDashboardPage() {
   const {
     status: orderStatus,
     data: pendingOrders,
-    refetch,
+    refetch: refetchOrders,
   } = useQuery({
     queryKey: ["pendingOrders"],
     queryFn: () => myOrders("pending"),
@@ -104,7 +82,11 @@ export default function RestaurantDashboardPage() {
     queryKey: ["categories"],
     queryFn: getCategories,
   });
-  const { /*status: menuStatus,*/ data: menuItems } = useQuery({
+  const {
+    status: menuStatus,
+    data: menuItems,
+    refetch: refetchMenuItems,
+  } = useQuery({
     queryKey: ["menuItems", restaurant_id],
     queryFn: () => getMenuItems(restaurant_id!),
   });
@@ -202,7 +184,7 @@ export default function RestaurantDashboardPage() {
       orderId: Number(orderId),
       status: newcategoryStatus,
     });
-    refetch;
+    refetchOrders();
     // Here you would typically update the order categoryStatus in your backend
   };
 
@@ -230,6 +212,7 @@ export default function RestaurantDashboardPage() {
         title: "Success",
         description: data.message,
       });
+      refetchMenuItems();
     },
     onError: (error) => {
       toast({
@@ -429,334 +412,358 @@ export default function RestaurantDashboardPage() {
                     <CardTitle>Orders</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Order ID</TableHead>
-                          {/* <TableHead>Customer</TableHead> */}
-                          <TableHead>Items</TableHead>
-                          <TableHead>Total</TableHead>
-                          <TableHead>categoryStatus</TableHead>
-                          <TableHead>Action</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {pendingOrderState?.map((order) => (
-                          <TableRow key={order.id}>
-                            <TableCell>{order.id}</TableCell>
-                            {/* <TableCell>{order.customer}</TableCell> */}
-                            <TableCell>item names</TableCell>
-                            <TableCell>
-                              ₦{Number(order.total).toLocaleString()}
-                            </TableCell>
-                            <TableCell>
-                              <Badge
-                                variant={
-                                  order.status === "Ready"
-                                    ? "secondary"
-                                    : "default"
-                                }
-                              >
-                                {order.status}
-                              </Badge>
-                            </TableCell>
-                            <TableCell>
-                              <Select
-                                value={order.status}
-                                onValueChange={(value) =>
-                                  handlecategoryStatusChange(order.id, value)
-                                }
-                              >
-                                <SelectTrigger className="w-[180px]">
-                                  <SelectValue placeholder="Update categoryStatus" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="accepted">
-                                    Accepted
-                                  </SelectItem>
-                                  <SelectItem value="ready">Ready</SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </TableCell>
+                    {orderStatus === "pending" ? (
+                      <div className="flex flex-col justify-center items-center">
+                        <l-waveform
+                          size="35"
+                          stroke="3.5"
+                          speed="1"
+                          color="white"
+                        ></l-waveform>
+                      </div>
+                    ) : (
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Order ID</TableHead>
+                            {/* <TableHead>Customer</TableHead> */}
+                            <TableHead>Items</TableHead>
+                            <TableHead>Total</TableHead>
+                            <TableHead>categoryStatus</TableHead>
+                            <TableHead>Action</TableHead>
                           </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
+                        </TableHeader>
+                        <TableBody>
+                          {pendingOrderState?.map((order) => (
+                            <TableRow key={order.id}>
+                              <TableCell>{order.id}</TableCell>
+                              {/* <TableCell>{order.customer}</TableCell> */}
+                              <TableCell>item names</TableCell>
+                              <TableCell>
+                                ₦{Number(order.total).toLocaleString()}
+                              </TableCell>
+                              <TableCell>
+                                <Badge
+                                  variant={
+                                    order.status === "Ready"
+                                      ? "secondary"
+                                      : "default"
+                                  }
+                                >
+                                  {order.status}
+                                </Badge>
+                              </TableCell>
+                              <TableCell>
+                                <Select
+                                  value={order.status}
+                                  onValueChange={(value) =>
+                                    handlecategoryStatusChange(order.id, value)
+                                  }
+                                >
+                                  <SelectTrigger className="w-[180px]">
+                                    <SelectValue placeholder="Update categoryStatus" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="accepted">
+                                      Accepted
+                                    </SelectItem>
+                                    <SelectItem value="ready">Ready</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    )}
                   </CardContent>
                 </Card>
               </PageWrapper>
             </TabsContent>
             <TabsContent value="menu">
               <PageWrapper>
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Menu Items</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Name</TableHead>
-                          <TableHead>Price</TableHead>
-                          <TableHead>Category</TableHead>
-                          <TableHead>Action</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {displayedMenuItems.map((item: menuItem) => (
-                          <TableRow key={item.id}>
-                            <TableCell>{item.name}</TableCell>
-                            <TableCell>{formatPrice(item.price)}</TableCell>
-                            <TableCell>{item.category}</TableCell>
-                            <TableCell>
-                              <Dialog>
-                                <DialogTrigger asChild>
-                                  <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => setEditingMenuItem(item)}
-                                  >
-                                    Edit
-                                  </Button>
-                                </DialogTrigger>
-                                <DialogContent>
-                                  <DialogHeader>
-                                    <DialogTitle>Edit Menu Item</DialogTitle>
-                                  </DialogHeader>
-                                  {editingMenuItem && (
-                                    <form
-                                      onSubmit={handleEditMenuItem}
-                                      className="mt-4 space-y-4"
-                                    >
-                                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                        <div>
-                                          <Label htmlFor="name">Name</Label>
-                                          <Input
-                                            id="name"
-                                            value={newMenuItem.name}
-                                            onChange={(e) =>
-                                              setNewMenuItem({
-                                                ...newMenuItem,
-                                                name: e.target.value,
-                                              })
-                                            }
-                                            required
-                                          />
-                                        </div>
-                                        <div>
-                                          <Label htmlFor="price">
-                                            Price (₦)
-                                          </Label>
-                                          <Input
-                                            id="price"
-                                            value={newMenuItem.price}
-                                            onChange={(e) => {
-                                              const { value } = e.target;
-
-                                              setNewMenuItem({
-                                                ...newMenuItem,
-                                                price: Number(
-                                                  value.replace(/[^0-9]/g, "")
-                                                ),
-                                              });
-                                            }}
-                                            required
-                                          />
-                                        </div>
-                                        <div>
-                                          <Label htmlFor="description">
-                                            Description
-                                          </Label>
-                                          <Textarea
-                                            id="description"
-                                            value={newMenuItem.description}
-                                            onChange={(e) =>
-                                              setNewMenuItem({
-                                                ...newMenuItem,
-                                                description: e.target.value,
-                                              })
-                                            }
-                                            required
-                                          />
-                                        </div>
-
-                                        <div>
-                                          <Label htmlFor="image">Image</Label>
-                                          <Input
-                                            id="image"
-                                            type="file"
-                                            accept="image/*"
-                                            onChange={handleImageChange}
-                                            required
-                                          />
-                                        </div>
-
-                                        <div>
-                                          <Label htmlFor="category">
-                                            Category
-                                          </Label>
-                                          <Select
-                                            onValueChange={(value) => {
-                                              setNewMenuItem({
-                                                ...newMenuItem,
-                                                category_id: Number(value),
-                                              });
-                                            }}
-                                          >
-                                            <SelectTrigger className="w-[180px]">
-                                              <SelectValue placeholder="Choose Category" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                              {categoryStatus === "pending" ? (
-                                                <SelectItem value="" disabled>
-                                                  Loading categories...
-                                                </SelectItem>
-                                              ) : categoryStatus === "error" ? (
-                                                <SelectItem value="" disabled>
-                                                  Error loading categories
-                                                </SelectItem>
-                                              ) : (
-                                                categories?.map(
-                                                  (category: category) => (
-                                                    <SelectItem
-                                                      key={category.id}
-                                                      value={String(
-                                                        category.id
-                                                      )}
-                                                    >
-                                                      {category.name}
-                                                    </SelectItem>
-                                                  )
-                                                )
-                                              )}
-                                            </SelectContent>
-                                          </Select>
-                                        </div>
-                                      </div>
-                                      <Button
-                                        type="submit"
-                                        disabled={mutateStatus === "pending"}
-                                      >
-                                        Update Menu Item
-                                      </Button>
-                                    </form>
-                                  )}
-                                </DialogContent>
-                              </Dialog>
-                            </TableCell>
+                {menuStatus === "pending" ? (
+                  <div className="flex flex-col justify-center items-center">
+                    <l-waveform
+                      size="35"
+                      stroke="3.5"
+                      speed="1"
+                      color="white"
+                    ></l-waveform>
+                  </div>
+                ) : (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Menu Items</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Name</TableHead>
+                            <TableHead>Price</TableHead>
+                            <TableHead>Category</TableHead>
+                            <TableHead>Action</TableHead>
                           </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                    <form
-                      onSubmit={handleAddMenuItem}
-                      className="mt-4 space-y-4"
-                    >
-                      <h3 className="text-lg font-semibold">
-                        Add New Menu Item
-                      </h3>
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div>
-                          <Label htmlFor="name">Name</Label>
-                          <Input
-                            id="name"
-                            value={newMenuItem.name}
-                            onChange={(e) =>
-                              setNewMenuItem({
-                                ...newMenuItem,
-                                name: e.target.value,
-                              })
-                            }
-                            required
-                          />
-                        </div>
-                        <div>
-                          <Label htmlFor="price">Price (₦)</Label>
-                          <Input
-                            id="price"
-                            value={newMenuItem.price}
-                            onChange={(e) => {
-                              const { value } = e.target;
+                        </TableHeader>
+                        <TableBody>
+                          {displayedMenuItems?.map((item: menuItem) => (
+                            <TableRow key={item.id}>
+                              <TableCell>{item.name}</TableCell>
+                              <TableCell>{formatPrice(item.price)}</TableCell>
+                              <TableCell>{item.category}</TableCell>
+                              <TableCell>
+                                <Dialog>
+                                  <DialogTrigger asChild>
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={() => setEditingMenuItem(item)}
+                                    >
+                                      Edit
+                                    </Button>
+                                  </DialogTrigger>
+                                  <DialogContent className="dark: text-cfont-dark">
+                                    <DialogHeader>
+                                      <DialogTitle>Edit Menu Item</DialogTitle>
+                                    </DialogHeader>
+                                    {editingMenuItem && (
+                                      <form
+                                        onSubmit={handleEditMenuItem}
+                                        className="mt-4 space-y-4"
+                                      >
+                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                          <div>
+                                            <Label htmlFor="name">Name</Label>
+                                            <Input
+                                              id="name"
+                                              value={newMenuItem.name}
+                                              onChange={(e) =>
+                                                setNewMenuItem({
+                                                  ...newMenuItem,
+                                                  name: e.target.value,
+                                                })
+                                              }
+                                              required
+                                            />
+                                          </div>
+                                          <div>
+                                            <Label htmlFor="price">
+                                              Price (₦)
+                                            </Label>
+                                            <Input
+                                              id="price"
+                                              value={newMenuItem.price}
+                                              onChange={(e) => {
+                                                const { value } = e.target;
 
-                              setNewMenuItem({
-                                ...newMenuItem,
-                                price: Number(value.replace(/[^0-9]/g, "")),
-                              });
-                            }}
-                            required
-                          />
-                        </div>
-                        <div>
-                          <Label htmlFor="description">Description</Label>
-                          <Textarea
-                            id="description"
-                            value={newMenuItem.description}
-                            onChange={(e) =>
-                              setNewMenuItem({
-                                ...newMenuItem,
-                                description: e.target.value,
-                              })
-                            }
-                            required
-                          />
-                        </div>
+                                                setNewMenuItem({
+                                                  ...newMenuItem,
+                                                  price: Number(
+                                                    value.replace(/[^0-9]/g, "")
+                                                  ),
+                                                });
+                                              }}
+                                              required
+                                            />
+                                          </div>
+                                          <div>
+                                            <Label htmlFor="description">
+                                              Description
+                                            </Label>
+                                            <Textarea
+                                              id="description"
+                                              value={newMenuItem.description}
+                                              onChange={(e) =>
+                                                setNewMenuItem({
+                                                  ...newMenuItem,
+                                                  description: e.target.value,
+                                                })
+                                              }
+                                              required
+                                            />
+                                          </div>
 
-                        <div>
-                          <Label htmlFor="image">Image</Label>
-                          <Input
-                            id="image"
-                            type="file"
-                            accept="image/*"
-                            onChange={handleImageChange}
-                            required
-                          />
-                        </div>
+                                          <div>
+                                            <Label htmlFor="image">Image</Label>
+                                            <Input
+                                              id="image"
+                                              type="file"
+                                              accept="image/*"
+                                              onChange={handleImageChange}
+                                              required
+                                            />
+                                          </div>
 
-                        <div>
-                          <Label htmlFor="category">Category</Label>
-                          <Select
-                            onValueChange={(value) => {
-                              setNewMenuItem({
-                                ...newMenuItem,
-                                category_id: Number(value),
-                              });
-                            }}
-                          >
-                            <SelectTrigger className="w-[180px]">
-                              <SelectValue placeholder="Choose Category" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {categoryStatus === "pending" ? (
-                                <SelectItem value="" disabled>
-                                  Loading categories...
-                                </SelectItem>
-                              ) : categoryStatus === "error" ? (
-                                <SelectItem value="" disabled>
-                                  Error loading categories
-                                </SelectItem>
-                              ) : (
-                                categories?.map((category: category) => (
-                                  <SelectItem
-                                    key={category.id}
-                                    value={String(category.id)}
-                                  >
-                                    {category.name}
-                                  </SelectItem>
-                                ))
-                              )}
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      </div>
-                      <Button
-                        type="submit"
-                        disabled={mutateStatus === "pending"}
+                                          <div>
+                                            <Label htmlFor="category">
+                                              Category
+                                            </Label>
+                                            <Select
+                                              onValueChange={(value) => {
+                                                setNewMenuItem({
+                                                  ...newMenuItem,
+                                                  category_id: Number(value),
+                                                });
+                                              }}
+                                            >
+                                              <SelectTrigger className="w-[180px]">
+                                                <SelectValue placeholder="Choose Category" />
+                                              </SelectTrigger>
+                                              <SelectContent>
+                                                {categoryStatus ===
+                                                "pending" ? (
+                                                  <SelectItem value="" disabled>
+                                                    Loading categories...
+                                                  </SelectItem>
+                                                ) : categoryStatus ===
+                                                  "error" ? (
+                                                  <SelectItem value="" disabled>
+                                                    Error loading categories
+                                                  </SelectItem>
+                                                ) : (
+                                                  categories?.map(
+                                                    (category: category) => (
+                                                      <SelectItem
+                                                        key={category.id}
+                                                        value={String(
+                                                          category.id
+                                                        )}
+                                                      >
+                                                        {category.name}
+                                                      </SelectItem>
+                                                    )
+                                                  )
+                                                )}
+                                              </SelectContent>
+                                            </Select>
+                                          </div>
+                                        </div>
+                                        <Button
+                                          type="submit"
+                                          disabled={mutateStatus === "pending"}
+                                        >
+                                          Update Menu Item
+                                        </Button>
+                                      </form>
+                                    )}
+                                  </DialogContent>
+                                </Dialog>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                      <form
+                        onSubmit={handleAddMenuItem}
+                        className="mt-4 space-y-4"
                       >
-                        Add Menu Item
-                      </Button>
-                    </form>
-                  </CardContent>
-                </Card>
+                        <h3 className="text-lg font-semibold">
+                          Add New Menu Item
+                        </h3>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                          <div>
+                            <Label htmlFor="name">Name</Label>
+                            <Input
+                              id="name"
+                              value={newMenuItem.name}
+                              onChange={(e) =>
+                                setNewMenuItem({
+                                  ...newMenuItem,
+                                  name: e.target.value,
+                                })
+                              }
+                              required
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="price">Price (₦)</Label>
+                            <Input
+                              id="price"
+                              value={newMenuItem.price}
+                              onChange={(e) => {
+                                const { value } = e.target;
+
+                                setNewMenuItem({
+                                  ...newMenuItem,
+                                  price: Number(value.replace(/[^0-9]/g, "")),
+                                });
+                              }}
+                              required
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="description">Description</Label>
+                            <Textarea
+                              id="description"
+                              value={newMenuItem.description}
+                              onChange={(e) =>
+                                setNewMenuItem({
+                                  ...newMenuItem,
+                                  description: e.target.value,
+                                })
+                              }
+                              required
+                            />
+                          </div>
+
+                          <div>
+                            <Label htmlFor="image">Image</Label>
+                            <Input
+                              id="image"
+                              type="file"
+                              accept="image/*"
+                              onChange={handleImageChange}
+                              required
+                            />
+                          </div>
+
+                          <div>
+                            <Label htmlFor="category">Category</Label>
+                            <Select
+                              onValueChange={(value) => {
+                                setNewMenuItem({
+                                  ...newMenuItem,
+                                  category_id: Number(value),
+                                });
+                              }}
+                            >
+                              <SelectTrigger className="w-[180px]">
+                                <SelectValue placeholder="Choose Category" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {categoryStatus === "pending" ? (
+                                  <SelectItem value="" disabled>
+                                    Loading categories...
+                                  </SelectItem>
+                                ) : categoryStatus === "error" ? (
+                                  <SelectItem value="" disabled>
+                                    Error loading categories
+                                  </SelectItem>
+                                ) : (
+                                  categories?.map((category: category) => (
+                                    <SelectItem
+                                      key={category.id}
+                                      value={String(category.id)}
+                                    >
+                                      {category.name}
+                                    </SelectItem>
+                                  ))
+                                )}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        </div>
+                        <Button
+                          type="submit"
+                          disabled={mutateStatus === "pending"}
+                        >
+                          Add Menu Item
+                        </Button>
+                      </form>
+                    </CardContent>
+                  </Card>
+                )}
               </PageWrapper>
             </TabsContent>
             <TabsContent value="financial">

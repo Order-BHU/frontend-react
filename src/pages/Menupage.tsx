@@ -466,13 +466,11 @@ export default function RestaurantMenuPage() {
                 {displayedMenuItems.map((item: menuItem) =>
                   Number(item.category_id) === Number(category.id) ? (
                     <Card key={item.id} className="flex flex-col">
-                      <div className="relative h-48 w-full">
+                      <div className="relative h-48 w-full mb-2">
                         {
                           <Img
-                            className="object-cover"
-                            src={`http://bhuorder.com.ng/api/${String(
-                              item.image!
-                            )}`}
+                            className="object-fit"
+                            src={String(item.image!)}
                             alt={item.name}
                             unloader={
                               <div className="flex justify-center p-5 h-[200px] items-center">

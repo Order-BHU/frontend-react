@@ -37,6 +37,7 @@ export async function getMenuItems(id: string) {
       timeout: 90000,
     })
     .then(function (response: AxiosResponse) {
+      console.log(response.data);
       return response.data.menu;
     })
     .catch(function (error: AxiosError) {

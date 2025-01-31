@@ -29,7 +29,6 @@ import { useQuery } from "@tanstack/react-query";
 import { myOrders } from "@/api/restaurant";
 import { orderType } from "@/interfaces/restaurantType";
 import { waveform } from "ldrs";
-waveform.register();
 
 // Mock data - in a real app, this would come from an API
 const allUserOrder = [
@@ -90,6 +89,7 @@ const userActivity = [
 ];
 
 export default function UserDashboardPage() {
+  waveform.register();
   const [user, setUser] = useState({
     name: "",
     email: "",
