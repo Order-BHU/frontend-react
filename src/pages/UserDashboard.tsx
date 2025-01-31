@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Header } from "../components/header";
 import { Footer } from "../components/footer";
 import { Link } from "react-router-dom";
@@ -25,6 +25,11 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { PageWrapper } from "@/components/pagewrapper";
+import { useQuery } from "@tanstack/react-query";
+import { myOrders } from "@/api/restaurant";
+import { orderType } from "@/interfaces/restaurantType";
+import { waveform } from "ldrs";
+waveform.register();
 
 // Mock data - in a real app, this would come from an API
 const allUserOrders = [
@@ -102,7 +107,20 @@ export default function UserDashboardPage() {
   };
 
   const recentOrders = allUserOrders.slice(0, 4);
+  const [userOrders, setUserOrders] = useState<orderType[]>([]); //this state stores all the pending orders for the user
   const username = localStorage.getItem("name")?.slice(0, 2).toUpperCase();
+  const { data: pendingOrders, status: pendingStatus } = useQuery({
+    queryFn: () => myOrders("pending"),
+    queryKey: ["orders"],
+  });
+
+  useEffect(() => {
+    if (pendingOrders?.orders) {
+      setUserOrders(pendingOrders.orders);
+    }
+    console.log("user orders: ", userOrders);
+    console.log("orders lenght: ", userOrders?.length);
+  }, [pendingOrders]);
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-cbg-dark">
@@ -274,23 +292,33 @@ export default function UserDashboardPage() {
                   <CardTitle>Recent Orders</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  {recentOrders.length > 0 ? (
+                  {pendingStatus === "pending" ? (
+                    <div className="flex flex-col justify-center items-center">
+                      <l-waveform
+                        size="35"
+                        stroke="3.5"
+                        speed="1"
+                        color="white"
+                      ></l-waveform>
+                    </div>
+                  ) : pendingStatus === "error" ? (
+                    <div className="text-center py-8">
+                      <p>Error loading orders. Please try again later.</p>
+                    </div>
+                  ) : userOrders && userOrders.length > 0 ? (
                     <Table>
                       <TableHeader>
                         <TableRow>
                           <TableHead>Order ID</TableHead>
-                          <TableHead>Restaurant</TableHead>
                           <TableHead>Items</TableHead>
                           <TableHead>Total</TableHead>
                           <TableHead>Status</TableHead>
-                          <TableHead>Date</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {recentOrders.map((order) => (
+                        {userOrders.map((order) => (
                           <TableRow key={order.id}>
                             <TableCell>{order.id}</TableCell>
-                            <TableCell>{order.restaurant}</TableCell>
                             <TableCell>{order.items.join(", ")}</TableCell>
                             <TableCell>{order.total}</TableCell>
                             <TableCell>
@@ -304,7 +332,6 @@ export default function UserDashboardPage() {
                                 {order.status}
                               </Badge>
                             </TableCell>
-                            <TableCell>{order.date}</TableCell>
                           </TableRow>
                         ))}
                       </TableBody>

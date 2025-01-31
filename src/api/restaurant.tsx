@@ -207,15 +207,12 @@ export async function checkout(checkoutItems: checkoutType) {
 export async function myOrders(ordertype: "pending" | "history" | "accepted") {
   const token = localStorage.getItem("token");
   return axios
-    .get(
-      `${apiUrl}/${ordertype}/my-orders`, // empty body or whatever body your API expects
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        timeout: 90000,
-      }
-    )
+    .get(`${apiUrl}/${ordertype}/my-orders`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      timeout: 90000,
+    })
     .then(function (response: AxiosResponse) {
       console.log(response.data);
       return response.data;

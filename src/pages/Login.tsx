@@ -32,7 +32,8 @@ export default function LoginPage() {
       }
 
       localStorage.setItem("token", data.token);
-      logIn(`${data.account_type}`);
+      localStorage.setItem("accountType", data.account_type);
+      logIn(`${localStorage.getItem("accountType")}`);
       if (localStorage.getItem("itemId")) {
         console.log("id exists");
         navigate(`/menu/${Number(localStorage.getItem("restaurantId"))}`);
@@ -42,7 +43,7 @@ export default function LoginPage() {
         });
       } else {
         console.log("no id");
-        navigate(`/${data.account_type}-dashboard/`);
+        navigate(`/${localStorage.getItem("accountType")}-dashboard/`);
         toast({
           title: "success!",
           description: data.message,

@@ -22,6 +22,7 @@ import {
   addToCart,
   removeCartItem,
   checkout,
+  viewCart,
 } from "@/api/restaurant";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { category, tempapiMenu, menuItem } from "@/interfaces/restaurantType";
@@ -35,7 +36,6 @@ import {
   DialogTrigger,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { viewCart } from "@/api/restaurant";
 import { singularCartItem } from "@/interfaces/restaurantType";
 import { waveform } from "ldrs";
 
@@ -184,7 +184,7 @@ export default function RestaurantMenuPage() {
         title: "Success",
         description: data.message,
       });
-      navigate("/customer-dashboard/");
+      navigate(`/${localStorage.getItem("accountType")}-dashboard/`);
     },
     onError: (error) => {
       toast({
