@@ -32,7 +32,7 @@ import { waveform } from "ldrs";
 waveform.register();
 
 // Mock data - in a real app, this would come from an API
-const allUserOrders = [
+const allUserOrder = [
   {
     id: "1",
     restaurant: "Burger Palace",
@@ -106,21 +106,21 @@ export default function UserDashboardPage() {
     // Close the dialog (you might want to use a state to control this)
   };
 
-  const recentOrders = allUserOrders.slice(0, 4);
-  const [userOrders, setUserOrders] = useState<orderType[]>([]); //this state stores all the pending orders for the user
+  // const recentOrders = allUserOrder.slice(0, 4);
+  const [userOrder, setUserOrder] = useState<orderType>(); //this state stores all the pending orders for the user
+  // const [allOrders, setAllOrders] = useState<orderType[]>([]); //stores all order history
   const username = localStorage.getItem("name")?.slice(0, 2).toUpperCase();
-  const { data: pendingOrders, status: pendingStatus } = useQuery({
+  const { data: pendingOrder, status: pendingStatus } = useQuery({
     queryFn: () => myOrders("pending"),
     queryKey: ["orders"],
   });
 
   useEffect(() => {
-    if (pendingOrders?.orders) {
-      setUserOrders(pendingOrders.orders);
+    if (pendingOrder) {
+      setUserOrder(pendingOrder?.order);
     }
-    console.log("user orders: ", userOrders);
-    console.log("orders lenght: ", userOrders?.length);
-  }, [pendingOrders]);
+    console.log("user orders: ", userOrder);
+  }, [pendingOrder]);
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-cbg-dark">
@@ -246,7 +246,7 @@ export default function UserDashboardPage() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {allUserOrders.map((order) => (
+                      {allUserOrder.map((order) => (
                         <TableRow
                           key={order.id}
                           className="dark:text-cfont-dark"
@@ -305,7 +305,7 @@ export default function UserDashboardPage() {
                     <div className="text-center py-8">
                       <p>Error loading orders. Please try again later.</p>
                     </div>
-                  ) : userOrders && userOrders.length > 0 ? (
+                  ) : userOrder ? (
                     <Table>
                       <TableHeader>
                         <TableRow>
@@ -316,24 +316,24 @@ export default function UserDashboardPage() {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {userOrders.map((order) => (
-                          <TableRow key={order.id}>
-                            <TableCell>{order.id}</TableCell>
-                            <TableCell>{order.items.join(", ")}</TableCell>
-                            <TableCell>{order.total}</TableCell>
-                            <TableCell>
-                              <Badge
-                                variant={
-                                  order.status === "Delivered"
-                                    ? "secondary"
-                                    : "default"
-                                }
-                              >
-                                {order.status}
-                              </Badge>
-                            </TableCell>
-                          </TableRow>
-                        ))}
+                        <TableRow>
+                          <TableCell>{userOrder.id}</TableCell>
+                          <TableCell>item names</TableCell>
+                          <TableCell>
+                            ₦{Number(userOrder.total).toLocaleString()}
+                          </TableCell>
+                          <TableCell>
+                            <Badge
+                              variant={
+                                userOrder.status === "Delivered"
+                                  ? "secondary"
+                                  : "default"
+                              }
+                            >
+                              {userOrder.status}
+                            </Badge>
+                          </TableCell>
+                        </TableRow>
                       </TableBody>
                     </Table>
                   ) : (

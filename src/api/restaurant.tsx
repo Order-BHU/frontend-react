@@ -225,3 +225,55 @@ export async function myOrders(ordertype: "pending" | "history" | "accepted") {
       throw error.response?.data;
     });
 }
+
+export async function getLocation() {
+  const token = localStorage.getItem("token");
+  return axios
+    .get(
+      `${apiUrl}/locations`, // empty body or whatever body your API expects
+      {
+        timeout: 90000,
+      }
+    )
+    .then(function (response: AxiosResponse) {
+      console.log("locations", response.data);
+      return response.data;
+    })
+    .catch(function (error: AxiosError) {
+      if (error.code === "ERR_NETWORK") {
+        throw new Error("Network error: Unable to reach the server.");
+      }
+      console.log(error, "token: ", token);
+      throw error.response?.data;
+    });
+}
+
+export async function updateOrderStatus(content: {
+  orderId: number;
+  status: string;
+}) {
+  const token = localStorage.getItem("token");
+  return axios
+    .post(
+      `${apiUrl}/${content.orderId}/${content.status}/update-order-status`,
+
+      {
+        // config object
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        timeout: 90000,
+      }
+    )
+    .then(function (response: AxiosResponse) {
+      console.log(response.data);
+      return response.data;
+    })
+    .catch(function (error: AxiosError) {
+      if (error.code === "ERR_NETWORK") {
+        throw new Error("Network error: Unable to reach the server.");
+      }
+      console.log(error);
+      throw error.response?.data;
+    });
+}

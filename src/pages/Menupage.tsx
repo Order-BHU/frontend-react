@@ -23,6 +23,7 @@ import {
   removeCartItem,
   checkout,
   viewCart,
+  getLocation,
 } from "@/api/restaurant";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { category, tempapiMenu, menuItem } from "@/interfaces/restaurantType";
@@ -37,6 +38,16 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { singularCartItem } from "@/interfaces/restaurantType";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
 import { waveform } from "ldrs";
 
 // interface CartItem extends singularCartItem {
@@ -50,16 +61,21 @@ export default function RestaurantMenuPage() {
     queryFn: viewCart,
     queryKey: ["cartItems"],
   });
+  const { data: locations, status: locationStatus } = useQuery({
+    queryFn: getLocation,
+    queryKey: ["locations"],
+  });
   const location = useLocation();
   const { id } = useParams<{ id: string }>(); //restaurant id container
   var previousId = location.state?.itemId; //container for the id of item user tried to access before logging in
   //const navigate = useNavigate();
   const [totalItems, setTotalItems] = useState(0);
+  const [selectedLocation, setLocation] = useState(""); //the location a user selects
   const [displayedMenuItems, setDisplayedMenuItems] = useState<menuItem[]>([]);
   const [cartItemArray, setCartItems] = useState<singularCartItem[]>([]); // this state is for the cartItems so we don't manipulate them directly. We'll use it to update quantity and whatnot
   const [totalPrice, setTotalPrice] = useState(0); //this is here so we can pass the price during checkout
   const [checkoutItems, setCheckoutItems] = useState<
-    { menu_id: number; quantity: number }[]
+    { menu_id: number; quantity: number; menu_name: string }[]
   >([]); //every time a menu item gets added or removed(hitting the plus button) we'll set the state here so we can pass it to checkout route
   const { status: menuStatus, data: menuItems } = useQuery({
     queryKey: ["menuItems", id],
@@ -119,11 +135,15 @@ export default function RestaurantMenuPage() {
         restaurantID: 0,
       })
     );
-    const transformedItems: { menu_id: number; quantity: number }[] =
-      cartItems?.cart_items.map((item: singularCartItem) => ({
-        menu_id: item.menu_id,
-        quantity: Number(item.quantity),
-      }));
+    const transformedItems: {
+      menu_id: number;
+      quantity: number;
+      menu_name: string;
+    }[] = cartItems?.cart_items.map((item: singularCartItem) => ({
+      menu_id: item.menu_id,
+      quantity: Number(item.quantity),
+      menu_name: item.item_name,
+    }));
     //so the values only update or show for logged in users
     isLoggedIn && setCartItems(modifiedItems);
     isLoggedIn && setCheckoutItems(transformedItems); //so that we can get the user's checkout items so they can continue from when they left off in selecting in cart if they refresh the page or something.
@@ -230,7 +250,17 @@ export default function RestaurantMenuPage() {
                 ? { ...item, quantity: item.quantity + 1 }
                 : item
             )
-          : [...prevItems, { menu_id: Number(itemId), quantity: 1 }];
+          : [
+              ...prevItems,
+              {
+                menu_id: Number(itemId),
+                quantity: 1,
+                menu_name:
+                  existingItemIndex !== -1
+                    ? prevItems[existingItemIndex].menu_name
+                    : "Unknown",
+              },
+            ];
 
       return newItems;
     });
@@ -283,7 +313,17 @@ export default function RestaurantMenuPage() {
                 ? { ...item, quantity: item.quantity - 1 }
                 : item
             )
-          : [...prevItems, { menu_id: Number(itemId), quantity: 1 }];
+          : [
+              ...prevItems,
+              {
+                menu_id: Number(itemId),
+                quantity: 1,
+                menu_name:
+                  existingItemIndex !== -1
+                    ? prevItems[existingItemIndex].menu_name
+                    : "Unknown",
+              },
+            ];
 
       return newItems;
     });
@@ -309,7 +349,11 @@ export default function RestaurantMenuPage() {
       items: checkoutItems,
       restaurant_id: id,
       total: cartItems?.total,
+      location: selectedLocation,
     });
+  };
+  const handleSelectLocationChange = (value: string) => {
+    setLocation(value);
   };
 
   return (
@@ -364,6 +408,26 @@ export default function RestaurantMenuPage() {
                 </PageWrapper>
               </div>
               <DialogFooter>
+                <Select onValueChange={handleSelectLocationChange}>
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Select a location" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      {locationStatus === "pending" ? (
+                        <SelectLabel>getting locations...</SelectLabel>
+                      ) : (
+                        locations?.locations.map(
+                          (location: { id: number; name: string }) => (
+                            <SelectItem key={location.id} value={location.name}>
+                              {location.name}
+                            </SelectItem>
+                          )
+                        )
+                      )}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
                 <Button
                   disabled={checkoutStatus === "pending"}
                   onClick={() => handleCheckout(Number(id))}

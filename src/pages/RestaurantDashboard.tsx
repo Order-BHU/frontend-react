@@ -41,37 +41,44 @@ import {
   addMenu,
   editMenu,
   myOrders,
+  updateOrderStatus,
 } from "@/api/restaurant";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { category, menuItem, tempapiMenu } from "@/interfaces/restaurantType";
+import {
+  category,
+  menuItem,
+  tempapiMenu,
+  orderType,
+} from "@/interfaces/restaurantType";
 // This would typically come from an API or database
-const orders = [
-  {
-    id: "1",
-    customer: "John Doe",
-    items: ["Jollof Rice", "Chicken"],
-    total: "₦3,500",
-    categoryStatus: "Preparing",
-  },
-  {
-    id: "2",
-    customer: "Jane Smith",
-    items: ["Egusi Soup", "Pounded Yam"],
-    total: "₦4,200",
-    categoryStatus: "Preparing",
-  },
-  {
-    id: "3",
-    customer: "Mike Johnson",
-    items: ["Suya", "Fries"],
-    total: "₦2,800",
-    categoryStatus: "Ready",
-  },
-];
+// const orders = [
+//   {
+//     id: "1",
+//     customer: "John Doe",
+//     items: ["Jollof Rice", "Chicken"],
+//     total: "₦3,500",
+//     categoryStatus: "Preparing",
+//   },
+//   {
+//     id: "2",
+//     customer: "Jane Smith",
+//     items: ["Egusi Soup", "Pounded Yam"],
+//     total: "₦4,200",
+//     categoryStatus: "Preparing",
+//   },
+//   {
+//     id: "3",
+//     customer: "Mike Johnson",
+//     items: ["Suya", "Fries"],
+//     total: "₦2,800",
+//     categoryStatus: "Ready",
+//   },
+// ];
 
 export default function RestaurantDashboardPage() {
   const [displayedMenuItems, setDisplayedMenuItems] = useState<menuItem[]>([]);
+  const [pendingOrderState, setPendingOrders] = useState<orderType[]>([]);
   const username = localStorage.getItem("name")?.slice(0, 2).toUpperCase();
   const restaurant_id = localStorage.getItem("restaurant_id");
   const { toast } = useToast();
@@ -85,10 +92,13 @@ export default function RestaurantDashboardPage() {
   });
 
   //APIs
-  const ordertype: "pending" | "history" | "accepted" = "pending";
-  const { status: orderStatus, data: myorders } = useQuery({
-    queryKey: ["orders", ordertype],
-    queryFn: () => myOrders(ordertype),
+  const {
+    status: orderStatus,
+    data: pendingOrders,
+    refetch,
+  } = useQuery({
+    queryKey: ["pendingOrders"],
+    queryFn: () => myOrders("pending"),
   });
   const { status: categoryStatus, data: categories } = useQuery({
     queryKey: ["categories"],
@@ -100,8 +110,14 @@ export default function RestaurantDashboardPage() {
   });
 
   useEffect(() => {
-    if (menuItems && categories && myorders) {
-      console.log("my orders: ", myorders);
+    if (pendingOrders) {
+      setPendingOrders(pendingOrders.orders);
+      console.log("my orders: ", pendingOrders);
+    }
+  });
+
+  useEffect(() => {
+    if (menuItems && categories) {
       // Flatten all menus from all categories into a single array
       const allMenus = menuItems.reduce((acc: any[], category: tempapiMenu) => {
         return [...acc, ...category.menus];
@@ -121,6 +137,23 @@ export default function RestaurantDashboardPage() {
       setDisplayedMenuItems(processedItems);
     }
   }, [menuItems, categories]);
+
+  const { mutate: orderStatusMutate } = useMutation({
+    mutationFn: updateOrderStatus,
+    onSuccess: (data) => {
+      toast({
+        title: "Success",
+        description: data.message,
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -161,18 +194,15 @@ export default function RestaurantDashboardPage() {
     });
   };
 
-  const [ordercategoryStatuses, setOrdercategoryStatuses] = useState<{
-    [key: string]: string;
-  }>({});
-
   const handlecategoryStatusChange = (
-    orderId: string,
+    orderId: number,
     newcategoryStatus: string
   ) => {
-    setOrdercategoryStatuses((prev) => ({
-      ...prev,
-      [orderId]: newcategoryStatus,
-    }));
+    orderStatusMutate({
+      orderId: Number(orderId),
+      status: newcategoryStatus,
+    });
+    refetch;
     // Here you would typically update the order categoryStatus in your backend
   };
 
@@ -396,14 +426,14 @@ export default function RestaurantDashboardPage() {
               <PageWrapper>
                 <Card>
                   <CardHeader>
-                    <CardTitle>Recent Orders</CardTitle>
+                    <CardTitle>Orders</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <Table>
                       <TableHeader>
                         <TableRow>
                           <TableHead>Order ID</TableHead>
-                          <TableHead>Customer</TableHead>
+                          {/* <TableHead>Customer</TableHead> */}
                           <TableHead>Items</TableHead>
                           <TableHead>Total</TableHead>
                           <TableHead>categoryStatus</TableHead>
@@ -411,30 +441,28 @@ export default function RestaurantDashboardPage() {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {orders.map((order) => (
+                        {pendingOrderState?.map((order) => (
                           <TableRow key={order.id}>
                             <TableCell>{order.id}</TableCell>
-                            <TableCell>{order.customer}</TableCell>
-                            <TableCell>{order.items.join(", ")}</TableCell>
-                            <TableCell>{order.total}</TableCell>
+                            {/* <TableCell>{order.customer}</TableCell> */}
+                            <TableCell>item names</TableCell>
+                            <TableCell>
+                              ₦{Number(order.total).toLocaleString()}
+                            </TableCell>
                             <TableCell>
                               <Badge
                                 variant={
-                                  order.categoryStatus === "Ready"
+                                  order.status === "Ready"
                                     ? "secondary"
                                     : "default"
                                 }
                               >
-                                {ordercategoryStatuses[order.id] ||
-                                  order.categoryStatus}
+                                {order.status}
                               </Badge>
                             </TableCell>
                             <TableCell>
                               <Select
-                                value={
-                                  ordercategoryStatuses[order.id] ||
-                                  order.categoryStatus
-                                }
+                                value={order.status}
                                 onValueChange={(value) =>
                                   handlecategoryStatusChange(order.id, value)
                                 }
@@ -443,10 +471,10 @@ export default function RestaurantDashboardPage() {
                                   <SelectValue placeholder="Update categoryStatus" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                  <SelectItem value="Preparing">
-                                    Preparing
+                                  <SelectItem value="accepted">
+                                    Accepted
                                   </SelectItem>
-                                  <SelectItem value="Ready">Ready</SelectItem>
+                                  <SelectItem value="ready">Ready</SelectItem>
                                 </SelectContent>
                               </Select>
                             </TableCell>

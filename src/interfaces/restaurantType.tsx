@@ -31,9 +31,10 @@ export interface cartItem {
 }
 
 export interface checkoutType {
-  items: { menu_id: number; quantity: number }[];
+  items: { menu_id: number; quantity: number; menu_name: string }[];
   restaurant_id: number;
   total: number;
+  location: string;
 }
 
 export interface orderType {
