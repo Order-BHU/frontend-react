@@ -31,62 +31,62 @@ import { orderType } from "@/interfaces/restaurantType";
 import { waveform } from "ldrs";
 
 // Mock data - in a real app, this would come from an API
-const allUserOrder = [
-  {
-    id: "1",
-    restaurant: "Burger Palace",
-    items: ["Cheeseburger", "Fries"],
-    total: "₦3,500",
-    status: "Delivered",
-    date: "2023-06-15",
-  },
-  {
-    id: "2",
-    restaurant: "Pizza Heaven",
-    items: ["Pepperoni Pizza"],
-    total: "₦4,200",
-    status: "In Transit",
-    date: "2023-06-14",
-  },
-  {
-    id: "3",
-    restaurant: "Sushi Sensation",
-    items: ["California Roll", "Miso Soup"],
-    total: "₦5,500",
-    status: "Preparing",
-    date: "2023-06-13",
-  },
-  {
-    id: "4",
-    restaurant: "Taco Town",
-    items: ["Beef Tacos", "Guacamole"],
-    total: "₦3,800",
-    status: "Delivered",
-    date: "2023-06-12",
-  },
-  {
-    id: "5",
-    restaurant: "Pasta Paradise",
-    items: ["Spaghetti Carbonara"],
-    total: "₦4,500",
-    status: "Delivered",
-    date: "2023-06-11",
-  },
-  {
-    id: "6",
-    restaurant: "Salad Spot",
-    items: ["Caesar Salad", "Iced Tea"],
-    total: "₦2,800",
-    status: "Delivered",
-    date: "2023-06-10",
-  },
-];
+// const allUserOrder = [
+//   {
+//     id: "1",
+//     restaurant: "Burger Palace",
+//     items: ["Cheeseburger", "Fries"],
+//     total: "₦3,500",
+//     status: "Delivered",
+//     date: "2023-06-15",
+//   },
+//   {
+//     id: "2",
+//     restaurant: "Pizza Heaven",
+//     items: ["Pepperoni Pizza"],
+//     total: "₦4,200",
+//     status: "In Transit",
+//     date: "2023-06-14",
+//   },
+//   {
+//     id: "3",
+//     restaurant: "Sushi Sensation",
+//     items: ["California Roll", "Miso Soup"],
+//     total: "₦5,500",
+//     status: "Preparing",
+//     date: "2023-06-13",
+//   },
+//   {
+//     id: "4",
+//     restaurant: "Taco Town",
+//     items: ["Beef Tacos", "Guacamole"],
+//     total: "₦3,800",
+//     status: "Delivered",
+//     date: "2023-06-12",
+//   },
+//   {
+//     id: "5",
+//     restaurant: "Pasta Paradise",
+//     items: ["Spaghetti Carbonara"],
+//     total: "₦4,500",
+//     status: "Delivered",
+//     date: "2023-06-11",
+//   },
+//   {
+//     id: "6",
+//     restaurant: "Salad Spot",
+//     items: ["Caesar Salad", "Iced Tea"],
+//     total: "₦2,800",
+//     status: "Delivered",
+//     date: "2023-06-10",
+//   },
+// ];
 
-const userActivity = [
-  { id: "1", action: "Placed an order", date: "2023-06-15 14:30" },
-  { id: "2", action: "Wrote a review", date: "2023-06-14 09:15" },
-  { id: "3", action: "Added items to cart", date: "2023-06-13 18:45" },
-];
+// const userActivity = [
+//   { id: "1", action: "Placed an order", date: "2023-06-15 14:30" },
+//   { id: "2", action: "Wrote a review", date: "2023-06-14 09:15" },
+//   { id: "3", action: "Added items to cart", date: "2023-06-13 18:45" },
+// ];
 
 export default function UserDashboardPage() {
   waveform.register();
@@ -108,18 +108,32 @@ export default function UserDashboardPage() {
 
   // const recentOrders = allUserOrder.slice(0, 4);
   const [userOrder, setUserOrder] = useState<orderType>(); //this state stores all the pending orders for the user
-  // const [allOrders, setAllOrders] = useState<orderType[]>([]); //stores all order history
+  const [allOrders, setAllOrders] = useState<orderType[]>([]); //stores all order history
   const username = localStorage.getItem("name")?.slice(0, 2).toUpperCase();
   const { data: pendingOrder, status: pendingStatus } = useQuery({
     queryFn: () => myOrders("pending"),
     queryKey: ["orders"],
   });
 
+  const { data: orderHistory, status: historyStatus } = useQuery({
+    queryFn: () => myOrders("history"),
+    queryKey: ["history"],
+  });
+
   useEffect(() => {
+    //sets pending orders to a state
     if (pendingOrder) {
-      setUserOrder(pendingOrder?.order);
+      setUserOrder(pendingOrder.order);
     }
     console.log("user orders: ", userOrder);
+  }, [pendingOrder]);
+
+  useEffect(() => {
+    //sets order history to a state
+    if (orderHistory) {
+      setAllOrders(orderHistory.orders);
+    }
+    console.log("All user orders: ", orderHistory);
   }, [pendingOrder]);
 
   return (
@@ -234,43 +248,46 @@ export default function UserDashboardPage() {
                   <DialogHeader>
                     <DialogTitle>Order History</DialogTitle>
                   </DialogHeader>
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Order ID</TableHead>
-                        <TableHead>Restaurant</TableHead>
-                        <TableHead>Items</TableHead>
-                        <TableHead>Total</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead>Date</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {allUserOrder.map((order) => (
-                        <TableRow
-                          key={order.id}
-                          className="dark:text-cfont-dark"
-                        >
-                          <TableCell>{order.id}</TableCell>
-                          <TableCell>{order.restaurant}</TableCell>
-                          <TableCell>{order.items.join(", ")}</TableCell>
-                          <TableCell>{order.total}</TableCell>
-                          <TableCell>
-                            <Badge
-                              variant={
-                                order.status === "Delivered"
-                                  ? "secondary"
-                                  : "default"
-                              }
-                            >
-                              {order.status}
-                            </Badge>
-                          </TableCell>
-                          <TableCell>{order.date}</TableCell>
+                  {historyStatus === "pending" ? (
+                    <div className="flex flex-col justify-center items-center">
+                      <l-waveform
+                        size="35"
+                        stroke="3.5"
+                        speed="1"
+                        color="white"
+                      ></l-waveform>
+                    </div>
+                  ) : (
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Order ID</TableHead>
+                          {/* <TableHead>Restaurant</TableHead> */}
+                          <TableHead>Items</TableHead>
+                          <TableHead>Total</TableHead>
+                          <TableHead>Status</TableHead>
+                          <TableHead>Date</TableHead>
                         </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
+                      </TableHeader>
+                      <TableBody>
+                        {allOrders?.map((order) => (
+                          <TableRow
+                            key={order.id}
+                            className="dark:text-cfont-dark"
+                          >
+                            <TableCell>{order.id}</TableCell>
+                            {/* <TableCell>{order.restaurant}</TableCell> */}
+                            <TableCell>item names</TableCell>
+                            <TableCell>{order.total}</TableCell>
+                            <TableCell>
+                              <Badge variant="default">{order.status}</Badge>
+                            </TableCell>
+                            {/* <TableCell>{order.date}</TableCell> */}
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  )}
                 </DialogContent>
               </Dialog>
             </CardContent>
@@ -280,8 +297,8 @@ export default function UserDashboardPage() {
         <Tabs defaultValue="orders" className="space-y-4">
           <PageWrapper>
             <TabsList>
-              <TabsTrigger value="orders">Recent Orders</TabsTrigger>
-              <TabsTrigger value="activity">Activity</TabsTrigger>
+              <TabsTrigger value="orders">Active Order</TabsTrigger>
+              <TabsTrigger value="activity">Order history</TabsTrigger>
             </TabsList>
           </PageWrapper>
 
@@ -289,7 +306,7 @@ export default function UserDashboardPage() {
             <PageWrapper>
               <Card>
                 <CardHeader>
-                  <CardTitle>Recent Orders</CardTitle>
+                  <CardTitle>Orders</CardTitle>
                 </CardHeader>
                 <CardContent>
                   {pendingStatus === "pending" ? (
@@ -354,25 +371,63 @@ export default function UserDashboardPage() {
             <PageWrapper>
               <Card>
                 <CardHeader>
-                  <CardTitle>Recent Activity</CardTitle>
+                  <CardTitle>All Orders</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Action</TableHead>
-                        <TableHead>Date</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {userActivity.map((activity) => (
-                        <TableRow key={activity.id}>
-                          <TableCell>{activity.action}</TableCell>
-                          <TableCell>{activity.date}</TableCell>
+                  {historyStatus === "pending" ? (
+                    <div className="flex flex-col justify-center items-center">
+                      <l-waveform
+                        size="35"
+                        stroke="3.5"
+                        speed="1"
+                        color="white"
+                      ></l-waveform>
+                    </div>
+                  ) : pendingStatus === "error" ? (
+                    <div className="text-center py-8">
+                      <p>Error loading orders. Please try again later.</p>
+                    </div>
+                  ) : userOrder ? (
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Order ID</TableHead>
+                          <TableHead>Items</TableHead>
+                          <TableHead>Total</TableHead>
+                          <TableHead>Status</TableHead>
                         </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
+                      </TableHeader>
+                      <TableBody>
+                        <TableRow>
+                          <TableCell>{userOrder.id}</TableCell>
+                          <TableCell>item names</TableCell>
+                          <TableCell>
+                            ₦{Number(userOrder.total).toLocaleString()}
+                          </TableCell>
+                          <TableCell>
+                            <Badge
+                              variant={
+                                userOrder.status === "Delivered"
+                                  ? "secondary"
+                                  : "default"
+                              }
+                            >
+                              {userOrder.status}
+                            </Badge>
+                          </TableCell>
+                        </TableRow>
+                      </TableBody>
+                    </Table>
+                  ) : (
+                    <div className="text-center py-8">
+                      <p className="text-lg mb-4">
+                        You haven't placed any orders yet.
+                      </p>
+                      <Button asChild>
+                        <Link to="/restaurants">Place Order</Link>
+                      </Button>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </PageWrapper>
