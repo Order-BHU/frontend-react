@@ -227,7 +227,7 @@ export default function RestaurantMenuPage() {
     //all this below sets the quantity for chekout items so we can... have the quantity
 
     setCartItems((prevItems: singularCartItem[]) => {
-      const existingItem = cartItemArray.find(
+      const existingItem = cartItemArray?.find(
         (item) => item.menu_id === Number(itemId)
       );
       if (!existingItem) return prevItems;
@@ -469,7 +469,7 @@ export default function RestaurantMenuPage() {
                       <div className="relative h-48 w-full mb-2">
                         {
                           <Img
-                            className="object-fit"
+                            className="cover"
                             src={String(item.image!)}
                             alt={item.name}
                             unloader={

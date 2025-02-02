@@ -57,6 +57,7 @@ export default function RestaurantDashboardPage() {
   waveform.register();
   const [displayedMenuItems, setDisplayedMenuItems] = useState<menuItem[]>([]);
   const [pendingOrderState, setPendingOrders] = useState<orderType[]>([]);
+  const [acceptedOrderState, setAccepted] = useState<orderType[]>([]);
   const username = localStorage.getItem("name")?.slice(0, 2).toUpperCase();
   const restaurant_id = localStorage.getItem("restaurant_id");
   const { toast } = useToast();
@@ -78,6 +79,15 @@ export default function RestaurantDashboardPage() {
     queryKey: ["pendingOrders"],
     queryFn: () => myOrders("pending"),
   });
+
+  const {
+    status: acceptedStatus,
+    data: acceptedOrders,
+    refetch: refetchaccepted,
+  } = useQuery({
+    queryKey: ["acceptedOrders"],
+    queryFn: () => myOrders("accepted"),
+  });
   const { status: categoryStatus, data: categories } = useQuery({
     queryKey: ["categories"],
     queryFn: getCategories,
@@ -92,11 +102,19 @@ export default function RestaurantDashboardPage() {
   });
 
   useEffect(() => {
+    console.log(localStorage.getItem("token"));
     if (pendingOrders) {
       setPendingOrders(pendingOrders.orders);
       console.log("my orders: ", pendingOrders);
     }
-  });
+  }, [pendingOrders]);
+
+  useEffect(() => {
+    if (acceptedOrders) {
+      setAccepted(acceptedOrders.orders);
+      console.log("my orders: ", acceptedOrders);
+    }
+  }, [acceptedOrders]);
 
   useEffect(() => {
     if (menuItems && categories) {
@@ -127,6 +145,8 @@ export default function RestaurantDashboardPage() {
         title: "Success",
         description: data.message,
       });
+      refetchOrders();
+      refetchaccepted();
     },
     onError: (error) => {
       toast({
@@ -163,7 +183,7 @@ export default function RestaurantDashboardPage() {
     });
   };
 
-  const handleEditMenuItem = (e: React.FormEvent) => {
+  const handleEditMenuItem = (itemId: number, e: React.FormEvent) => {
     e.preventDefault();
     editMutate({
       name: newMenuItem.name,
@@ -171,7 +191,7 @@ export default function RestaurantDashboardPage() {
       category_id: newMenuItem.category_id,
       price: newMenuItem.price,
       image: newMenuItem.image,
-      id: Number(restaurant_id),
+      id: Number(itemId),
       category: "",
     });
   };
@@ -208,6 +228,7 @@ export default function RestaurantDashboardPage() {
   const { /*status: editStatus,*/ mutate: editMutate } = useMutation({
     mutationFn: editMenu,
     onSuccess: (data) => {
+      refetchMenuItems();
       toast({
         title: "Success",
         description: data.message,
@@ -438,18 +459,98 @@ export default function RestaurantDashboardPage() {
                             <TableRow key={order.id}>
                               <TableCell>{order.id}</TableCell>
                               {/* <TableCell>{order.customer}</TableCell> */}
-                              <TableCell>item names</TableCell>
+                              <TableCell>
+                                {order.items
+                                  ?.map(
+                                    (item) =>
+                                      item.menu_name + `(x${item.quantity})`
+                                  )
+                                  .join(", ")}
+                              </TableCell>
                               <TableCell>
                                 ₦{Number(order.total).toLocaleString()}
                               </TableCell>
                               <TableCell>
                                 <Badge
                                   variant={
-                                    order.status === "Ready"
+                                    order.status === "ready"
                                       ? "secondary"
                                       : "default"
                                   }
                                 >
+                                  {order.status}
+                                </Badge>
+                              </TableCell>
+                              <TableCell>
+                                <Select
+                                  value={order.status}
+                                  onValueChange={(value) =>
+                                    handlecategoryStatusChange(order.id, value)
+                                  }
+                                >
+                                  <SelectTrigger className="w-[180px]">
+                                    <SelectValue placeholder="Update categoryStatus" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="accepted">
+                                      Accepted
+                                    </SelectItem>
+                                    <SelectItem value="ready">Ready</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    )}
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Accepted Orders</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {acceptedStatus === "pending" ? (
+                      <div className="flex flex-col justify-center items-center">
+                        <l-waveform
+                          size="35"
+                          stroke="3.5"
+                          speed="1"
+                          color="white"
+                        ></l-waveform>
+                      </div>
+                    ) : (
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Order ID</TableHead>
+                            {/* <TableHead>Customer</TableHead> */}
+                            <TableHead>Items</TableHead>
+                            <TableHead>Total</TableHead>
+                            <TableHead>categoryStatus</TableHead>
+                            <TableHead>Action</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {acceptedOrderState?.map((order) => (
+                            <TableRow key={order.id}>
+                              <TableCell>{order.id}</TableCell>
+                              {/* <TableCell>{order.customer}</TableCell> */}
+                              <TableCell>
+                                {order.items
+                                  ?.map(
+                                    (item) =>
+                                      item.menu_name + `(x${item.quantity})`
+                                  )
+                                  .join(", ")}
+                              </TableCell>
+                              <TableCell>
+                                ₦{Number(order.total).toLocaleString()}
+                              </TableCell>
+                              <TableCell>
+                                <Badge variant={"secondary"}>
                                   {order.status}
                                 </Badge>
                               </TableCell>
@@ -529,7 +630,9 @@ export default function RestaurantDashboardPage() {
                                     </DialogHeader>
                                     {editingMenuItem && (
                                       <form
-                                        onSubmit={handleEditMenuItem}
+                                        onSubmit={(e) =>
+                                          handleEditMenuItem(item.id, e)
+                                        }
                                         className="mt-4 space-y-4"
                                       >
                                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -537,7 +640,7 @@ export default function RestaurantDashboardPage() {
                                             <Label htmlFor="name">Name</Label>
                                             <Input
                                               id="name"
-                                              value={newMenuItem.name}
+                                              value={item.name}
                                               onChange={(e) =>
                                                 setNewMenuItem({
                                                   ...newMenuItem,
@@ -553,7 +656,7 @@ export default function RestaurantDashboardPage() {
                                             </Label>
                                             <Input
                                               id="price"
-                                              value={newMenuItem.price}
+                                              value={item.price}
                                               onChange={(e) => {
                                                 const { value } = e.target;
 
@@ -573,7 +676,7 @@ export default function RestaurantDashboardPage() {
                                             </Label>
                                             <Textarea
                                               id="description"
-                                              value={newMenuItem.description}
+                                              value={item.description}
                                               onChange={(e) =>
                                                 setNewMenuItem({
                                                   ...newMenuItem,

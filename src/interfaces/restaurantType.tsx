@@ -40,7 +40,10 @@ export interface checkoutType {
 export interface orderType {
   //this is for the order route in user dashboard. It's the type the userOrders state is set to
   id: number;
-  items: { menu_id: number; quantity: number }[];
+  items: { menu_id: number; quantity: number; menu_name: string }[];
   status: string;
   total: number;
+  restaurant_name: string;
+  location: string;
+  user_phoneNumber: string;
 }

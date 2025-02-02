@@ -77,7 +77,7 @@ export async function editMenu(menu: menuItem) {
   const token = localStorage.getItem("token");
   return axios
     .post(
-      `${apiUrl}/${menu.id}/add-menu`,
+      `${apiUrl}/${menu.id}/edit-menu`,
       menu, // empty body or whatever body your API expects
       {
         headers: {
@@ -205,8 +205,11 @@ export async function checkout(checkoutItems: checkoutType) {
     });
 }
 
-export async function myOrders(ordertype: "pending" | "history" | "accepted") {
+export async function myOrders(
+  ordertype: "pending" | "history" | "accepted" | "ready" | "history"
+) {
   const token = localStorage.getItem("token");
+  console.log(token);
   return axios
     .get(`${apiUrl}/${ordertype}/my-orders`, {
       headers: {
@@ -252,14 +255,46 @@ export async function getLocation() {
 export async function updateOrderStatus(content: {
   orderId: number;
   status: string;
+  code?: number;
 }) {
   const token = localStorage.getItem("token");
+  console.log(token);
   return axios
     .post(
       `${apiUrl}/${content.orderId}/${content.status}/update-order-status`,
+      {
+        code: content.code,
+      },
 
       {
-        // config object
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        timeout: 90000,
+      }
+    )
+    .then(function (response: AxiosResponse) {
+      console.log(response.data);
+      return response.data;
+    })
+    .catch(function (error: AxiosError) {
+      if (error.code === "ERR_NETWORK") {
+        throw new Error("Network error: Unable to reach the server.");
+      }
+      console.log(error);
+      throw error.response?.data;
+    });
+}
+
+export async function setDriverStatus(status: "offline" | "online") {
+  const token = localStorage.getItem("token");
+  console.log(token);
+  return axios
+    .post(
+      `${apiUrl}/${status}/driver-status-update`,
+      {},
+
+      {
         headers: {
           Authorization: `Bearer ${token}`,
         },

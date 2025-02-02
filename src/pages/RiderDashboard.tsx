@@ -1,52 +1,124 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Header } from "../components/header";
 import { Footer } from "../components/footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import { MapPin, Package, DollarSign, Star, TrendingUp } from "lucide-react";
 import { PageWrapper } from "@/components/pagewrapper";
+import { myOrders, updateOrderStatus, setDriverStatus } from "@/api/restaurant";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { orderType } from "@/interfaces/restaurantType";
+import { waveform } from "ldrs";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useToast } from "@/hooks/use-toast";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+} from "@/components/ui/dialog";
 
 // This would typically come from an API or database
-const currentOrders = [
-  {
-    id: "1",
-    restaurant: "Burger Palace",
-    destination: "123 Main St",
-    status: "Picking Up",
-    earnings: "$8.50",
-  },
-  {
-    id: "2",
-    restaurant: "Pizza Heaven",
-    destination: "456 Elm St",
-    status: "En Route",
-    earnings: "$10.00",
-  },
-];
-
-const completedOrders = [
-  {
-    id: "3",
-    restaurant: "Sushi Sensation",
-    destination: "789 Oak St",
-    status: "Delivered",
-    earnings: "$12.00",
-  },
-  {
-    id: "4",
-    restaurant: "Taco Town",
-    destination: "101 Pine St",
-    status: "Delivered",
-    earnings: "$9.50",
-  },
-];
 
 export default function RiderDashboardPage() {
+  waveform.register();
+  const [activeOrders, setActive] = useState<orderType[]>([]);
+  const [orderHistoryState, setHistory] = useState<orderType[]>([]);
+  const {
+    status: pendingStatus,
+    data: pendingOrders,
+    refetch: refetchPending,
+  } = useQuery({
+    queryKey: ["activeOrders"],
+    queryFn: () => myOrders("ready"),
+  });
+
+  const {
+    status: historyStatus,
+    data: orderHistory,
+    refetch: refetchHistory,
+  } = useQuery({
+    queryKey: ["history"],
+    queryFn: () => myOrders("history"),
+  });
+
+  const { toast } = useToast();
+  const { mutate: orderStatusMutate } = useMutation({
+    mutationFn: updateOrderStatus,
+    onSuccess: (data) => {
+      toast({
+        title: "Success",
+        description: data.message,
+      });
+      refetchPending();
+      refetchHistory();
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const { status: driverStatus, mutate: driverStatusMutate } = useMutation({
+    mutationFn: setDriverStatus,
+    onSuccess: (data) => {
+      toast({
+        title: "Success",
+        description: data.message,
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleDriverStatusChange = (state: "offline" | "online") => {
+    driverStatusMutate(state);
+  };
+
+  const handlecategoryStatusChange = (
+    orderId: number,
+    newcategoryStatus: string
+  ) => {
+    console.log("updatng category...");
+    orderStatusMutate({
+      orderId: Number(orderId),
+      status: newcategoryStatus,
+    });
+    // Here you would typically update the order categoryStatus in your backend
+  };
+
+  useEffect(() => {
+    if (pendingOrders) {
+      setActive(pendingOrders.orders[0]); //for some reason pendingOrders is an array inside an array in the response
+    }
+  }, [pendingOrders]);
+
+  useEffect(() => {
+    if (orderHistory) {
+      setHistory(orderHistory.orders[0]); //for some reason pendingOrders is an array inside an array in the response
+      console.log("order history: ", orderHistoryState);
+    }
+  }, [orderHistory]);
   const [isOnline, setIsOnline] = useState(true);
 
   return (
@@ -137,64 +209,120 @@ export default function RiderDashboardPage() {
           </PageWrapper>
 
           <TabsContent value="current">
-            <div className="space-y-4">
-              {currentOrders.map((order) => (
-                <PageWrapper key={order.id}>
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="flex justify-between items-center">
-                        <span>{order.restaurant}</span>
-                        <Badge>{order.status}</Badge>
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="flex items-center mb-2">
-                        <MapPin className="h-4 w-4 mr-2" />
-                        <span className="text-sm text-gray-600">
-                          {order.destination}
-                        </span>
-                      </div>
-                      <div className="flex items-center">
-                        <DollarSign className="h-4 w-4 mr-2" />
-                        <span className="text-sm font-semibold">
-                          {order.earnings}
-                        </span>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </PageWrapper>
-              ))}
-            </div>
+            {pendingStatus === "pending" ? (
+              <div className="flex flex-col justify-center items-center">
+                <l-waveform
+                  size="35"
+                  stroke="3.5"
+                  speed="1"
+                  color="white"
+                ></l-waveform>
+              </div>
+            ) : activeOrders?.length <= 0 ? (
+              <div className="text-center py-8">
+                <p className="text-lg mb-4">No pending orders</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {activeOrders?.map((order) => (
+                  <PageWrapper key={order.id}>
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="flex justify-between items-center">
+                          <span>{order.restaurant_name}</span>
+                          <span className="text-sm italic">
+                            {order.user_phoneNumber}
+                          </span>
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="flex items-center mb-2">
+                          <MapPin className="h-4 w-4 mr-2" />
+                          <span className="text-sm text-gray-600">
+                            {order.location}
+                          </span>
+                        </div>
+                        <div className="flex items-center">
+                          <span className="text-sm font-semibold">
+                            ₦{order.total}
+                          </span>
+                        </div>
+
+                        <Select
+                          value={order.status}
+                          onValueChange={(value) =>
+                            handlecategoryStatusChange(order.id, value)
+                          }
+                        >
+                          <SelectTrigger className="w-[180px]">
+                            <SelectValue placeholder={order.status} />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="ready">Completed</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </CardContent>
+                    </Card>
+                  </PageWrapper>
+                ))}
+              </div>
+            )}
           </TabsContent>
           <TabsContent value="completed">
-            <div className="space-y-4">
-              {completedOrders.map((order) => (
-                <PageWrapper key={order.id}>
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="flex justify-between items-center">
-                        <span>{order.restaurant}</span>
-                        <Badge variant="secondary">{order.status}</Badge>
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="flex items-center mb-2">
-                        <MapPin className="h-4 w-4 mr-2" />
-                        <span className="text-sm text-gray-600">
-                          {order.destination}
-                        </span>
-                      </div>
-                      <div className="flex items-center">
-                        <DollarSign className="h-4 w-4 mr-2" />
-                        <span className="text-sm font-semibold">
-                          {order.earnings}
-                        </span>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </PageWrapper>
-              ))}
-            </div>
+            {historyStatus === "pending" ? (
+              <div className="flex flex-col justify-center items-center">
+                <l-waveform
+                  size="35"
+                  stroke="3.5"
+                  speed="1"
+                  color="white"
+                ></l-waveform>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {orderHistoryState?.map((order) => (
+                  <PageWrapper key={order.id}>
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="flex justify-between items-center">
+                          <span>{order.restaurant_name}</span>
+                          <span className="text-sm italic">
+                            {order.user_phoneNumber}
+                          </span>
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="flex items-center mb-2">
+                          <MapPin className="h-4 w-4 mr-2" />
+                          <span className="text-sm text-gray-600">
+                            {order.location}
+                          </span>
+                        </div>
+                        <div className="flex items-center">
+                          <span className="text-sm font-semibold">
+                            ₦{order.total}
+                          </span>
+                        </div>
+
+                        {/* <Select
+                          value={order.status}
+                          onValueChange={(value) =>
+                            handlecategoryStatusChange(order.id, value)
+                          }
+                        >
+                          <SelectTrigger className="w-[180px]">
+                            <SelectValue placeholder="update status" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="ready">Completed</SelectItem>
+                          </SelectContent>
+                        </Select> */}
+                      </CardContent>
+                    </Card>
+                  </PageWrapper>
+                ))}
+              </div>
+            )}
           </TabsContent>
         </Tabs>
       </main>

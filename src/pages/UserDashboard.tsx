@@ -277,7 +277,11 @@ export default function UserDashboardPage() {
                           >
                             <TableCell>{order.id}</TableCell>
                             {/* <TableCell>{order.restaurant}</TableCell> */}
-                            <TableCell>item names</TableCell>
+                            <TableCell>
+                              {order.items
+                                ?.map((item) => item.menu_name)
+                                .join(",")}
+                            </TableCell>
                             <TableCell>{order.total}</TableCell>
                             <TableCell>
                               <Badge variant="default">{order.status}</Badge>
@@ -335,7 +339,13 @@ export default function UserDashboardPage() {
                       <TableBody>
                         <TableRow>
                           <TableCell>{userOrder.id}</TableCell>
-                          <TableCell>item names</TableCell>
+                          <TableCell>
+                            {userOrder.items
+                              ?.map(
+                                (item) => item.menu_name + `(x${item.quantity})`
+                              )
+                              .join(", ")}
+                          </TableCell>
                           <TableCell>
                             ₦{Number(userOrder.total).toLocaleString()}
                           </TableCell>
@@ -400,7 +410,9 @@ export default function UserDashboardPage() {
                       <TableBody>
                         <TableRow>
                           <TableCell>{userOrder.id}</TableCell>
-                          <TableCell>item names</TableCell>
+                          <TableCell>
+                            {userOrder.items.map((item) => item.menu_name)}
+                          </TableCell>
                           <TableCell>
                             ₦{Number(userOrder.total).toLocaleString()}
                           </TableCell>

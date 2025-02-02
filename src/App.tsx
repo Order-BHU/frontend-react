@@ -37,9 +37,9 @@ function App() {
               <Route path="/menu/:id" element={<RestaurantMenuPage />}></Route>
               <Route path="/verify-otp" element={<VerifyOTPPage />}></Route>
               <Route
-                path="/rider-dashboard"
+                path="/driver-dashboard"
                 element={
-                  <ProtectedRoute allowedRoles={["rider"]}>
+                  <ProtectedRoute allowedRoles={["driver"]}>
                     <RiderDashboardPage />
                   </ProtectedRoute>
                 }
