@@ -21,19 +21,21 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-  DialogFooter,
-} from "@/components/ui/dialog";
+import driverStore from "@/stores/driverStore";
+// import {
+//   Dialog,
+//   DialogContent,
+//   DialogHeader,
+//   DialogTitle,
+//   DialogTrigger,
+//   DialogFooter,
+// } from "@/components/ui/dialog";
 
 // This would typically come from an API or database
 
 export default function RiderDashboardPage() {
   waveform.register();
+  const { state, setState } = driverStore();
   const [activeOrders, setActive] = useState<orderType[]>([]);
   const [orderHistoryState, setHistory] = useState<orderType[]>([]);
   const {
@@ -74,7 +76,7 @@ export default function RiderDashboardPage() {
     },
   });
 
-  const { status: driverStatus, mutate: driverStatusMutate } = useMutation({
+  const { mutate: driverStatusMutate } = useMutation({
     mutationFn: setDriverStatus,
     onSuccess: (data) => {
       toast({
@@ -91,8 +93,23 @@ export default function RiderDashboardPage() {
     },
   });
 
-  const handleDriverStatusChange = (state: "offline" | "online") => {
-    driverStatusMutate(state);
+  const handleDriverStatusChange = (newState: "offline" | "online") => {
+    const prevState = state; // Save the previous state
+
+    // Optimistically update state
+    setState(newState);
+
+    driverStatusMutate(newState, {
+      onError: () => {
+        // Revert state if there's an error
+        setState(prevState);
+        toast({
+          title: "Error",
+          description: "Failed to update driver status. Please try again.",
+          variant: "destructive",
+        });
+      },
+    });
   };
 
   const handlecategoryStatusChange = (
@@ -119,7 +136,6 @@ export default function RiderDashboardPage() {
       console.log("order history: ", orderHistoryState);
     }
   }, [orderHistory]);
-  const [isOnline, setIsOnline] = useState(true);
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-cbg-dark">
@@ -133,10 +149,14 @@ export default function RiderDashboardPage() {
           </PageWrapper>
 
           <Button
-            onClick={() => setIsOnline(!isOnline)}
-            variant={isOnline ? "default" : "outline"}
+            onClick={() =>
+              handleDriverStatusChange(
+                state === "online" ? "offline" : "online"
+              )
+            }
+            variant={state === "online" ? "default" : "secondary"}
           >
-            {isOnline ? "Go Offline" : "Go Online"}
+            {state === "online" ? "Go Offline" : "Go Online"}
           </Button>
         </div>
 

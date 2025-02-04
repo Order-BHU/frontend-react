@@ -193,7 +193,7 @@ export async function checkout(checkoutItems: checkoutType) {
       }
     )
     .then(function (response: AxiosResponse) {
-      console.log(response.data);
+      console.log("checkout data: ", response.data);
       return response.data;
     })
     .catch(function (error: AxiosError) {

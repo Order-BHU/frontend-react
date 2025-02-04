@@ -8,6 +8,7 @@ export interface loginResponse {
   name: string;
   restaurant_name: string;
   restaurant_id: string;
+  status: "offline" | "online"; //for the driver's status
 }
 
 export interface email {

@@ -401,7 +401,7 @@ export default function RestaurantMenuPage() {
                           </li>
                         ))}
                       </ul>
-                      <h2>Total: {cartItems?.total}</h2>
+                      <h2>Total: {cartItems?.total.toLocaleString()}</h2>
                       {/*I accessed total directly here because virgo just sent the total and we have a deadline. Trying to figure out which interface i need to edit will take a while so i'll just stick to this for a while */}
                     </CardContent>
                   </Card>

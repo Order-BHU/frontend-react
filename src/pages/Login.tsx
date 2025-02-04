@@ -10,9 +10,11 @@ import { useMutation } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { Eye, EyeOff } from "lucide-react";
 import UseAuthStore from "@/stores/useAuthStore";
+import driverStore from "@/stores/driverStore";
 
 export default function LoginPage() {
   const { logIn } = UseAuthStore();
+  const { setState } = driverStore();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -27,6 +29,12 @@ export default function LoginPage() {
         localStorage.setItem("name", data.restaurant_name);
         localStorage.setItem("restaurant_id", data.restaurant_id);
       }
+
+      if (data.account_type === "driver") {
+        //this logic will deal with assigning the state for the driver's status: online or offline
+        setState(data.status);
+      }
+
       if (data.account_type === "customer") {
         localStorage.setItem("name", data.name);
       }
