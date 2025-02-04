@@ -13,23 +13,24 @@ import { myOrders, updateOrderStatus, setDriverStatus } from "@/api/restaurant";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { orderType } from "@/interfaces/restaurantType";
 import { waveform } from "ldrs";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+// import {
+//   Select,
+//   SelectContent,
+//   SelectItem,
+//   SelectTrigger,
+//   SelectValue,
+// } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import driverStore from "@/stores/driverStore";
-// import {
-//   Dialog,
-//   DialogContent,
-//   DialogHeader,
-//   DialogTitle,
-//   DialogTrigger,
-//   DialogFooter,
-// } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 
 // This would typically come from an API or database
 
@@ -38,6 +39,7 @@ export default function RiderDashboardPage() {
   const { state, setState } = driverStore();
   const [activeOrders, setActive] = useState<orderType[]>([]);
   const [orderHistoryState, setHistory] = useState<orderType[]>([]);
+  const [orderCode, setCode] = useState(""); //keeps track of the code the rider types in to complete an order
   const {
     status: pendingStatus,
     data: pendingOrders,
@@ -76,9 +78,10 @@ export default function RiderDashboardPage() {
     },
   });
 
-  const { mutate: driverStatusMutate } = useMutation({
+  const { mutate: driverStatusMutate, status: mutateStatus } = useMutation({
     mutationFn: setDriverStatus,
     onSuccess: (data) => {
+      refetchPending();
       toast({
         title: "Success",
         description: data.message,
@@ -114,12 +117,14 @@ export default function RiderDashboardPage() {
 
   const handlecategoryStatusChange = (
     orderId: number,
-    newcategoryStatus: string
+    newcategoryStatus: string,
+    code: string
   ) => {
     console.log("updatng category...");
     orderStatusMutate({
       orderId: Number(orderId),
       status: newcategoryStatus,
+      code: code,
     });
     // Here you would typically update the order categoryStatus in your backend
   };
@@ -268,7 +273,7 @@ export default function RiderDashboardPage() {
                           </span>
                         </div>
 
-                        <Select
+                        {/* <Select
                           value={order.status}
                           onValueChange={(value) =>
                             handlecategoryStatusChange(order.id, value)
@@ -280,7 +285,44 @@ export default function RiderDashboardPage() {
                           <SelectContent>
                             <SelectItem value="ready">Completed</SelectItem>
                           </SelectContent>
-                        </Select>
+                        </Select> */}
+
+                        <Dialog>
+                          <DialogTrigger asChild>
+                            <Button>Complete Order</Button>
+                          </DialogTrigger>
+                          <DialogContent className="sm:max-w-md">
+                            <DialogHeader>
+                              <DialogTitle>Enter Order Code</DialogTitle>
+                              <DialogDescription>
+                                Input the code from the customer to complete
+                                this order
+                              </DialogDescription>
+                            </DialogHeader>
+                            <div className="">
+                              <div className="grid flex-1 gap-2">
+                                <Input
+                                  id="ordercode"
+                                  onChange={(e) => setCode(e.target.value)}
+                                />
+                              </div>
+                              <Button
+                                onClick={() =>
+                                  handlecategoryStatusChange(
+                                    order.id,
+                                    "completed",
+                                    orderCode
+                                  )
+                                }
+                                disabled={mutateStatus === "pending"}
+                                size="sm"
+                                className="px-3"
+                              >
+                                Submit
+                              </Button>
+                            </div>
+                          </DialogContent>
+                        </Dialog>
                       </CardContent>
                     </Card>
                   </PageWrapper>

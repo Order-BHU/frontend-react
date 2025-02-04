@@ -255,7 +255,7 @@ export async function getLocation() {
 export async function updateOrderStatus(content: {
   orderId: number;
   status: string;
-  code?: number;
+  code?: string;
 }) {
   const token = localStorage.getItem("token");
   console.log(token);
