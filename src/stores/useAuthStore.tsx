@@ -10,29 +10,36 @@ interface AuthState {
 
 // Create the Zustand store
 const useAuthStore = create<AuthState>((set) => {
+  // Define the logout function first
+  const logout = () => {
+    set({ isLoggedIn: false, role: null });
+    localStorage.removeItem("authState");
+    localStorage.removeItem("token");
+    localStorage.removeItem("name");
+    localStorage.removeItem("restaurant_id");
+  };
+
   // Check localStorage for saved state
   const savedAuth = JSON.parse(localStorage.getItem("authState") || "{}");
+  const token = localStorage.getItem("token");
+
+  // Logout if the token is invalid
+  if (token === "undefined" || token === "null" || token === "") {
+    logout();
+    return { isLoggedIn: false, role: null, logIn: () => {}, logout };
+  }
 
   return {
     isLoggedIn: savedAuth?.isLoggedIn || false, // Load saved isLoggedIn state
     role: savedAuth?.role || null, // Load saved role state
 
-    // Log in and save the state to localStorage
     logIn: (role) => {
       const newState = { isLoggedIn: true, role };
       set(newState);
       localStorage.setItem("authState", JSON.stringify(newState));
     },
 
-    // Log out and clear the state from localStorage
-    logout: () => {
-      const newState = { isLoggedIn: false, role: null };
-      set(newState);
-      localStorage.removeItem("authState");
-      localStorage.removeItem("token");
-      localStorage.removeItem("name");
-      localStorage.removeItem("restaurant_id");
-    },
+    logout, // Use the logout function
   };
 });
 
