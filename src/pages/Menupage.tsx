@@ -200,6 +200,7 @@ export default function RestaurantMenuPage() {
   const { mutate: checkoutMutate, status: checkoutStatus } = useMutation({
     mutationFn: checkout,
     onSuccess: (data) => {
+      localStorage.setItem("orderCode", data.code);
       toast({
         title: "Success",
         description: data.message,

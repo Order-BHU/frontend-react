@@ -349,7 +349,7 @@ export default function UserDashboardPage() {
                           <TableCell>
                             ₦{Number(userOrder.total).toLocaleString()}
                           </TableCell>
-                          <TableCell>
+                          <TableCell className="flex flex-col">
                             <Badge
                               variant={
                                 userOrder.status === "Delivered"
@@ -359,6 +359,7 @@ export default function UserDashboardPage() {
                             >
                               {userOrder.status}
                             </Badge>
+                            <p>{localStorage.getItem("orderCode")}</p>
                           </TableCell>
                         </TableRow>
                       </TableBody>

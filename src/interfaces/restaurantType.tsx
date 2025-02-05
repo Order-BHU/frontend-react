@@ -46,4 +46,5 @@ export interface orderType {
   restaurant_name: string;
   location: string;
   user_phoneNumber: string;
+  order_id: number; //honestly, man, idek why this is here. It's to complete the checkout order for the drivers, but idk we couldn't just use the id. DO NOT FUCKING REMOVE ANYTHING, it's from the backend and it's very important istg.
 }

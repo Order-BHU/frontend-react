@@ -120,7 +120,7 @@ export default function RiderDashboardPage() {
     newcategoryStatus: string,
     code: string
   ) => {
-    console.log("updatng category...");
+    console.log("order id: ", orderId);
     orderStatusMutate({
       orderId: Number(orderId),
       status: newcategoryStatus,
@@ -291,7 +291,7 @@ export default function RiderDashboardPage() {
                           <DialogTrigger asChild>
                             <Button>Complete Order</Button>
                           </DialogTrigger>
-                          <DialogContent className="sm:max-w-md">
+                          <DialogContent className="sm:max-w-md dark:text-cfont-dark">
                             <DialogHeader>
                               <DialogTitle>Enter Order Code</DialogTitle>
                               <DialogDescription>
@@ -309,14 +309,14 @@ export default function RiderDashboardPage() {
                               <Button
                                 onClick={() =>
                                   handlecategoryStatusChange(
-                                    order.id,
+                                    order.order_id,
                                     "completed",
                                     orderCode
                                   )
                                 }
                                 disabled={mutateStatus === "pending"}
                                 size="sm"
-                                className="px-3"
+                                className="px-3 mt-4"
                               >
                                 Submit
                               </Button>
