@@ -351,6 +351,7 @@ export default function UserDashboardPage() {
                           </TableCell>
                           <TableCell className="flex flex-col">
                             <Badge
+                              className="max-w-16"
                               variant={
                                 userOrder.status === "Delivered"
                                   ? "secondary"
@@ -359,7 +360,9 @@ export default function UserDashboardPage() {
                             >
                               {userOrder.status}
                             </Badge>
-                            <p>{localStorage.getItem("orderCode")}</p>
+                            <p className="italic ">
+                              Order Code: "{localStorage.getItem("orderCode")}"
+                            </p>
                           </TableCell>
                         </TableRow>
                       </TableBody>
