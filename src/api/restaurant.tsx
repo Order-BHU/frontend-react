@@ -24,47 +24,69 @@ export async function getMenuItems(id: string) {
 }
 
 export async function addMenu(menu: menuItem) {
+  const token = localStorage.getItem("token");
   return api
     .post(`/${menu.id}/add-menu`, menu, {
-      headers: { "Content-Type": "multipart/form-data" },
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${token}`,
+      },
     })
     .then((response: AxiosResponse) => response.data)
     .catch(handleError);
 }
 
 export async function editMenu(menu: menuItem) {
+  const token = localStorage.getItem("token");
   return api
     .post(`/${menu.id}/edit-menu`, menu, {
-      headers: { "Content-Type": "multipart/form-data" },
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${token}`,
+      },
     })
     .then((response: AxiosResponse) => response.data)
     .catch(handleError);
 }
 
 export async function addToCart(menuid: number) {
+  const token = localStorage.getItem("token");
   return api
-    .post(`/${menuid}/add-to-cart`, { menuid })
+    .post(
+      `/${menuid}/add-to-cart`,
+      { menuid },
+      { headers: { Authorization: `Bearer ${token}` } }
+    )
     .then((response: AxiosResponse) => response.data)
     .catch(handleError);
 }
 
 export async function removeCartItem(menuid: number) {
+  const token = localStorage.getItem("token");
   return api
-    .post(`/${menuid}/remove-cart-item`, { menuid })
+    .post(
+      `/${menuid}/remove-cart-item`,
+      { menuid },
+      { headers: { Authorization: `Bearer ${token}` } }
+    )
     .then((response: AxiosResponse) => response.data)
     .catch(handleError);
 }
 
 export async function viewCart() {
+  const token = localStorage.getItem("token");
   return api
-    .get("/view-cart")
+    .get("/view-cart", { headers: { Authorization: `Bearer ${token}` } })
     .then((response: AxiosResponse) => response.data)
     .catch(handleError);
 }
 
 export async function checkout(checkoutItems: checkoutType) {
+  const token = localStorage.getItem("token");
   return api
-    .post(`/${checkoutItems.restaurant_id}/checkout`, checkoutItems)
+    .post(`/${checkoutItems.restaurant_id}/checkout`, checkoutItems, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
     .then((response: AxiosResponse) => response.data)
     .catch(handleError);
 }
@@ -72,8 +94,11 @@ export async function checkout(checkoutItems: checkoutType) {
 export async function myOrders(
   ordertype: "pending" | "history" | "accepted" | "ready" | "history"
 ) {
+  const token = localStorage.getItem("token");
   return api
-    .get(`/${ordertype}/my-orders`)
+    .get(`/${ordertype}/my-orders`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
     .then((response: AxiosResponse) => response.data)
     .catch(handleError);
 }
@@ -90,17 +115,27 @@ export async function updateOrderStatus(content: {
   status: string;
   code?: string;
 }) {
+  const token = localStorage.getItem("token");
   return api
-    .post(`/${content.orderId}/${content.status}/update-order-status`, {
-      code: content.code,
-    })
+    .post(
+      `/${content.orderId}/${content.status}/update-order-status`,
+      {
+        code: content.code,
+      },
+      { headers: { Authorization: `Bearer ${token}` } }
+    )
     .then((response: AxiosResponse) => response.data)
     .catch(handleError);
 }
 
 export async function setDriverStatus(status: "offline" | "online") {
+  const token = localStorage.getItem("token");
   return api
-    .post(`/${status}/driver-status-update`, {})
+    .post(
+      `/${status}/driver-status-update`,
+      {},
+      { headers: { Authorization: `Bearer ${token}` } }
+    )
     .then((response: AxiosResponse) => response.data)
     .catch(handleError);
 }

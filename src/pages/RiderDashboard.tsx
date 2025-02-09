@@ -38,7 +38,7 @@ export default function RiderDashboardPage() {
   waveform.register();
   const { state, setState } = driverStore();
   const [activeOrders, setActive] = useState<orderType[]>([]);
-  const [orderHistoryState, setHistory] = useState<orderType[]>([]);
+  //const [orderHistoryState, setHistory] = useState<orderType[]>([]);
   const [orderCode, setCode] = useState(""); //keeps track of the code the rider types in to complete an order
   const {
     status: pendingStatus,
@@ -49,14 +49,14 @@ export default function RiderDashboardPage() {
     queryFn: () => myOrders("ready"),
   });
 
-  const {
-    status: historyStatus,
-    data: orderHistory,
-    refetch: refetchHistory,
-  } = useQuery({
-    queryKey: ["history"],
-    queryFn: () => myOrders("history"),
-  });
+  // const {
+  //   status: historyStatus,
+  //   data: orderHistory,
+  //   refetch: refetchHistory,
+  // } = useQuery({
+  //   queryKey: ["history"],
+  //   queryFn: () => myOrders("history"),
+  // });
 
   const { toast } = useToast();
   const { mutate: orderStatusMutate } = useMutation({
@@ -67,7 +67,7 @@ export default function RiderDashboardPage() {
         description: data.message,
       });
       refetchPending();
-      refetchHistory();
+      // refetchHistory();
     },
     onError: (error) => {
       toast({
@@ -135,12 +135,12 @@ export default function RiderDashboardPage() {
     }
   }, [pendingOrders]);
 
-  useEffect(() => {
-    if (orderHistory) {
-      setHistory(orderHistory.orders[0]); //for some reason pendingOrders is an array inside an array in the response
-      console.log("order history: ", orderHistoryState);
-    }
-  }, [orderHistory]);
+  // useEffect(() => {
+  //   if (orderHistory) {
+  //     setHistory(orderHistory.orders[0]); //for some reason pendingOrders is an array inside an array in the response
+  //     console.log("order history: ", orderHistoryState);
+  //   }
+  // }, [orderHistory]);
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-cbg-dark">
@@ -330,7 +330,7 @@ export default function RiderDashboardPage() {
               </div>
             )}
           </TabsContent>
-          <TabsContent value="completed">
+          {/* <TabsContent value="completed">
             {historyStatus === "pending" ? (
               <div className="flex flex-col justify-center items-center">
                 <l-waveform
@@ -365,27 +365,13 @@ export default function RiderDashboardPage() {
                             ₦{order.total}
                           </span>
                         </div>
-
-                        {/* <Select
-                          value={order.status}
-                          onValueChange={(value) =>
-                            handlecategoryStatusChange(order.id, value)
-                          }
-                        >
-                          <SelectTrigger className="w-[180px]">
-                            <SelectValue placeholder="update status" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="ready">Completed</SelectItem>
-                          </SelectContent>
-                        </Select> */}
                       </CardContent>
                     </Card>
                   </PageWrapper>
                 ))}
               </div>
             )}
-          </TabsContent>
+          </TabsContent> */}
         </Tabs>
       </main>
       <Footer />

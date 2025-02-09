@@ -59,7 +59,7 @@ export default function RestaurantsPage() {
             </PageWrapper>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {restaurants.map((restaurant: restaurant) => (
+              {restaurants?.map((restaurant: restaurant) => (
                 <PageWrapper key={restaurant.id}>
                   <RestaurantCard {...restaurant} />
                 </PageWrapper>
