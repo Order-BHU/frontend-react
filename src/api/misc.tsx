@@ -1,0 +1,31 @@
+import { AxiosResponse, AxiosError } from "axios";
+import axios from "axios";
+const apiUrl = "https://bhuorder.com.ng/api";
+
+export async function updatePfp(pfp: { profile_picture: File | null }) {
+  const token = localStorage.getItem("token");
+  console.log(token);
+  return axios
+    .post(
+      `${apiUrl}/update-profile-picture`,
+      pfp,
+
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        timeout: 90000,
+      }
+    )
+    .then(function (response: AxiosResponse) {
+      console.log(response.data);
+      return response.data;
+    })
+    .catch(function (error: AxiosError) {
+      if (error.code === "ERR_NETWORK") {
+        throw new Error("Network error: Unable to reach the server.");
+      }
+      console.log(error);
+      throw error.response?.data;
+    });
+}

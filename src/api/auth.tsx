@@ -1,5 +1,4 @@
 import { AxiosResponse, AxiosError } from "axios";
-import axios from "axios";
 import {
   apiResponse,
   loginResponse,
@@ -9,33 +8,26 @@ import {
   Owner,
   Otp,
 } from "@/interfaces/user";
-
-const apiUrl = "https://bhuorder.com.ng/api";
+import api from "./apiClient";
 
 export async function createUser(user: User) {
-  return axios
-    .post(`${apiUrl}/register`, user, {
-      timeout: 90000,
-    })
-    .then(function (response: AxiosResponse<apiResponse>) {
-      return response.data;
-    })
-    .catch(function (error: AxiosError) {
+  return api
+    .post("/register", user)
+    .then((response: AxiosResponse<apiResponse>) => response.data)
+    .catch((error: AxiosError) => {
       console.log(error);
       throw error.response?.data;
     });
 }
 
 export async function loginUser(user: existingUser) {
-  return axios
-    .post(`${apiUrl}/login`, user, {
-      timeout: 90000,
-    })
-    .then(function (response: AxiosResponse<loginResponse>) {
+  return api
+    .post("/login", user)
+    .then((response: AxiosResponse<loginResponse>) => {
       console.log(response.data);
       return response.data;
     })
-    .catch(function (error: AxiosError) {
+    .catch((error: AxiosError) => {
       if (error.code === "ERR_NETWORK") {
         throw new Error("Network error: Unable to reach the server.");
       }
@@ -45,14 +37,10 @@ export async function loginUser(user: existingUser) {
 }
 
 export async function createRestaurant(restaurant: Owner) {
-  return axios
-    .post(`${apiUrl}/register`, restaurant, {
-      timeout: 90000,
-    })
-    .then(function (response: AxiosResponse<apiResponse>) {
-      return response.data;
-    })
-    .catch(function (error: AxiosError) {
+  return api
+    .post("/register", restaurant)
+    .then((response: AxiosResponse<apiResponse>) => response.data)
+    .catch((error: AxiosError) => {
       if (error.code === "ERR_NETWORK") {
         throw new Error("Network error: Unable to reach the server.");
       }
@@ -62,14 +50,10 @@ export async function createRestaurant(restaurant: Owner) {
 }
 
 export async function verifyAccount(code: Otp) {
-  return axios
-    .post(`${apiUrl}/verify-user`, code, {
-      timeout: 90000,
-    })
-    .then(function (response: AxiosResponse<apiResponse>) {
-      return response.data;
-    })
-    .catch(function (error: AxiosError) {
+  return api
+    .post("/verify-user", code)
+    .then((response: AxiosResponse<apiResponse>) => response.data)
+    .catch((error: AxiosError) => {
       if (error.code === "ERR_NETWORK") {
         throw new Error("Network error: Unable to reach the server.");
       }
@@ -79,14 +63,10 @@ export async function verifyAccount(code: Otp) {
 }
 
 export async function getOtp(email: email) {
-  return axios
-    .post(`${apiUrl}/get-otp`, email, {
-      timeout: 90000,
-    })
-    .then(function (response: AxiosResponse<apiResponse>) {
-      return response.data;
-    })
-    .catch(function (error: AxiosError) {
+  return api
+    .post("/get-otp", email)
+    .then((response: AxiosResponse<apiResponse>) => response.data)
+    .catch((error: AxiosError) => {
       if (error.code === "ERR_NETWORK") {
         throw new Error("Network error: Unable to reach the server.");
       }
@@ -96,21 +76,18 @@ export async function getOtp(email: email) {
 }
 
 export async function logOut(token: string | null) {
-  return axios
+  return api
     .post(
-      `${apiUrl}/logout`,
-      {}, // empty body or whatever body your API expects
+      "/logout",
+      {},
       {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-        timeout: 90000,
       }
     )
-    .then(function (response: AxiosResponse<apiResponse>) {
-      return response.data;
-    })
-    .catch(function (error: AxiosError) {
+    .then((response: AxiosResponse<apiResponse>) => response.data)
+    .catch((error: AxiosError) => {
       if (error.code === "ERR_NETWORK") {
         throw new Error("Network error: Unable to reach the server.");
       }

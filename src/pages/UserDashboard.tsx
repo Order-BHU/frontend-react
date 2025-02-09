@@ -25,10 +25,12 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { PageWrapper } from "@/components/pagewrapper";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { myOrders } from "@/api/restaurant";
 import { orderType } from "@/interfaces/restaurantType";
 import { waveform } from "ldrs";
+import { updatePfp } from "@/api/misc";
+import { useToast } from "@/hooks/use-toast";
 
 // Mock data - in a real app, this would come from an API
 // const allUserOrder = [
@@ -90,26 +92,41 @@ import { waveform } from "ldrs";
 
 export default function UserDashboardPage() {
   waveform.register();
+  const { toast } = useToast();
   const [user, setUser] = useState({
     name: "",
     email: "",
     phone: "",
-    profilePicture: "/placeholder.svg?height=80&width=80",
+    profile_picture: "/placeholder.svg?height=80&width=80",
   });
 
   const [isOrderHistoryOpen, setIsOrderHistoryOpen] = useState(false);
 
   const handleUpdateProfile = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // Here you would typically send the updated profile to your backend
     console.log("Profile updated:", user);
-    // Close the dialog (you might want to use a state to control this)
   };
 
   // const recentOrders = allUserOrder.slice(0, 4);
   const [userOrder, setUserOrder] = useState<orderType>(); //this state stores all the pending orders for the user
   const [allOrders, setAllOrders] = useState<orderType[]>([]); //stores all order history
   const username = localStorage.getItem("name")?.slice(0, 2).toUpperCase();
+  const { status: pfpStatus, mutate: pfpMutate } = useMutation({
+    mutationFn: updatePfp,
+    onSuccess: (data) => {
+      toast({
+        title: "Success",
+        description: data.message,
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
   const { data: pendingOrder, status: pendingStatus } = useQuery({
     queryFn: () => myOrders("pending"),
     queryKey: ["orders"],
@@ -136,6 +153,23 @@ export default function UserDashboardPage() {
     console.log("All user orders: ", orderHistory);
   }, [pendingOrder]);
 
+  const [file, setFile] = useState<File | null>(null); //here for updating pfp
+  const handleUpdatePfp = (event: React.FormEvent) => {
+    event.preventDefault();
+    // Handle the file and other data here
+    const formData = new FormData();
+    if (file) {
+      formData.append("profile_picture", file); // Add the file to the form data
+    }
+    formData.append("name", user.name);
+    formData.append("email", user.email);
+    formData.append("phone", user.phone);
+
+    pfpMutate({
+      profile_picture: file,
+    });
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-cbg-dark">
       <Header />
@@ -153,7 +187,7 @@ export default function UserDashboardPage() {
             </CardHeader>
             <CardContent className="flex items-center space-x-4">
               <Avatar className="h-20 w-20">
-                <AvatarImage src={user.profilePicture} alt={username} />
+                <AvatarImage src={user.profile_picture} alt={username} />
                 <AvatarFallback className="text-white">
                   {username}
                 </AvatarFallback>
@@ -178,9 +212,9 @@ export default function UserDashboardPage() {
                   <DialogHeader>
                     <DialogTitle>Edit Profile</DialogTitle>
                   </DialogHeader>
-                  <form onSubmit={handleUpdateProfile} className="space-y-4">
+                  <form onSubmit={handleUpdatePfp} className="space-y-4">
                     <div>
-                      <Label htmlFor="profilePicture">Profile Picture</Label>
+                      <Label htmlFor="profile_picture">Profile Picture</Label>
                       <Input
                         id="profilePicture"
                         type="file"
@@ -188,11 +222,12 @@ export default function UserDashboardPage() {
                         onChange={(e) => {
                           const file = e.target.files?.[0];
                           if (file) {
+                            setFile(file); // Save the selected file to state
                             const reader = new FileReader();
                             reader.onloadend = () => {
                               setUser({
                                 ...user,
-                                profilePicture: reader.result as string,
+                                profile_picture: reader.result as string, // Optional: store base64 for preview
                               });
                             };
                             reader.readAsDataURL(file);
@@ -231,7 +266,9 @@ export default function UserDashboardPage() {
                         }
                       />
                     </div>
-                    <Button type="submit">Update Profile</Button>
+                    <Button type="submit" disabled={pfpStatus === "pending"}>
+                      Update Profile
+                    </Button>
                   </form>
                 </DialogContent>
               </Dialog>
