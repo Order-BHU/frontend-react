@@ -49,7 +49,7 @@ import {
 } from "@/components/ui/select";
 
 import { waveform } from "ldrs";
-import PaystackPop from "@paystack/inline-js";
+//import PaystackPop from "@paystack/inline-js";
 
 // interface CartItem extends singularCartItem {
 //   total: number

@@ -102,10 +102,10 @@ export default function UserDashboardPage() {
 
   const [isOrderHistoryOpen, setIsOrderHistoryOpen] = useState(false);
 
-  const handleUpdateProfile = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    console.log("Profile updated:", user);
-  };
+  // const handleUpdateProfile = (e: React.FormEvent<HTMLFormElement>) => {
+  //   e.preventDefault();
+  //   console.log("Profile updated:", user);
+  // };
 
   // const recentOrders = allUserOrder.slice(0, 4);
   const [userOrder, setUserOrder] = useState<orderType>(); //this state stores all the pending orders for the user
