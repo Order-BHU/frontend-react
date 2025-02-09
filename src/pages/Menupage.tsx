@@ -471,7 +471,7 @@ export default function RestaurantMenuPage() {
                       <div className="relative h-48 w-full mb-2">
                         {
                           <Img
-                            className="cover"
+                            className="w-full h-full object-cover"
                             src={String(item.image!)}
                             alt={item.name}
                             unloader={
