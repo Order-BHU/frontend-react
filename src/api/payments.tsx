@@ -1,5 +1,5 @@
 import { AxiosResponse, AxiosError } from "axios";
-import api from "./payStackGlobal";
+import api from "./paystackGlobal";
 import { subaccount } from "@/interfaces/paymentType";
 
 const secretKey = "sk_test_aed324bcb6181b0f29a204b52010dae9847036af";
