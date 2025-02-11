@@ -122,6 +122,12 @@ export default function RestaurantMenuPage() {
   }, [menuItems, categories]);
 
   useEffect(() => {
+    const total_price = cartItems?.cart_items?.reduce(
+      (sum: number, item: singularCartItem) => sum + Number(item.item_price),
+      0
+    );
+    setTotalPrice(total_price);
+
     //function below makes it so we don't have to touch cart Items and gives them menu and restaurant IDs so we can pass those to checkout
     // const modifiedItems = cartItems?.cart_items.map(
     //   (item: singularCartItem) => ({
@@ -416,7 +422,7 @@ export default function RestaurantMenuPage() {
                           </li>
                         ))}
                       </ul>
-                      <h2>Total: {/*cartItems?.total.toLocaleString()*/}</h2>
+                      <h2>Total: ₦{totalPrice?.toLocaleString()}</h2>
                       {/*I accessed total directly here because virgo just sent the total and we have a deadline. Trying to figure out which interface i need to edit will take a while so i'll just stick to this for a while */}
                     </CardContent>
                   </Card>
