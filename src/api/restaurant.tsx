@@ -77,7 +77,10 @@ export async function viewCart() {
   const token = localStorage.getItem("token");
   return api
     .get("/view-cart", { headers: { Authorization: `Bearer ${token}` } })
-    .then((response: AxiosResponse) => response.data)
+    .then((response: AxiosResponse) => {
+      console.log("cart data: ", response.data);
+      return response.data;
+    })
     .catch(handleError);
 }
 

@@ -122,32 +122,25 @@ export default function RestaurantMenuPage() {
   }, [menuItems, categories]);
 
   useEffect(() => {
-    //This function will set the total items for the cart. It's just for viewing purposes so the cart icon also has the total number of items next to it
-    const items = cartItems?.cart_items.reduce(
-      (acc: number, quantity: singularCartItem) =>
-        acc + Number(quantity.quantity),
-      0
-    );
-    isLoggedIn && setTotalItems(items);
     //function below makes it so we don't have to touch cart Items and gives them menu and restaurant IDs so we can pass those to checkout
-    const modifiedItems = cartItems?.cart_items.map(
-      (item: singularCartItem) => ({
-        ...item,
-        menuID: 0,
-        restaurantID: 0,
-      })
-    );
+    // const modifiedItems = cartItems?.cart_items.map(
+    //   (item: singularCartItem) => ({
+    //     ...item,
+    //     menuID: 0,
+    //     restaurantID: 0,
+    //   })
+    // );
     const transformedItems: {
       menu_id: number;
       quantity: number;
       menu_name: string;
     }[] = cartItems?.cart_items.map((item: singularCartItem) => ({
       menu_id: item.menu_id,
-      quantity: Number(item.quantity),
+      quantity: 1, //we don't store quantity in the backend anymore, so I just default them to 1
       menu_name: item.item_name,
     }));
     //so the values only update or show for logged in users
-    isLoggedIn && setCartItems(modifiedItems);
+    // isLoggedIn && setCartItems(modifiedItems);
     isLoggedIn && setCheckoutItems(transformedItems); //so that we can get the user's checkout items so they can continue from when they left off in selecting in cart if they refresh the page or something.
   }, [cartItems]);
 
@@ -182,7 +175,7 @@ export default function RestaurantMenuPage() {
       });
     },
   });
-  const { mutate } = useMutation({
+  const { mutateAsync: mutate } = useMutation({
     mutationFn: addToCart,
     onSuccess: (data) => {
       toast({
@@ -278,18 +271,18 @@ export default function RestaurantMenuPage() {
     }
     //all this below sets the quantity for chekout items so we can... have the quantity
 
-    setCartItems((prevItems: singularCartItem[]) => {
-      const existingItem = cartItemArray.find(
-        (item) => item.menu_id === Number(itemId)
-      );
-      if (!existingItem) return prevItems;
+    // setCartItems((prevItems: singularCartItem[]) => {
+    //   const existingItem = cartItemArray.find(
+    //     (item) => item.menu_id === Number(itemId)
+    //   );
+    //   if (!existingItem) return prevItems;
 
-      return prevItems.map((item) =>
-        item.menu_id === Number(itemId)
-          ? { ...item, quantity: Number(item.quantity) - 1 }
-          : item
-      );
-    });
+    //   return prevItems.map((item) =>
+    //     item.menu_id === Number(itemId)
+    //       ? { ...item, quantity: Number(item.quantity) - 1 }
+    //       : item
+    //   );
+    // });
     setCheckoutItems((prevItems) => {
       return prevItems.filter((item) => item.menu_id !== Number(itemId));
     });
@@ -392,8 +385,7 @@ export default function RestaurantMenuPage() {
             <DialogTrigger>
               <Button className="w-32 sm:w-48 text-xs md:text-md overflow">
                 <ShoppingCart className="mr-2 h-4 w-4 text-md hidden sm:inline " />{" "}
-                <span className="hidden sm:inline">View Cart</span>({totalItems}
-                ){/*items - ₦{totalPrice.toLocaleString()})*/}
+                <span className="hidden sm:inline">View Cart</span>
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px] dark:text-cfont-dark">
@@ -415,12 +407,12 @@ export default function RestaurantMenuPage() {
                     </CardHeader>
                     <CardContent>
                       <ul>
-                        {cartItemArray?.map((item: singularCartItem) => (
+                        {checkoutItems?.map((item) => (
                           <li
                             className="text-sm text-gray-500 mb-2"
-                            key={item.item_picture}
+                            key={item.menu_id}
                           >
-                            {item.item_name} ({`x${item.quantity}`})
+                            {item.menu_name} ({`x${item.quantity}`})
                           </li>
                         ))}
                       </ul>
