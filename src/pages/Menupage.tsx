@@ -122,20 +122,13 @@ export default function RestaurantMenuPage() {
   }, [menuItems, categories]);
 
   useEffect(() => {
+    //this calculates the total price of cart Items
     const total_price = cartItems?.cart_items?.reduce(
       (sum: number, item: singularCartItem) => sum + Number(item.item_price),
       0
     );
     setTotalPrice(total_price);
 
-    //function below makes it so we don't have to touch cart Items and gives them menu and restaurant IDs so we can pass those to checkout
-    // const modifiedItems = cartItems?.cart_items.map(
-    //   (item: singularCartItem) => ({
-    //     ...item,
-    //     menuID: 0,
-    //     restaurantID: 0,
-    //   })
-    // );
     const transformedItems: {
       menu_id: number;
       quantity: number;
@@ -146,7 +139,6 @@ export default function RestaurantMenuPage() {
       menu_name: item.item_name,
     }));
     //so the values only update or show for logged in users
-    // isLoggedIn && setCartItems(modifiedItems);
     isLoggedIn && setCheckoutItems(transformedItems); //so that we can get the user's checkout items so they can continue from when they left off in selecting in cart if they refresh the page or something.
   }, [cartItems]);
 
@@ -162,6 +154,13 @@ export default function RestaurantMenuPage() {
     }
   }, []);
 
+  useEffect(() => {
+    if (checkoutItems?.some((item) => item.quantity <= 0)) {
+      setCheckoutItems((prevItems) =>
+        prevItems.filter((item) => item.quantity > 0)
+      );
+    }
+  }, [checkoutItems]);
   const { toast } = useToast();
   const { isLoggedIn } = useAuthStore();
   const { mutate: removeCartMutate } = useMutation({
@@ -378,6 +377,26 @@ export default function RestaurantMenuPage() {
     setLocation(value);
   };
 
+  const setCartItemQuantity = (menu_id: number, operator: number) => {
+    //this function increases the quantity for cart items
+    operator === 1 &&
+      setCheckoutItems((prevItems) =>
+        prevItems.map((item) =>
+          item.menu_id === menu_id
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        )
+      );
+    operator === -1 &&
+      setCheckoutItems((prevItems) =>
+        prevItems.map((item) =>
+          item.menu_id === menu_id
+            ? { ...item, quantity: item.quantity - 1 }
+            : item
+        )
+      );
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-cbg-dark">
       <Header />
@@ -522,13 +541,13 @@ export default function RestaurantMenuPage() {
                       <CardFooter className="flex justify-between items-center">
                         <div className="flex items-center space-x-2">
                           <Button
-                            onClick={() =>
-                              handleAddToCart(String(item.id), item.price)
-                            }
                             disabled={
                               checkoutItems?.find(
                                 (cItem) => cItem.menu_id === item.id
                               ) != undefined
+                            }
+                            onClick={() =>
+                              handleAddToCart(String(item.id), item.price)
                             }
                           >
                             Add to cart
