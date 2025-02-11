@@ -38,7 +38,9 @@ export async function makePayment(data: {
 
 export async function verifyPayment(reference: string | null) {
   return api
-    .get(`/transaction/verify/${reference}`)
+    .get(`/transaction/verify/${reference}`, {
+      headers: { Authorization: `Bearer ${secretKey}` },
+    })
     .then((response: AxiosResponse) => {
       console.log(response.data);
       return response.data;
