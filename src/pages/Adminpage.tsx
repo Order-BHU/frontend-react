@@ -211,6 +211,7 @@ export default function AdminDashboardPage() {
     phoneType: "whatsapp",
     owners_name: "",
     restaurant_name: "",
+    account_number: "",
   });
   const handleRestaurantPhoneTypeChange = (type: "whatsapp" | "sms") => {
     setformData((prev) => ({ ...prev, phoneType: type }));
@@ -229,12 +230,12 @@ export default function AdminDashboardPage() {
       account_type: "restaurant",
       owners_name: formData.owners_name,
       restaurant_name: formData.restaurant_name,
+      account_no: formData.account_number,
     });
-    // You might want to add some feedback to the user here
   };
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    if (name === "phone") {
+    if (name === "phone" || name === "account_number") {
       const numericValue = value.replace(/[^0-9]/g, "");
       setformData((prev) => ({ ...prev, [name]: numericValue }));
     } else {
@@ -568,6 +569,23 @@ export default function AdminDashboardPage() {
                                 SMS
                               </Button>
                             </div>
+                          </div>
+                          <div>
+                            <Label
+                              htmlFor="accountnum"
+                              className="dark:text-cfont-dark"
+                            >
+                              Bank Account Number
+                            </Label>
+                            <Input
+                              type="tel"
+                              id="accountnum"
+                              name="account_number"
+                              className="dark:text-cfont-dark"
+                              value={formData.account_number}
+                              onChange={handleChange}
+                              required
+                            />
                           </div>
                           <div className="relative">
                             <Label
