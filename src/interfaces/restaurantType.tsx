@@ -20,7 +20,7 @@ export interface tempapiMenu {
 export interface singularCartItem {
   item_description: string;
   item_name: string;
-  item_picture: string;
+  item_picture: File | null | string;
   item_price: number;
   menu_id: number;
 }

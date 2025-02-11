@@ -12,16 +12,17 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Plus, Minus, ShoppingCart, Trash } from "lucide-react";
+import { ScrollArea } from "@/components/ui/scroll-area";
+//import { Input } from "@/components/ui/input";
+import { Plus, Minus, ShoppingCart } from "lucide-react";
 import { orbit } from "ldrs";
 import { PageWrapper } from "@/components/pagewrapper";
 import {
   getMenuItems,
   getCategories,
   addToCart,
-  removeCartItem,
   checkout,
+  removeCartItem,
   viewCart,
   getLocation,
 } from "@/api/restaurant";
@@ -62,6 +63,7 @@ export default function RestaurantMenuPage() {
   const { data: cartItems, refetch } = useQuery({
     queryFn: viewCart,
     queryKey: ["cartItems"],
+    refetchOnWindowFocus: false, //because removing items from cart gets annoying since it's stored in the frontend now till i checkout
   });
   const { data: locations, status: locationStatus } = useQuery({
     queryFn: getLocation,
@@ -71,13 +73,16 @@ export default function RestaurantMenuPage() {
   const { id } = useParams<{ id: string }>(); //restaurant id container
   var previousId = location.state?.itemId; //container for the id of item user tried to access before logging in
   //const navigate = useNavigate();
-  const [totalItems, setTotalItems] = useState(0);
   const [selectedLocation, setLocation] = useState(""); //the location a user selects
   const [displayedMenuItems, setDisplayedMenuItems] = useState<menuItem[]>([]);
-  const [cartItemArray, setCartItems] = useState<singularCartItem[]>([]); // this state is for the cartItems so we don't manipulate them directly. We'll use it to update quantity and whatnot
   const [totalPrice, setTotalPrice] = useState(0); //this is here so we can pass the price during checkout
   const [checkoutItems, setCheckoutItems] = useState<
-    { menu_id: number; quantity: number; menu_name: string }[]
+    {
+      menu_id: number;
+      quantity: number;
+      menu_name: string;
+      menu_picture: File | null | string;
+    }[]
   >([]); //every time a menu item gets added or removed(hitting the plus button) we'll set the state here so we can pass it to checkout route
   const { status: menuStatus, data: menuItems } = useQuery({
     queryKey: ["menuItems", id],
@@ -133,10 +138,12 @@ export default function RestaurantMenuPage() {
       menu_id: number;
       quantity: number;
       menu_name: string;
+      menu_picture: File | null | string;
     }[] = cartItems?.cart_items.map((item: singularCartItem) => ({
       menu_id: item.menu_id,
       quantity: 1, //we don't store quantity in the backend anymore, so I just default them to 1
       menu_name: item.item_name,
+      menu_picture: item.item_picture,
     }));
     //so the values only update or show for logged in users
     isLoggedIn && setCheckoutItems(transformedItems); //so that we can get the user's checkout items so they can continue from when they left off in selecting in cart if they refresh the page or something.
@@ -163,23 +170,7 @@ export default function RestaurantMenuPage() {
   }, [checkoutItems]);
   const { toast } = useToast();
   const { isLoggedIn } = useAuthStore();
-  const { mutate: removeCartMutate } = useMutation({
-    mutationFn: removeCartItem,
-    onSuccess: (data) => {
-      toast({
-        title: "Success",
-        description: data.message,
-      });
-      refetch();
-    },
-    onError: (error) => {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
-    },
-  });
+
   const { mutateAsync: mutate } = useMutation({
     mutationFn: addToCart,
     onSuccess: (data) => {
@@ -206,6 +197,23 @@ export default function RestaurantMenuPage() {
         description: data.message,
       });
       navigate(`/${localStorage.getItem("accountType")}-dashboard/`);
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const { mutate: removeItemMutate /*status: checkoutStatus*/ } = useMutation({
+    mutationFn: removeCartItem,
+    onSuccess: (data) => {
+      toast({
+        title: "Success",
+        description: data.message,
+      });
     },
     onError: (error) => {
       toast({
@@ -246,6 +254,9 @@ export default function RestaurantMenuPage() {
           menu_name: menuItems?.find(
             (item: menuItem) => item.id === Number(itemId)
           )?.name,
+          menu_picture: menuItems?.find(
+            (item: menuItem) => item.id === Number(itemId)
+          )?.item_picture,
         },
       ];
 
@@ -267,43 +278,6 @@ export default function RestaurantMenuPage() {
       console.error("Failed to update cart:", error);
       refetch(); // Refetch to ensure UI shows correct state
     }
-  };
-  const handleremoveCartItem = (itemId: string, price: number) => {
-    console.log("prices: ", totalPrice);
-    if (!isLoggedIn) {
-      navigate("/login/", { state: { itemId, id } });
-      return;
-    }
-    //all this below sets the quantity for chekout items so we can... have the quantity
-
-    // setCartItems((prevItems: singularCartItem[]) => {
-    //   const existingItem = cartItemArray.find(
-    //     (item) => item.menu_id === Number(itemId)
-    //   );
-    //   if (!existingItem) return prevItems;
-
-    //   return prevItems.map((item) =>
-    //     item.menu_id === Number(itemId)
-    //       ? { ...item, quantity: Number(item.quantity) - 1 }
-    //       : item
-    //   );
-    // });
-    setCheckoutItems((prevItems) => {
-      return prevItems.filter((item) => item.menu_id !== Number(itemId));
-    });
-    setTotalPrice((prevPrice) => {
-      const currentPrice = Number(prevPrice); // Force convert to number. Somewhere along the line, it adds them as strings and i can't find where so i just fell back to this
-      const addPrice = Number(price); // Force convert to number
-      return currentPrice - addPrice;
-    });
-
-    // Move these after the state update
-    Promise.resolve().then(() => {
-      removeCartMutate(Number(itemId), {
-        onError: () => refetch,
-      });
-      refetch();
-    });
   };
 
   const { mutate: paymentMutate, status: paymentStatus } = useMutation({
@@ -339,23 +313,35 @@ export default function RestaurantMenuPage() {
   });
   const handlePayment = () => {
     //this function will store the location in localStorage, so after payment and redirect, we can checkout with said info
-    localStorage.setItem("orderLocation", selectedLocation);
-    paymentMutate({
-      email: "victrbl01@gmail.com",
-      amount: "100",
-      callback_url: `https://bhuorder.netlify.app/menu/${id}`,
-    });
+    if (checkoutItems.length != 0) {
+      localStorage.setItem("orderLocation", selectedLocation);
+      localStorage.setItem("checkoutItems", JSON.stringify(checkoutItems));
+      localStorage.setItem("totalPrice", String(totalPrice));
+      paymentMutate({
+        email: "victrbl01@gmail.com",
+        amount: "100",
+        callback_url: `https://bhuorder.netlify.app/menu/${id}`,
+      });
+    } else {
+      toast({
+        title: "Oh no",
+        description: "you haven't picked anything D:",
+        variant: "destructive",
+      });
+    }
   };
   const handleCheckout = () => {
     console.log("rest id: ", id);
     console.log(checkoutItems);
     checkoutMutate({
-      items: checkoutItems,
+      items: JSON.parse(localStorage.getItem("checkoutItems")!),
       restaurant_id: Number(id),
-      total: cartItems?.total,
+      total: Number(localStorage.getItem("totalPrice")),
       location: localStorage.getItem("orderLocation"),
     });
     localStorage.removeItem("orderLocation");
+    localStorage.removeItem("totalPrice");
+    localStorage.removeItem("checkoutItems");
   };
   useEffect(() => {
     //this function handles checkout after payments have been made
@@ -395,6 +381,17 @@ export default function RestaurantMenuPage() {
             : item
         )
       );
+    if (operator === 0) {
+      setCheckoutItems((prevItems) =>
+        prevItems.map((item) =>
+          item.menu_id === menu_id
+            ? { ...item, quantity: item.quantity - 1 }
+            : item
+        )
+      );
+      //Do all that but also remove from the backend
+      removeItemMutate(menu_id);
+    }
   };
 
   return (
@@ -418,34 +415,70 @@ export default function RestaurantMenuPage() {
                 <DialogTitle>My Cart</DialogTitle>
               </DialogHeader>
               <div>
-                <PageWrapper>
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="flex justify-between items-center">
-                        <span>Cart Items</span>
-                        {/* {Number(item.quantity) > 1 ? (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex justify-between items-center">
+                      <span>Cart Items</span>
+                      {/* {Number(item.quantity) > 1 ? (
                           <Badge variant="default">{item.quantity}</Badge>
                         ) : (
                           <></>
                         )} */}
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <ul>
-                        {checkoutItems?.map((item) => (
-                          <li
-                            className="text-sm text-gray-500 mb-2"
-                            key={item.menu_id}
+                    </CardTitle>
+                  </CardHeader>
+                  <ScrollArea className="h-[300px] pr-4">
+                    {checkoutItems?.map((item) => (
+                      <div
+                        key={item.menu_id}
+                        className="flex items-center justify-between py-2"
+                      >
+                        <div className="flex items-center">
+                          <Img
+                            className="rounded-md mr-2 max-h-[40%] max-w-[40%]"
+                            src={String(item.menu_picture!)}
+                            alt={item.menu_name}
+                            unloader={
+                              <div className="flex justify-center p-5 max-h-[40%] items-center">
+                                <l-orbit
+                                  size="35"
+                                  speed="1.5"
+                                  color="#6C757D"
+                                ></l-orbit>
+                              </div>
+                            }
+                          />
+                          <div>
+                            <p className="font-medium">{item.menu_name}</p>
+                            {/* <p className="text-sm text-gray-500">{item.price}</p> */}
+                          </div>
+                        </div>
+                        <div className="flex items-center">
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            onClick={() => {
+                              checkoutItems.find(
+                                (citem) => item.menu_id === citem.menu_id
+                              )?.quantity === 1
+                                ? setCartItemQuantity(item.menu_id, 0)
+                                : setCartItemQuantity(item.menu_id, -1);
+                            }}
                           >
-                            {item.menu_name} ({`x${item.quantity}`})
-                          </li>
-                        ))}
-                      </ul>
-                      <h2>Total: ₦{totalPrice?.toLocaleString()}</h2>
-                      {/*I accessed total directly here because virgo just sent the total and we have a deadline. Trying to figure out which interface i need to edit will take a while so i'll just stick to this for a while */}
-                    </CardContent>
-                  </Card>
-                </PageWrapper>
+                            <Minus className="h-4 w-4" />
+                          </Button>
+                          <span className="mx-2">{item.quantity}</span>
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            onClick={() => setCartItemQuantity(item.menu_id, 1)}
+                          >
+                            <Plus className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </ScrollArea>
+                </Card>
               </div>
               <DialogFooter>
                 <Select onValueChange={handleSelectLocationChange}>
