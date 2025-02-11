@@ -13,7 +13,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Plus, Minus, ShoppingCart } from "lucide-react";
+import { Plus, Minus, ShoppingCart, Trash } from "lucide-react";
 import { orbit } from "ldrs";
 import { PageWrapper } from "@/components/pagewrapper";
 import {
@@ -156,7 +156,7 @@ export default function RestaurantMenuPage() {
     if (localStorage.getItem("previousId")) {
       handleAddToCart(
         localStorage.getItem("previousId")!,
-        menuItems?.find((item: menuItem) => item.id === previousId)
+        menuItems?.find((item: menuItem) => item.id === previousId)?.price
       );
       localStorage.removeItem("previousId");
       localStorage.removeItem("restaurantId");
@@ -229,41 +229,27 @@ export default function RestaurantMenuPage() {
     }
     //all this below sets the quantity for chekout items so we can... have the quantity
 
-    setCartItems((prevItems: singularCartItem[]) => {
-      const existingItem = cartItemArray?.find(
-        (item) => item.menu_id === Number(itemId)
-      );
-      if (!existingItem) return prevItems;
+    // setCartItems((prevItems: singularCartItem[]) => {
+    //   const existingItem = cartItemArray?.find(
+    //     (item) => item.menu_id === Number(itemId)
+    //   );
+    //   if (!existingItem) return prevItems;
 
-      return prevItems.map((item) =>
-        item.menu_id === Number(itemId)
-          ? { ...item, quantity: Number(item.quantity) + 1 }
-          : item
-      );
-    });
+    //   return prevItems.map((item) =>
+    //     item.menu_id === Number(itemId) ? { ...item, quantity: 1 } : item
+    //   );
+    // });
     setCheckoutItems((prevItems) => {
-      const existingItemIndex = prevItems?.findIndex(
-        (item) => item.menu_id === Number(itemId)
-      );
-
-      const newItems =
-        existingItemIndex !== -1
-          ? prevItems?.map((item, index) =>
-              index === existingItemIndex
-                ? { ...item, quantity: item.quantity + 1 }
-                : item
-            )
-          : [
-              ...prevItems,
-              {
-                menu_id: Number(itemId),
-                quantity: 1,
-                menu_name:
-                  existingItemIndex !== -1
-                    ? prevItems[existingItemIndex].menu_name
-                    : "Unknown",
-              },
-            ];
+      const newItems = [
+        ...prevItems,
+        {
+          menu_id: Number(itemId),
+          quantity: 1,
+          menu_name: menuItems?.find(
+            (item: menuItem) => item.id === Number(itemId)
+          )?.name,
+        },
+      ];
 
       return newItems;
     });
@@ -305,37 +291,13 @@ export default function RestaurantMenuPage() {
       );
     });
     setCheckoutItems((prevItems) => {
-      const existingItemIndex = prevItems.findIndex(
-        (item) => item.menu_id === Number(itemId)
-      );
-
-      const newItems =
-        existingItemIndex !== -1
-          ? prevItems.map((item, index) =>
-              index === existingItemIndex
-                ? { ...item, quantity: item.quantity - 1 }
-                : item
-            )
-          : [
-              ...prevItems,
-              {
-                menu_id: Number(itemId),
-                quantity: 1,
-                menu_name:
-                  existingItemIndex !== -1
-                    ? prevItems[existingItemIndex].menu_name
-                    : "Unknown",
-              },
-            ];
-
-      return newItems;
+      return prevItems.filter((item) => item.menu_id !== Number(itemId));
     });
     setTotalPrice((prevPrice) => {
       const currentPrice = Number(prevPrice); // Force convert to number. Somewhere along the line, it adds them as strings and i can't find where so i just fell back to this
-      const negPrice = Number(price); // Force convert to number
-      return currentPrice - negPrice;
+      const addPrice = Number(price); // Force convert to number
+      return currentPrice - addPrice;
     });
-    console.log("checkout items", checkoutItems);
 
     // Move these after the state update
     Promise.resolve().then(() => {
@@ -462,7 +424,7 @@ export default function RestaurantMenuPage() {
                           </li>
                         ))}
                       </ul>
-                      <h2>Total: {cartItems?.total.toLocaleString()}</h2>
+                      <h2>Total: {/*cartItems?.total.toLocaleString()*/}</h2>
                       {/*I accessed total directly here because virgo just sent the total and we have a deadline. Trying to figure out which interface i need to edit will take a while so i'll just stick to this for a while */}
                     </CardContent>
                   </Card>
@@ -556,50 +518,22 @@ export default function RestaurantMenuPage() {
                           {item.description}
                         </p>
                         <p className="font-semibold">
-                          ₦{Number(item.price).toLocaleString()}
+                          {/* ₦{Number(item.price).toLocaleString()} */}
                         </p>
                       </CardContent>
                       <CardFooter className="flex justify-between items-center">
                         <div className="flex items-center space-x-2">
                           <Button
-                            size="icon"
-                            variant="outline"
-                            onClick={() =>
-                              handleremoveCartItem(String(item.id), item.price)
-                            }
-                            disabled={
-                              //I know I'm not using the state here, but crunch mode. Can't be bothered to fix the error I'm getting when i try to change it right now
-                              Number(
-                                cartItemArray?.find(
-                                  (cItem: {
-                                    menu_id: number;
-                                    quantity: number;
-                                  }) => cItem.menu_id === item.id
-                                )?.quantity
-                              ) < 1
-                            }
-                          >
-                            <Minus className="h-4 w-4" />
-                          </Button>
-                          <Input
-                            type="number"
-                            value={
-                              cartItemArray?.find(
-                                (cartitem: singularCartItem) =>
-                                  cartitem.item_name === item.name
-                              )?.quantity || 0
-                            }
-                            onChange={(e) => e.preventDefault()}
-                            className="w-16 text-center"
-                          />
-                          <Button
-                            size="icon"
-                            variant="outline"
                             onClick={() =>
                               handleAddToCart(String(item.id), item.price)
                             }
+                            disabled={
+                              checkoutItems?.find(
+                                (cItem) => cItem.menu_id === item.id
+                              ) != undefined
+                            }
                           >
-                            <Plus className="h-4 w-4" />
+                            Add to cart
                           </Button>
                         </div>
                       </CardFooter>
