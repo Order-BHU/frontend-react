@@ -383,7 +383,7 @@ export default function RestaurantMenuPage() {
     paymentMutate({
       email: "victrbl01@gmail.com",
       amount: "100",
-      callback_url: `http://localhost:5173/menu/${id}`,
+      callback_url: `https://bhuorder.netlify.app/menu/${id}`,
     });
   };
   const handleCheckout = () => {
