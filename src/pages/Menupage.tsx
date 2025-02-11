@@ -49,6 +49,7 @@ import {
 } from "@/components/ui/select";
 
 import { waveform } from "ldrs";
+import { makePayment, verifyPayment } from "@/api/payments";
 //import PaystackPop from "@paystack/inline-js";
 
 // interface CartItem extends singularCartItem {
@@ -198,7 +199,7 @@ export default function RestaurantMenuPage() {
     },
   });
 
-  const { mutate: checkoutMutate, status: checkoutStatus } = useMutation({
+  const { mutate: checkoutMutate /*status: checkoutStatus*/ } = useMutation({
     mutationFn: checkout,
     onSuccess: (data) => {
       localStorage.setItem("orderCode", data.code);
@@ -344,16 +345,74 @@ export default function RestaurantMenuPage() {
       refetch();
     });
   };
-  const handleCheckout = (id: number) => {
+
+  const { mutate: paymentMutate, status: paymentStatus } = useMutation({
+    mutationFn: makePayment,
+    onSuccess: (data) => {
+      toast({
+        title: "Success",
+        description: "redirecting you to payment gateway...",
+      });
+      window.location.href = data.data.authorization_url;
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+  //the two variables below will get the transaction id when we get redirected from the paystack page to here
+  const [transactionReference, setTransactionReference] = useState("");
+  const queryParams = new URLSearchParams(window.location.search);
+  useEffect(() => {
+    //this useEffect sets the reference code for verifying a transaction
+    if (queryParams.get("reference")) {
+      setTransactionReference(queryParams.get("reference") || "");
+    }
+  }, []);
+  const { data: verifyPaymentData } = useQuery({
+    queryFn: () => verifyPayment(transactionReference),
+    queryKey: ["paymentDetails"],
+    enabled: !!transactionReference,
+  });
+  const handlePayment = () => {
+    //this function will store the location in localStorage, so after payment and redirect, we can checkout with said info
+    localStorage.setItem("orderLocation", selectedLocation);
+    paymentMutate({
+      email: "victrbl01@gmail.com",
+      amount: "100",
+      callback_url: `http://localhost:5173/menu/${id}`,
+    });
+  };
+  const handleCheckout = () => {
     console.log("rest id: ", id);
     console.log(checkoutItems);
     checkoutMutate({
       items: checkoutItems,
-      restaurant_id: id,
+      restaurant_id: Number(id),
       total: cartItems?.total,
-      location: selectedLocation,
+      location: localStorage.getItem("orderLocation"),
     });
+    localStorage.removeItem("orderLocation");
   };
+  useEffect(() => {
+    //this function handles checkout after payments have been made
+    if (verifyPaymentData) {
+      if (verifyPaymentData?.data?.status === "success") {
+        handleCheckout();
+        setTransactionReference(""); //so that another reload doesn't trigger verifyPayments to run
+      } else if (verifyPaymentData?.data?.status === "failed") {
+        toast({
+          title: "Error",
+          description: verifyPaymentData?.message,
+          variant: "destructive",
+        });
+        setTransactionReference(""); //so that another reload doesn't trigger verifyPayments to run
+      }
+    }
+  }, [verifyPaymentData]);
   const handleSelectLocationChange = (value: string) => {
     setLocation(value);
   };
@@ -431,8 +490,8 @@ export default function RestaurantMenuPage() {
                   </SelectContent>
                 </Select>
                 <Button
-                  disabled={checkoutStatus === "pending"}
-                  onClick={() => handleCheckout(Number(id))}
+                  disabled={paymentStatus === "pending"}
+                  onClick={handlePayment}
                 >
                   CheckOut
                 </Button>
