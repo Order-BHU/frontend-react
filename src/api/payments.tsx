@@ -20,11 +20,28 @@ export async function makeSubaccount(data: subaccount) {
     .catch(handleError);
 }
 
-export async function makePayment(data: { email: string; amount: string }) {
+export async function makePayment(data: {
+  email: string;
+  amount: string;
+  callback_url: string | null;
+}) {
   return api
     .post("/transaction/initialize", data, {
-      headers: { Authorization: `Authorization: Bearer ${secretKey}` },
+      headers: { Authorization: `Bearer ${secretKey}` },
     })
-    .then((response: AxiosResponse) => response.data)
+    .then((response: AxiosResponse) => {
+      console.log(response.data);
+      return response.data;
+    })
+    .catch(handleError);
+}
+
+export async function verifyPayment(reference: string | null) {
+  return api
+    .get(`/transaction/verify/${reference}`)
+    .then((response: AxiosResponse) => {
+      console.log(response.data);
+      return response.data;
+    })
     .catch(handleError);
 }
