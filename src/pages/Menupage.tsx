@@ -83,6 +83,7 @@ export default function RestaurantMenuPage() {
       menu_id: number;
       quantity: number;
       menu_name: string;
+      menu_price: number;
       menu_picture: File | null | string;
     }[]
   >([]); //every time a menu item gets added or removed(hitting the plus button) we'll set the state here so we can pass it to checkout route
@@ -148,11 +149,13 @@ export default function RestaurantMenuPage() {
       quantity: number;
       menu_name: string;
       menu_picture: File | null | string;
+      menu_price: number;
     }[] = cartItems?.cart_items.map((item: singularCartItem) => ({
       menu_id: item.menu_id,
       quantity: 1, //we don't store quantity in the backend anymore, so I just default them to 1
       menu_name: item.item_name,
       menu_picture: item.item_picture,
+      menu_price: item.item_price,
     }));
     //so the values only update or show for logged in users
     isLoggedIn && setCheckoutItems(transformedItems); //so that we can get the user's checkout items so they can continue from when they left off in selecting in cart if they refresh the page or something.
@@ -266,6 +269,9 @@ export default function RestaurantMenuPage() {
           menu_picture: menuItems?.find(
             (item: menuItem) => item.id === Number(itemId)
           )?.item_picture,
+          menu_price: menuItems?.find(
+            (item: menuItem) => item.id === Number(itemId)
+          )?.item_price,
         },
       ];
 
@@ -386,9 +392,13 @@ export default function RestaurantMenuPage() {
     setLocation(value);
   };
 
-  const setCartItemQuantity = (menu_id: number, operator: number) => {
+  const setCartItemQuantity = (
+    menu_id: number,
+    operator: number,
+    price: number
+  ) => {
     //this function increases the quantity for cart items
-    operator === 1 &&
+    if (operator === 1) {
       setCheckoutItems((prevItems) =>
         prevItems.map((item) =>
           item.menu_id === menu_id
@@ -396,7 +406,10 @@ export default function RestaurantMenuPage() {
             : item
         )
       );
-    operator === -1 &&
+      setTotalPrice((prevItems) => prevItems + Number(price));
+    }
+
+    if (operator === -1) {
       setCheckoutItems((prevItems) =>
         prevItems.map((item) =>
           item.menu_id === menu_id
@@ -404,6 +417,9 @@ export default function RestaurantMenuPage() {
             : item
         )
       );
+      setTotalPrice((prevItems) => prevItems - Number(price));
+    }
+
     if (operator === 0) {
       setCheckoutItems((prevItems) =>
         prevItems.map((item) =>
@@ -412,7 +428,9 @@ export default function RestaurantMenuPage() {
             : item
         )
       );
+      setTotalPrice((prevItems) => prevItems - Number(price));
       //Do all that but also remove from the backend
+
       removeItemMutate(menu_id);
     }
   };
@@ -492,8 +510,16 @@ export default function RestaurantMenuPage() {
                               checkoutItems.find(
                                 (citem) => item.menu_id === citem.menu_id
                               )?.quantity === 1
-                                ? setCartItemQuantity(item.menu_id, 0)
-                                : setCartItemQuantity(item.menu_id, -1);
+                                ? setCartItemQuantity(
+                                    item.menu_id,
+                                    0,
+                                    item.menu_price
+                                  )
+                                : setCartItemQuantity(
+                                    item.menu_id,
+                                    -1,
+                                    item.menu_price
+                                  );
                             }}
                           >
                             <Minus className="h-4 w-4" />
@@ -502,7 +528,13 @@ export default function RestaurantMenuPage() {
                           <Button
                             variant="outline"
                             size="icon"
-                            onClick={() => setCartItemQuantity(item.menu_id, 1)}
+                            onClick={() =>
+                              setCartItemQuantity(
+                                item.menu_id,
+                                1,
+                                item.menu_price
+                              )
+                            }
                           >
                             <Plus className="h-4 w-4" />
                           </Button>
@@ -510,6 +542,12 @@ export default function RestaurantMenuPage() {
                       </div>
                     ))}
                   </ScrollArea>
+                  <div className="mb-4 ml-4 flex flex-col justify-between items-left">
+                    <span className="font-semibold">Total:</span>
+                    <span className="font-semibold">
+                      ₦{totalPrice.toLocaleString()}
+                    </span>
+                  </div>
                 </Card>
               </div>
               <DialogFooter>
