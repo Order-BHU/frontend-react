@@ -25,6 +25,7 @@ import {
   removeCartItem,
   viewCart,
   getLocation,
+  myOrders,
 } from "@/api/restaurant";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { category, tempapiMenu, menuItem } from "@/interfaces/restaurantType";
@@ -69,6 +70,7 @@ export default function RestaurantMenuPage() {
     queryFn: getLocation,
     queryKey: ["locations"],
   });
+
   const location = useLocation();
   const { id } = useParams<{ id: string }>(); //restaurant id container
   var previousId = location.state?.itemId; //container for the id of item user tried to access before logging in
@@ -87,6 +89,13 @@ export default function RestaurantMenuPage() {
   const { status: menuStatus, data: menuItems } = useQuery({
     queryKey: ["menuItems", id],
     queryFn: () => getMenuItems(id!),
+  });
+  const { data: userOrders, status: userOrderStatus } = useQuery({
+    //this'll help check if the user has a pending order before checkout
+    queryFn: () => myOrders("pending"),
+    queryKey: ["userOrders"],
+    enabled: !!selectedLocation,
+    refetchOnWindowFocus: false,
   });
 
   const { data: categories } = useQuery({
@@ -207,7 +216,7 @@ export default function RestaurantMenuPage() {
     },
   });
 
-  const { mutate: removeItemMutate /*status: checkoutStatus*/ } = useMutation({
+  const { mutate: removeItemMutate, status: removeItemStatus } = useMutation({
     mutationFn: removeCartItem,
     onSuccess: (data) => {
       toast({
@@ -313,7 +322,26 @@ export default function RestaurantMenuPage() {
   });
   const handlePayment = () => {
     //this function will store the location in localStorage, so after payment and redirect, we can checkout with said info
-    if (checkoutItems.length != 0) {
+    if (!selectedLocation) {
+      toast({
+        title: "One more step to go",
+        description: "you haven't picked a location yet",
+        variant: "destructive",
+      });
+    } else if (userOrders?.order) {
+      toast({
+        title: "Oops",
+        description:
+          "Looks like you already have a pending order right now. Finish that one to place a new order",
+        variant: "destructive",
+      });
+    } else if (checkoutItems.length < 1) {
+      toast({
+        title: "Oh no",
+        description: "you haven't picked anything D:",
+        variant: "destructive",
+      });
+    } else {
       localStorage.setItem("orderLocation", selectedLocation);
       localStorage.setItem("checkoutItems", JSON.stringify(checkoutItems));
       localStorage.setItem("totalPrice", String(totalPrice));
@@ -321,12 +349,6 @@ export default function RestaurantMenuPage() {
         email: "victrbl01@gmail.com",
         amount: "100",
         callback_url: `https://bhuorder.netlify.app/menu/${id}`,
-      });
-    } else {
-      toast({
-        title: "Oh no",
-        description: "you haven't picked anything D:",
-        variant: "destructive",
       });
     }
   };
@@ -347,6 +369,7 @@ export default function RestaurantMenuPage() {
     //this function handles checkout after payments have been made
     if (verifyPaymentData) {
       if (verifyPaymentData?.data?.status === "success") {
+        navigate(`/menu/${id}`, { replace: true });
         handleCheckout();
         setTransactionReference(""); //so that another reload doesn't trigger verifyPayments to run
       } else if (verifyPaymentData?.data?.status === "failed") {
@@ -393,6 +416,15 @@ export default function RestaurantMenuPage() {
       removeItemMutate(menu_id);
     }
   };
+
+  const isCheckoutDisabled = //this'll disable the checkout button depending on the situation
+    paymentStatus !== "pending"
+      ? "Checkout"
+      : removeItemStatus !== "pending"
+      ? "Checkout"
+      : userOrderStatus !== "pending"
+      ? "Checkout"
+      : "Checking...";
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-cbg-dark">
@@ -502,10 +534,10 @@ export default function RestaurantMenuPage() {
                   </SelectContent>
                 </Select>
                 <Button
-                  disabled={paymentStatus === "pending"}
                   onClick={handlePayment}
+                  disabled={isCheckoutDisabled === "Checking..."}
                 >
-                  CheckOut
+                  {isCheckoutDisabled}
                 </Button>
               </DialogFooter>
             </DialogContent>

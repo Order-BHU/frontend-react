@@ -102,7 +102,10 @@ export async function myOrders(
     .get(`/${ordertype}/my-orders`, {
       headers: { Authorization: `Bearer ${token}` },
     })
-    .then((response: AxiosResponse) => response.data)
+    .then((response: AxiosResponse) => {
+      console.log("userOrders: ", response.data);
+      return response.data;
+    })
     .catch(handleError);
 }
 
