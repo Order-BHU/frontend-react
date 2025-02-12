@@ -545,7 +545,7 @@ export default function RestaurantMenuPage() {
                   <div className="mb-4 ml-4 flex flex-col justify-between items-left">
                     <span className="font-semibold">Total:</span>
                     <span className="font-semibold">
-                      ₦{totalPrice.toLocaleString()}
+                      ₦{totalPrice?.toLocaleString()}
                     </span>
                   </div>
                 </Card>
