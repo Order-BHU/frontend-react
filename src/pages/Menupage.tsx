@@ -14,7 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 //import { Input } from "@/components/ui/input";
-import { Plus, Minus, ShoppingCart } from "lucide-react";
+import { Plus, Minus, ShoppingCart, Check } from "lucide-react";
 import { orbit } from "ldrs";
 import { PageWrapper } from "@/components/pagewrapper";
 import {
@@ -644,16 +644,24 @@ export default function RestaurantMenuPage() {
                       <CardFooter className="flex justify-between items-center">
                         <div className="flex items-center space-x-2">
                           <Button
-                            disabled={
-                              checkoutItems?.find(
-                                (cItem) => cItem.menu_id === item.id
-                              ) != undefined
-                            }
+                            className="disabled:opacity-100 cursor-pointer disabled:pointer-events-none flex items-center gap-2"
+                            disabled={checkoutItems?.some(
+                              (cItem) => cItem.menu_id === item.id
+                            )}
                             onClick={() =>
                               handleAddToCart(String(item.id), item.price)
                             }
                           >
-                            Add to cart
+                            {checkoutItems?.some(
+                              (cItem) => cItem.menu_id === item.id
+                            ) ? (
+                              <>
+                                Added{" "}
+                                <Check className="w-4 h-4 text-green-500" />
+                              </>
+                            ) : (
+                              "Add to cart"
+                            )}
                           </Button>
                         </div>
                       </CardFooter>

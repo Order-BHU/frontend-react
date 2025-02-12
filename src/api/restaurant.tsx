@@ -19,7 +19,10 @@ export async function getCategories() {
 export async function getMenuItems(id: string) {
   return api
     .get(`/${id}/menu-list`)
-    .then((response: AxiosResponse) => response.data.menu)
+    .then((response: AxiosResponse) => {
+      console.log("menuItems: ", response.data);
+      return response.data.menu;
+    })
     .catch(handleError);
 }
 
