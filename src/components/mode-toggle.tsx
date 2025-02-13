@@ -59,7 +59,7 @@ export function ModeToggle() {
       <DropdownMenuTrigger asChild>
         <div className="h-12 w-12 mr-[1rem]">
           <Avatar className="w-full h-full">
-            <AvatarImage src="" />
+            <AvatarImage src={localStorage.getItem("pfp")!} />
             <AvatarFallback className="text-white">{username}</AvatarFallback>
           </Avatar>
         </div>

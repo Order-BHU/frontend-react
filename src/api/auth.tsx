@@ -24,7 +24,7 @@ export async function loginUser(user: existingUser) {
   return api
     .post("/login", user)
     .then((response: AxiosResponse<loginResponse>) => {
-      console.log(response.data);
+      console.log("login data:", response.data);
       return response.data;
     })
     .catch((error: AxiosError) => {

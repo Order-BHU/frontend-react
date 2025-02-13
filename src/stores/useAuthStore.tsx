@@ -17,6 +17,7 @@ const useAuthStore = create<AuthState>((set) => {
     localStorage.removeItem("token");
     localStorage.removeItem("name");
     localStorage.removeItem("restaurant_id");
+    localStorage.removeItem("pfp");
   };
 
   // Check localStorage for saved state

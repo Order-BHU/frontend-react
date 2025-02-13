@@ -26,7 +26,7 @@ import {
 } from "@/components/ui/dialog";
 import { PageWrapper } from "@/components/pagewrapper";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { myOrders } from "@/api/restaurant";
+import { myOrders, trackOrder } from "@/api/restaurant";
 import { orderType } from "@/interfaces/restaurantType";
 import { waveform } from "ldrs";
 import { updatePfp } from "@/api/misc";
@@ -110,6 +110,7 @@ export default function UserDashboardPage() {
   // const recentOrders = allUserOrder.slice(0, 4);
   const [userOrder, setUserOrder] = useState<orderType>(); //this state stores all the pending orders for the user
   const [allOrders, setAllOrders] = useState<orderType[]>([]); //stores all order history
+  const [tracked, setTracked] = useState<orderType>(); //deals with tracked order(what we'll be displaying to the user)
   const username = localStorage.getItem("name")?.slice(0, 2).toUpperCase();
   const { status: pfpStatus, mutate: pfpMutate } = useMutation({
     mutationFn: updatePfp,
@@ -132,6 +133,12 @@ export default function UserDashboardPage() {
     queryKey: ["orders"],
   });
 
+  const { data: trackedOrder, status: trackedStatus } = useQuery({
+    queryFn: () => trackOrder(Number(localStorage.getItem("orderId"))), //we'll track it using the pending order route since that's how we get the ID
+    queryKey: ["trackedorders"],
+    enabled: !!pendingOrder,
+  });
+
   const { data: orderHistory, status: historyStatus } = useQuery({
     queryFn: () => myOrders("history"),
     queryKey: ["history"],
@@ -143,6 +150,10 @@ export default function UserDashboardPage() {
       setUserOrder(pendingOrder.order);
     }
     console.log("user orders: ", userOrder);
+    if (trackedOrder) {
+      setTracked(trackedOrder);
+      localStorage.removeItem("orderId");
+    }
   }, [pendingOrder]);
 
   useEffect(() => {

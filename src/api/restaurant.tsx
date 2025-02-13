@@ -113,6 +113,21 @@ export async function myOrders(
     .catch(handleError);
 }
 
+export async function trackOrder(orderId: number) {
+  const token = localStorage.getItem("token");
+  return api
+    .get(`/${orderId}/track-order`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    .then((response: AxiosResponse) => {
+      console.log(token);
+      console.log("TrackOrders: ", response.data);
+      console.log("order id: ", orderId);
+      return response.data;
+    })
+    .catch(handleError);
+}
+
 export async function getLocation() {
   return api
     .get("/locations")
@@ -156,4 +171,16 @@ function handleError(error: AxiosError) {
   }
   console.error(error);
   throw error.response?.data;
+}
+
+export async function deleteMenuItem(menuid: number) {
+  const token = localStorage.getItem("token");
+  return api
+    .post(
+      `/${menuid}/delete-menu`,
+      { menuid },
+      { headers: { Authorization: `Bearer ${token}` } }
+    )
+    .then((response: AxiosResponse) => response.data)
+    .catch(handleError);
 }

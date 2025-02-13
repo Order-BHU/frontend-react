@@ -204,6 +204,7 @@ export default function RestaurantMenuPage() {
     mutationFn: checkout,
     onSuccess: (data) => {
       localStorage.setItem("orderCode", data.code);
+      localStorage.setItem("orderId", data.order?.id); //I didn't really finish this, feel free to change stuff.
       toast({
         title: "Success",
         description: data.message,
@@ -484,7 +485,7 @@ export default function RestaurantMenuPage() {
                       >
                         <div className="flex items-center">
                           <Img
-                            className="rounded-md mr-2 max-h-[40%] max-w-[40%]"
+                            className="rounded-md mr-2 max-w-[35%] h-auto"
                             src={String(item.menu_picture!)}
                             alt={item.menu_name}
                             unloader={
@@ -657,7 +658,9 @@ export default function RestaurantMenuPage() {
                             ) ? (
                               <>
                                 Added{" "}
-                                <Check className="w-4 h-4 text-green-500" />
+                                <Check
+                                  className={`w-4 h-4 text-cfont-dark dark:text-gray-800`}
+                                />
                               </>
                             ) : (
                               "Add to cart"

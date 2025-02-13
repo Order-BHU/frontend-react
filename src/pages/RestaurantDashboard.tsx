@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Header } from "../components/header";
 import { Footer } from "../components/footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -32,6 +32,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogClose,
 } from "@/components/ui/dialog";
 import { useMutation } from "@tanstack/react-query";
 import { useQuery } from "@tanstack/react-query";
@@ -42,6 +43,7 @@ import {
   editMenu,
   myOrders,
   updateOrderStatus,
+  deleteMenuItem,
 } from "@/api/restaurant";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
@@ -51,6 +53,7 @@ import {
   tempapiMenu,
   orderType,
 } from "@/interfaces/restaurantType";
+import { editProfile, dashboard } from "@/api/misc";
 import { waveform } from "ldrs";
 
 export default function RestaurantDashboardPage() {
@@ -80,6 +83,12 @@ export default function RestaurantDashboardPage() {
     queryFn: () => myOrders("pending"),
   });
 
+  const { data: userDetails, refetch: refetchDetails } = useQuery({
+    queryKey: ["userDetails"],
+    queryFn: () => dashboard(),
+    refetchOnWindowFocus: false,
+  });
+
   const {
     status: acceptedStatus,
     data: acceptedOrders,
@@ -100,6 +109,17 @@ export default function RestaurantDashboardPage() {
     queryKey: ["menuItems", restaurant_id],
     queryFn: () => getMenuItems(restaurant_id!),
   });
+
+  useEffect(() => {
+    //this'll take user data and store the pfp in localeStorage and also store the default values in restaurant object
+    if (userDetails) {
+      localStorage.setItem("pfp", userDetails?.message?.profile_picture_url);
+      setRestaurant((prev) => ({
+        ...prev,
+        name: userDetails?.message?.name || prev.name, // Ensure fallback to previous name if undefined
+      }));
+    }
+  }, [userDetails]);
 
   useEffect(() => {
     console.log(localStorage.getItem("token"));
@@ -157,15 +177,80 @@ export default function RestaurantDashboardPage() {
     },
   });
 
+  const { mutate: deleteMenuItemMutate } = useMutation({
+    mutationFn: deleteMenuItem,
+    onSuccess: (data) => {
+      toast({
+        title: "Success",
+        description: data.message,
+      });
+      refetchMenuItems();
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+      refetchMenuItems();
+    },
+  });
+
+  const handleDeleteMenuItem = (id: number) => {
+    deleteMenuItemMutate(id);
+
+    setDisplayedMenuItems((prev) => prev.filter((item) => item.id !== id));
+  };
+
+  const { mutate: editProfileMutate, status: editProfileMutateStatus } =
+    useMutation({
+      mutationFn: editProfile,
+      onSuccess: (data) => {
+        refetchDetails();
+        localStorage.setItem("name", restaurant.name);
+        toast({
+          title: "Success",
+          description: data.message,
+        });
+      },
+      onError: (error) => {
+        toast({
+          title: "Error",
+          description: error.message,
+          variant: "destructive",
+        });
+      },
+    });
+
+  const handleEditProfile = (e: React.FormEvent) => {
+    e.preventDefault();
+    editProfileMutate(filteredData);
+    console.log(restaurant);
+  };
+
+  const handlePfpImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setRestaurant({ ...restaurant, profile_picture: e.target.files[0] });
+    }
+  };
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       setNewMenuItem({ ...newMenuItem, image: e.target.files[0] });
     }
   };
   const [restaurant, setRestaurant] = useState({
-    name: "Tasty Bites Restaurant",
-    photo: "",
+    name: "",
+    profile_picture: null as File | null,
+    phone_number_type: "",
   });
+  const filteredData = Object.fromEntries(
+    //this is here to filter only the truthy values from the edit profile form and we pass it to mutate, since the api can't accept empty strings as they'll override whatever is already there
+    Object.entries(restaurant).filter(([_, value]) => value)
+  );
+
+  const handlePhoneTypeChange = (type: "whatsapp" | "phone") => {
+    setRestaurant((prev) => ({ ...prev, phone_number_type: type }));
+  };
   const [editingMenuItem, setEditingMenuItem] = useState<
     (typeof menuItems)[0] | null
   >(null);
@@ -215,6 +300,15 @@ export default function RestaurantDashboardPage() {
         title: "Success",
         description: data.message,
       });
+      setNewMenuItem({
+        name: "",
+        price: 0,
+        description: "",
+        image: null as File | null,
+        category_id: 0,
+        menuId: "",
+      });
+      refetchMenuItems();
     },
     onError: (error) => {
       toast({
@@ -279,7 +373,7 @@ export default function RestaurantDashboardPage() {
             </CardHeader>
             <CardContent className="flex items-center space-x-4 flex-col sm:flex-row sm:items-center sm:space-x-4 space-y-4 sm:space-y-0">
               <Avatar className="h-20 w-20">
-                <AvatarImage src={restaurant.photo} />
+                <AvatarImage src={userDetails?.message?.profile_picture_url} />
                 <AvatarFallback className="text-white">
                   {username}
                 </AvatarFallback>
@@ -299,12 +393,7 @@ export default function RestaurantDashboardPage() {
                   <DialogHeader>
                     <DialogTitle>Edit Restaurant Profile</DialogTitle>
                   </DialogHeader>
-                  <form
-                    onSubmit={(e) => {
-                      e.preventDefault();
-                    }}
-                    className="space-y-4"
-                  >
+                  <form onSubmit={handleEditProfile} className="space-y-4">
                     <div>
                       <Label
                         htmlFor="restaurantPhoto"
@@ -313,23 +402,10 @@ export default function RestaurantDashboardPage() {
                         Restaurant Photo
                       </Label>
                       <Input
-                        id="restaurantPhoto"
+                        id="photo"
                         type="file"
                         accept="image/*"
-                        className="dark:text-cfont-dark"
-                        onChange={(e) => {
-                          const file = e.target.files?.[0];
-                          if (file) {
-                            const reader = new FileReader();
-                            reader.onloadend = () => {
-                              setRestaurant({
-                                ...restaurant,
-                                photo: reader.result as string,
-                              });
-                            };
-                            reader.readAsDataURL(file);
-                          }
-                        }}
+                        onChange={handlePfpImageChange}
                       />
                     </div>
                     <div>
@@ -348,7 +424,46 @@ export default function RestaurantDashboardPage() {
                         }
                       />
                     </div>
-                    <Button type="submit">Update Profile</Button>
+                    <div>
+                      <Label
+                        htmlFor="restaurantPhoto"
+                        className="dark:text-cfont-dark"
+                      >
+                        Phone Number Type:
+                      </Label>
+                      <div className="flex space-x-2 mt-2">
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant={
+                            restaurant.phone_number_type === "whatsapp"
+                              ? "default"
+                              : "outline"
+                          }
+                          onClick={() => handlePhoneTypeChange("whatsapp")}
+                        >
+                          WhatsApp
+                        </Button>
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant={
+                            restaurant.phone_number_type === "phone"
+                              ? "default"
+                              : "outline"
+                          }
+                          onClick={() => handlePhoneTypeChange("phone")}
+                        >
+                          Phone
+                        </Button>
+                      </div>
+                    </div>
+                    <Button
+                      type="submit"
+                      disabled={editProfileMutateStatus === "pending"}
+                    >
+                      Update Profile
+                    </Button>
                   </form>
                 </DialogContent>
               </Dialog>
@@ -750,6 +865,39 @@ export default function RestaurantDashboardPage() {
                                         </Button>
                                       </form>
                                     )}
+                                  </DialogContent>
+                                </Dialog>
+
+                                <Dialog>
+                                  <DialogTrigger asChild>
+                                    <Button
+                                      className="ml-3"
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={() => setEditingMenuItem(item)}
+                                    >
+                                      Delete
+                                    </Button>
+                                  </DialogTrigger>
+                                  <DialogContent className="dark: text-cfont-dark">
+                                    <DialogHeader>
+                                      <DialogTitle>
+                                        Delete Item '{item.name}'
+                                      </DialogTitle>
+                                    </DialogHeader>
+                                    <div className="flex justify-around">
+                                      <Button
+                                        variant="destructive"
+                                        onClick={() =>
+                                          handleDeleteMenuItem(item.id)
+                                        }
+                                      >
+                                        Yes
+                                      </Button>
+                                      <DialogClose asChild>
+                                        <Button>No</Button>
+                                      </DialogClose>
+                                    </div>
                                   </DialogContent>
                                 </Dialog>
                               </TableCell>
