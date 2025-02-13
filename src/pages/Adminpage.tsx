@@ -45,6 +45,7 @@ import { PageWrapper } from "@/components/pagewrapper";
 import { createRestaurant } from "@/api/auth";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 // Mock data - in a real app, this would come from an API
 const revenueData = [
@@ -473,215 +474,217 @@ export default function AdminDashboardPage() {
                             Create New Restaurant Account
                           </DialogTitle>
                         </DialogHeader>
-                        <form
-                          onSubmit={handleCreateRestaurant}
-                          className="space-y-4 "
-                        >
-                          <div>
-                            <Label htmlFor="restaurantName">
-                              Restaurant Name
-                            </Label>
-                            <Input
-                              id="restaurantName"
-                              value={formData.restaurant_name}
-                              onChange={(e) =>
-                                setformData({
-                                  ...formData,
-                                  restaurant_name: e.target.value,
-                                })
-                              }
-                              required
-                            />
-                          </div>
-                          <div>
-                            <Label htmlFor="ownerName">Owner's Name</Label>
-                            <Input
-                              id="ownerName"
-                              value={formData.owners_name}
-                              onChange={(e) =>
-                                setformData({
-                                  ...formData,
-                                  owners_name: e.target.value,
-                                })
-                              }
-                              required
-                            />
-                          </div>
-                          <div>
-                            <Label htmlFor="restaurantEmail">Email</Label>
-                            <Input
-                              id="restaurantEmail"
-                              type="email"
-                              value={formData.email}
-                              onChange={(e) =>
-                                setformData({
-                                  ...formData,
-                                  email: e.target.value,
-                                })
-                              }
-                              required
-                            />
-                          </div>
+                        <ScrollArea className="h-[80vh] px-8">
+                          <form
+                            onSubmit={handleCreateRestaurant}
+                            className="space-y-4 w-[90%] pl-3"
+                          >
+                            <div>
+                              <Label htmlFor="restaurantName">
+                                Restaurant Name
+                              </Label>
+                              <Input
+                                id="restaurantName"
+                                value={formData.restaurant_name}
+                                onChange={(e) =>
+                                  setformData({
+                                    ...formData,
+                                    restaurant_name: e.target.value,
+                                  })
+                                }
+                                required
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor="ownerName">Owner's Name</Label>
+                              <Input
+                                id="ownerName"
+                                value={formData.owners_name}
+                                onChange={(e) =>
+                                  setformData({
+                                    ...formData,
+                                    owners_name: e.target.value,
+                                  })
+                                }
+                                required
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor="restaurantEmail">Email</Label>
+                              <Input
+                                id="restaurantEmail"
+                                type="email"
+                                value={formData.email}
+                                onChange={(e) =>
+                                  setformData({
+                                    ...formData,
+                                    email: e.target.value,
+                                  })
+                                }
+                                required
+                              />
+                            </div>
 
-                          <div>
-                            <Label
-                              htmlFor="phone"
-                              className="dark:text-cfont-dark"
-                            >
-                              Phone Number
-                            </Label>
-                            <Input
-                              type="tel"
-                              id="phone"
-                              name="phone"
-                              className="dark:text-cfont-dark"
-                              value={formData.phone}
-                              onChange={handleChange}
-                              required
-                            />
-                            <div className="flex space-x-2 mt-2">
+                            <div>
+                              <Label
+                                htmlFor="phone"
+                                className="dark:text-cfont-dark"
+                              >
+                                Phone Number
+                              </Label>
+                              <Input
+                                type="tel"
+                                id="phone"
+                                name="phone"
+                                className="dark:text-cfont-dark"
+                                value={formData.phone}
+                                onChange={handleChange}
+                                required
+                              />
+                              <div className="flex space-x-2 mt-2">
+                                <Button
+                                  type="button"
+                                  size="sm"
+                                  variant={
+                                    formData.phoneType === "whatsapp"
+                                      ? "default"
+                                      : "outline"
+                                  }
+                                  onClick={() =>
+                                    handleRestaurantPhoneTypeChange("whatsapp")
+                                  }
+                                >
+                                  WhatsApp
+                                </Button>
+                                <Button
+                                  type="button"
+                                  size="sm"
+                                  variant={
+                                    formData.phoneType === "sms"
+                                      ? "default"
+                                      : "outline"
+                                  }
+                                  onClick={() =>
+                                    handleRestaurantPhoneTypeChange("sms")
+                                  }
+                                >
+                                  SMS
+                                </Button>
+                              </div>
+                            </div>
+                            <div>
+                              <Label
+                                htmlFor="accountnum"
+                                className="dark:text-cfont-dark"
+                              >
+                                Bank Account Number
+                              </Label>
+                              <Input
+                                type="tel"
+                                id="accountnum"
+                                name="account_number"
+                                className="dark:text-cfont-dark"
+                                value={formData.account_number}
+                                onChange={handleChange}
+                                required
+                              />
+                            </div>
+                            <div className="relative">
+                              <Label
+                                htmlFor="password"
+                                className="dark:text-cfont-dark"
+                              >
+                                Password
+                              </Label>
+                              <Input
+                                type={
+                                  showRestaurantPassword ? "text" : "password"
+                                }
+                                id="password"
+                                name="password"
+                                className="dark:text-cfont-dark"
+                                value={formData.password}
+                                onChange={handleChange}
+                                required
+                              />
                               <Button
                                 type="button"
-                                size="sm"
-                                variant={
-                                  formData.phoneType === "whatsapp"
-                                    ? "default"
-                                    : "outline"
-                                }
+                                variant="ghost"
+                                size="icon"
+                                className="absolute right-0 top-2 h-full px-3 py-2 hover:bg-transparent"
                                 onClick={() =>
-                                  handleRestaurantPhoneTypeChange("whatsapp")
+                                  setShowRestaurantPassword(
+                                    !showRestaurantPassword
+                                  )
                                 }
                               >
-                                WhatsApp
-                              </Button>
-                              <Button
-                                type="button"
-                                size="sm"
-                                variant={
-                                  formData.phoneType === "sms"
-                                    ? "default"
-                                    : "outline"
-                                }
-                                onClick={() =>
-                                  handleRestaurantPhoneTypeChange("sms")
-                                }
-                              >
-                                SMS
+                                {showRestaurantPassword ? (
+                                  <EyeOff className="h-4 w-4 text-gray-500" />
+                                ) : (
+                                  <Eye className="h-4 w-4 text-gray-500" />
+                                )}
+                                <span className="sr-only">
+                                  {showRestaurantPassword
+                                    ? "Hide password"
+                                    : "Show password"}
+                                </span>
                               </Button>
                             </div>
-                          </div>
-                          <div>
-                            <Label
-                              htmlFor="accountnum"
-                              className="dark:text-cfont-dark"
-                            >
-                              Bank Account Number
-                            </Label>
-                            <Input
-                              type="tel"
-                              id="accountnum"
-                              name="account_number"
-                              className="dark:text-cfont-dark"
-                              value={formData.account_number}
-                              onChange={handleChange}
-                              required
-                            />
-                          </div>
-                          <div className="relative">
-                            <Label
-                              htmlFor="password"
-                              className="dark:text-cfont-dark"
-                            >
-                              Password
-                            </Label>
-                            <Input
-                              type={
-                                showRestaurantPassword ? "text" : "password"
-                              }
-                              id="password"
-                              name="password"
-                              className="dark:text-cfont-dark"
-                              value={formData.password}
-                              onChange={handleChange}
-                              required
-                            />
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="icon"
-                              className="absolute right-0 top-2 h-full px-3 py-2 hover:bg-transparent"
-                              onClick={() =>
-                                setShowRestaurantPassword(
-                                  !showRestaurantPassword
-                                )
-                              }
-                            >
-                              {showRestaurantPassword ? (
-                                <EyeOff className="h-4 w-4 text-gray-500" />
-                              ) : (
-                                <Eye className="h-4 w-4 text-gray-500" />
-                              )}
-                              <span className="sr-only">
-                                {showRestaurantPassword
-                                  ? "Hide password"
-                                  : "Show password"}
-                              </span>
-                            </Button>
-                          </div>
-                          <div className="relative">
-                            <Label
-                              htmlFor="confirmPassword"
-                              className="dark:text-cfont-dark"
-                            >
-                              Confirm Password
-                            </Label>
-                            <Input
-                              type={
-                                showRestaurantConfirmPassword
-                                  ? "text"
-                                  : "password"
-                              }
-                              id="confirmPassword"
-                              name="confirmPassword"
-                              className="dark:text-cfont-dark"
-                              value={formData.confirmPassword}
-                              onChange={handleChange}
-                              required
-                            />
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="icon"
-                              className="absolute right-0 top-2 h-full px-3 py-2 hover:bg-transparent"
-                              onClick={() =>
-                                setShowRestaurantConfirmPassword(
-                                  !showRestaurantConfirmPassword
-                                )
-                              }
-                            >
-                              {showRestaurantConfirmPassword ? (
-                                <EyeOff className="h-4 w-4 text-gray-500" />
-                              ) : (
-                                <Eye className="h-4 w-4 text-gray-500" />
-                              )}
-                              <span className="sr-only">
-                                {showRestaurantConfirmPassword
-                                  ? "Hide confirm password"
-                                  : "Show confirm password"}
-                              </span>
-                            </Button>
-                          </div>
+                            <div className="relative">
+                              <Label
+                                htmlFor="confirmPassword"
+                                className="dark:text-cfont-dark"
+                              >
+                                Confirm Password
+                              </Label>
+                              <Input
+                                type={
+                                  showRestaurantConfirmPassword
+                                    ? "text"
+                                    : "password"
+                                }
+                                id="confirmPassword"
+                                name="confirmPassword"
+                                className="dark:text-cfont-dark"
+                                value={formData.confirmPassword}
+                                onChange={handleChange}
+                                required
+                              />
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon"
+                                className="absolute right-0 top-2 h-full px-3 py-2 hover:bg-transparent"
+                                onClick={() =>
+                                  setShowRestaurantConfirmPassword(
+                                    !showRestaurantConfirmPassword
+                                  )
+                                }
+                              >
+                                {showRestaurantConfirmPassword ? (
+                                  <EyeOff className="h-4 w-4 text-gray-500" />
+                                ) : (
+                                  <Eye className="h-4 w-4 text-gray-500" />
+                                )}
+                                <span className="sr-only">
+                                  {showRestaurantConfirmPassword
+                                    ? "Hide confirm password"
+                                    : "Show confirm password"}
+                                </span>
+                              </Button>
+                            </div>
 
-                          <Button
-                            type="submit"
-                            className="w-full"
-                            disabled={status === "pending"}
-                          >
-                            {status === "pending"
-                              ? "Creating account..."
-                              : "Create Restaurant Account"}
-                          </Button>
-                        </form>
+                            <Button
+                              type="submit"
+                              className="w-full"
+                              disabled={status === "pending"}
+                            >
+                              {status === "pending"
+                                ? "Creating account..."
+                                : "Create Restaurant Account"}
+                            </Button>
+                          </form>
+                        </ScrollArea>
                       </DialogContent>
                     </Dialog>
                   </CardContent>
