@@ -12,7 +12,7 @@ import { waveform } from "ldrs";
 interface restaurant {
   id: number;
   name: string;
-  cover_picture: string;
+  logo: string;
 }
 export default function RestaurantsPage() {
   waveform.register();

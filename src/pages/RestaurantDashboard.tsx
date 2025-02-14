@@ -125,7 +125,6 @@ export default function RestaurantDashboardPage() {
     console.log(localStorage.getItem("token"));
     if (pendingOrders) {
       setPendingOrders(pendingOrders.orders);
-      console.log("my orders: ", pendingOrders);
     }
   }, [pendingOrders]);
 
@@ -650,14 +649,14 @@ export default function RestaurantDashboardPage() {
                         </TableHeader>
                         <TableBody>
                           {acceptedOrderState?.map((order) => (
-                            <TableRow key={order.id}>
-                              <TableCell>{order.id}</TableCell>
+                            <TableRow key={order?.order_id}>
+                              <TableCell>{order.order_id}</TableCell>
                               {/* <TableCell>{order.customer}</TableCell> */}
                               <TableCell>
                                 {order.items
                                   ?.map(
                                     (item) =>
-                                      item.menu_name + `(x${item.quantity})`
+                                      item.item_name + `(x${item.quantity})`
                                   )
                                   .join(", ")}
                               </TableCell>

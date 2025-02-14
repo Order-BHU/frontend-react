@@ -40,7 +40,12 @@ export interface checkoutType {
 export interface orderType {
   //this is for the order route in user dashboard. It's the type the userOrders state is set to
   id: number;
-  items: { menu_id: number; quantity: number; menu_name: string }[];
+  items: {
+    menu_id: number;
+    quantity: number;
+    menu_name: string;
+    item_name: string /*man... he changed the names without telling, and now idk what to add or remove. bear with me here, this is for pending orders but idk if the change carries over to all order types */;
+  }[];
   status: string;
   total: number;
   restaurant_name: string;

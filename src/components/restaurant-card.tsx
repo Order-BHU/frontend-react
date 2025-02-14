@@ -7,20 +7,16 @@ import { orbit } from "ldrs";
 interface RestaurantCardProps {
   id: number;
   name: string;
-  cover_picture: string;
+  logo: string;
 }
 
-export function RestaurantCard({
-  id,
-  name,
-  cover_picture,
-}: RestaurantCardProps) {
+export function RestaurantCard({ id, name, logo }: RestaurantCardProps) {
   orbit.register();
   return (
     <Card className="overflow-hidden transition-all hover:shadow-lg">
       <CardContent className="p-0 justify-center">
         <Img
-          src={cover_picture}
+          src={logo}
           alt={name}
           width={300}
           height={200}
