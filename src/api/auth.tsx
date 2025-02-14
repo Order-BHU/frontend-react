@@ -95,3 +95,22 @@ export async function logOut(token: string | null) {
       throw error.response?.data;
     });
 }
+
+export async function getBanks() {
+  const token = localStorage.getItem("token");
+  return api
+    .get(`/bank-list`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    .then((response: AxiosResponse) => {
+      console.log("list of banks: ", response.data);
+      return response.data;
+    })
+    .catch((error: AxiosError) => {
+      if (error.code === "ERR_NETWORK") {
+        throw new Error("Network error: Unable to reach the server.");
+      }
+      console.log(error);
+      throw error.response?.data;
+    });
+}

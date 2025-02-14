@@ -43,9 +43,11 @@ import {
 import { Utensils, Bike, DollarSign, Eye, EyeOff } from "lucide-react";
 import { PageWrapper } from "@/components/pagewrapper";
 import { createRestaurant } from "@/api/auth";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { getBanks } from "@/api/auth";
+import { bankType } from "@/interfaces/paymentType";
 
 // Mock data - in a real app, this would come from an API
 const revenueData = [
@@ -213,6 +215,7 @@ export default function AdminDashboardPage() {
     owners_name: "",
     restaurant_name: "",
     account_number: "",
+    bank_code: "",
   });
   const handleRestaurantPhoneTypeChange = (type: "whatsapp" | "sms") => {
     setformData((prev) => ({ ...prev, phoneType: type }));
@@ -253,6 +256,11 @@ export default function AdminDashboardPage() {
     setNewRider({ name: "", email: "", phone: "" });
     // You might want to add some feedback to the user here
   };
+
+  const { data: bankList, status: bankListStatus } = useQuery({
+    queryKey: ["bankList"],
+    queryFn: getBanks,
+  });
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-cbg-dark">
@@ -572,6 +580,43 @@ export default function AdminDashboardPage() {
                                 </Button>
                               </div>
                             </div>
+
+                            <div>
+                              <Label htmlFor="bank">Bank</Label>
+                              <Select
+                                onValueChange={(value) => {
+                                  setformData({
+                                    ...formData,
+                                    bank_code: value,
+                                  });
+                                }}
+                              >
+                                <SelectTrigger className="w-[180px]">
+                                  <SelectValue placeholder="Choose Bank" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {bankListStatus === "pending" ? (
+                                    <SelectItem value="" disabled>
+                                      Loading Banks...
+                                    </SelectItem>
+                                  ) : bankListStatus === "error" ? (
+                                    <SelectItem value="" disabled>
+                                      Error loading Banks
+                                    </SelectItem>
+                                  ) : (
+                                    bankList?.data.map((bank: bankType) => (
+                                      <SelectItem
+                                        key={bank.code}
+                                        value={String(bank.code)}
+                                      >
+                                        {bank.name}
+                                      </SelectItem>
+                                    ))
+                                  )}
+                                </SelectContent>
+                              </Select>
+                            </div>
+
                             <div>
                               <Label
                                 htmlFor="accountnum"
