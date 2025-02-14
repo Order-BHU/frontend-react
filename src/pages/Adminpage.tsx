@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Header } from "../components/header";
 import { Footer } from "../components/footer";
@@ -48,6 +48,7 @@ import { useNavigate } from "react-router-dom";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { getBanks, resolveBank } from "@/api/auth";
 import { banksType } from "@/interfaces/paymentType";
+import debounce from "lodash/debounce";
 
 // Mock data - in a real app, this would come from an API
 const revenueData = [
@@ -219,6 +220,13 @@ export default function AdminDashboardPage() {
     bank_name: "",
   });
 
+  const debouncedResolveBankMutate = useCallback(
+    debounce((data) => {
+      handleResolveBankMutate(data);
+    }, 300),
+    []
+  );
+
   const [resolveBankData, setResolveBankData] = useState<{
     //this state will store the data I will send to the resolve bank route
     bank_code: string;
@@ -235,8 +243,7 @@ export default function AdminDashboardPage() {
       resolveBankData.account_number.length >= 10 ||
       resolveBankData.bank_code
     ) {
-      handleResolveBankMutate(resolveBankData);
-      console.log("leresolvename: ", resolvedBankName);
+      debouncedResolveBankMutate(resolveBankData);
     }
   }, [resolveBankData]);
   const { data: bankList, status: bankListStatus } = useQuery({
@@ -255,10 +262,14 @@ export default function AdminDashboardPage() {
   };
 
   useEffect(() => {
-    if (bankList) {
-      setAllBanks(bankList?.data);
+    if (bankList?.data && Array.isArray(bankList.data)) {
+      const processed = bankList.data.map((bank: banksType) => ({
+        ...bank,
+      }));
+      setAllBanks(processed);
     }
-  }, [bankList]);
+  }, [bankList]); // Depend on `bankList` instead of `bankList?.data`
+
   //const [foundResolvedBank, setFoundResolvedBank] = useState({});
   const { mutate: resolveBankMutate } = useMutation({
     mutationFn: resolveBank,
@@ -282,6 +293,16 @@ export default function AdminDashboardPage() {
       return;
     },
   });
+  const bankOptions = useMemo(() => {
+    //idk what this does yet, but it helps with performance
+    if (bankListStatus !== "success") return null;
+    return allBanks.map((bank) => (
+      <SelectItem key={bank.id} value={String(bank.code)}>
+        {bank.name}
+      </SelectItem>
+    ));
+  }, [allBanks, bankListStatus]);
+
   const handleRestaurantPhoneTypeChange = (type: "whatsapp" | "sms") => {
     setformData((prev) => ({ ...prev, phoneType: type }));
   };
@@ -313,12 +334,19 @@ export default function AdminDashboardPage() {
   };
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
+
+    // First update formData
     if (name === "phone" || name === "account_number") {
       const numericValue = value.replace(/[^0-9]/g, "");
       setformData((prev) => ({ ...prev, [name]: numericValue }));
     } else {
-      setResolveBankData((prev) => ({ ...prev, account_number: value }));
       setformData((prev) => ({ ...prev, [name]: value }));
+    }
+
+    // Only update resolveBankData for account_number
+    if (name === "account_no") {
+      const numericValue = value.replace(/[^0-9]/g, "");
+      setResolveBankData((prev) => ({ ...prev, account_number: numericValue }));
     }
   };
   const [timeRange, setTimeRange] = useState<TimeRange>("week");
@@ -677,18 +705,14 @@ export default function AdminDashboardPage() {
                                     (bank) => String(bank.code) === value
                                   );
                                   if (selectedBank) {
-                                    setformData({
-                                      ...formData,
+                                    setformData((prev) => ({
+                                      ...prev,
                                       bank_code: selectedBank.code,
-                                    });
+                                    }));
                                     setResolveBankData((prev) => ({
                                       ...prev,
                                       bank_code: selectedBank.code,
                                     }));
-                                    console.log(
-                                      "resolve bank data: ",
-                                      resolveBankData
-                                    );
                                   }
                                 }}
                               >
@@ -705,14 +729,7 @@ export default function AdminDashboardPage() {
                                       Error loading Banks
                                     </SelectItem>
                                   ) : (
-                                    allBanks?.map((bank) => (
-                                      <SelectItem
-                                        key={bank.id}
-                                        value={String(bank?.code)}
-                                      >
-                                        {bank?.name}
-                                      </SelectItem>
-                                    ))
+                                    bankOptions
                                   )}
                                 </SelectContent>
                               </Select>
