@@ -39,6 +39,8 @@ export type Owner = {
   owners_name: string;
   restaurant_name: string;
   account_no: string;
+  bank_code: string;
+  bank_name: string;
 };
 
 export type Otp = {

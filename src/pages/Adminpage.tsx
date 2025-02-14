@@ -264,7 +264,14 @@ export default function AdminDashboardPage() {
     mutationFn: resolveBank,
     onSuccess: (data) => {
       //setFoundResolvedBank(data);
-      setResolvedBankName(data?.data.account_name); //just here to fill up space(completely useless)
+      setResolvedBankName(data?.data.account_name);
+      const matchingbank = allBanks.find(
+        (bank) => bank.id === data.data.bank_id
+      );
+      setformData((prev) => ({
+        ...prev,
+        bank_name: matchingbank?.name || prev.bank_name,
+      }));
     },
     onError: (error) => {
       toast({
@@ -283,6 +290,13 @@ export default function AdminDashboardPage() {
     useState(false);
   const handleCreateRestaurant = (e: React.FormEvent) => {
     e.preventDefault();
+    if (resolvedBankName === undefined || resolvedBankName === "") {
+      toast({
+        title: "Couldn't find bank",
+        description: "Couldn't find this bank account",
+        variant: "destructive",
+      });
+    }
     console.log("New restaurant:", formData);
     mutate({
       email: formData.email,
@@ -293,6 +307,8 @@ export default function AdminDashboardPage() {
       owners_name: formData.owners_name,
       restaurant_name: formData.restaurant_name,
       account_no: formData.account_no,
+      bank_code: formData.bank_code,
+      bank_name: formData.bank_name,
     });
   };
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
