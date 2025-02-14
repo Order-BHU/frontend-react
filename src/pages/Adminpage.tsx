@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Header } from "../components/header";
 import { Footer } from "../components/footer";
@@ -227,10 +227,21 @@ export default function AdminDashboardPage() {
     bank_code: "",
     account_number: "",
   });
+  const [resolvedBankName, setResolvedBankName] = useState(""); //handles storing the name of the account from resolved. May be redundant, but I'm in a hurry rn
+  useEffect(() => {
+    //this will handle the mutations. I'm not doing it directly because something something asynchronous programming
+    if (
+      resolveBankData.account_number.length >= 10 ||
+      resolveBankData.bank_code
+    ) {
+      handleResolveBankMutate(resolveBankData);
+    }
+  }, [resolveBankData]);
   const handleResolveBankMutate = (bank: {
     bank_code: string;
     account_number: string;
   }) => {
+    console.log("bank sending:", bank);
     resolveBankMutate(bank);
   };
   //const [foundResolvedBank, setFoundResolvedBank] = useState({});
@@ -238,7 +249,7 @@ export default function AdminDashboardPage() {
     mutationFn: resolveBank,
     onSuccess: (data) => {
       //setFoundResolvedBank(data);
-      console.log(data); //just here to fill up space(completely useless)
+      setResolvedBankName(data?.account_name); //just here to fill up space(completely useless)
     },
     onError: (error) => {
       toast({
@@ -277,8 +288,6 @@ export default function AdminDashboardPage() {
     } else {
       setResolveBankData((prev) => ({ ...prev, account_number: value }));
       setformData((prev) => ({ ...prev, [name]: value }));
-      resolveBankData.account_number.length >= 10 && //this is here incase they select a bank before inputting number
-        handleResolveBankMutate(resolveBankData);
     }
   };
   const [timeRange, setTimeRange] = useState<TimeRange>("week");
@@ -639,11 +648,8 @@ export default function AdminDashboardPage() {
                               <Select
                                 onValueChange={(value) => {
                                   const selectedBank = bankList?.data.find(
-                                    (bank: {
-                                      id: string;
-                                      name: string;
-                                      code: string;
-                                    }) => String(bank.code) === value
+                                    (bank: { code: string }) =>
+                                      String(bank.code) === value
                                   );
                                   if (selectedBank) {
                                     setformData({
@@ -658,7 +664,6 @@ export default function AdminDashboardPage() {
                                       "resolve bank data: ",
                                       resolveBankData
                                     );
-                                    handleResolveBankMutate(resolveBankData);
                                   }
                                 }}
                               >
@@ -689,6 +694,12 @@ export default function AdminDashboardPage() {
                                 </SelectContent>
                               </Select>
                             </div>
+                            {resolvedBankName ? (
+                              <div>{resolvedBankName}</div>
+                            ) : (
+                              <></>
+                            )}
+
                             <div className="relative">
                               <Label
                                 htmlFor="password"

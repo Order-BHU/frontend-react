@@ -45,3 +45,8 @@ export type Otp = {
   email: string;
   otp: string;
 };
+
+export type bankResolveResponse = {
+  //this is used for the response we get if a bank gets resolved
+  account_name: string;
+};

@@ -7,6 +7,7 @@ import {
   existingUser,
   Owner,
   Otp,
+  bankResolveResponse,
 } from "@/interfaces/user";
 import api from "./apiClient";
 
@@ -130,7 +131,7 @@ export async function resolveBank(data: {
         },
       }
     )
-    .then((response: AxiosResponse<apiResponse>) => {
+    .then((response: AxiosResponse<bankResolveResponse>) => {
       console.log("resolved bank data: ", response.data);
       return response.data;
     })
