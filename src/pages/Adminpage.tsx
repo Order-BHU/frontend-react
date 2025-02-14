@@ -236,11 +236,14 @@ export default function AdminDashboardPage() {
       resolveBankData.bank_code
     ) {
       handleResolveBankMutate(resolveBankData);
+      console.log("leresolvename: ", resolvedBankName);
     }
   }, [resolveBankData]);
   const { data: bankList, status: bankListStatus } = useQuery({
     queryKey: ["bankList"],
     queryFn: getBanks,
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
   });
 
   const handleResolveBankMutate = (bank: {
@@ -261,7 +264,7 @@ export default function AdminDashboardPage() {
     mutationFn: resolveBank,
     onSuccess: (data) => {
       //setFoundResolvedBank(data);
-      setResolvedBankName(data?.account_name); //just here to fill up space(completely useless)
+      setResolvedBankName(data?.data.account_name); //just here to fill up space(completely useless)
     },
     onError: (error) => {
       toast({
@@ -698,11 +701,14 @@ export default function AdminDashboardPage() {
                                 </SelectContent>
                               </Select>
                             </div>
-                            {resolvedBankName ? (
-                              <div>{resolvedBankName}</div>
-                            ) : (
-                              <></>
-                            )}
+                            <div
+                              className={`relative ${
+                                resolvedBankName === "" ? "hidden" : ""
+                              }`}
+                            >
+                              <p>Matching account: </p>
+                              <h3>{resolvedBankName?.toLocaleUpperCase()}</h3>
+                            </div>
 
                             <div className="relative">
                               <Label

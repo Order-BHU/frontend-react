@@ -48,5 +48,12 @@ export type Otp = {
 
 export type bankResolveResponse = {
   //this is used for the response we get if a bank gets resolved
-  account_name: string;
+  data: {
+    account_name: string;
+    account_number: string;
+    bank_id: number;
+  };
+
+  message: string;
+  status: boolean;
 };
