@@ -9,4 +9,5 @@ export interface bankType {
   //for the bank list in the admin page
   name: string;
   code: number;
+  id: number;
 }

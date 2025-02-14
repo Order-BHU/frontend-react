@@ -103,7 +103,35 @@ export async function getBanks() {
       headers: { Authorization: `Bearer ${token}` },
     })
     .then((response: AxiosResponse) => {
-      console.log("list of banks: ", response.data);
+      console.log("list of banks: ", response.data, token);
+      return response.data;
+    })
+    .catch((error: AxiosError) => {
+      if (error.code === "ERR_NETWORK") {
+        throw new Error("Network error: Unable to reach the server.");
+      }
+      console.log(error);
+      throw error.response?.data;
+    });
+}
+
+export async function resolveBank(data: {
+  account_number: string;
+  bank_code: string;
+}) {
+  const token = localStorage.getItem("token");
+  return api
+    .post(
+      "/resolve-bank",
+      { account_number: data.account_number, bank_code: data.bank_code },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    )
+    .then((response: AxiosResponse<apiResponse>) => {
+      console.log("resolved bank data: ", response.data);
       return response.data;
     })
     .catch((error: AxiosError) => {

@@ -46,7 +46,7 @@ import { createRestaurant } from "@/api/auth";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { getBanks } from "@/api/auth";
+import { getBanks, resolveBank } from "@/api/auth";
 import { bankType } from "@/interfaces/paymentType";
 
 // Mock data - in a real app, this would come from an API
@@ -214,8 +214,40 @@ export default function AdminDashboardPage() {
     phoneType: "whatsapp",
     owners_name: "",
     restaurant_name: "",
-    account_number: "",
+    account_no: "",
     bank_code: "",
+    bank_name: "",
+  });
+
+  const [resolveBankData, setResolveBankData] = useState<{
+    //this state will store the data I will send to the resolve bank route
+    bank_code: string;
+    account_number: string;
+  }>({
+    bank_code: "",
+    account_number: "",
+  });
+  const handleResolveBankMutate = (bank: {
+    bank_code: string;
+    account_number: string;
+  }) => {
+    resolveBankMutate(bank);
+  };
+  //const [foundResolvedBank, setFoundResolvedBank] = useState({});
+  const { mutate: resolveBankMutate } = useMutation({
+    mutationFn: resolveBank,
+    onSuccess: (data) => {
+      //setFoundResolvedBank(data);
+      console.log(data); //just here to fill up space(completely useless)
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+      return;
+    },
   });
   const handleRestaurantPhoneTypeChange = (type: "whatsapp" | "sms") => {
     setformData((prev) => ({ ...prev, phoneType: type }));
@@ -234,7 +266,7 @@ export default function AdminDashboardPage() {
       account_type: "restaurant",
       owners_name: formData.owners_name,
       restaurant_name: formData.restaurant_name,
-      account_no: formData.account_number,
+      account_no: formData.account_no,
     });
   };
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -243,7 +275,10 @@ export default function AdminDashboardPage() {
       const numericValue = value.replace(/[^0-9]/g, "");
       setformData((prev) => ({ ...prev, [name]: numericValue }));
     } else {
+      setResolveBankData((prev) => ({ ...prev, account_number: value }));
       setformData((prev) => ({ ...prev, [name]: value }));
+      resolveBankData.account_number.length >= 10 && //this is here incase they select a bank before inputting number
+        handleResolveBankMutate(resolveBankData);
     }
   };
   const [timeRange, setTimeRange] = useState<TimeRange>("week");
@@ -582,13 +617,49 @@ export default function AdminDashboardPage() {
                             </div>
 
                             <div>
+                              <Label
+                                htmlFor="accountnum"
+                                className="dark:text-cfont-dark"
+                              >
+                                Bank Account Number
+                              </Label>
+                              <Input
+                                type="tel"
+                                id="accountnum"
+                                name="account_no"
+                                className="dark:text-cfont-dark"
+                                value={formData.account_no}
+                                onChange={handleChange}
+                                required
+                              />
+                            </div>
+
+                            <div>
                               <Label htmlFor="bank">Bank</Label>
                               <Select
                                 onValueChange={(value) => {
-                                  setformData({
-                                    ...formData,
-                                    bank_code: value,
-                                  });
+                                  const selectedBank = bankList?.data.find(
+                                    (bank: {
+                                      id: string;
+                                      name: string;
+                                      code: string;
+                                    }) => String(bank.code) === value
+                                  );
+                                  if (selectedBank) {
+                                    setformData({
+                                      ...formData,
+                                      bank_code: selectedBank.code,
+                                    });
+                                    setResolveBankData((prev) => ({
+                                      ...prev,
+                                      bank_code: selectedBank.code,
+                                    }));
+                                    console.log(
+                                      "resolve bank data: ",
+                                      resolveBankData
+                                    );
+                                    handleResolveBankMutate(resolveBankData);
+                                  }
                                 }}
                               >
                                 <SelectTrigger className="w-[180px]">
@@ -604,35 +675,19 @@ export default function AdminDashboardPage() {
                                       Error loading Banks
                                     </SelectItem>
                                   ) : (
-                                    bankList?.data.map((bank: bankType) => (
-                                      <SelectItem
-                                        key={bank.code}
-                                        value={String(bank.code)}
-                                      >
-                                        {bank.name}
-                                      </SelectItem>
-                                    ))
+                                    bankList?.data?.map(
+                                      (bank: bankType, index: number) => (
+                                        <SelectItem
+                                          key={`${bank.id}-${index}`}
+                                          value={String(bank?.code)}
+                                        >
+                                          {bank?.name}
+                                        </SelectItem>
+                                      )
+                                    )
                                   )}
                                 </SelectContent>
                               </Select>
-                            </div>
-
-                            <div>
-                              <Label
-                                htmlFor="accountnum"
-                                className="dark:text-cfont-dark"
-                              >
-                                Bank Account Number
-                              </Label>
-                              <Input
-                                type="tel"
-                                id="accountnum"
-                                name="account_number"
-                                className="dark:text-cfont-dark"
-                                value={formData.account_number}
-                                onChange={handleChange}
-                                required
-                              />
                             </div>
                             <div className="relative">
                               <Label

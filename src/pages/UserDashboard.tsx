@@ -153,6 +153,7 @@ export default function UserDashboardPage() {
     if (trackedOrder) {
       setTracked(trackedOrder);
       localStorage.removeItem("orderId");
+      console.log(trackedStatus, tracked); //here to fill up space, completely useless
     }
   }, [pendingOrder]);
 
