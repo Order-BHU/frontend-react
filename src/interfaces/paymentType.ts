@@ -11,3 +11,21 @@ export interface bankType {
   code: number;
   id: number;
 }
+
+export interface banksType {
+  active: string;
+  code: string;
+  country: string;
+  createdAt: string;
+  currency: string;
+  gateway: string;
+  id: number;
+  is_deleted: boolean;
+  longcode: string;
+  name: string;
+  pay_with_bank: boolean;
+  slug: string;
+  supports_transfer: boolean;
+  type: string;
+  updatedAt: string;
+}

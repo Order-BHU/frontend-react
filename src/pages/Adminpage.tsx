@@ -47,7 +47,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { getBanks, resolveBank } from "@/api/auth";
-import { bankType } from "@/interfaces/paymentType";
+import { banksType } from "@/interfaces/paymentType";
 
 // Mock data - in a real app, this would come from an API
 const revenueData = [
@@ -228,6 +228,7 @@ export default function AdminDashboardPage() {
     account_number: "",
   });
   const [resolvedBankName, setResolvedBankName] = useState(""); //handles storing the name of the account from resolved. May be redundant, but I'm in a hurry rn
+  const [allBanks, setAllBanks] = useState<banksType[]>([]);
   useEffect(() => {
     //this will handle the mutations. I'm not doing it directly because something something asynchronous programming
     if (
@@ -237,6 +238,11 @@ export default function AdminDashboardPage() {
       handleResolveBankMutate(resolveBankData);
     }
   }, [resolveBankData]);
+  const { data: bankList, status: bankListStatus } = useQuery({
+    queryKey: ["bankList"],
+    queryFn: getBanks,
+  });
+
   const handleResolveBankMutate = (bank: {
     bank_code: string;
     account_number: string;
@@ -244,6 +250,12 @@ export default function AdminDashboardPage() {
     console.log("bank sending:", bank);
     resolveBankMutate(bank);
   };
+
+  useEffect(() => {
+    if (bankList) {
+      setAllBanks(bankList?.data);
+    }
+  }, [bankList]);
   //const [foundResolvedBank, setFoundResolvedBank] = useState({});
   const { mutate: resolveBankMutate } = useMutation({
     mutationFn: resolveBank,
@@ -300,11 +312,6 @@ export default function AdminDashboardPage() {
     setNewRider({ name: "", email: "", phone: "" });
     // You might want to add some feedback to the user here
   };
-
-  const { data: bankList, status: bankListStatus } = useQuery({
-    queryKey: ["bankList"],
-    queryFn: getBanks,
-  });
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-cbg-dark">
@@ -647,9 +654,8 @@ export default function AdminDashboardPage() {
                               <Label htmlFor="bank">Bank</Label>
                               <Select
                                 onValueChange={(value) => {
-                                  const selectedBank = bankList?.data.find(
-                                    (bank: { code: string }) =>
-                                      String(bank.code) === value
+                                  const selectedBank = allBanks?.find(
+                                    (bank) => String(bank.code) === value
                                   );
                                   if (selectedBank) {
                                     setformData({
@@ -680,16 +686,14 @@ export default function AdminDashboardPage() {
                                       Error loading Banks
                                     </SelectItem>
                                   ) : (
-                                    bankList?.data?.map(
-                                      (bank: bankType, index: number) => (
-                                        <SelectItem
-                                          key={`${bank.id}-${index}`}
-                                          value={String(bank?.code)}
-                                        >
-                                          {bank?.name}
-                                        </SelectItem>
-                                      )
-                                    )
+                                    allBanks?.map((bank) => (
+                                      <SelectItem
+                                        key={bank.id}
+                                        value={String(bank?.code)}
+                                      >
+                                        {bank?.name}
+                                      </SelectItem>
+                                    ))
                                   )}
                                 </SelectContent>
                               </Select>
