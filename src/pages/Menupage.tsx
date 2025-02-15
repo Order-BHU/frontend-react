@@ -139,7 +139,7 @@ export default function RestaurantMenuPage() {
   useEffect(() => {
     //this calculates the total price of cart Items
     const total_price = cartItems?.cart_items?.reduce(
-      (sum: number, item: singularCartItem) => sum + Number(item.item_price),
+      (sum: number, item: singularCartItem) => sum + Number(item.price),
       0
     );
     setTotalPrice(total_price);
@@ -155,7 +155,7 @@ export default function RestaurantMenuPage() {
       quantity: 1, //we don't store quantity in the backend anymore, so I just default them to 1
       menu_name: item.item_name,
       menu_picture: item.item_picture,
-      menu_price: item.item_price,
+      menu_price: item.price,
     }));
     //so the values only update or show for logged in users
     isLoggedIn && setCheckoutItems(transformedItems); //so that we can get the user's checkout items so they can continue from when they left off in selecting in cart if they refresh the page or something.
@@ -247,17 +247,6 @@ export default function RestaurantMenuPage() {
       return;
     }
     //all this below sets the quantity for chekout items so we can... have the quantity
-
-    // setCartItems((prevItems: singularCartItem[]) => {
-    //   const existingItem = cartItemArray?.find(
-    //     (item) => item.menu_id === Number(itemId)
-    //   );
-    //   if (!existingItem) return prevItems;
-
-    //   return prevItems.map((item) =>
-    //     item.menu_id === Number(itemId) ? { ...item, quantity: 1 } : item
-    //   );
-    // });
     setCheckoutItems((prevItems) => {
       const newItems = [
         ...prevItems,
@@ -272,7 +261,7 @@ export default function RestaurantMenuPage() {
           )?.item_picture,
           menu_price: menuItems?.find(
             (item: menuItem) => item.id === Number(itemId)
-          )?.item_price,
+          )?.price,
         },
       ];
 
@@ -500,7 +489,9 @@ export default function RestaurantMenuPage() {
                           />
                           <div>
                             <p className="font-medium">{item.menu_name}</p>
-                            {/* <p className="text-sm text-gray-500">{item.price}</p> */}
+                            <p className="text-sm text-gray-500">
+                              {item.menu_price}
+                            </p>
                           </div>
                         </div>
                         <div className="flex items-center">
@@ -639,7 +630,7 @@ export default function RestaurantMenuPage() {
                           {item.description}
                         </p>
                         <p className="font-semibold">
-                          {/* ₦{Number(item.price).toLocaleString()} */}
+                          ₦{Number(item.price).toLocaleString()}
                         </p>
                       </CardContent>
                       <CardFooter className="flex justify-between items-center">

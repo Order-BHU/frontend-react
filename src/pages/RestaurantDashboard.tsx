@@ -416,7 +416,7 @@ export default function RestaurantDashboardPage() {
                       </Label>
                       <Input
                         id="restaurantName"
-                        value={restaurant.name}
+                        value={userDetails?.message.restaurant_name}
                         className="dark:text-cfont-dark"
                         onChange={(e) =>
                           setRestaurant({ ...restaurant, name: e.target.value })
