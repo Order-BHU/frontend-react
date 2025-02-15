@@ -14,7 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 //import { Input } from "@/components/ui/input";
-import { Plus, Minus, ShoppingCart, Check } from "lucide-react";
+import { Plus, Minus, ShoppingCart } from "lucide-react";
 import { orbit } from "ldrs";
 import { PageWrapper } from "@/components/pagewrapper";
 import {
@@ -222,22 +222,23 @@ export default function RestaurantMenuPage() {
     },
   });
 
-  const { mutate: removeItemMutate, status: removeItemStatus } = useMutation({
-    mutationFn: removeCartItem,
-    onSuccess: (data) => {
-      toast({
-        title: "Success",
-        description: data.message,
-      });
-    },
-    onError: (error) => {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
-    },
-  });
+  const { mutateAsync: removeItemMutate, status: removeItemStatus } =
+    useMutation({
+      mutationFn: removeCartItem,
+      onSuccess: (data) => {
+        toast({
+          title: "Success",
+          description: data.message,
+        });
+      },
+      onError: (error) => {
+        toast({
+          title: "Error",
+          description: error.message,
+          variant: "destructive",
+        });
+      },
+    });
 
   const handleAddToCart = async (itemId: string, price: number) => {
     //this function updates the state for cartItems and that updates in the input field. the onError makes it refetch the data since cartItemarray get reset whenever cartitem from the api changes. If the data gets refetched, what failed won't display anymore
@@ -279,6 +280,21 @@ export default function RestaurantMenuPage() {
     // Move these after the state update
     try {
       await mutate(Number(itemId));
+      await refetch(); // Refetch cart data to ensure sync with server
+    } catch (error) {
+      // Handle error case
+      console.error("Failed to update cart:", error);
+      refetch(); // Refetch to ensure UI shows correct state
+    }
+  };
+
+  const handleRemoveFromCart = async (itemId: number) => {
+    setCheckoutItems(() =>
+      checkoutItems.filter((item) => item.menu_id != itemId)
+    );
+
+    try {
+      await removeItemMutate(itemId);
       await refetch(); // Refetch cart data to ensure sync with server
     } catch (error) {
       // Handle error case
@@ -653,26 +669,31 @@ export default function RestaurantMenuPage() {
                       <CardFooter className="flex justify-between items-center">
                         <div className="flex items-center space-x-2">
                           <Button
-                            className="disabled:opacity-100 cursor-pointer disabled:pointer-events-none flex items-center gap-2"
-                            disabled={checkoutItems?.some(
-                              (cItem) => cItem.menu_id === item.id
-                            )}
+                            className={`${
+                              checkoutItems?.find(
+                                (cItem) => cItem.menu_id === item.id
+                              )
+                                ? "hidden"
+                                : "flex items-center gap-2"
+                            } disabled:opacity-100 cursor-pointer disabled:pointer-events-none `}
                             onClick={() =>
                               handleAddToCart(String(item.id), item.price)
                             }
                           >
-                            {checkoutItems?.some(
-                              (cItem) => cItem.menu_id === item.id
-                            ) ? (
-                              <>
-                                Added{" "}
-                                <Check
-                                  className={`w-4 h-4 text-cfont-dark dark:text-gray-800`}
-                                />
-                              </>
-                            ) : (
-                              "Add to cart"
-                            )}
+                            Add To Cart
+                          </Button>
+
+                          <Button
+                            className={`${
+                              checkoutItems?.find(
+                                (cItem) => cItem.menu_id === item.id
+                              )
+                                ? "flex items-center gap-2"
+                                : "hidden"
+                            } disabled:opacity-100 cursor-pointer disabled:pointer-events-none `}
+                            onClick={() => handleRemoveFromCart(item.id)}
+                          >
+                            Remove
                           </Button>
                         </div>
                       </CardFooter>
