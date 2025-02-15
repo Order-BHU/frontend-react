@@ -492,7 +492,7 @@ export default function RestaurantMenuPage() {
                           <div>
                             <p className="font-medium">{item.menu_name}</p>
                             <p className="text-sm text-gray-500">
-                              {item.menu_price.toLocaleString()}
+                              {item.menu_price?.toLocaleString()}
                             </p>
                           </div>
                         </div>
@@ -547,7 +547,7 @@ export default function RestaurantMenuPage() {
                   <div className="mb-4 ml-4 flex flex-col justify-between items-left">
                     <span className="font-semibold">Total:</span>
 
-                    {checkoutItems.length > 0 ? (
+                    {checkoutItems?.length > 0 ? (
                       <span className="font-semibold">
                         ₦{(totalPrice! + deliveryFee).toLocaleString()}
                       </span>
