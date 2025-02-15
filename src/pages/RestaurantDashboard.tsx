@@ -373,7 +373,7 @@ export default function RestaurantDashboardPage() {
             <CardContent className="flex items-center space-x-4 flex-col sm:flex-row sm:items-center sm:space-x-4 space-y-4 sm:space-y-0">
               <Avatar className="h-20 w-20">
                 <AvatarImage src={userDetails?.message?.profile_picture_url} />
-                <AvatarFallback className="text-white">
+                <AvatarFallback className="text-gray-900 dark:text-gray-300">
                   {username}
                 </AvatarFallback>
               </Avatar>
@@ -553,7 +553,7 @@ export default function RestaurantDashboardPage() {
                           size="35"
                           stroke="3.5"
                           speed="1"
-                          color="white"
+                          color="var(--loader-color)"
                         ></l-waveform>
                       </div>
                     ) : (
@@ -632,7 +632,7 @@ export default function RestaurantDashboardPage() {
                           size="35"
                           stroke="3.5"
                           speed="1"
-                          color="white"
+                          color="var(--loader-color)"
                         ></l-waveform>
                       </div>
                     ) : (

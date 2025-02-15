@@ -29,85 +29,15 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { myOrders, trackOrder } from "@/api/restaurant";
 import { orderType } from "@/interfaces/restaurantType";
 import { waveform } from "ldrs";
-import { updatePfp } from "@/api/misc";
+import { updatePfp, editProfile, dashboard } from "@/api/misc";
 import { useToast } from "@/hooks/use-toast";
 
-// Mock data - in a real app, this would come from an API
-// const allUserOrder = [
-//   {
-//     id: "1",
-//     restaurant: "Burger Palace",
-//     items: ["Cheeseburger", "Fries"],
-//     total: "₦3,500",
-//     status: "Delivered",
-//     date: "2023-06-15",
-//   },
-//   {
-//     id: "2",
-//     restaurant: "Pizza Heaven",
-//     items: ["Pepperoni Pizza"],
-//     total: "₦4,200",
-//     status: "In Transit",
-//     date: "2023-06-14",
-//   },
-//   {
-//     id: "3",
-//     restaurant: "Sushi Sensation",
-//     items: ["California Roll", "Miso Soup"],
-//     total: "₦5,500",
-//     status: "Preparing",
-//     date: "2023-06-13",
-//   },
-//   {
-//     id: "4",
-//     restaurant: "Taco Town",
-//     items: ["Beef Tacos", "Guacamole"],
-//     total: "₦3,800",
-//     status: "Delivered",
-//     date: "2023-06-12",
-//   },
-//   {
-//     id: "5",
-//     restaurant: "Pasta Paradise",
-//     items: ["Spaghetti Carbonara"],
-//     total: "₦4,500",
-//     status: "Delivered",
-//     date: "2023-06-11",
-//   },
-//   {
-//     id: "6",
-//     restaurant: "Salad Spot",
-//     items: ["Caesar Salad", "Iced Tea"],
-//     total: "₦2,800",
-//     status: "Delivered",
-//     date: "2023-06-10",
-//   },
-// ];
-
-// const userActivity = [
-//   { id: "1", action: "Placed an order", date: "2023-06-15 14:30" },
-//   { id: "2", action: "Wrote a review", date: "2023-06-14 09:15" },
-//   { id: "3", action: "Added items to cart", date: "2023-06-13 18:45" },
-// ];
-
+//Everything regarding edit profile is a copy and paste of restaurant dashboard
 export default function UserDashboardPage() {
   waveform.register();
   const { toast } = useToast();
-  const [user, setUser] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    profile_picture: "/placeholder.svg?height=80&width=80",
-  });
 
   const [isOrderHistoryOpen, setIsOrderHistoryOpen] = useState(false);
-
-  // const handleUpdateProfile = (e: React.FormEvent<HTMLFormElement>) => {
-  //   e.preventDefault();
-  //   console.log("Profile updated:", user);
-  // };
-
-  // const recentOrders = allUserOrder.slice(0, 4);
   const [userOrder, setUserOrder] = useState<orderType>(); //this state stores all the pending orders for the user
   const [allOrders, setAllOrders] = useState<orderType[]>([]); //stores all order history
   const [tracked, setTracked] = useState<orderType>(); //deals with tracked order(what we'll be displaying to the user)
@@ -128,9 +58,49 @@ export default function UserDashboardPage() {
       });
     },
   });
+
+  const { status: editProfileStatus, mutate: editProfileMutate } = useMutation({
+    mutationFn: editProfile,
+    onSuccess: (data) => {
+      toast({
+        title: "Success",
+        description: data.message,
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+  const { data: userDetails, refetch: refetchDetails } = useQuery({
+    queryKey: ["userDetails"],
+    queryFn: dashboard,
+    refetchOnWindowFocus: false,
+  });
+
+  const [profileDetails, setprofileDetails] = useState({
+    name: "",
+    profile_picture: null as File | null,
+    phone_number_type: "",
+  });
+  const filteredData = Object.fromEntries(
+    //this is here to filter only the truthy values from the edit profile form and we pass it to mutate, since the api can't accept empty strings as they'll override whatever is already there
+    Object.entries(profileDetails).filter(([_, value]) => value)
+  );
+  const handleEditProfile = (e: React.FormEvent) => {
+    e.preventDefault();
+    editProfileMutate(filteredData);
+    console.log(profileDetails);
+    refetchDetails();
+  };
+
   const { data: pendingOrder, status: pendingStatus } = useQuery({
     queryFn: () => myOrders("pending"),
     queryKey: ["orders"],
+    refetchOnWindowFocus: false,
   });
 
   const { data: trackedOrder, status: trackedStatus } = useQuery({
@@ -165,21 +135,17 @@ export default function UserDashboardPage() {
     console.log("All user orders: ", orderHistory);
   }, [pendingOrder]);
 
-  const [file, setFile] = useState<File | null>(null); //here for updating pfp
-  const handleUpdatePfp = (event: React.FormEvent) => {
-    event.preventDefault();
-    // Handle the file and other data here
-    const formData = new FormData();
-    if (file) {
-      formData.append("profile_picture", file); // Add the file to the form data
+  const handlePfpImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    //for updating
+    if (e.target.files && e.target.files[0]) {
+      setprofileDetails({
+        ...profileDetails,
+        profile_picture: e.target.files[0],
+      });
     }
-    formData.append("name", user.name);
-    formData.append("email", user.email);
-    formData.append("phone", user.phone);
-
-    pfpMutate({
-      profile_picture: file,
-    });
+  };
+  const handlePhoneTypeChange = (type: "whatsapp" | "phone") => {
+    setprofileDetails((prev) => ({ ...prev, phone_number_type: type }));
   };
 
   return (
@@ -199,15 +165,20 @@ export default function UserDashboardPage() {
             </CardHeader>
             <CardContent className="flex items-center space-x-4">
               <Avatar className="h-20 w-20">
-                <AvatarImage src={user.profile_picture} alt={username} />
-                <AvatarFallback className="text-white">
+                <AvatarImage
+                  src={userDetails?.profile_picture}
+                  alt={username}
+                />
+                <AvatarFallback className="text-gray-900 dark:text-gray-300">
                   {username}
                 </AvatarFallback>
               </Avatar>
               <div>
-                <h2 className="text-xl font-semibold">{user.name}</h2>
-                <p className="text-sm text-gray-500">{user.email}</p>
-                <p className="text-sm text-gray-500">{user.phone}</p>
+                <h2 className="text-xl font-semibold">{userDetails?.name}</h2>
+                <p className="text-sm text-gray-500">{userDetails?.email}</p>
+                <p className="text-sm text-gray-500">
+                  {userDetails?.phone_number}
+                </p>
               </div>
             </CardContent>
           </Card>
@@ -220,65 +191,82 @@ export default function UserDashboardPage() {
                 <DialogTrigger asChild>
                   <Button className="w-full mb-2">Edit Profile</Button>
                 </DialogTrigger>
-                <DialogContent className="dark: text-cfont-dark">
+                <DialogContent className="dark:text-cfont-dark">
                   <DialogHeader>
                     <DialogTitle>Edit Profile</DialogTitle>
                   </DialogHeader>
-                  <form onSubmit={handleUpdatePfp} className="space-y-4">
+                  <form onSubmit={handleEditProfile} className="space-y-4">
                     <div>
-                      <Label htmlFor="profile_picture">Profile Picture</Label>
+                      <Label
+                        htmlFor="restaurantPhoto"
+                        className="dark:text-cfont-dark"
+                      >
+                        Profile Photo
+                      </Label>
                       <Input
-                        id="profilePicture"
+                        id="photo"
                         type="file"
                         accept="image/*"
-                        onChange={(e) => {
-                          const file = e.target.files?.[0];
-                          if (file) {
-                            setFile(file); // Save the selected file to state
-                            const reader = new FileReader();
-                            reader.onloadend = () => {
-                              setUser({
-                                ...user,
-                                profile_picture: reader.result as string, // Optional: store base64 for preview
-                              });
-                            };
-                            reader.readAsDataURL(file);
+                        onChange={handlePfpImageChange}
+                      />
+                    </div>
+                    <div>
+                      <Label
+                        htmlFor="restaurantName"
+                        className="dark:text-cfont-dark"
+                      >
+                        Name
+                      </Label>
+                      <Input
+                        id="restaurantName"
+                        value={userDetails?.message.restaurant_name}
+                        className="dark:text-cfont-dark"
+                        onChange={(e) =>
+                          setprofileDetails({
+                            ...userDetails,
+                            name: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
+                    <div>
+                      <Label
+                        htmlFor="restaurantPhoto"
+                        className="dark:text-cfont-dark"
+                      >
+                        How should we contact you:
+                      </Label>
+                      <div className="flex space-x-2 mt-2">
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant={
+                            profileDetails.phone_number_type === "whatsapp"
+                              ? "default"
+                              : "outline"
                           }
-                        }}
-                      />
+                          onClick={() => handlePhoneTypeChange("whatsapp")}
+                        >
+                          WhatsApp
+                        </Button>
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant={
+                            profileDetails.phone_number_type === "phone"
+                              ? "default"
+                              : "outline"
+                          }
+                          onClick={() => handlePhoneTypeChange("phone")}
+                        >
+                          Phone
+                        </Button>
+                      </div>
                     </div>
-                    <div>
-                      <Label htmlFor="name">Name</Label>
-                      <Input
-                        id="name"
-                        value={user.name}
-                        onChange={(e) =>
-                          setUser({ ...user, name: e.target.value })
-                        }
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="email">Email</Label>
-                      <Input
-                        id="email"
-                        type="email"
-                        value={user.email}
-                        onChange={(e) =>
-                          setUser({ ...user, email: e.target.value })
-                        }
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="phone">Phone</Label>
-                      <Input
-                        id="phone"
-                        value={user.phone}
-                        onChange={(e) =>
-                          setUser({ ...user, phone: e.target.value })
-                        }
-                      />
-                    </div>
-                    <Button type="submit" disabled={pfpStatus === "pending"}>
+                    <Button
+                      type="submit"
+                      disabled={editProfileStatus === "pending"}
+                    >
                       Update Profile
                     </Button>
                   </form>
@@ -368,7 +356,7 @@ export default function UserDashboardPage() {
                         size="35"
                         stroke="3.5"
                         speed="1"
-                        color="white"
+                        color="var(--loader-color)"
                       ></l-waveform>
                     </div>
                   ) : pendingStatus === "error" ? (
@@ -443,7 +431,7 @@ export default function UserDashboardPage() {
                         size="35"
                         stroke="3.5"
                         speed="1"
-                        color="white"
+                        color="var(--loader-color)"
                       ></l-waveform>
                     </div>
                   ) : pendingStatus === "error" ? (

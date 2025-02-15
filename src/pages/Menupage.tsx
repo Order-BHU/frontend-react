@@ -464,8 +464,8 @@ export default function RestaurantMenuPage() {
           <Dialog>
             <DialogTrigger>
               <Button className="w-32 sm:w-48 text-xs md:text-md overflow">
-                <ShoppingCart className="mr-2 h-4 w-4 text-md hidden sm:inline " />{" "}
-                <span className="hidden sm:inline">View Cart</span>
+                <ShoppingCart className="mr-2 h-4 w-4 text-md" />{" "}
+                <span>View Cart</span>
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px] dark:text-cfont-dark">
@@ -500,7 +500,7 @@ export default function RestaurantMenuPage() {
                                 <l-orbit
                                   size="35"
                                   speed="1.5"
-                                  color="#6C757D"
+                                  color="var(--loader-color)"
                                 ></l-orbit>
                               </div>
                             }
@@ -577,7 +577,7 @@ export default function RestaurantMenuPage() {
               </div>
               <DialogFooter>
                 <Select onValueChange={handleSelectLocationChange}>
-                  <SelectTrigger className="w-[180px]">
+                  <SelectTrigger className="w-[180px] mt-3 sm:mt-0">
                     <SelectValue placeholder="Select a location" />
                   </SelectTrigger>
                   <SelectContent>
@@ -615,7 +615,7 @@ export default function RestaurantMenuPage() {
               size="35"
               stroke="3.5"
               speed="1"
-              color="white"
+              color="var(--loader-color)"
             ></l-waveform>
             <h3 className="text-l font-bold mb-8 text-center text-gray-800 dark:text-cfont-dark m-8">
               Getting Meals
@@ -645,7 +645,7 @@ export default function RestaurantMenuPage() {
                                 <l-orbit
                                   size="35"
                                   speed="1.5"
-                                  color="#6C757D"
+                                  color="var(--loader-color)"
                                 ></l-orbit>
                               </div>
                             }

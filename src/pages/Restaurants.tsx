@@ -50,7 +50,7 @@ export default function RestaurantsPage() {
                   size="35"
                   stroke="3.5"
                   speed="1"
-                  color="white"
+                  color="var(--loader-color)"
                 ></l-waveform>
                 <h3 className="text-l font-bold mb-8 text-center text-gray-800 dark:text-cfont-dark m-8">
                   Getting Restaurants

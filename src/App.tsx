@@ -18,11 +18,13 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Toaster } from "@/components/ui/toaster";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/protectedRoute";
+import ToastAutoDismiss from "./components/dismisstoast"; //handles dismissing toast when screen tapped
 
 function App() {
   const queryClient = new QueryClient();
   return (
     <div className="app">
+      <ToastAutoDismiss />
       <Toaster />
       <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
         <BrowserRouter future={{ v7_relativeSplatPath: true }}>
