@@ -91,6 +91,7 @@ export default function RestaurantMenuPage() {
     queryKey: ["menuItems", id],
     queryFn: () => getMenuItems(id!),
   });
+  const deliveryFee = 250; //this is the delivery fee variable
   const { data: userOrders, status: userOrderStatus } = useQuery({
     //this'll help check if the user has a pending order before checkout
     queryFn: () => myOrders("pending"),
@@ -139,7 +140,7 @@ export default function RestaurantMenuPage() {
   useEffect(() => {
     //this calculates the total price of cart Items
     const total_price = cartItems?.cart_items?.reduce(
-      (sum: number, item: singularCartItem) => sum + Number(item.price),
+      (sum: number, item: singularCartItem) => sum + Number(item.item_price),
       0
     );
     setTotalPrice(total_price);
@@ -155,10 +156,11 @@ export default function RestaurantMenuPage() {
       quantity: 1, //we don't store quantity in the backend anymore, so I just default them to 1
       menu_name: item.item_name,
       menu_picture: item.item_picture,
-      menu_price: item.price,
+      menu_price: Number(item.item_price),
     }));
     //so the values only update or show for logged in users
     isLoggedIn && setCheckoutItems(transformedItems); //so that we can get the user's checkout items so they can continue from when they left off in selecting in cart if they refresh the page or something.
+    console.log("items in cart: ", checkoutItems);
   }, [cartItems]);
 
   useEffect(() => {
@@ -354,7 +356,7 @@ export default function RestaurantMenuPage() {
     checkoutMutate({
       items: JSON.parse(localStorage.getItem("checkoutItems")!),
       restaurant_id: Number(id),
-      total: Number(localStorage.getItem("totalPrice")),
+      total: Number(localStorage.getItem("totalPrice")! + deliveryFee),
       location: localStorage.getItem("orderLocation"),
     });
     localStorage.removeItem("orderLocation");
@@ -490,7 +492,7 @@ export default function RestaurantMenuPage() {
                           <div>
                             <p className="font-medium">{item.menu_name}</p>
                             <p className="text-sm text-gray-500">
-                              {item.menu_price}
+                              {item.menu_price.toLocaleString()}
                             </p>
                           </div>
                         </div>
@@ -533,12 +535,27 @@ export default function RestaurantMenuPage() {
                         </div>
                       </div>
                     ))}
+                    {checkoutItems?.length > 0 && (
+                      <div className="flex justify-between ml-2">
+                        <span className="font-semibold">Delivery Fee:</span>
+                        <span className="font-semibold">
+                          ₦{deliveryFee.toLocaleString()}
+                        </span>
+                      </div>
+                    )}
                   </ScrollArea>
                   <div className="mb-4 ml-4 flex flex-col justify-between items-left">
                     <span className="font-semibold">Total:</span>
-                    <span className="font-semibold">
-                      ₦{totalPrice?.toLocaleString()}
-                    </span>
+
+                    {checkoutItems.length > 0 ? (
+                      <span className="font-semibold">
+                        ₦{(totalPrice! + deliveryFee).toLocaleString()}
+                      </span>
+                    ) : (
+                      <span className="font-semibold">
+                        ₦{totalPrice?.toLocaleString()}
+                      </span>
+                    )}
                   </div>
                 </Card>
               </div>
