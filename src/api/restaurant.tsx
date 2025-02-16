@@ -2,6 +2,14 @@ import { AxiosResponse, AxiosError } from "axios";
 import { menuItem, checkoutType } from "@/interfaces/restaurantType";
 import api from "./apiClient";
 
+function handleError(error: AxiosError) {
+  if (error.code === "ERR_NETWORK") {
+    throw new Error("Network error: Unable to reach the server.");
+  }
+  console.error(error);
+  throw error.response?.data;
+}
+
 export async function getRestaurants() {
   return api
     .get("/restaurant-list")
@@ -165,14 +173,6 @@ export async function setDriverStatus(status: "offline" | "online") {
     .catch(handleError);
 }
 
-function handleError(error: AxiosError) {
-  if (error.code === "ERR_NETWORK") {
-    throw new Error("Network error: Unable to reach the server.");
-  }
-  console.error(error);
-  throw error.response?.data;
-}
-
 export async function deleteMenuItem(menuid: number) {
   const token = localStorage.getItem("token");
   return api
@@ -182,5 +182,25 @@ export async function deleteMenuItem(menuid: number) {
       { headers: { Authorization: `Bearer ${token}` } }
     )
     .then((response: AxiosResponse) => response.data)
+    .catch(handleError);
+}
+
+//PAYMENTS
+export async function initializeCheckout(data: {
+  restaurantId: string;
+  total: number;
+  callback_id: string;
+}) {
+  const token = localStorage.getItem("token");
+  return api
+    .post(
+      `/${data.restaurantId}/initialize-checkout`,
+      { total: data.total, callback_id: data.callback_id },
+      { headers: { Authorization: `Bearer ${token}` } }
+    )
+    .then((response: AxiosResponse) => {
+      console.log("checkout stuff: ", response.data);
+      return response.data;
+    })
     .catch(handleError);
 }

@@ -13,7 +13,6 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-//import { Input } from "@/components/ui/input";
 import { Plus, Minus, ShoppingCart } from "lucide-react";
 import { orbit } from "ldrs";
 import { PageWrapper } from "@/components/pagewrapper";
@@ -26,6 +25,7 @@ import {
   viewCart,
   getLocation,
   myOrders,
+  initializeCheckout,
 } from "@/api/restaurant";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { category, tempapiMenu, menuItem } from "@/interfaces/restaurantType";
@@ -51,7 +51,7 @@ import {
 } from "@/components/ui/select";
 
 import { waveform } from "ldrs";
-import { makePayment, verifyPayment } from "@/api/payments";
+import { verifyPayment } from "@/api/payments";
 //import PaystackPop from "@paystack/inline-js";
 
 // interface CartItem extends singularCartItem {
@@ -92,7 +92,7 @@ export default function RestaurantMenuPage() {
     queryFn: () => getMenuItems(id!),
   });
   const deliveryFee = 250; //this is the delivery fee variable
-  const { data: userOrders, status: userOrderStatus } = useQuery({
+  const { data: userOrders } = useQuery({
     //this'll help check if the user has a pending order before checkout
     queryFn: () => myOrders("pending"),
     queryKey: ["userOrders"],
@@ -276,6 +276,7 @@ export default function RestaurantMenuPage() {
       return currentPrice + addPrice;
     });
     console.log("checkout items", checkoutItems);
+    localStorage.removeItem("previousId");
 
     // Move these after the state update
     try {
@@ -303,23 +304,6 @@ export default function RestaurantMenuPage() {
     }
   };
 
-  const { mutate: paymentMutate, status: paymentStatus } = useMutation({
-    mutationFn: makePayment,
-    onSuccess: (data) => {
-      toast({
-        title: "Success",
-        description: "redirecting you to payment gateway...",
-      });
-      window.location.href = data.data.authorization_url;
-    },
-    onError: (error) => {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
-    },
-  });
   //the two variables below will get the transaction id when we get redirected from the paystack page to here
   const [transactionReference, setTransactionReference] = useState("");
   const queryParams = new URLSearchParams(window.location.search);
@@ -359,13 +343,34 @@ export default function RestaurantMenuPage() {
       localStorage.setItem("orderLocation", selectedLocation);
       localStorage.setItem("checkoutItems", JSON.stringify(checkoutItems));
       localStorage.setItem("totalPrice", String(totalPrice));
-      paymentMutate({
-        email: "victrbl01@gmail.com",
-        amount: "100",
-        callback_url: `https://bhuorder.netlify.app/menu/${id}`,
+      initializeCheckoutMutate({
+        restaurantId: id!,
+        total: totalPrice + deliveryFee,
+        callback_id: id!,
       });
     }
   };
+
+  const {
+    mutateAsync: initializeCheckoutMutate,
+    status: initializeCheckoutStatus,
+  } = useMutation({
+    mutationFn: initializeCheckout,
+    onSuccess: (data) => {
+      toast({
+        title: "redirecting to payment gateway...",
+      });
+      window.location.href = data.data.authorization_url;
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
   const handleCheckout = () => {
     console.log("rest id: ", id);
     console.log(checkoutItems);
@@ -442,15 +447,6 @@ export default function RestaurantMenuPage() {
       removeItemMutate(menu_id);
     }
   };
-
-  const isCheckoutDisabled = //this'll disable the checkout button depending on the situation
-    paymentStatus !== "pending"
-      ? "Checkout"
-      : removeItemStatus !== "pending"
-      ? "Checkout"
-      : userOrderStatus !== "pending"
-      ? "Checkout"
-      : "Checking...";
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-cbg-dark">
@@ -598,9 +594,9 @@ export default function RestaurantMenuPage() {
                 </Select>
                 <Button
                   onClick={handlePayment}
-                  disabled={isCheckoutDisabled === "Checking..."}
+                  disabled={initializeCheckoutStatus === "pending"}
                 >
-                  {isCheckoutDisabled}
+                  Checkout
                 </Button>
               </DialogFooter>
             </DialogContent>
@@ -684,6 +680,7 @@ export default function RestaurantMenuPage() {
                           </Button>
 
                           <Button
+                            disabled={removeItemStatus === "pending"}
                             className={`${
                               checkoutItems?.find(
                                 (cItem) => cItem.menu_id === item.id
