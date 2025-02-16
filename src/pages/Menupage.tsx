@@ -51,7 +51,7 @@ import {
 } from "@/components/ui/select";
 
 import { waveform } from "ldrs";
-import { verifyPayment } from "@/api/payments";
+// import { verifyPayment } from "@/api/payments";
 //import PaystackPop from "@paystack/inline-js";
 
 // interface CartItem extends singularCartItem {
@@ -305,19 +305,19 @@ export default function RestaurantMenuPage() {
   };
 
   //the two variables below will get the transaction id when we get redirected from the paystack page to here
-  const [transactionReference, setTransactionReference] = useState("");
+  // const [transactionReference, setTransactionReference] = useState("");
   const queryParams = new URLSearchParams(window.location.search);
   useEffect(() => {
     //this useEffect sets the reference code for verifying a transaction
     if (queryParams.get("reference")) {
-      setTransactionReference(queryParams.get("reference") || "");
+      handleCheckout(queryParams.get("reference")!);
     }
   }, []);
-  const { data: verifyPaymentData } = useQuery({
-    queryFn: () => verifyPayment(transactionReference),
-    queryKey: ["paymentDetails"],
-    enabled: !!transactionReference,
-  });
+  // const { data: verifyPaymentData } = useQuery({
+  //   queryFn: () => verifyPayment(transactionReference),
+  //   queryKey: ["paymentDetails"],
+  //   enabled: !!transactionReference,
+  // });
   const handlePayment = () => {
     //this function will store the location in localStorage, so after payment and redirect, we can checkout with said info
     if (!selectedLocation) {
@@ -371,7 +371,7 @@ export default function RestaurantMenuPage() {
     },
   });
 
-  const handleCheckout = () => {
+  const handleCheckout = (reference: string) => {
     console.log("rest id: ", id);
     console.log(checkoutItems);
     checkoutMutate({
@@ -379,28 +379,29 @@ export default function RestaurantMenuPage() {
       restaurant_id: Number(id),
       total: Number(localStorage.getItem("totalPrice")! + deliveryFee),
       location: localStorage.getItem("orderLocation"),
+      reference: reference,
     });
     localStorage.removeItem("orderLocation");
     localStorage.removeItem("totalPrice");
     localStorage.removeItem("checkoutItems");
   };
-  useEffect(() => {
-    //this function handles checkout after payments have been made
-    if (verifyPaymentData) {
-      if (verifyPaymentData?.data?.status === "success") {
-        navigate(`/menu/${id}`, { replace: true });
-        handleCheckout();
-        setTransactionReference(""); //so that another reload doesn't trigger verifyPayments to run
-      } else if (verifyPaymentData?.data?.status === "failed") {
-        toast({
-          title: "Error",
-          description: verifyPaymentData?.message,
-          variant: "destructive",
-        });
-        setTransactionReference(""); //so that another reload doesn't trigger verifyPayments to run
-      }
-    }
-  }, [verifyPaymentData]);
+  // useEffect(() => {
+  //   //this function handles checkout after payments have been made
+  //   if (verifyPaymentData) {
+  //     if (verifyPaymentData?.data?.status === "success") {
+  //       navigate(`/menu/${id}`, { replace: true });
+  //       handleCheckout();
+  //       setTransactionReference(""); //so that another reload doesn't trigger verifyPayments to run
+  //     } else if (verifyPaymentData?.data?.status === "failed") {
+  //       toast({
+  //         title: "Error",
+  //         description: verifyPaymentData?.message,
+  //         variant: "destructive",
+  //       });
+  //       setTransactionReference(""); //so that another reload doesn't trigger verifyPayments to run
+  //     }
+  //   }
+  // }, [verifyPaymentData]);
   const handleSelectLocationChange = (value: string) => {
     setLocation(value);
   };

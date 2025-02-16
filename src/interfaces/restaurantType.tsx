@@ -35,6 +35,7 @@ export interface checkoutType {
   restaurant_id: number;
   total: number;
   location: string | null;
+  reference: string;
 }
 
 export interface orderType {
