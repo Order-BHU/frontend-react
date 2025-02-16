@@ -38,7 +38,7 @@ export async function editProfile(data: {
   console.log(token);
   return axios
     .post(
-      `${apiUrl}/update-profile-picture`,
+      `${apiUrl}/edit-profile`,
       data,
 
       {

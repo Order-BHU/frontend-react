@@ -29,7 +29,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { myOrders, trackOrder } from "@/api/restaurant";
 import { orderType } from "@/interfaces/restaurantType";
 import { waveform } from "ldrs";
-import { updatePfp, editProfile, dashboard } from "@/api/misc";
+import { editProfile, dashboard } from "@/api/misc";
 import { useToast } from "@/hooks/use-toast";
 
 //Everything regarding edit profile is a copy and paste of restaurant dashboard
@@ -42,26 +42,11 @@ export default function UserDashboardPage() {
   const [allOrders, setAllOrders] = useState<orderType[]>([]); //stores all order history
   const [tracked, setTracked] = useState<orderType>(); //deals with tracked order(what we'll be displaying to the user)
   const username = localStorage.getItem("name")?.slice(0, 2).toUpperCase();
-  const { status: pfpStatus, mutate: pfpMutate } = useMutation({
-    mutationFn: updatePfp,
-    onSuccess: (data) => {
-      toast({
-        title: "Success",
-        description: data.message,
-      });
-    },
-    onError: (error) => {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
-    },
-  });
 
   const { status: editProfileStatus, mutate: editProfileMutate } = useMutation({
     mutationFn: editProfile,
     onSuccess: (data) => {
+      localStorage.setItem("pfp", data.message.profile_picture_url);
       toast({
         title: "Success",
         description: data.message,
@@ -166,7 +151,7 @@ export default function UserDashboardPage() {
             <CardContent className="flex items-center space-x-4">
               <Avatar className="h-20 w-20">
                 <AvatarImage
-                  src={userDetails?.profile_picture}
+                  src={userDetails?.message.profile_picture_url}
                   alt={username}
                 />
                 <AvatarFallback className="text-gray-900 dark:text-gray-300">
@@ -174,10 +159,14 @@ export default function UserDashboardPage() {
                 </AvatarFallback>
               </Avatar>
               <div>
-                <h2 className="text-xl font-semibold">{userDetails?.name}</h2>
-                <p className="text-sm text-gray-500">{userDetails?.email}</p>
+                <h2 className="text-xl font-semibold">
+                  {userDetails?.message.name}
+                </h2>
                 <p className="text-sm text-gray-500">
-                  {userDetails?.phone_number}
+                  {userDetails?.message.email}
+                </p>
+                <p className="text-sm text-gray-500">
+                  {userDetails?.message.phone_number}
                 </p>
               </div>
             </CardContent>
