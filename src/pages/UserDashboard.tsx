@@ -47,6 +47,7 @@ export default function UserDashboardPage() {
     mutationFn: editProfile,
     onSuccess: (data) => {
       localStorage.setItem("pfp", data.message.profile_picture_url);
+      localStorage.setItem("name", data.message.name);
       toast({
         title: "Success",
         description: data.message,
@@ -65,6 +66,11 @@ export default function UserDashboardPage() {
     queryFn: dashboard,
     refetchOnWindowFocus: false,
   });
+  useEffect(() => {
+    if (userDetails) {
+      localStorage.setItem("pfp", userDetails?.message.profile_picture_url); //i no longer set this on login
+    }
+  }, [userDetails]);
 
   const [profileDetails, setprofileDetails] = useState({
     name: "",
@@ -151,7 +157,10 @@ export default function UserDashboardPage() {
             <CardContent className="flex items-center space-x-4">
               <Avatar className="h-20 w-20">
                 <AvatarImage
-                  src={userDetails?.message.profile_picture_url}
+                  src={
+                    localStorage.getItem("pfp")! ||
+                    userDetails?.message.profile_picture_url
+                  }
                   alt={username}
                 />
                 <AvatarFallback className="text-gray-900 dark:text-gray-300">

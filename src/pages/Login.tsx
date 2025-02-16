@@ -40,7 +40,6 @@ export default function LoginPage() {
       }
       localStorage.setItem("token", data.token ?? "undefined");
       localStorage.setItem("accountType", data.account_type ?? "undefined");
-      localStorage.setItem("pfp", data.profile_image ?? "undefined");
 
       if (localStorage.getItem("itemId")) {
         navigate(`/menu/${Number(localStorage.getItem("restaurantId"))}`);
