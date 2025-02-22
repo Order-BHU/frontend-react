@@ -12,7 +12,6 @@ import { PageWrapper } from "@/components/pagewrapper";
 import { myOrders, updateOrderStatus, setDriverStatus } from "@/api/restaurant";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { orderType } from "@/interfaces/restaurantType";
-import { waveform } from "ldrs";
 // import {
 //   Select,
 //   SelectContent,
@@ -35,7 +34,6 @@ import { Input } from "@/components/ui/input";
 // This would typically come from an API or database
 
 export default function RiderDashboardPage() {
-  waveform.register();
   const { state, setState } = driverStore();
   const [activeOrders, setActive] = useState<orderType[]>([]);
   //const [orderHistoryState, setHistory] = useState<orderType[]>([]);

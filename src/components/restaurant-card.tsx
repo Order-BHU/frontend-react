@@ -20,6 +20,7 @@ export function RestaurantCard({ id, name, logo }: RestaurantCardProps) {
           alt={name}
           width={300}
           height={200}
+          loading="lazy"
           className="w-full h-48 object-cover"
           unloader={
             <div className="flex justify-center p-5 h-[200px] items-center">

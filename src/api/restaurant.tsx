@@ -114,7 +114,6 @@ export async function myOrders(
       headers: { Authorization: `Bearer ${token}` },
     })
     .then((response: AxiosResponse) => {
-      console.log(token);
       console.log("userOrders: ", response.data);
       return response.data;
     })

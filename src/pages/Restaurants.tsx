@@ -5,7 +5,6 @@ import { PageWrapper } from "@/components/pagewrapper";
 import { useQuery } from "@tanstack/react-query";
 import { getRestaurants } from "@/api/restaurant";
 import { useToast } from "@/hooks/use-toast";
-import { waveform } from "ldrs";
 
 // Default values shown
 
@@ -15,7 +14,6 @@ interface restaurant {
   logo: string;
 }
 export default function RestaurantsPage() {
-  waveform.register();
   const { toast } = useToast();
   const {
     status,
@@ -28,7 +26,7 @@ export default function RestaurantsPage() {
   });
   if (status === "error") {
     toast({
-      title: "success!",
+      title: "Error",
       description: error.message,
     });
   }
@@ -50,20 +48,24 @@ export default function RestaurantsPage() {
                   size="35"
                   stroke="3.5"
                   speed="1"
-                  color="var(--loader-color)"
+                  color="#6C757D"
                 ></l-waveform>
                 <h3 className="text-l font-bold mb-8 text-center text-gray-800 dark:text-cfont-dark m-8">
                   Getting Restaurants
                 </h3>
               </div>
             </PageWrapper>
-          ) : (
+          ) : status === "success" ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {restaurants?.map((restaurant: restaurant) => (
                 <PageWrapper key={restaurant.id}>
                   <RestaurantCard {...restaurant} />
                 </PageWrapper>
               ))}
+            </div>
+          ) : (
+            <div>
+              <h1>something went wrong</h1>
             </div>
           )}
         </div>

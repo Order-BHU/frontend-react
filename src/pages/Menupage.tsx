@@ -14,7 +14,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Plus, Minus, ShoppingCart } from "lucide-react";
-import { orbit } from "ldrs";
 import { PageWrapper } from "@/components/pagewrapper";
 import {
   getMenuItems,
@@ -50,7 +49,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { waveform } from "ldrs";
 // import { verifyPayment } from "@/api/payments";
 //import PaystackPop from "@paystack/inline-js";
 
@@ -59,8 +57,6 @@ import { waveform } from "ldrs";
 // }
 
 export default function RestaurantMenuPage() {
-  waveform.register();
-  orbit.register();
   const { data: cartItems, refetch } = useQuery({
     queryFn: viewCart,
     queryKey: ["cartItems"],
@@ -492,12 +488,13 @@ export default function RestaurantMenuPage() {
                             className="rounded-md mr-2 max-w-[35%] h-auto"
                             src={String(item.menu_picture!)}
                             alt={item.menu_name}
+                            loading="lazy"
                             unloader={
                               <div className="flex justify-center p-5 max-h-[40%] items-center">
                                 <l-orbit
                                   size="35"
                                   speed="1.5"
-                                  color="var(--loader-color)"
+                                  color="#6C757D"
                                 ></l-orbit>
                               </div>
                             }
@@ -612,7 +609,7 @@ export default function RestaurantMenuPage() {
               size="35"
               stroke="3.5"
               speed="1"
-              color="var(--loader-color)"
+              color="#6C757D"
             ></l-waveform>
             <h3 className="text-l font-bold mb-8 text-center text-gray-800 dark:text-cfont-dark m-8">
               Getting Meals
@@ -635,6 +632,7 @@ export default function RestaurantMenuPage() {
                         {
                           <Img
                             className="w-full h-full object-cover"
+                            loading="lazy"
                             src={String(item.image!)}
                             alt={item.name}
                             unloader={
@@ -642,7 +640,7 @@ export default function RestaurantMenuPage() {
                                 <l-orbit
                                   size="35"
                                   speed="1.5"
-                                  color="var(--loader-color)"
+                                  color="#6C757D"
                                 ></l-orbit>
                               </div>
                             }

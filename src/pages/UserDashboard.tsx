@@ -28,13 +28,11 @@ import { PageWrapper } from "@/components/pagewrapper";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { myOrders, trackOrder } from "@/api/restaurant";
 import { orderType } from "@/interfaces/restaurantType";
-import { waveform } from "ldrs";
 import { editProfile, dashboard } from "@/api/misc";
 import { useToast } from "@/hooks/use-toast";
 
 //Everything regarding edit profile is a copy and paste of restaurant dashboard
 export default function UserDashboardPage() {
-  waveform.register();
   const { toast } = useToast();
 
   const [isOrderHistoryOpen, setIsOrderHistoryOpen] = useState(false);
@@ -289,7 +287,7 @@ export default function UserDashboardPage() {
                         size="35"
                         stroke="3.5"
                         speed="1"
-                        color="white"
+                        color="#6C757D"
                       ></l-waveform>
                     </div>
                   ) : (
@@ -354,7 +352,7 @@ export default function UserDashboardPage() {
                         size="35"
                         stroke="3.5"
                         speed="1"
-                        color="var(--loader-color)"
+                        color="#6C757D"
                       ></l-waveform>
                     </div>
                   ) : pendingStatus === "error" ? (
@@ -429,7 +427,7 @@ export default function UserDashboardPage() {
                         size="35"
                         stroke="3.5"
                         speed="1"
-                        color="var(--loader-color)"
+                        color="#6C757D"
                       ></l-waveform>
                     </div>
                   ) : pendingStatus === "error" ? (

@@ -54,10 +54,8 @@ import {
   orderType,
 } from "@/interfaces/restaurantType";
 import { editProfile, dashboard } from "@/api/misc";
-import { waveform } from "ldrs";
 
 export default function RestaurantDashboardPage() {
-  waveform.register();
   const [displayedMenuItems, setDisplayedMenuItems] = useState<menuItem[]>([]);
   const [pendingOrderState, setPendingOrders] = useState<orderType[]>([]);
   const [acceptedOrderState, setAccepted] = useState<orderType[]>([]);
