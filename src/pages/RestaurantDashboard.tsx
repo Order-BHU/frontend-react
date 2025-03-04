@@ -44,6 +44,7 @@ import {
   myOrders,
   updateOrderStatus,
   deleteMenuItem,
+  updateItemAvailability,
 } from "@/api/restaurant";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
@@ -79,6 +80,7 @@ export default function RestaurantDashboardPage() {
   } = useQuery({
     queryKey: ["pendingOrders"],
     queryFn: () => myOrders("pending"),
+    staleTime: 30000,
   });
 
   const { data: userDetails, refetch: refetchDetails } = useQuery({
@@ -94,10 +96,12 @@ export default function RestaurantDashboardPage() {
   } = useQuery({
     queryKey: ["acceptedOrders"],
     queryFn: () => myOrders("accepted"),
+    staleTime: 30000,
   });
   const { status: categoryStatus, data: categories } = useQuery({
     queryKey: ["categories"],
     queryFn: getCategories,
+    staleTime: 30000,
   });
   const {
     status: menuStatus,
@@ -106,6 +110,7 @@ export default function RestaurantDashboardPage() {
   } = useQuery({
     queryKey: ["menuItems", restaurant_id],
     queryFn: () => getMenuItems(restaurant_id!),
+    staleTime: 30000,
   });
 
   useEffect(() => {
@@ -262,6 +267,7 @@ export default function RestaurantDashboardPage() {
       image: newMenuItem.image,
       id: Number(restaurant_id),
       category: "",
+      is_available: "1",
     });
   };
 
@@ -275,6 +281,7 @@ export default function RestaurantDashboardPage() {
       image: newMenuItem.image,
       id: Number(itemId),
       category: "",
+      is_available: "1",
     });
   };
 
@@ -351,6 +358,42 @@ export default function RestaurantDashboardPage() {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     }).format(numericPrice);
+  };
+
+  const { mutate: isAvailableMutate } = useMutation({
+    mutationFn: updateItemAvailability,
+    onSuccess: (data) => {
+      toast({
+        title: "Success",
+        description: data.message,
+      });
+      refetchMenuItems();
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+      refetchMenuItems();
+    },
+  });
+
+  const handleItemAvailability = (menuId: number, value: "1" | "0") => {
+    const foundItem = displayedMenuItems.find(
+      (item) => item.category_id === menuId
+    );
+    if (foundItem) {
+      setDisplayedMenuItems((prev) =>
+        prev.map((item) =>
+          item.id === menuId ? { ...item, is_available: value } : item
+        )
+      );
+    }
+    isAvailableMutate({
+      menuid: menuId,
+      value: value,
+    });
   };
 
   return (
@@ -716,7 +759,10 @@ export default function RestaurantDashboardPage() {
                             <TableHead>Name</TableHead>
                             <TableHead>Price</TableHead>
                             <TableHead>Category</TableHead>
-                            <TableHead>Action</TableHead>
+                            <TableHead>Availability</TableHead>
+                            <TableHead className="text-center">
+                              Action
+                            </TableHead>
                           </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -726,177 +772,211 @@ export default function RestaurantDashboardPage() {
                               <TableCell>{formatPrice(item.price)}</TableCell>
                               <TableCell>{item.category}</TableCell>
                               <TableCell>
-                                <Dialog>
-                                  <DialogTrigger asChild>
-                                    <Button
-                                      variant="outline"
-                                      size="sm"
-                                      onClick={() => setEditingMenuItem(item)}
-                                    >
-                                      Edit
-                                    </Button>
-                                  </DialogTrigger>
-                                  <DialogContent className="dark: text-cfont-dark">
-                                    <DialogHeader>
-                                      <DialogTitle>Edit Menu Item</DialogTitle>
-                                    </DialogHeader>
-                                    {editingMenuItem && (
-                                      <form
-                                        onSubmit={(e) =>
-                                          handleEditMenuItem(item.id, e)
-                                        }
-                                        className="mt-4 space-y-4"
-                                      >
-                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                          <div>
-                                            <Label htmlFor="name">Name</Label>
-                                            <Input
-                                              id="name"
-                                              value={item.name}
-                                              onChange={(e) =>
-                                                setNewMenuItem({
-                                                  ...newMenuItem,
-                                                  name: e.target.value,
-                                                })
-                                              }
-                                              required
-                                            />
-                                          </div>
-                                          <div>
-                                            <Label htmlFor="price">
-                                              Price (₦)
-                                            </Label>
-                                            <Input
-                                              id="price"
-                                              value={item.price}
-                                              onChange={(e) => {
-                                                const { value } = e.target;
+                                <Select
+                                  onValueChange={(value: "1" | "0") => {
+                                    handleItemAvailability(item.id, value);
+                                  }}
+                                >
+                                  <SelectTrigger className="w-[180px]">
+                                    <SelectValue placeholder="Set Availability" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="1">Available</SelectItem>
 
-                                                setNewMenuItem({
-                                                  ...newMenuItem,
-                                                  price: Number(
-                                                    value.replace(/[^0-9]/g, "")
-                                                  ),
-                                                });
-                                              }}
-                                              required
-                                            />
-                                          </div>
-                                          <div>
-                                            <Label htmlFor="description">
-                                              Description
-                                            </Label>
-                                            <Textarea
-                                              id="description"
-                                              value={item.description}
-                                              onChange={(e) =>
-                                                setNewMenuItem({
-                                                  ...newMenuItem,
-                                                  description: e.target.value,
-                                                })
-                                              }
-                                              required
-                                            />
-                                          </div>
-
-                                          <div>
-                                            <Label htmlFor="image">Image</Label>
-                                            <Input
-                                              id="image"
-                                              type="file"
-                                              accept="image/*"
-                                              onChange={handleImageChange}
-                                              required
-                                            />
-                                          </div>
-
-                                          <div>
-                                            <Label htmlFor="category">
-                                              Category
-                                            </Label>
-                                            <Select
-                                              onValueChange={(value) => {
-                                                setNewMenuItem({
-                                                  ...newMenuItem,
-                                                  category_id: Number(value),
-                                                });
-                                              }}
-                                            >
-                                              <SelectTrigger className="w-[180px]">
-                                                <SelectValue placeholder="Choose Category" />
-                                              </SelectTrigger>
-                                              <SelectContent>
-                                                {categoryStatus ===
-                                                "pending" ? (
-                                                  <SelectItem value="" disabled>
-                                                    Loading categories...
-                                                  </SelectItem>
-                                                ) : categoryStatus ===
-                                                  "error" ? (
-                                                  <SelectItem value="" disabled>
-                                                    Error loading categories
-                                                  </SelectItem>
-                                                ) : (
-                                                  categories?.map(
-                                                    (category: category) => (
-                                                      <SelectItem
-                                                        key={category.id}
-                                                        value={String(
-                                                          category.id
-                                                        )}
-                                                      >
-                                                        {category.name}
-                                                      </SelectItem>
-                                                    )
-                                                  )
-                                                )}
-                                              </SelectContent>
-                                            </Select>
-                                          </div>
-                                        </div>
-                                        <Button
-                                          type="submit"
-                                          disabled={mutateStatus === "pending"}
-                                        >
-                                          Update Menu Item
-                                        </Button>
-                                      </form>
-                                    )}
-                                  </DialogContent>
-                                </Dialog>
-
-                                <Dialog>
-                                  <DialogTrigger asChild>
-                                    <Button
-                                      className="ml-3"
-                                      variant="outline"
-                                      size="sm"
-                                      onClick={() => setEditingMenuItem(item)}
-                                    >
-                                      Delete
-                                    </Button>
-                                  </DialogTrigger>
-                                  <DialogContent className="dark: text-cfont-dark">
-                                    <DialogHeader>
-                                      <DialogTitle>
-                                        Delete Item '{item.name}'
-                                      </DialogTitle>
-                                    </DialogHeader>
-                                    <div className="flex justify-around">
+                                    <SelectItem value="0">
+                                      Unavailable
+                                    </SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </TableCell>
+                              <TableCell>
+                                <div className="flex flex-col items-center md:flex-row md:justify-center">
+                                  <Dialog>
+                                    <DialogTrigger asChild>
                                       <Button
-                                        variant="destructive"
-                                        onClick={() =>
-                                          handleDeleteMenuItem(item.id)
-                                        }
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => setEditingMenuItem(item)}
                                       >
-                                        Yes
+                                        Edit
                                       </Button>
-                                      <DialogClose asChild>
-                                        <Button>No</Button>
-                                      </DialogClose>
-                                    </div>
-                                  </DialogContent>
-                                </Dialog>
+                                    </DialogTrigger>
+                                    <DialogContent className="dark: text-cfont-dark">
+                                      <DialogHeader>
+                                        <DialogTitle>
+                                          Edit Menu Item
+                                        </DialogTitle>
+                                      </DialogHeader>
+                                      {editingMenuItem && (
+                                        <form
+                                          onSubmit={(e) =>
+                                            handleEditMenuItem(item.id, e)
+                                          }
+                                          className="mt-4 space-y-4"
+                                        >
+                                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                            <div>
+                                              <Label htmlFor="name">Name</Label>
+                                              <Input
+                                                id="name"
+                                                value={item.name}
+                                                onChange={(e) =>
+                                                  setNewMenuItem({
+                                                    ...newMenuItem,
+                                                    name: e.target.value,
+                                                  })
+                                                }
+                                                required
+                                              />
+                                            </div>
+                                            <div>
+                                              <Label htmlFor="price">
+                                                Price (₦)
+                                              </Label>
+                                              <Input
+                                                id="price"
+                                                value={item.price}
+                                                onChange={(e) => {
+                                                  const { value } = e.target;
+
+                                                  setNewMenuItem({
+                                                    ...newMenuItem,
+                                                    price: Number(
+                                                      value.replace(
+                                                        /[^0-9]/g,
+                                                        ""
+                                                      )
+                                                    ),
+                                                  });
+                                                }}
+                                                required
+                                              />
+                                            </div>
+                                            <div>
+                                              <Label htmlFor="description">
+                                                Description
+                                              </Label>
+                                              <Textarea
+                                                id="description"
+                                                value={item.description}
+                                                onChange={(e) =>
+                                                  setNewMenuItem({
+                                                    ...newMenuItem,
+                                                    description: e.target.value,
+                                                  })
+                                                }
+                                                required
+                                              />
+                                            </div>
+
+                                            <div>
+                                              <Label htmlFor="image">
+                                                Image
+                                              </Label>
+                                              <Input
+                                                id="image"
+                                                type="file"
+                                                accept="image/*"
+                                                onChange={handleImageChange}
+                                                required
+                                              />
+                                            </div>
+
+                                            <div>
+                                              <Label htmlFor="category">
+                                                Category
+                                              </Label>
+                                              <Select
+                                                onValueChange={(value) => {
+                                                  setNewMenuItem({
+                                                    ...newMenuItem,
+                                                    category_id: Number(value),
+                                                  });
+                                                }}
+                                              >
+                                                <SelectTrigger className="w-[180px]">
+                                                  <SelectValue placeholder="Choose Category" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                  {categoryStatus ===
+                                                  "pending" ? (
+                                                    <SelectItem
+                                                      value=""
+                                                      disabled
+                                                    >
+                                                      Loading categories...
+                                                    </SelectItem>
+                                                  ) : categoryStatus ===
+                                                    "error" ? (
+                                                    <SelectItem
+                                                      value=""
+                                                      disabled
+                                                    >
+                                                      Error loading categories
+                                                    </SelectItem>
+                                                  ) : (
+                                                    categories?.map(
+                                                      (category: category) => (
+                                                        <SelectItem
+                                                          key={category.id}
+                                                          value={String(
+                                                            category.id
+                                                          )}
+                                                        >
+                                                          {category.name}
+                                                        </SelectItem>
+                                                      )
+                                                    )
+                                                  )}
+                                                </SelectContent>
+                                              </Select>
+                                            </div>
+                                          </div>
+                                          <Button
+                                            type="submit"
+                                            disabled={
+                                              mutateStatus === "pending"
+                                            }
+                                          >
+                                            Update Menu Item
+                                          </Button>
+                                        </form>
+                                      )}
+                                    </DialogContent>
+                                  </Dialog>
+                                  <Dialog>
+                                    <DialogTrigger asChild>
+                                      <Button
+                                        className="ml-3"
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => setEditingMenuItem(item)}
+                                      >
+                                        Delete
+                                      </Button>
+                                    </DialogTrigger>
+                                    <DialogContent className="dark: text-cfont-dark">
+                                      <DialogHeader>
+                                        <DialogTitle>
+                                          Delete Item '{item.name}'
+                                        </DialogTitle>
+                                      </DialogHeader>
+                                      <div className="flex justify-around">
+                                        <Button
+                                          variant="destructive"
+                                          onClick={() =>
+                                            handleDeleteMenuItem(item.id)
+                                          }
+                                        >
+                                          Yes
+                                        </Button>
+                                        <DialogClose asChild>
+                                          <Button>No</Button>
+                                        </DialogClose>
+                                      </div>
+                                    </DialogContent>
+                                  </Dialog>
+                                </div>
                               </TableCell>
                             </TableRow>
                           ))}

@@ -664,13 +664,14 @@ export default function RestaurantMenuPage() {
                       <CardFooter className="flex justify-between items-center">
                         <div className="flex items-center space-x-2">
                           <Button
+                            disabled={item.is_available === "0"}
                             className={`${
                               checkoutItems?.find(
                                 (cItem) => cItem.menu_id === item.id
                               )
                                 ? "hidden"
                                 : "flex items-center gap-2"
-                            } disabled:opacity-100 cursor-pointer disabled:pointer-events-none `}
+                            } disabled:opacity-50 cursor-pointer disabled:pointer-events-none `}
                             onClick={() =>
                               handleAddToCart(String(item.id), item.price)
                             }

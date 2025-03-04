@@ -184,6 +184,21 @@ export async function deleteMenuItem(menuid: number) {
     .catch(handleError);
 }
 
+export async function updateItemAvailability(data: {
+  menuid: number;
+  value: "1" | "0";
+}) {
+  const token = localStorage.getItem("token");
+  return api
+    .post(
+      `/${data.menuid}/update-availability`,
+      { is_available: data.value },
+      { headers: { Authorization: `Bearer ${token}` } }
+    )
+    .then((response: AxiosResponse) => response.data)
+    .catch(handleError);
+}
+
 //PAYMENTS
 export async function initializeCheckout(data: {
   restaurantId: string;

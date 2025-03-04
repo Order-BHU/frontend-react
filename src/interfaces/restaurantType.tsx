@@ -6,6 +6,7 @@ export interface menuItem {
   price: number;
   image: File | null | string;
   id: number;
+  is_available: "1" | "0";
 }
 
 export interface category {
