@@ -605,7 +605,7 @@ export default function RestaurantDashboardPage() {
                                   </SelectTrigger>
                                   <SelectContent>
                                     <SelectItem value="accepted">
-                                      Accepted
+                                      Accept
                                     </SelectItem>
                                     <SelectItem value="ready">Ready</SelectItem>
                                   </SelectContent>
@@ -654,7 +654,7 @@ export default function RestaurantDashboardPage() {
                                 {order.items
                                   ?.map(
                                     (item) =>
-                                      item.item_name + `(x${item.quantity})`
+                                      item.menu_name + `(x${item.quantity})`
                                   )
                                   .join(", ")}
                               </TableCell>

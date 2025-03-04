@@ -96,6 +96,7 @@ export default function UserDashboardPage() {
     queryFn: () => trackOrder(Number(localStorage.getItem("orderId"))), //we'll track it using the pending order route since that's how we get the ID
     queryKey: ["trackedorders"],
     enabled: !!pendingOrder,
+    staleTime: 30000, //set data as fresh so crackheads don't spam it by opening multiple times.
   });
 
   const { data: orderHistory, status: historyStatus } = useQuery({
