@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { Header } from "../components/header";
 import { Footer } from "../components/footer";
 import { Link } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -140,7 +139,6 @@ export default function UserDashboardPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-cbg-dark">
-      <Header />
       <main className="flex-grow container mx-auto px-4 py-8">
         <PageWrapper>
           <h1 className="text-3xl font-bold mb-6 text-gray-800 dark:text-cfont-dark">

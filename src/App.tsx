@@ -20,6 +20,7 @@ import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/protectedRoute";
 import ToastAutoDismiss from "./components/dismisstoast"; //handles dismissing toast when screen tapped
 import { waveform, orbit } from "ldrs";
+import { Header } from "./components/header";
 
 function App() {
   waveform.register();
@@ -32,6 +33,7 @@ function App() {
       <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
         <BrowserRouter future={{ v7_relativeSplatPath: true }}>
           <QueryClientProvider client={queryClient}>
+            <Header />
             <Routes>
               <Route path="*" element={<NotFound />}></Route>
               <Route path="/" element={<LandingPage />}></Route>

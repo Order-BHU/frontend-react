@@ -1,4 +1,3 @@
-import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,7 +7,6 @@ import { Label } from "@/components/ui/label";
 export default function ContactPage() {
   return (
     <div className="min-h-screen flex flex-col">
-      <Header />
       <main className="flex-grow bg-gray-50 py-12 dark:bg-cbg-dark">
         <div className="container mx-auto px-4">
           <h1 className="text-4xl font-bold mb-8 text-center text-gray-800 dark:text-cfont-dark">

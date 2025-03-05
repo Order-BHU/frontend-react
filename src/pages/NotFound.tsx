@@ -1,12 +1,10 @@
 import { Link } from "react-router-dom";
-import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { Button } from "@/components/ui/button";
 
 export default function NotFound() {
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
-      <Header />
       <main className="flex-grow flex items-center justify-center px-4">
         <div className="text-center">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">

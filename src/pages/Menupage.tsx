@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { Img } from "react-image";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
-import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import {
   Card,
@@ -467,8 +466,6 @@ export default function RestaurantMenuPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-cbg-dark">
-      <Header />
-
       <PageWrapper className="sticky top-[4rem] z-10 bg-white shadow-md p-4 dark:bg-cbg-darkaccent">
         <div className="container mx-auto flex justify-between items-center">
           <h1 className="text-xl md:text-2xl font-bold text-gray-800 dark:text-cfont-dark">

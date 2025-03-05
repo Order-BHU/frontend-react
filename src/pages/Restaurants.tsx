@@ -1,4 +1,3 @@
-import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { RestaurantCard } from "@/components/restaurant-card";
 import { PageWrapper } from "@/components/pagewrapper";
@@ -32,7 +31,6 @@ export default function RestaurantsPage() {
   }
   return (
     <div className="min-h-screen flex flex-col ">
-      <Header />
       <main className="flex-grow bg-gray-50 py-12 dark:bg-cbg-dark">
         <div className="container mx-auto px-4 ">
           <PageWrapper>

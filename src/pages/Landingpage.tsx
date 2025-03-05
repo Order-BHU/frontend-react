@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import { Header } from "@/components/header";
 import { Button } from "@/components/ui/button";
 import { Footer } from "@/components/footer";
 import Typewriter from "@/hooks/typewriter";
@@ -18,7 +17,6 @@ import { faTruck } from "@fortawesome/free-solid-svg-icons";
 export default function LandingPage() {
   return (
     <div className="min-h-screen flex flex-col dark:bg-cbg-dark dark:text-cfont-dark">
-      <Header />
       <main className="flex-grow">
         <PageWrapper className="bg-gradient-to-r from-orange-light to-orange-dark  dark:from-gradient-darkstart dark:to-gradient-darkend py-20 dark:rounded dark:mx-8 dark:mb-8 dark:box-content">
           <div className="container mx-auto px-4 text-center">

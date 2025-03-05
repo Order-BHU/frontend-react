@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Header } from "../components/header";
 import { Footer } from "../components/footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -97,7 +96,6 @@ export default function VerifyOTPPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-cbg-dark">
-      <Header />
       <main className="flex-grow container mx-auto px-4 py-8">
         <Card className="max-w-md mx-auto">
           <CardHeader>
