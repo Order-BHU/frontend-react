@@ -81,6 +81,7 @@ export default function RestaurantMenuPage() {
       menu_name: string;
       menu_price: number;
       menu_picture: File | null | string;
+      is_available: "1" | "0";
     }[]
   >([]); //every time a menu item gets added or removed(hitting the plus button) we'll set the state here so we can pass it to checkout route
   const { status: menuStatus, data: menuItems } = useQuery({
@@ -147,12 +148,14 @@ export default function RestaurantMenuPage() {
       menu_name: string;
       menu_picture: File | null | string;
       menu_price: number;
+      is_available: "1" | "0";
     }[] = cartItems?.cart_items.map((item: singularCartItem) => ({
       menu_id: item.menu_id,
       quantity: 1, //we don't store quantity in the backend anymore, so I just default them to 1
       menu_name: item.item_name,
       menu_picture: item.item_picture,
       menu_price: Number(item.item_price),
+      is_available: item.is_available,
     }));
     //so the values only update or show for logged in users
     isLoggedIn && setCheckoutItems(transformedItems); //so that we can get the user's checkout items so they can continue from when they left off in selecting in cart if they refresh the page or something.
@@ -172,6 +175,20 @@ export default function RestaurantMenuPage() {
   }, []);
 
   useEffect(() => {
+    //this function removes unavailable menu items from the user's cart
+    if (checkoutItems?.some((item) => item.is_available === "0")) {
+      checkoutItems.map((item) => {
+        item.is_available === "0" ? handleRemoveFromCart(item.menu_id) : item;
+      });
+      // const newCart = checkoutItems?.filter(
+      //   (item) => item.is_available === "1"
+      // );
+      // setCheckoutItems(newCart);
+    }
+  }, [menuItems]);
+
+  useEffect(() => {
+    //this function makes sure that if the quantity of an item is less than zero, it should be removed from the cart(checkout items)
     if (checkoutItems?.some((item) => item.quantity <= 0)) {
       setCheckoutItems((prevItems) =>
         prevItems.filter((item) => item.quantity > 0)
@@ -261,6 +278,9 @@ export default function RestaurantMenuPage() {
           menu_price: menuItems?.find(
             (item: menuItem) => item.id === Number(itemId)
           )?.price,
+          is_available: menuItems?.find(
+            (item: menuItem) => item.id === Number(itemId)
+          )?.is_available,
         },
       ];
 

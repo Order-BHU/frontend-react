@@ -24,6 +24,7 @@ export interface singularCartItem {
   item_picture: File | null | string;
   item_price: number;
   menu_id: number;
+  is_available: "1" | "0";
 }
 export interface cartItem {
   items: singularCartItem[];

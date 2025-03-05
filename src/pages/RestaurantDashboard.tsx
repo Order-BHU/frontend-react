@@ -778,7 +778,15 @@ export default function RestaurantDashboardPage() {
                                   }}
                                 >
                                   <SelectTrigger className="w-[180px]">
-                                    <SelectValue placeholder="Set Availability" />
+                                    <SelectValue
+                                      placeholder={
+                                        item.is_available === "1"
+                                          ? "Available"
+                                          : item.is_available === "0"
+                                          ? "Unavailable"
+                                          : "Select availability"
+                                      }
+                                    />
                                   </SelectTrigger>
                                   <SelectContent>
                                     <SelectItem value="1">Available</SelectItem>
