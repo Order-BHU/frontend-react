@@ -92,7 +92,7 @@ export default function UserDashboardPage() {
   });
 
   const { data: trackedOrder, status: trackedStatus } = useQuery({
-    queryFn: () => trackOrder(Number(localStorage.getItem("orderId"))), //we'll track it using the pending order route since that's how we get the ID
+    queryFn: () => trackOrder(userOrder?.id!), //we'll track it using the pending order route since that's how we get the ID
     queryKey: ["trackedorders"],
     enabled: !!pendingOrder,
     staleTime: 30000, //set data as fresh so crackheads don't spam it by opening multiple times.
@@ -358,7 +358,7 @@ export default function UserDashboardPage() {
                     <div className="text-center py-8">
                       <p>Error loading orders. Please try again later.</p>
                     </div>
-                  ) : userOrder ? (
+                  ) : userOrder ? ( //tracked order doesn't have the total price, so I'm just using userOrder here. You're welcome to fix this if you want, but I'll just stick to using this and only use tracked for the tracking dialogue box.
                     <Table>
                       <TableHeader>
                         <TableRow>
