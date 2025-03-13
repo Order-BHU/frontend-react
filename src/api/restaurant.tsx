@@ -114,7 +114,6 @@ export async function myOrders(
       headers: { Authorization: `Bearer ${token}` },
     })
     .then((response: AxiosResponse) => {
-      console.log("userOrders: ", response.data);
       return response.data;
     })
     .catch(handleError);
@@ -127,9 +126,6 @@ export async function trackOrder(orderId: number) {
       headers: { Authorization: `Bearer ${token}` },
     })
     .then((response: AxiosResponse) => {
-      console.log(token);
-      console.log("TrackOrders: ", response.data);
-      console.log("order id: ", orderId);
       return response.data;
     })
     .catch(handleError);

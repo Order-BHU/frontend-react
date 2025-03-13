@@ -1,7 +1,21 @@
 import { useState, useEffect } from "react";
+import {
+  Clock,
+  MapPin,
+  Phone,
+  Receipt,
+  ThumbsUp,
+  Utensils,
+} from "lucide-react";
 import { Footer } from "../components/footer";
 import { Link } from "react-router-dom";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardFooter,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,6 +28,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -29,6 +44,7 @@ import { myOrders, trackOrder } from "@/api/restaurant";
 import { orderType } from "@/interfaces/restaurantType";
 import { editProfile, dashboard } from "@/api/misc";
 import { useToast } from "@/hooks/use-toast";
+import { Progress } from "@/components/ui/progress";
 
 //Everything regarding edit profile is a copy and paste of restaurant dashboard
 export default function UserDashboardPage() {
@@ -65,7 +81,7 @@ export default function UserDashboardPage() {
   });
   useEffect(() => {
     if (userDetails) {
-      localStorage.setItem("pfp", userDetails?.message.profile_picture_url); //i no longer set this on login
+      localStorage.setItem("pfp", userDetails?.user?.profile_picture_url); //i no longer set this on login
     }
   }, [userDetails]);
 
@@ -91,11 +107,11 @@ export default function UserDashboardPage() {
     refetchOnWindowFocus: false,
   });
 
-  const { data: trackedOrder, status: trackedStatus } = useQuery({
-    queryFn: () => trackOrder(userOrder?.id!), //we'll track it using the pending order route since that's how we get the ID
-    queryKey: ["trackedorders"],
-    enabled: !!pendingOrder,
-    staleTime: 30000, //set data as fresh so crackheads don't spam it by opening multiple times.
+  const { data: trackedOrder } = useQuery({
+    queryFn: () => trackOrder(userOrder?.id!),
+    queryKey: ["trackedorders", userOrder?.id], // Ensure key changes when userOrder changes
+    enabled: !!userOrder?.id, // Wait until userOrder has a valid ID
+    staleTime: 30000,
   });
 
   const { data: orderHistory, status: historyStatus } = useQuery({
@@ -108,13 +124,28 @@ export default function UserDashboardPage() {
     if (pendingOrder) {
       setUserOrder(pendingOrder.order);
     }
-    console.log("user orders: ", userOrder);
+  }, [pendingOrder]);
+
+  useEffect(() => {
+    //here to set the tracked order a state
     if (trackedOrder) {
+      console.log("setting tracked");
       setTracked(trackedOrder);
       localStorage.removeItem("orderId");
-      console.log(trackedStatus, tracked); //here to fill up space, completely useless
     }
-  }, [pendingOrder]);
+  }, [trackedOrder]);
+
+  useEffect(() => {
+    //just here for logging
+    console.log("user orders: ", userOrder);
+  }, [userOrder]);
+  useEffect(() => {
+    //just here for logging
+    console.log("tracked online orders: ", trackedOrder);
+  }, [trackedOrder]);
+  useEffect(() => {
+    console.log("trackedOrders: ", tracked); // This runs after tracked has been updated
+  }, [tracked]);
 
   useEffect(() => {
     //sets order history to a state
@@ -137,6 +168,84 @@ export default function UserDashboardPage() {
     setprofileDetails((prev) => ({ ...prev, phone_number_type: type }));
   };
 
+  function getOrderProgress(status: string) {
+    //this function just creates a progress value for the progress bar
+    switch (status) {
+      case "pending":
+        return 20;
+      case "accepted":
+        return 40;
+      case "ready":
+        return 60;
+      case "delivering":
+        return 80;
+      case "completed":
+        return 100;
+    }
+  }
+
+  function setStep(status: string) {
+    console.log("setting step: ", status);
+    //this function sets tge currentStep variable
+    switch (status) {
+      case "pending":
+        return 1;
+      case "accepted":
+        return 2;
+      case "ready":
+        return 3;
+      case "delivering":
+        return 4;
+      case "completed":
+        return 5;
+    }
+  }
+  useEffect(() => {
+    setCurrentStep(setStep(tracked?.status!)!);
+  }, [tracked]);
+
+  //the thing below was rendered by v0, i'm too scared to fully comprehend what this does, i am very sleepy and i have a headache, i pray god sees you through these trying times, my friedn
+  const [currentStep, setCurrentStep] = useState(0);
+  const totalSteps = 4;
+
+  const steps = [
+    {
+      id: 1,
+      name: "Order Confirmed",
+      description: "Your order has been received",
+      icon: Receipt,
+      time: "12:05 PM",
+      completed: currentStep >= 1 ? true : false,
+    },
+    {
+      id: 2,
+      name: "Preparing",
+      description: "Chef is preparing your meal",
+      icon: Utensils,
+      time: "12:10 PM",
+      completed: currentStep >= 2 ? true : false,
+    },
+    {
+      id: 3,
+      name: "On the way",
+      description: "Driver has picked up your order",
+      icon: MapPin,
+      time: "12:25 PM",
+      completed: currentStep >= 3 ? true : false,
+    },
+    {
+      id: 4,
+      name: "Delivered",
+      description: "Enjoy your meal!",
+      icon: ThumbsUp,
+      time: "12:40 PM",
+      completed: currentStep >= 4 ? true : false,
+    },
+  ];
+  useEffect(() => {
+    console.log("the steps: ", steps);
+  }, [steps]);
+
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-cbg-dark">
       <main className="flex-grow container mx-auto px-4 py-8">
@@ -155,8 +264,8 @@ export default function UserDashboardPage() {
               <Avatar className="h-20 w-20">
                 <AvatarImage
                   src={
-                    localStorage.getItem("pfp")! ||
-                    userDetails?.message.profile_picture_url
+                    localStorage.getItem("pfp") ||
+                    userDetails?.user?.profile_picture_url
                   }
                   alt={username}
                 />
@@ -166,13 +275,13 @@ export default function UserDashboardPage() {
               </Avatar>
               <div>
                 <h2 className="text-xl font-semibold">
-                  {userDetails?.message.name}
+                  {userDetails?.user?.name}
                 </h2>
                 <p className="text-sm text-gray-500">
-                  {userDetails?.message.email}
+                  {userDetails?.user?.email}
                 </p>
                 <p className="text-sm text-gray-500">
-                  {userDetails?.message.phone_number}
+                  {userDetails?.user?.phone_number}
                 </p>
               </div>
             </CardContent>
@@ -214,7 +323,7 @@ export default function UserDashboardPage() {
                       </Label>
                       <Input
                         id="restaurantName"
-                        value={userDetails?.message.restaurant_name}
+                        value={userDetails?.message?.restaurant_name}
                         className="dark:text-cfont-dark"
                         onChange={(e) =>
                           setprofileDetails({
@@ -369,34 +478,201 @@ export default function UserDashboardPage() {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        <TableRow>
-                          <TableCell>{userOrder.id}</TableCell>
-                          <TableCell>
-                            {userOrder.items
-                              ?.map(
-                                (item) => item.menu_name + `(x${item.quantity})`
-                              )
-                              .join(", ")}
-                          </TableCell>
-                          <TableCell>
-                            ₦{Number(userOrder.total).toLocaleString()}
-                          </TableCell>
-                          <TableCell className="flex flex-col">
-                            <Badge
-                              className="max-w-16"
-                              variant={
-                                userOrder.status === "Delivered"
-                                  ? "secondary"
-                                  : "default"
-                              }
-                            >
-                              {userOrder.status}
-                            </Badge>
-                            <p className="italic ">
-                              Order Code: "{localStorage.getItem("orderCode")}"
-                            </p>
-                          </TableCell>
-                        </TableRow>
+                        <Dialog>
+                          <DialogTrigger asChild>
+                            <TableRow>
+                              <TableCell>{userOrder.id}</TableCell>
+                              <TableCell>
+                                {userOrder.items
+                                  ?.map(
+                                    (item) =>
+                                      item.menu_name + `(x${item.quantity})`
+                                  )
+                                  .join(", ")}
+                              </TableCell>
+                              <TableCell>
+                                ₦{Number(userOrder.total).toLocaleString()}
+                              </TableCell>
+                              <TableCell className="flex flex-col">
+                                <Badge
+                                  className="max-w-16"
+                                  variant={
+                                    userOrder.status === "Delivered"
+                                      ? "secondary"
+                                      : "default"
+                                  }
+                                >
+                                  {userOrder.status}
+                                </Badge>
+                                <p className="italic ">
+                                  Order Code: "
+                                  {localStorage.getItem("orderCode")}"
+                                </p>
+                              </TableCell>
+                            </TableRow>
+                          </DialogTrigger>
+                          <DialogContent className="dark:text-cfont-dark min-w-[90vw] max-h-[90vh] overflow-auto">
+                            <DialogHeader>
+                              <DialogTitle>Track Order</DialogTitle>
+                            </DialogHeader>
+                            <div className="grid gap-6 md:grid-cols-4">
+                              {/* Combined Order Status and Details Card */}
+                              <Card className="md:col-span-3">
+                                <CardHeader className="pb-4">
+                                  <div className="flex items-center justify-between">
+                                    <div>
+                                      <CardTitle className="text-xl">
+                                        Order #{tracked?.order_id}
+                                      </CardTitle>
+                                    </div>
+                                    <Badge
+                                      variant={
+                                        tracked?.status === "completed"
+                                          ? "secondary"
+                                          : "default"
+                                      }
+                                      className="px-3 py-1 text-sm font-medium"
+                                    >
+                                      {tracked?.status}
+                                    </Badge>
+                                  </div>
+                                </CardHeader>
+                                <CardContent className="pb-2">
+                                  <div className="mb-6">
+                                    <div className="flex justify-between items-center mb-2">
+                                      <span className="text-sm font-medium text-muted-foreground">
+                                        Order Progress
+                                      </span>
+                                      <span className="text-sm font-medium">
+                                        {getOrderProgress(tracked?.status!)}%
+                                      </span>
+                                    </div>
+                                    <Progress
+                                      value={getOrderProgress(tracked?.status!)}
+                                      className="h-2"
+                                    />
+                                  </div>
+
+                                  {/* Horizontal Steps */}
+                                  <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-6">
+                                    {steps.map((step) => (
+                                      <div
+                                        key={step.id}
+                                        className={`relative p-3 rounded-lg border ${
+                                          step.completed
+                                            ? "border-black dark:border-black bg-gray-300 dark:bg-gray-900"
+                                            : "border-input"
+                                        }`}
+                                      >
+                                        <div className="flex items-center gap-2 mb-2">
+                                          <div
+                                            className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${
+                                              step.completed
+                                                ? "bg-primary text-primary-foreground"
+                                                : "border border-input bg-background text-muted-foreground"
+                                            }`}
+                                          >
+                                            <step.icon className="h-4 w-4" />
+                                          </div>
+                                          <p className="text-sm font-medium leading-none">
+                                            {step.name}
+                                            {step.completed}
+                                          </p>
+                                        </div>
+                                        <p className="text-xs text-muted-foreground">
+                                          {step.description}
+                                        </p>
+
+                                        {/* Connector line between steps (except last) */}
+                                        {step.id < totalSteps && (
+                                          <div
+                                            className={`hidden md:block absolute top-1/2 -right-1 w-2 h-0.5 ${
+                                              step.completed
+                                                ? "bg-primary"
+                                                : "bg-input"
+                                            }`}
+                                            style={{
+                                              transform: "translateY(-50%)",
+                                            }}
+                                          />
+                                        )}
+                                      </div>
+                                    ))}
+                                  </div>
+
+                                  <Separator className="my-6" />
+
+                                  {/* Order Items */}
+                                  <div className="space-y-4">
+                                    <h4 className="text-sm font-medium">
+                                      Order Items
+                                    </h4>
+                                    <div className="space-y-3">
+                                      {tracked?.items?.map((item) => (
+                                        <div className="flex justify-between">
+                                          <span className="text-sm">
+                                            {item.menu_name}
+                                          </span>
+                                          <span className="text-sm font-medium"></span>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                </CardContent>
+                                <CardFooter className="flex justify-between pt-6">
+                                  <Button variant="outline" size="sm">
+                                    <Phone className="mr-2 h-4 w-4" />
+                                    Contact Restaurant
+                                  </Button>
+                                </CardFooter>
+                              </Card>
+
+                              {/* Driver Information Card */}
+                              <Card>
+                                <CardHeader>
+                                  <CardTitle className="text-lg">
+                                    Your Driver
+                                  </CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                  <div className="flex items-center gap-3 mb-4">
+                                    <Avatar>
+                                      <AvatarImage
+                                        src="/placeholder.svg"
+                                        alt="Driver"
+                                      />
+                                      <AvatarFallback>JD</AvatarFallback>
+                                    </Avatar>
+                                    <div>
+                                      <p className="text-sm font-medium">
+                                        John Doe
+                                      </p>
+                                      <p className="text-xs text-muted-foreground">
+                                        5 ★ Rating
+                                      </p>
+                                    </div>
+                                  </div>
+                                  <div className="space-y-2">
+                                    <p className="text-sm">
+                                      <Clock className="inline mr-2 h-4 w-4" />
+                                      Arriving in ~15 mins
+                                    </p>
+                                    <p className="text-sm">
+                                      <MapPin className="inline mr-2 h-4 w-4" />
+                                      2.5 km away
+                                    </p>
+                                  </div>
+                                </CardContent>
+                                <CardFooter>
+                                  <Button variant="outline" className="w-full">
+                                    <Phone className="mr-2 h-4 w-4" />
+                                    Contact Driver
+                                  </Button>
+                                </CardFooter>
+                              </Card>
+                            </div>
+                          </DialogContent>
+                        </Dialog>
                       </TableBody>
                     </Table>
                   ) : (
