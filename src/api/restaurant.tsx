@@ -106,7 +106,7 @@ export async function checkout(checkoutItems: checkoutType) {
 }
 
 export async function myOrders(
-  ordertype: "pending" | "history" | "accepted" | "ready" | "history"
+  ordertype: "pending" | "delivering" | "accepted" | "ready" | "history"
 ) {
   const token = localStorage.getItem("token");
   return api
