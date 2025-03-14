@@ -53,7 +53,13 @@ import {
   tempapiMenu,
   orderType,
 } from "@/interfaces/restaurantType";
-import { editProfile, dashboard } from "@/api/misc";
+import { editProfile, dashboard, changePassword } from "@/api/misc";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 export default function RestaurantDashboardPage() {
   const [displayedMenuItems, setDisplayedMenuItems] = useState<menuItem[]>([]);
@@ -121,6 +127,7 @@ export default function RestaurantDashboardPage() {
         name: userDetails?.message?.name || prev.name, // Ensure fallback to previous name if undefined
       }));
     }
+    console.log("userdeets: ", userDetails);
   }, [userDetails]);
 
   useEffect(() => {
@@ -176,6 +183,40 @@ export default function RestaurantDashboardPage() {
         variant: "destructive",
       });
     },
+  });
+
+  const { mutate: passwordMutate, status: passwordStatus } = useMutation({
+    mutationFn: changePassword,
+    onSuccess: (data) => {
+      setPasswordDetails({
+        current_password: "",
+        new_password: "",
+        confirm_password: "",
+      });
+      toast({
+        title: "Success",
+        description: data.message,
+      });
+      refetchDetails();
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleUpdatePassword = () => {
+    passwordMutate(passwordDeetails);
+  };
+
+  //this is what we'll pass to the change password mutate function
+  const [passwordDeetails, setPasswordDetails] = useState({
+    current_password: "",
+    new_password: "",
+    confirm_password: "",
   });
 
   const { mutate: deleteMenuItemMutate } = useMutation({
@@ -421,9 +462,10 @@ export default function RestaurantDashboardPage() {
                   {localStorage.getItem("name")}
                 </h2>
               </div>
+
               <Dialog>
                 <DialogTrigger asChild>
-                  <Button variant="outline" className="">
+                  <Button variant="outline" className="sm:mt-8">
                     Edit Profile
                   </Button>
                 </DialogTrigger>
@@ -455,10 +497,13 @@ export default function RestaurantDashboardPage() {
                       </Label>
                       <Input
                         id="restaurantName"
-                        value={userDetails?.message.restaurant_name}
+                        value={userDetails?.message?.restaurant_name}
                         className="dark:text-cfont-dark"
                         onChange={(e) =>
-                          setRestaurant({ ...restaurant, name: e.target.value })
+                          setRestaurant({
+                            ...restaurant,
+                            name: e.target.value,
+                          })
                         }
                       />
                     </div>
@@ -496,12 +541,89 @@ export default function RestaurantDashboardPage() {
                         </Button>
                       </div>
                     </div>
+
                     <Button
                       type="submit"
                       disabled={editProfileMutateStatus === "pending"}
                     >
                       Update Profile
                     </Button>
+
+                    <Accordion type="single" collapsible>
+                      <AccordionItem value="item-1">
+                        <AccordionTrigger>Change Password</AccordionTrigger>
+                        <AccordionContent>
+                          <div className="mb-4">
+                            <Label
+                              htmlFor="oldPassword"
+                              className="dark:text-cfont-dark"
+                            >
+                              Old Password
+                            </Label>
+                            <Input
+                              id="oldPassword"
+                              type="password"
+                              value={passwordDeetails?.current_password}
+                              className="dark:text-cfont-dark max-w-[90%] mx-3"
+                              onChange={(e) =>
+                                setPasswordDetails({
+                                  ...passwordDeetails,
+                                  current_password: e.target.value,
+                                })
+                              }
+                            />
+                          </div>
+
+                          <div className="mb-4">
+                            <Label
+                              htmlFor="newPassword"
+                              className="dark:text-cfont-dark"
+                            >
+                              New Password
+                            </Label>
+                            <Input
+                              id="newPassword"
+                              type="password"
+                              value={passwordDeetails?.new_password}
+                              className="dark:text-cfont-dark max-w-[90%] mx-3"
+                              onChange={(e) =>
+                                setPasswordDetails({
+                                  ...passwordDeetails,
+                                  new_password: e.target.value,
+                                })
+                              }
+                            />
+                          </div>
+
+                          <div className="mb-4">
+                            <Label
+                              htmlFor="confirmPassword"
+                              className="dark:text-cfont-dark max-w-[90%] mx-3"
+                            >
+                              Confirm Password
+                            </Label>
+                            <Input
+                              type="password"
+                              id="confirmPassword"
+                              value={passwordDeetails?.confirm_password}
+                              className="dark:text-cfont-dark max-w-[90%] mx-3"
+                              onChange={(e) =>
+                                setPasswordDetails({
+                                  ...passwordDeetails,
+                                  confirm_password: e.target.value,
+                                })
+                              }
+                            />
+                          </div>
+                          <Button
+                            onClick={handleUpdatePassword}
+                            disabled={passwordStatus === "pending"}
+                          >
+                            Update Password
+                          </Button>
+                        </AccordionContent>
+                      </AccordionItem>
+                    </Accordion>
                   </form>
                 </DialogContent>
               </Dialog>
@@ -638,7 +760,10 @@ export default function RestaurantDashboardPage() {
                                 <Select
                                   value={order.status}
                                   onValueChange={(value) =>
-                                    handlecategoryStatusChange(order.id, value)
+                                    handlecategoryStatusChange(
+                                      order.order_id,
+                                      value
+                                    )
                                   }
                                 >
                                   <SelectTrigger className="w-[180px]">
@@ -711,7 +836,10 @@ export default function RestaurantDashboardPage() {
                                 <Select
                                   value={order.status}
                                   onValueChange={(value) =>
-                                    handlecategoryStatusChange(order.id, value)
+                                    handlecategoryStatusChange(
+                                      order.order_id,
+                                      value
+                                    )
                                   }
                                 >
                                   <SelectTrigger className="w-[180px]">

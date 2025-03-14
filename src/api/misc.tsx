@@ -88,3 +88,35 @@ export async function dashboard() {
       throw error.response?.data;
     });
 }
+
+export async function changePassword(data: {
+  current_password: string;
+  new_password: string;
+  confirm_password: string;
+}) {
+  const token = localStorage.getItem("token");
+  console.log(token);
+  return axios
+    .post(
+      `${apiUrl}/change-password`,
+      data,
+
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        },
+        timeout: 90000,
+      }
+    )
+    .then(function (response: AxiosResponse) {
+      return response.data;
+    })
+    .catch(function (error: AxiosError) {
+      if (error.code === "ERR_NETWORK") {
+        throw new Error("Network error: Unable to reach the server.");
+      }
+      console.log(error);
+      throw error.response?.data;
+    });
+}

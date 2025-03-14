@@ -42,9 +42,15 @@ import { PageWrapper } from "@/components/pagewrapper";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { myOrders, trackOrder } from "@/api/restaurant";
 import { orderType } from "@/interfaces/restaurantType";
-import { editProfile, dashboard } from "@/api/misc";
+import { editProfile, dashboard, changePassword } from "@/api/misc";
 import { useToast } from "@/hooks/use-toast";
 import { Progress } from "@/components/ui/progress";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 //Everything regarding edit profile is a copy and paste of restaurant dashboard
 export default function UserDashboardPage() {
@@ -166,6 +172,39 @@ export default function UserDashboardPage() {
   };
   const handlePhoneTypeChange = (type: "whatsapp" | "phone") => {
     setprofileDetails((prev) => ({ ...prev, phone_number_type: type }));
+  };
+
+  const { mutate: passwordMutate, status: passwordStatus } = useMutation({
+    mutationFn: changePassword,
+    onSuccess: (data) => {
+      setPasswordDetails({
+        current_password: "",
+        new_password: "",
+        confirm_password: "",
+      });
+      toast({
+        title: "Success",
+        description: data.message,
+      });
+      refetchDetails();
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  //this is what we'll pass to the change password mutate function
+  const [passwordDeetails, setPasswordDetails] = useState({
+    current_password: "",
+    new_password: "",
+    confirm_password: "",
+  });
+  const handleUpdatePassword = () => {
+    passwordMutate(passwordDeetails);
   };
 
   function getOrderProgress(status: string) {
@@ -373,6 +412,82 @@ export default function UserDashboardPage() {
                     >
                       Update Profile
                     </Button>
+
+                    <Accordion type="single" collapsible>
+                      <AccordionItem value="item-1">
+                        <AccordionTrigger>Change Password</AccordionTrigger>
+                        <AccordionContent>
+                          <div className="mb-4">
+                            <Label
+                              htmlFor="oldPassword"
+                              className="dark:text-cfont-dark"
+                            >
+                              Old Password
+                            </Label>
+                            <Input
+                              id="oldPassword"
+                              type="password"
+                              value={passwordDeetails?.current_password}
+                              className="dark:text-cfont-dark max-w-[90%] mx-3"
+                              onChange={(e) =>
+                                setPasswordDetails({
+                                  ...passwordDeetails,
+                                  current_password: e.target.value,
+                                })
+                              }
+                            />
+                          </div>
+
+                          <div className="mb-4">
+                            <Label
+                              htmlFor="newPassword"
+                              className="dark:text-cfont-dark"
+                            >
+                              New Password
+                            </Label>
+                            <Input
+                              id="newPassword"
+                              type="password"
+                              value={passwordDeetails?.new_password}
+                              className="dark:text-cfont-dark max-w-[90%] mx-3"
+                              onChange={(e) =>
+                                setPasswordDetails({
+                                  ...passwordDeetails,
+                                  new_password: e.target.value,
+                                })
+                              }
+                            />
+                          </div>
+
+                          <div className="mb-4">
+                            <Label
+                              htmlFor="confirmPassword"
+                              className="dark:text-cfont-dark max-w-[90%] mx-3"
+                            >
+                              Confirm Password
+                            </Label>
+                            <Input
+                              type="password"
+                              id="confirmPassword"
+                              value={passwordDeetails?.confirm_password}
+                              className="dark:text-cfont-dark max-w-[90%] mx-3"
+                              onChange={(e) =>
+                                setPasswordDetails({
+                                  ...passwordDeetails,
+                                  confirm_password: e.target.value,
+                                })
+                              }
+                            />
+                          </div>
+                          <Button
+                            onClick={handleUpdatePassword}
+                            disabled={passwordStatus === "pending"}
+                          >
+                            Update Password
+                          </Button>
+                        </AccordionContent>
+                      </AccordionItem>
+                    </Accordion>
                   </form>
                 </DialogContent>
               </Dialog>

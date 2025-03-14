@@ -9,6 +9,7 @@ import { Progress } from "@/components/ui/progress";
 import { MapPin, Package, DollarSign, Star, TrendingUp } from "lucide-react";
 import { PageWrapper } from "@/components/pagewrapper";
 import { myOrders, updateOrderStatus, setDriverStatus } from "@/api/restaurant";
+import { dashboard } from "@/api/misc";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { orderType } from "@/interfaces/restaurantType";
 // import {
@@ -54,6 +55,17 @@ export default function RiderDashboardPage() {
   //   queryKey: ["history"],
   //   queryFn: () => myOrders("history"),
   // });
+
+  const { data: userDetails /*refetch: refetchDetails*/ } = useQuery({
+    queryKey: ["userDetails"],
+    queryFn: () => dashboard(),
+    refetchOnWindowFocus: false,
+  });
+  useEffect(() => {
+    if (userDetails) {
+      console.log("user details: ", userDetails);
+    }
+  }, [userDetails]);
 
   const { toast } = useToast();
   const { mutate: orderStatusMutate } = useMutation({

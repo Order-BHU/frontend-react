@@ -25,26 +25,29 @@ export default function LoginPage() {
     mutationFn: loginUser,
     onSuccess: (data) => {
       if (data.account_type === "restaurant") {
-        localStorage.setItem("name", data.restaurant_name);
-        localStorage.setItem("restaurant_id", data.restaurant_id);
+        localStorage.setItem("name", data?.restaurant_name);
+        localStorage.setItem("restaurant_id", data?.restaurant_id);
       }
 
       if (data.account_type === "driver") {
         //this logic will deal with assigning the state for the driver's status: online or offline
-        setState(data.status);
+        setState(data?.status);
       }
 
-      if (data.account_type === "customer") {
-        localStorage.setItem("name", data.name);
+      if (
+        data?.account_type === "customer" ||
+        data?.account_type === "driver"
+      ) {
+        localStorage.setItem("name", data?.name);
       }
-      localStorage.setItem("token", data.token ?? "undefined");
-      localStorage.setItem("accountType", data.account_type ?? "undefined");
+      localStorage.setItem("token", data?.token ?? "undefined");
+      localStorage.setItem("accountType", data?.account_type ?? "undefined");
 
       if (localStorage.getItem("itemId")) {
-        navigate(`/menu/${Number(localStorage.getItem("restaurantId"))}`);
+        navigate(`/menu/${Number(localStorage?.getItem("restaurantId"))}`);
         toast({
           title: "success!",
-          description: data.message,
+          description: data?.message,
         });
       }
       if (
@@ -56,7 +59,7 @@ export default function LoginPage() {
         navigate(`/${localStorage.getItem("accountType")}-dashboard/`);
         toast({
           title: "success!",
-          description: data.message,
+          description: data?.message,
         });
       } else {
         throw new Error("can't log in!!");
