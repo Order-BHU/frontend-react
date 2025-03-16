@@ -13,12 +13,7 @@ const useAuthStore = create<AuthState>((set) => {
   // Define the logout function first
   const logout = () => {
     set({ isLoggedIn: false, role: null });
-    localStorage.removeItem("authState");
-    localStorage.removeItem("token");
-    localStorage.removeItem("name");
-    localStorage.removeItem("restaurant_id");
-    localStorage.removeItem("pfp");
-    localStorage.removeItem("previousId");
+    localStorage.clear();
   };
 
   // Check localStorage for saved state

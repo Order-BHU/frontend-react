@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { CreditCard, DollarSign, Package } from "lucide-react";
-import { Separator } from "@/components/ui/separator";
+//import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Dialog,
@@ -635,29 +635,33 @@ export default function RestaurantDashboardPage() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
-                Total Revenue
+                Wallet Balance
               </CardTitle>
               <CreditCard className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">₦234,567</div>
-              <p className="text-xs text-muted-foreground">
+              <div className="text-2xl font-bold">
+                ₦{userDetails?.wallet_balance}
+              </div>
+              {/* <p className="text-xs text-muted-foreground">
                 +20.1% from last month
-              </p>
+              </p> */}
             </CardContent>
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
-                Total Orders
+                Completed Orders
               </CardTitle>
               <Package className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">342</div>
-              <p className="text-xs text-muted-foreground">
+              <div className="text-2xl font-bold">
+                {userDetails?.statistics?.completed_orders}
+              </div>
+              {/* <p className="text-xs text-muted-foreground">
                 +15% from last month
-              </p>
+              </p> */}
             </CardContent>
           </Card>
           <Card>
@@ -1233,10 +1237,18 @@ export default function RestaurantDashboardPage() {
                 <PageWrapper>
                   <Card>
                     <CardHeader>
-                      <CardTitle>Revenue Breakdown</CardTitle>
+                      <CardTitle>Transactions</CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <div className="space-y-4">
+                      {userDetails?.transactions?.map(
+                        <Card>
+                          <CardHeader>
+                            <CardTitle>Transaction name</CardTitle>
+                          </CardHeader>
+                          <CardContent>content would go here</CardContent>
+                        </Card>
+                      )}
+                      {/* <div className="space-y-4">
                         <div className="flex justify-between items-center">
                           <span className="text-sm font-medium">
                             Food Sales
@@ -1264,7 +1276,7 @@ export default function RestaurantDashboardPage() {
                           </span>
                           <span className="text-sm font-bold">₦234,567</span>
                         </div>
-                      </div>
+                      </div> */}
                     </CardContent>
                   </Card>
                 </PageWrapper>

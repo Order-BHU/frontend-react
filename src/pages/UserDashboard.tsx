@@ -497,12 +497,12 @@ export default function UserDashboardPage() {
               >
                 <DialogTrigger asChild>
                   <Button variant="outline" className="w-full">
-                    View Order History
+                    View Transactions
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="max-w-4xl dark:text-cfont-dark">
                   <DialogHeader>
-                    <DialogTitle>Order History</DialogTitle>
+                    <DialogTitle>Transactions</DialogTitle>
                   </DialogHeader>
                   {historyStatus === "pending" ? (
                     <div className="flex flex-col justify-center items-center">
