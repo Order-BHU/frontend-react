@@ -469,7 +469,7 @@ export default function RestaurantDashboardPage() {
                     Edit Profile
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="dark:text-cfont-dark">
+                <DialogContent className="dark:text-cfont-dark overflow-auto max-h-[95vh]">
                   <DialogHeader>
                     <DialogTitle>Edit Restaurant Profile</DialogTitle>
                   </DialogHeader>

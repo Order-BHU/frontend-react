@@ -334,7 +334,7 @@ export default function UserDashboardPage() {
                 <DialogTrigger asChild>
                   <Button className="w-full mb-2">Edit Profile</Button>
                 </DialogTrigger>
-                <DialogContent className="dark:text-cfont-dark">
+                <DialogContent className="dark:text-cfont-dark overflow-auto max-h-[95vh]">
                   <DialogHeader>
                     <DialogTitle>Edit Profile</DialogTitle>
                   </DialogHeader>
