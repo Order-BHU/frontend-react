@@ -57,7 +57,6 @@ export default function UserDashboardPage() {
   const { toast } = useToast();
 
   const [isOrderHistoryOpen, setIsOrderHistoryOpen] = useState(false);
-  const [userOrder, setUserOrder] = useState<orderType>(); //this state stores all the pending orders for the user
   const [allOrders, setAllOrders] = useState<orderType[]>([]); //stores all order history
   const [tracked, setTracked] = useState<orderType>(); //deals with tracked order(what we'll be displaying to the user)
   const username = localStorage.getItem("name")?.slice(0, 2).toUpperCase();
@@ -107,16 +106,15 @@ export default function UserDashboardPage() {
     refetchDetails();
   };
 
-  const { data: pendingOrder, status: pendingStatus } = useQuery({
-    queryFn: () => myOrders("pending"),
-    queryKey: ["orders"],
-    refetchOnWindowFocus: false,
-  });
+  // const { data: pendingOrder, status: pendingStatus } = useQuery({
+  //   queryFn: () => myOrders("pending"),
+  //   queryKey: ["orders"],
+  //   refetchOnWindowFocus: false,
+  // });
 
-  const { data: trackedOrder } = useQuery({
-    queryFn: () => trackOrder(userOrder?.id!),
-    queryKey: ["trackedorders", userOrder?.id], // Ensure key changes when userOrder changes
-    enabled: !!userOrder?.id, // Wait until userOrder has a valid ID
+  const { data: trackedOrder, status: trackedStatus } = useQuery({
+    queryFn: () => trackOrder(),
+    queryKey: ["trackedorders"], // Ensure key changes when userOrder changes
     staleTime: 30000,
   });
 
@@ -124,13 +122,6 @@ export default function UserDashboardPage() {
     queryFn: () => myOrders("history"),
     queryKey: ["history"],
   });
-
-  useEffect(() => {
-    //sets pending orders to a state
-    if (pendingOrder) {
-      setUserOrder(pendingOrder.order);
-    }
-  }, [pendingOrder]);
 
   useEffect(() => {
     //here to set the tracked order a state
@@ -141,10 +132,6 @@ export default function UserDashboardPage() {
     }
   }, [trackedOrder]);
 
-  useEffect(() => {
-    //just here for logging
-    console.log("user orders: ", userOrder);
-  }, [userOrder]);
   useEffect(() => {
     //just here for logging
     console.log("tracked online orders: ", trackedOrder);
@@ -159,7 +146,7 @@ export default function UserDashboardPage() {
       setAllOrders(orderHistory.orders);
     }
     console.log("All user orders: ", orderHistory);
-  }, [pendingOrder]);
+  }, [tracked]);
 
   const handlePfpImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     //for updating
@@ -228,15 +215,15 @@ export default function UserDashboardPage() {
     //this function sets tge currentStep variable
     switch (status) {
       case "pending":
-        return 1;
+        return 0;
       case "accepted":
-        return 2;
+        return 1;
       case "ready":
-        return 3;
+        return 2;
       case "delivering":
-        return 4;
+        return 3;
       case "completed":
-        return 5;
+        return 4;
     }
   }
   useEffect(() => {
@@ -569,7 +556,7 @@ export default function UserDashboardPage() {
                   <CardTitle>Orders</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  {pendingStatus === "pending" ? (
+                  {trackedStatus === "pending" ? (
                     <div className="flex flex-col justify-center items-center">
                       <l-waveform
                         size="35"
@@ -578,11 +565,11 @@ export default function UserDashboardPage() {
                         color="#6C757D"
                       ></l-waveform>
                     </div>
-                  ) : pendingStatus === "error" ? (
+                  ) : trackedStatus === "error" ? (
                     <div className="text-center py-8">
                       <p>Error loading orders. Please try again later.</p>
                     </div>
-                  ) : userOrder ? ( //tracked order doesn't have the total price, so I'm just using userOrder here. You're welcome to fix this if you want, but I'll just stick to using this and only use tracked for the tracking dialogue box.
+                  ) : tracked ? ( //tracked order doesn't have the total price, so I'm just using userOrder here. You're welcome to fix this if you want, but I'll just stick to using this and only use tracked for the tracking dialogue box.
                     <Table>
                       <TableHeader>
                         <TableRow>
@@ -596,9 +583,9 @@ export default function UserDashboardPage() {
                         <Dialog>
                           <DialogTrigger asChild>
                             <TableRow>
-                              <TableCell>{userOrder.id}</TableCell>
+                              <TableCell>{tracked.order_id}</TableCell>
                               <TableCell>
-                                {userOrder.items
+                                {tracked.items
                                   ?.map(
                                     (item) =>
                                       item.menu_name + `(x${item.quantity})`
@@ -606,22 +593,21 @@ export default function UserDashboardPage() {
                                   .join(", ")}
                               </TableCell>
                               <TableCell>
-                                ₦{Number(userOrder.total).toLocaleString()}
+                                ₦{Number(tracked.total).toLocaleString()}
                               </TableCell>
                               <TableCell className="flex flex-col">
                                 <Badge
-                                  className="max-w-16"
+                                  className="max-w-16 pl-1 box-border"
                                   variant={
-                                    userOrder.status === "Delivered"
+                                    tracked.status === "Delivered"
                                       ? "secondary"
                                       : "default"
                                   }
                                 >
-                                  {userOrder.status}
+                                  {tracked.status}
                                 </Badge>
                                 <p className="italic ">
-                                  Order Code: "
-                                  {localStorage.getItem("orderCode")}"
+                                  Order Code: "{tracked.order_code}"
                                 </p>
                               </TableCell>
                             </TableRow>
@@ -820,11 +806,11 @@ export default function UserDashboardPage() {
                         color="#6C757D"
                       ></l-waveform>
                     </div>
-                  ) : pendingStatus === "error" ? (
+                  ) : historyStatus === "error" ? (
                     <div className="text-center py-8">
                       <p>Error loading orders. Please try again later.</p>
                     </div>
-                  ) : userOrder ? (
+                  ) : allOrders ? (
                     <Table>
                       <TableHeader>
                         <TableRow>
@@ -835,26 +821,28 @@ export default function UserDashboardPage() {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        <TableRow>
-                          <TableCell>{userOrder.id}</TableCell>
-                          <TableCell>
-                            {userOrder.items.map((item) => item.menu_name)}
-                          </TableCell>
-                          <TableCell>
-                            ₦{Number(userOrder.total).toLocaleString()}
-                          </TableCell>
-                          <TableCell>
-                            <Badge
-                              variant={
-                                userOrder.status === "Delivered"
-                                  ? "secondary"
-                                  : "default"
-                              }
-                            >
-                              {userOrder.status}
-                            </Badge>
-                          </TableCell>
-                        </TableRow>
+                        {allOrders.map((item) => (
+                          <TableRow>
+                            <TableCell>{item.order_id}</TableCell>
+                            <TableCell>
+                              {item.items.map((item) => item.menu_name)}
+                            </TableCell>
+                            <TableCell>
+                              ₦{Number(item.total).toLocaleString()}
+                            </TableCell>
+                            <TableCell>
+                              <Badge
+                                variant={
+                                  item.status === "Delivered"
+                                    ? "secondary"
+                                    : "default"
+                                }
+                              >
+                                {item.status}
+                              </Badge>
+                            </TableCell>
+                          </TableRow>
+                        ))}
                       </TableBody>
                     </Table>
                   ) : (

@@ -51,6 +51,7 @@ export interface orderType {
   }[];
   status: string;
   total: number;
+  order_code: string;
   restaurant_name: string;
   location: string;
   user_phoneNumber: string;

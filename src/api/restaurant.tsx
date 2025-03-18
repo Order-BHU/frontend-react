@@ -119,10 +119,10 @@ export async function myOrders(
     .catch(handleError);
 }
 
-export async function trackOrder(orderId: number) {
+export async function trackOrder() {
   const token = localStorage.getItem("token");
   return api
-    .get(`/${orderId}/track-order`, {
+    .get(`/track-order`, {
       headers: { Authorization: `Bearer ${token}` },
     })
     .then((response: AxiosResponse) => {
