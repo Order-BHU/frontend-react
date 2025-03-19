@@ -152,27 +152,28 @@ export default function RiderDashboardPage() {
   }, [userDetails]);
 
   const { toast } = useToast();
-  const { mutate: orderStatusMutate } = useMutation({
-    mutationFn: updateOrderStatus,
-    onSuccess: (data) => {
-      toast({
-        title: "Success",
-        description: data.message,
-      });
-      refetchPending();
-      refetchDelivering();
-      // refetchHistory();
-    },
-    onError: (error) => {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
-    },
-  });
+  const { mutate: orderStatusMutate, status: completeOrderStatus } =
+    useMutation({
+      mutationFn: updateOrderStatus,
+      onSuccess: (data) => {
+        toast({
+          title: "Success",
+          description: data.message,
+        });
+        refetchPending();
+        refetchDelivering();
+        // refetchHistory();
+      },
+      onError: (error) => {
+        toast({
+          title: "Error",
+          description: error.message,
+          variant: "destructive",
+        });
+      },
+    });
 
-  const { mutate: driverStatusMutate, status: mutateStatus } = useMutation({
+  const { mutate: driverStatusMutate } = useMutation({
     mutationFn: setDriverStatus,
     onSuccess: (data) => {
       refetchPending();
@@ -691,7 +692,9 @@ export default function RiderDashboardPage() {
                                           orderCode
                                         )
                                       }
-                                      disabled={mutateStatus === "pending"}
+                                      disabled={
+                                        completeOrderStatus === "pending"
+                                      }
                                       size="sm"
                                       className="px-3 mt-4"
                                     >

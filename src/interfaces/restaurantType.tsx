@@ -47,6 +47,7 @@ export interface orderType {
     menu_id: number;
     quantity: number;
     menu_name: string;
+    menu_price: number;
     item_name: string /*man... he changed the names without telling, and now idk what to add or remove. bear with me here, this is for pending orders but idk if the change carries over to all order types */;
   }[];
   status: string;
@@ -56,4 +57,8 @@ export interface orderType {
   location: string;
   user_phoneNumber: string;
   order_id: number; //honestly, man, idek why this is here. It's to complete the checkout order for the drivers, but idk we couldn't just use the id. DO NOT FUCKING REMOVE ANYTHING, it's from the backend and it's very important istg.
+
+  driver_name: string;
+  driver_profile_photo: string;
+  driver_number: string;
 }

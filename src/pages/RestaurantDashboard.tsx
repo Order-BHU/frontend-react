@@ -764,10 +764,7 @@ export default function RestaurantDashboardPage() {
                                 <Select
                                   value={order.status}
                                   onValueChange={(value) =>
-                                    handlecategoryStatusChange(
-                                      order.order_id,
-                                      value
-                                    )
+                                    handlecategoryStatusChange(order.id, value)
                                   }
                                 >
                                   <SelectTrigger className="w-[180px]">
@@ -1240,14 +1237,14 @@ export default function RestaurantDashboardPage() {
                       <CardTitle>Transactions</CardTitle>
                     </CardHeader>
                     <CardContent>
-                      {userDetails?.transactions?.map(
+                      {/* {userDetails?.statistics?.transactions?.map(
                         <Card>
                           <CardHeader>
                             <CardTitle>Transaction name</CardTitle>
                           </CardHeader>
                           <CardContent>content would go here</CardContent>
                         </Card>
-                      )}
+                      )} */}
                       {/* <div className="space-y-4">
                         <div className="flex justify-between items-center">
                           <span className="text-sm font-medium">

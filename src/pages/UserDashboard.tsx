@@ -198,11 +198,11 @@ export default function UserDashboardPage() {
     //this function just creates a progress value for the progress bar
     switch (status) {
       case "pending":
-        return 20;
+        return 0;
       case "accepted":
-        return 40;
+        return 25;
       case "ready":
-        return 60;
+        return 50;
       case "delivering":
         return 80;
       case "completed":
@@ -570,212 +570,185 @@ export default function UserDashboardPage() {
                       <p>Error loading orders. Please try again later.</p>
                     </div>
                   ) : tracked ? ( //tracked order doesn't have the total price, so I'm just using userOrder here. You're welcome to fix this if you want, but I'll just stick to using this and only use tracked for the tracking dialogue box.
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Order ID</TableHead>
-                          <TableHead>Items</TableHead>
-                          <TableHead>Total</TableHead>
-                          <TableHead>Status</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        <Dialog>
-                          <DialogTrigger asChild>
-                            <TableRow>
-                              <TableCell>{tracked.order_id}</TableCell>
-                              <TableCell>
-                                {tracked.items
-                                  ?.map(
-                                    (item) =>
-                                      item.menu_name + `(x${item.quantity})`
-                                  )
-                                  .join(", ")}
-                              </TableCell>
-                              <TableCell>
-                                ₦{Number(tracked.total).toLocaleString()}
-                              </TableCell>
-                              <TableCell className="flex flex-col">
-                                <Badge
-                                  className="max-w-16 pl-1 box-border"
-                                  variant={
-                                    tracked.status === "Delivered"
-                                      ? "secondary"
-                                      : "default"
-                                  }
-                                >
-                                  {tracked.status}
-                                </Badge>
-                                <p className="italic ">
-                                  Order Code: "{tracked.order_code}"
-                                </p>
-                              </TableCell>
-                            </TableRow>
-                          </DialogTrigger>
-                          <DialogContent className="dark:text-cfont-dark min-w-[90vw] max-h-[90vh] overflow-auto">
-                            <DialogHeader>
-                              <DialogTitle>Track Order</DialogTitle>
-                            </DialogHeader>
-                            <div className="grid gap-6 md:grid-cols-4">
-                              {/* Combined Order Status and Details Card */}
-                              <Card className="md:col-span-3">
-                                <CardHeader className="pb-4">
-                                  <div className="flex items-center justify-between">
-                                    <div>
-                                      <CardTitle className="text-xl">
-                                        Order #{tracked?.order_id}
-                                      </CardTitle>
-                                    </div>
-                                    <Badge
-                                      variant={
-                                        tracked?.status === "completed"
-                                          ? "secondary"
-                                          : "default"
-                                      }
-                                      className="px-3 py-1 text-sm font-medium"
-                                    >
-                                      {tracked?.status}
-                                    </Badge>
-                                  </div>
-                                </CardHeader>
-                                <CardContent className="pb-2">
-                                  <div className="mb-6">
-                                    <div className="flex justify-between items-center mb-2">
-                                      <span className="text-sm font-medium text-muted-foreground">
-                                        Order Progress
-                                      </span>
-                                      <span className="text-sm font-medium">
-                                        {getOrderProgress(tracked?.status!)}%
-                                      </span>
-                                    </div>
-                                    <Progress
-                                      value={getOrderProgress(tracked?.status!)}
-                                      className="h-2"
-                                    />
-                                  </div>
-
-                                  {/* Horizontal Steps */}
-                                  <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-6">
-                                    {steps.map((step) => (
-                                      <div
-                                        key={step.id}
-                                        className={`relative p-3 rounded-lg border ${
-                                          step.completed
-                                            ? "border-black dark:border-black bg-gray-300 dark:bg-gray-900"
-                                            : "border-input"
-                                        }`}
-                                      >
-                                        <div className="flex items-center gap-2 mb-2">
-                                          <div
-                                            className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${
-                                              step.completed
-                                                ? "bg-primary text-primary-foreground"
-                                                : "border border-input bg-background text-muted-foreground"
-                                            }`}
-                                          >
-                                            <step.icon className="h-4 w-4" />
-                                          </div>
-                                          <p className="text-sm font-medium leading-none">
-                                            {step.name}
-                                            {step.completed}
-                                          </p>
-                                        </div>
-                                        <p className="text-xs text-muted-foreground">
-                                          {step.description}
-                                        </p>
-
-                                        {/* Connector line between steps (except last) */}
-                                        {step.id < totalSteps && (
-                                          <div
-                                            className={`hidden md:block absolute top-1/2 -right-1 w-2 h-0.5 ${
-                                              step.completed
-                                                ? "bg-primary"
-                                                : "bg-input"
-                                            }`}
-                                            style={{
-                                              transform: "translateY(-50%)",
-                                            }}
-                                          />
-                                        )}
-                                      </div>
-                                    ))}
-                                  </div>
-
-                                  <Separator className="my-6" />
-
-                                  {/* Order Items */}
-                                  <div className="space-y-4">
-                                    <h4 className="text-sm font-medium">
-                                      Order Items
-                                    </h4>
-                                    <div className="space-y-3">
-                                      {tracked?.items?.map((item) => (
-                                        <div className="flex justify-between">
-                                          <span className="text-sm">
-                                            {item.menu_name}
-                                          </span>
-                                          <span className="text-sm font-medium"></span>
-                                        </div>
-                                      ))}
-                                    </div>
-                                  </div>
-                                </CardContent>
-                                <CardFooter className="flex justify-between pt-6">
-                                  <Button variant="outline" size="sm">
-                                    <Phone className="mr-2 h-4 w-4" />
-                                    Contact Restaurant
-                                  </Button>
-                                </CardFooter>
-                              </Card>
-
-                              {/* Driver Information Card */}
-                              <Card>
-                                <CardHeader>
-                                  <CardTitle className="text-lg">
-                                    Your Driver
-                                  </CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                  <div className="flex items-center gap-3 mb-4">
-                                    <Avatar>
-                                      <AvatarImage
-                                        src="/placeholder.svg"
-                                        alt="Driver"
-                                      />
-                                      <AvatarFallback>JD</AvatarFallback>
-                                    </Avatar>
-                                    <div>
-                                      <p className="text-sm font-medium">
-                                        John Doe
-                                      </p>
-                                      <p className="text-xs text-muted-foreground">
-                                        5 ★ Rating
-                                      </p>
-                                    </div>
-                                  </div>
-                                  <div className="space-y-2">
-                                    <p className="text-sm">
-                                      <Clock className="inline mr-2 h-4 w-4" />
-                                      Arriving in ~15 mins
-                                    </p>
-                                    <p className="text-sm">
-                                      <MapPin className="inline mr-2 h-4 w-4" />
-                                      2.5 km away
-                                    </p>
-                                  </div>
-                                </CardContent>
-                                <CardFooter>
-                                  <Button variant="outline" className="w-full">
-                                    <Phone className="mr-2 h-4 w-4" />
-                                    Contact Driver
-                                  </Button>
-                                </CardFooter>
-                              </Card>
+                    <div className="grid gap-6 md:grid-cols-4">
+                      {/* Combined Order Status and Details Card */}
+                      <Card className="md:col-span-3">
+                        <CardHeader className="pb-4">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <CardTitle className="text-xl">
+                                Order #{tracked?.order_id}
+                              </CardTitle>
                             </div>
-                          </DialogContent>
-                        </Dialog>
-                      </TableBody>
-                    </Table>
+                            <Badge
+                              variant={
+                                tracked?.status === "completed"
+                                  ? "secondary"
+                                  : "default"
+                              }
+                              className="px-3 py-1 text-sm font-medium"
+                            >
+                              {tracked?.status}
+                            </Badge>
+                          </div>
+                        </CardHeader>
+                        <CardContent className="pb-2">
+                          <div className="mb-6">
+                            <div className="flex justify-between items-center mb-2">
+                              <span className="text-sm font-medium text-muted-foreground">
+                                Order Progress
+                              </span>
+                              <span className="text-sm font-medium">
+                                {getOrderProgress(tracked?.status!)}%
+                              </span>
+                            </div>
+                            <Progress
+                              value={getOrderProgress(tracked?.status!)}
+                              className="h-2"
+                            />
+                          </div>
+
+                          {/* Horizontal Steps */}
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-6">
+                            {steps.map((step) => (
+                              <div
+                                key={step.id}
+                                className={`relative p-3 rounded-lg border ${
+                                  step.completed
+                                    ? "border-black dark:border-black bg-gray-300 dark:bg-gray-900"
+                                    : "border-input"
+                                }`}
+                              >
+                                <div className="flex items-center gap-2 mb-2">
+                                  <div
+                                    className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${
+                                      step.completed
+                                        ? "bg-primary text-primary-foreground"
+                                        : "border border-input bg-background text-muted-foreground"
+                                    }`}
+                                  >
+                                    <step.icon className="h-4 w-4" />
+                                  </div>
+                                  <p className="text-sm font-medium leading-none">
+                                    {step.name}
+                                    {step.completed}
+                                  </p>
+                                </div>
+                                <p className="text-xs text-muted-foreground">
+                                  {step.description}
+                                </p>
+
+                                {/* Connector line between steps (except last) */}
+                                {step.id < totalSteps && (
+                                  <div
+                                    className={`hidden md:block absolute top-1/2 -right-1 w-2 h-0.5 ${
+                                      step.completed ? "bg-primary" : "bg-input"
+                                    }`}
+                                    style={{
+                                      transform: "translateY(-50%)",
+                                    }}
+                                  />
+                                )}
+                              </div>
+                            ))}
+                          </div>
+
+                          <Separator className="my-6" />
+
+                          {/* Order Items */}
+                          <div className="space-y-4">
+                            <h4 className="text-sm font-medium">Order Items</h4>
+                            <div className="space-y-3">
+                              {tracked?.items?.map((item) => (
+                                <div className="flex justify-between">
+                                  <span className="text-sm">
+                                    {item.menu_name}
+                                  </span>
+                                  <span className="text-sm font-medium">
+                                    ₦{item.menu_price.toLocaleString()}
+                                  </span>
+                                </div>
+                              ))}
+                              <Separator className="my-6" />
+                              <div className="flex justify-between">
+                                <span className="text-sm font-bold">
+                                  Delivery Fee
+                                </span>
+                                <span className="text-sm font-medium">
+                                  ₦250
+                                </span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="text-sm font-bold">Total</span>
+                                <span className="text-sm font-medium">
+                                  ₦{Number(tracked.total).toLocaleString()}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        </CardContent>
+                        <CardFooter className="flex justify-between pt-6">
+                          <Link to={`mailto:`}>
+                            <Button variant="outline" size="sm">
+                              <Phone className="mr-2 h-4 w-4" />
+                              Contact Restaurant
+                            </Button>
+                          </Link>
+                        </CardFooter>
+                      </Card>
+
+                      {/* Driver Information Card */}
+                      {tracked.driver_name && (
+                        <Card>
+                          <CardHeader>
+                            <CardTitle className="text-lg">
+                              Your Driver
+                            </CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="flex items-center gap-3 mb-4">
+                              <Avatar>
+                                <AvatarImage
+                                  src={tracked.driver_profile_photo}
+                                  alt="Driver"
+                                />
+                                <AvatarFallback>
+                                  {tracked.driver_name
+                                    .slice(0, 2)
+                                    .toUpperCase()}
+                                </AvatarFallback>
+                              </Avatar>
+                              <div>
+                                <p className="text-sm font-medium">
+                                  {tracked.driver_name}
+                                </p>
+                                <p className="text-xs text-muted-foreground">
+                                  5 ★ Rating
+                                </p>
+                              </div>
+                            </div>
+                            <div className="space-y-2">
+                              <p className="text-sm">
+                                <Clock className="inline mr-2 h-4 w-4" />
+                                Arriving in ~15 mins
+                              </p>
+                              <p className="text-sm">
+                                <MapPin className="inline mr-2 h-4 w-4" />
+                                2.5 km away
+                              </p>
+                            </div>
+                          </CardContent>
+                          <CardFooter>
+                            <Link to={`tel:${tracked.driver_number}`}>
+                              <Button variant="outline" className="w-full">
+                                <Phone className="mr-2 h-4 w-4" />
+                                Contact Driver
+                              </Button>
+                            </Link>
+                          </CardFooter>
+                        </Card>
+                      )}
+                    </div>
                   ) : (
                     <div className="text-center py-8">
                       <p className="text-lg mb-4">
