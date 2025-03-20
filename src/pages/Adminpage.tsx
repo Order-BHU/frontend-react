@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { Header } from "../components/header";
 import { Footer } from "../components/footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -47,8 +46,10 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { getBanks, resolveBank } from "@/api/auth";
+import { dashboard } from "@/api/misc";
 import { banksType } from "@/interfaces/paymentType";
 import debounce from "lodash/debounce";
+import { restaurantMetric, transactionType } from "@/interfaces/restaurantType";
 
 // Mock data - in a real app, this would come from an API
 const revenueData = [
@@ -59,75 +60,6 @@ const revenueData = [
   { name: "Fri", value: 1890 },
   { name: "Sat", value: 2390 },
   { name: "Sun", value: 3490 },
-];
-
-const restaurants = [
-  {
-    id: "1",
-    name: "Burger Palace",
-    stats: {
-      day: { totalOrders: 50, completedOrders: 48, totalRevenue: "₦150,000" },
-      week: {
-        totalOrders: 350,
-        completedOrders: 340,
-        totalRevenue: "₦1,050,000",
-      },
-      month: {
-        totalOrders: 1500,
-        completedOrders: 1450,
-        totalRevenue: "₦4,500,000",
-      },
-      year: {
-        totalOrders: 18000,
-        completedOrders: 17500,
-        totalRevenue: "₦54,000,000",
-      },
-    },
-  },
-  {
-    id: "2",
-    name: "Pizza Heaven",
-    stats: {
-      day: { totalOrders: 40, completedOrders: 39, totalRevenue: "₦120,000" },
-      week: {
-        totalOrders: 280,
-        completedOrders: 275,
-        totalRevenue: "₦840,000",
-      },
-      month: {
-        totalOrders: 1200,
-        completedOrders: 1180,
-        totalRevenue: "₦3,600,000",
-      },
-      year: {
-        totalOrders: 14400,
-        completedOrders: 14200,
-        totalRevenue: "₦43,200,000",
-      },
-    },
-  },
-  {
-    id: "3",
-    name: "Sushi Sensation",
-    stats: {
-      day: { totalOrders: 30, completedOrders: 29, totalRevenue: "₦105,000" },
-      week: {
-        totalOrders: 210,
-        completedOrders: 205,
-        totalRevenue: "₦735,000",
-      },
-      month: {
-        totalOrders: 900,
-        completedOrders: 880,
-        totalRevenue: "₦3,150,000",
-      },
-      year: {
-        totalOrders: 10800,
-        completedOrders: 10600,
-        totalRevenue: "₦37,800,000",
-      },
-    },
-  },
 ];
 
 const drivers = [
@@ -253,6 +185,12 @@ export default function AdminDashboardPage() {
     refetchOnWindowFocus: false,
   });
 
+  const { data: userDetails } = useQuery({
+    queryKey: ["userDetails"],
+    queryFn: () => dashboard(),
+    refetchOnWindowFocus: false,
+  });
+
   const handleResolveBankMutate = (bank: {
     bank_code: string;
     account_number: string;
@@ -297,7 +235,10 @@ export default function AdminDashboardPage() {
     //idk what this does yet, but it helps with performance
     if (bankListStatus !== "success") return null;
     return allBanks.map((bank) => (
-      <SelectItem key={bank.id} value={String(bank.code)}>
+      <SelectItem
+        key={`${bank.id}-${bank.code}-${bank.name}`}
+        value={String(bank.code)}
+      >
         {bank.name}
       </SelectItem>
     ));
@@ -362,7 +303,6 @@ export default function AdminDashboardPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-cbg-dark">
-      <Header />
       <main className="flex-grow container mx-auto px-4 py-8 space-y-8">
         <PageWrapper>
           <h1 className="text-2xl md:text-3xl font-bold mb-6 text-gray-800 dark:text-cfont-dark">
@@ -379,10 +319,23 @@ export default function AdminDashboardPage() {
               <Utensils className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-xl md:text-2xl font-bold">1,234</div>
-              <p className="text-xs text-muted-foreground">
-                +20.1% from last month
-              </p>
+              <div className="text-xl md:text-2xl font-bold">
+                {userDetails?.total_orders}
+              </div>
+              <div className="italic">
+                <p className="text-xs text-muted-foreground">
+                  {`${userDetails?.order_metrics?.accepted || ""} Accepted`}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {`${userDetails?.order_metrics?.delivering || ""} Delivering`}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {`${userDetails?.order_metrics?.completed || ""} Completed`}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {`${userDetails?.order_metrics?.pending || ""} Pending`}
+                </p>
+              </div>
             </CardContent>
           </Card>
           <Card>
@@ -393,10 +346,13 @@ export default function AdminDashboardPage() {
               <DollarSign className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-xl md:text-2xl font-bold">₦1,234,567</div>
-              <p className="text-xs text-muted-foreground">
-                +15% from last month
-              </p>
+              <div className="text-xl md:text-2xl font-bold">
+                ₦
+                {Number(
+                  userDetails?.transactions?.total_revenue
+                ).toLocaleString() || ""}
+              </div>
+              <p className="text-xs text-muted-foreground"></p>
             </CardContent>
           </Card>
           <Card>
@@ -407,67 +363,163 @@ export default function AdminDashboardPage() {
               <Utensils className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-xl md:text-2xl font-bold">56</div>
-              <p className="text-xs text-muted-foreground">
-                +3 from last month
-              </p>
+              <div className="text-xl md:text-2xl font-bold">
+                {userDetails?.total_restaurants || ""}
+              </div>
+              <p className="text-xs text-muted-foreground"></p>
             </CardContent>
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
-                Active Drivers
+                Total Drivers
               </CardTitle>
               <Bike className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-xl md:text-2xl font-bold">89</div>
-              <p className="text-xs text-muted-foreground">
-                +7 from last month
+              <div className="text-xl md:text-2xl font-bold">
+                {userDetails?.total_drivers || ""}
+              </div>
+              <p className="text-xs text-muted-foreground italic">
+                {`${userDetails?.active_drivers} ${
+                  userDetails?.active_drivers != 1
+                    ? "Active drivers"
+                    : "Active driver"
+                }`}
+              </p>
+              <p className="text-xs text-muted-foreground italic">
+                {`${userDetails?.inactive_drivers} Inactive drivers`}
               </p>
             </CardContent>
           </Card>
         </PageWrapper>
 
         <PageWrapper>
-          <Card className="mb-8">
-            <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-2 sm:space-y-0">
-              <CardTitle className="text-lg md:text-xl font-semibold">
+          <Tabs defaultValue="overview" className="space-y-4">
+            <TabsList className="flex flex-wrap mb-10 sm:mb-4 galaxy-fold:mb-16">
+              <TabsTrigger value="overview" className="flex-grow">
                 Revenue Overview
-              </CardTitle>
-              <Select
-                value={timeRange}
-                onValueChange={(value: TimeRange) => setTimeRange(value)}
-              >
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Select time range" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="day">Today</SelectItem>
-                  <SelectItem value="week">This Week</SelectItem>
-                  <SelectItem value="month">This Month</SelectItem>
-                  <SelectItem value="year">This Year</SelectItem>
-                </SelectContent>
-              </Select>
-            </CardHeader>
-            <CardContent>
-              <ResponsiveContainer width="100%" height={300}>
-                <LineChart data={revenueData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" tick={{ fontSize: 12 }} />
-                  <YAxis tick={{ fontSize: 12 }} />
-                  <Tooltip contentStyle={{ fontSize: 12 }} />
-                  <Legend wrapperStyle={{ fontSize: 12 }} />
-                  <Line
-                    type="monotone"
-                    dataKey="value"
-                    stroke="#8884d8"
-                    activeDot={{ r: 8 }}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
+              </TabsTrigger>
+              <TabsTrigger value="transactions" className="flex-grow">
+                Transactions
+              </TabsTrigger>
+            </TabsList>
+            <TabsContent value="overview">
+              <PageWrapper>
+                <Card className="mb-8">
+                  <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-2 sm:space-y-0">
+                    <CardTitle className="text-lg md:text-xl font-semibold">
+                      Revenue Overview
+                    </CardTitle>
+                    <Select
+                      value={timeRange}
+                      onValueChange={(value: TimeRange) => setTimeRange(value)}
+                    >
+                      <SelectTrigger className="w-[180px]">
+                        <SelectValue placeholder="Select time range" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="day">Today</SelectItem>
+                        <SelectItem value="week">This Week</SelectItem>
+                        <SelectItem value="month">This Month</SelectItem>
+                        <SelectItem value="year">This Year</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </CardHeader>
+                  <CardContent>
+                    <ResponsiveContainer width="100%" height={300}>
+                      <LineChart data={revenueData}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="name" tick={{ fontSize: 12 }} />
+                        <YAxis tick={{ fontSize: 12 }} />
+                        <Tooltip contentStyle={{ fontSize: 12 }} />
+                        <Legend wrapperStyle={{ fontSize: 12 }} />
+                        <Line
+                          type="monotone"
+                          dataKey="value"
+                          stroke="#8884d8"
+                          activeDot={{ r: 8 }}
+                        />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </CardContent>
+                </Card>
+              </PageWrapper>
+            </TabsContent>
+            <TabsContent value="transactions">
+              <PageWrapper>
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg md:text-xl">
+                      Recent Transactions
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="overflow-x-auto">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead className="whitespace-nowrap">
+                              ID
+                            </TableHead>
+                            <TableHead className="whitespace-nowrap">
+                              Customer ID
+                            </TableHead>
+                            <TableHead className="whitespace-nowrap">
+                              Restaurant ID
+                            </TableHead>
+                            <TableHead className="whitespace-nowrap">
+                              Type
+                            </TableHead>
+                            <TableHead className="whitespace-nowrap">
+                              Reference
+                            </TableHead>
+                            <TableHead className="whitespace-nowrap">
+                              Status
+                            </TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {userDetails?.transactions?.recent?.map(
+                            (data: transactionType) => (
+                              <TableRow key={data.id}>
+                                <TableCell className="whitespace-nowrap">
+                                  {data.id}
+                                </TableCell>
+                                <TableCell className="whitespace-nowrap">
+                                  {data.customer_id}
+                                </TableCell>
+                                <TableCell className="whitespace-nowrap">
+                                  {data.restaurant_id}
+                                </TableCell>
+                                <TableCell className="whitespace-nowrap">
+                                  {data.type}
+                                </TableCell>
+                                <TableCell className="whitespace-nowrap">
+                                  {data.reference}
+                                </TableCell>
+                                <TableCell className="whitespace-nowrap">
+                                  <Badge
+                                    variant={
+                                      data.status === "completed"
+                                        ? "default"
+                                        : "secondary"
+                                    }
+                                  >
+                                    {data.status}
+                                  </Badge>
+                                </TableCell>
+                              </TableRow>
+                            )
+                          )}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  </CardContent>
+                </Card>
+              </PageWrapper>
+            </TabsContent>
+          </Tabs>
         </PageWrapper>
 
         <PageWrapper>
@@ -488,7 +540,7 @@ export default function AdminDashboardPage() {
                 <Card>
                   <CardHeader>
                     <CardTitle className="text-lg md:text-xl">
-                      Restaurant Performance
+                      Restaurant Data
                     </CardTitle>
                     <Select
                       value={restaurantTimeRange}
@@ -519,52 +571,43 @@ export default function AdminDashboardPage() {
                               Total Orders
                             </TableHead>
                             <TableHead className="whitespace-nowrap">
-                              Completed Orders
+                              Pending Orders
                             </TableHead>
-                            <TableHead className="whitespace-nowrap">
-                              Completion Rate
-                            </TableHead>
+
                             <TableHead className="whitespace-nowrap">
                               Total Revenue
+                            </TableHead>
+                            <TableHead className="whitespace-nowrap">
+                              Average Value
+                            </TableHead>
+                            <TableHead className="whitespace-nowrap">
+                              Wallet Balance
                             </TableHead>
                           </TableRow>
                         </TableHeader>
                         <TableBody>
-                          {restaurants.map((restaurant) => (
-                            <TableRow key={restaurant.id}>
-                              <TableCell className="whitespace-nowrap">
-                                {restaurant.name}
-                              </TableCell>
-                              <TableCell>
-                                {
-                                  restaurant.stats[restaurantTimeRange]
-                                    .totalOrders
-                                }
-                              </TableCell>
-                              <TableCell>
-                                {
-                                  restaurant.stats[restaurantTimeRange]
-                                    .completedOrders
-                                }
-                              </TableCell>
-                              <TableCell>
-                                {(
-                                  (restaurant.stats[restaurantTimeRange]
-                                    .completedOrders /
-                                    restaurant.stats[restaurantTimeRange]
-                                      .totalOrders) *
-                                  100
-                                ).toFixed(2)}
-                                %
-                              </TableCell>
-                              <TableCell>
-                                {
-                                  restaurant.stats[restaurantTimeRange]
-                                    .totalRevenue
-                                }
-                              </TableCell>
-                            </TableRow>
-                          ))}
+                          {userDetails?.restaurant_metrics.map(
+                            (restaurant: restaurantMetric) => (
+                              <TableRow key={restaurant.id}>
+                                <TableCell className="whitespace-nowrap">
+                                  {restaurant.name}
+                                </TableCell>
+                                <TableCell>{restaurant.total_orders}</TableCell>
+                                <TableCell>
+                                  {restaurant.pending_orders}
+                                </TableCell>
+                                <TableCell>
+                                  {restaurant.total_revenue}
+                                </TableCell>
+                                <TableCell>
+                                  {restaurant.average_order_value}
+                                </TableCell>
+                                <TableCell>
+                                  {restaurant.wallet_balance}
+                                </TableCell>
+                              </TableRow>
+                            )
+                          )}
                         </TableBody>
                       </Table>
                     </div>

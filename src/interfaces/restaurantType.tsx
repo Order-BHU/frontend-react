@@ -62,3 +62,24 @@ export interface orderType {
   driver_profile_photo: string;
   driver_number: string;
 }
+
+export interface restaurantMetric {
+  average_order_value: number;
+  id: number;
+  name: string;
+  pending_orders: string;
+  total_orders: string;
+  total_revenue: number;
+  wallet_balance: string;
+}
+
+export interface transactionType {
+  id: number;
+  amount: string; // If you plan to do calculations, change this to `number`
+  created_at: string; // Consider using `Date` if you plan to manipulate dates
+  customer_id: string; // If IDs are numbers, change this to `number`
+  reference: string;
+  restaurant_id: string; // If IDs are numbers, change this to `number`
+  status: string; // Add more possible statuses if needed
+  type: string; // Assuming only these two types exist
+}

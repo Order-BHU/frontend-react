@@ -34,10 +34,7 @@ export default function LoginPage() {
         setState(data?.status);
       }
 
-      if (
-        data?.account_type === "customer" ||
-        data?.account_type === "driver"
-      ) {
+      if (data?.account_type != "restaurant") {
         localStorage.setItem("name", data?.name);
       }
       localStorage.setItem("token", data?.token ?? "undefined");
