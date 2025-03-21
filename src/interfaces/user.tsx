@@ -12,10 +12,6 @@ export interface loginResponse {
   profile_image: string;
 }
 
-export interface email {
-  email: string;
-}
-
 export type User = {
   name: string;
   email: string;
