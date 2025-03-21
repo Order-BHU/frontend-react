@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
-import { createUser, getOtp } from "@/api/auth";
+import { createUser } from "@/api/auth";
 import { useMutation } from "@tanstack/react-query";
 import { Eye, EyeOff } from "lucide-react";
 
@@ -22,10 +22,6 @@ export default function SignUpPage() {
     phoneType: "whatsapp",
     password: "",
     confirmPassword: "",
-  });
-
-  const { mutate: otpMutate } = useMutation({
-    mutationFn: getOtp,
   });
 
   const { status, mutate } = useMutation({
@@ -78,7 +74,6 @@ export default function SignUpPage() {
     //if (status === "error") {
 
     //}
-    otpMutate(formData.email);
     mutate({
       name: formData.name,
       email: formData.email,

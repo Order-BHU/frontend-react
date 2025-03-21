@@ -2,6 +2,7 @@ import { AxiosResponse, AxiosError } from "axios";
 import {
   apiResponse,
   loginResponse,
+  email,
   User,
   existingUser,
   Owner,
@@ -62,7 +63,7 @@ export async function verifyAccount(code: Otp) {
     });
 }
 
-export async function getOtp(email: string) {
+export async function getOtp(email: email) {
   return api
     .post("/get-otp", email)
     .then((response: AxiosResponse<apiResponse>) => response.data)
