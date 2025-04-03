@@ -20,7 +20,7 @@ import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/protectedRoute";
 import ToastAutoDismiss from "./components/dismisstoast"; //handles dismissing toast when screen tapped
 import { waveform, orbit } from "ldrs";
-import { Header } from "./components/header";
+import Header from "./components/header";
 
 function App() {
   waveform.register();
