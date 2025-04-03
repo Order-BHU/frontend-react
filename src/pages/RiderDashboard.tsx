@@ -226,7 +226,7 @@ export default function RiderDashboardPage() {
 
   useEffect(() => {
     if (pendingOrders) {
-      setActive(pendingOrders.orders[0]); //for some reason pendingOrders is an array inside an array in the response
+      setActive(pendingOrders.orders); //for some reason pendingOrders is an array inside an array in the response
     }
   }, [pendingOrders]);
 
@@ -559,7 +559,7 @@ export default function RiderDashboardPage() {
                         </div>
                         <div className="flex items-center">
                           <span className="text-sm font-semibold">
-                            ₦{order.total}
+                            ₦{Number(order.total).toLocaleString()}
                           </span>
                         </div>
 
@@ -570,7 +570,7 @@ export default function RiderDashboardPage() {
                           }
                         >
                           <SelectTrigger className="w-[180px]">
-                            <SelectValue placeholder={order.status} />
+                            <SelectValue placeholder={"Click to Start Order"} />
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="delivering">
@@ -645,7 +645,7 @@ export default function RiderDashboardPage() {
                               </div>
                               <div className="flex items-center">
                                 <span className="text-sm font-semibold">
-                                  ₦{order.total}
+                                  ₦{Number(order.total).toLocaleString()}
                                 </span>
                               </div>
 

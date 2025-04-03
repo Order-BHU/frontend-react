@@ -72,3 +72,10 @@
     font-family: "Inter", sans-serif;
   }
 }
+
+@layer components {
+  span,
+  p {
+    @apply font-bold;
+  }
+}

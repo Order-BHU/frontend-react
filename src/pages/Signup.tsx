@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Header } from "../components/header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -86,7 +85,6 @@ export default function SignUpPage() {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <Header />
       <main className="container mx-auto px-4 py-8 dark:text-cfont-dark">
         <div className="max-w-md mx-auto bg-white p-8 rounded-lg shadow-md dark:bg-cbg-darkaccent">
           <h1 className="text-3xl font-bold mb-6 text-center text-orange-600 dark:text-cfont-dark">

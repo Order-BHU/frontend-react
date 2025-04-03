@@ -5,6 +5,7 @@ import { faBurger } from "@fortawesome/free-solid-svg-icons";
 import useAuthStore from "@/stores/useAuthStore";
 //import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ModeToggle } from "./mode-toggle";
+import { useState } from "react";
 
 import {
   DropdownMenu,
@@ -13,17 +14,22 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useNavigate } from "react-router-dom";
 
 export function Header() {
+  const navigate = useNavigate();
   const { isLoggedIn /*role*/ } = useAuthStore();
+  const [activeButton, setActiveButton] = useState("");
+  const handleButtonClick = (
+    buttonId: "home" | "contact" | "restaurant" | "signup" | "login"
+  ) => {
+    setActiveButton(buttonId);
+  };
 
   return (
-    <header className="bg-white dark:bg-header-dark shadow-sm flex justify-center sticky z-10 top-0 max-h-16">
+    <header className="bg-white dark:bg-header-dark shadow-sm flex justify-center sticky z-10 top-0 max-h-16 text-blue-headers">
       <div className="container py-4 flex justify-between items-center w-full px-0">
         <div className="flex flex-row ml-9 align-middle justify-end">
-          <span className="mt-7 font-semibold text-lg italic dark:text-gradient-darkstart text-right md:text-xl galaxy-fold:text-sm">
-            Order
-          </span>
           <Link
             to="/"
             className="text-2xl font-bold text-stone-900 dark:text-cfont-dark "
@@ -55,7 +61,7 @@ export function Header() {
           </DropdownMenuTrigger>
           <DropdownMenuContent>
             <DropdownMenuSeparator />
-            <DropdownMenuItem asChild>
+            <DropdownMenuItem asChild onClick={() => navigate("/home")}>
               <Link to="/">Home</Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
@@ -80,38 +86,58 @@ export function Header() {
           </DropdownMenuContent>
         </DropdownMenu>
         <nav className="hidden md:flex space-x-4">
-          <Link
-            to="/"
-            className="text-sm dark:text-cfont-dark font-medium text-gray-600 hover:text-stone-900 dark:hover:text-stone-50"
+          <Button
+            variant={activeButton === "home" ? "default" : "ghost"}
+            onClick={() => {
+              handleButtonClick("home");
+              navigate("/");
+            }}
           >
             Home
-          </Link>
-          <Link
-            to="/restaurants"
-            className="text-sm dark:text-cfont-dark font-medium text-gray-600 hover:text-stone-900 dark:hover:text-stone-50"
+          </Button>
+
+          <Button
+            variant={activeButton === "restaurant" ? "default" : "ghost"}
+            onClick={() => {
+              handleButtonClick("restaurant");
+              navigate("restaurants");
+            }}
           >
             Restaurants
-          </Link>
+          </Button>
 
-          <Link
-            to="/contact"
-            className="text-sm dark:text-cfont-dark font-medium text-gray-600 hover:text-stone-900 dark:hover:text-stone-50"
+          <Button
+            variant={activeButton === "contact" ? "default" : "ghost"}
+            onClick={() => {
+              handleButtonClick("contact");
+              navigate("/contact");
+            }}
           >
             Contact Us
-          </Link>
+          </Button>
         </nav>
         <div
           className={`${
             isLoggedIn ? "hidden" : "md:flex"
           } items-center sm:hidden space-x-2`}
         >
-          <Button variant="ghost" asChild>
-            <Link className="dark:text-cfont-dark" to="/login">
-              Log In
-            </Link>
+          <Button
+            variant={activeButton === "login" ? "default" : "ghost"}
+            onClick={() => {
+              handleButtonClick("login");
+              navigate("/login");
+            }}
+          >
+            Log in
           </Button>
-          <Button asChild>
-            <Link to="/signup">Sign Up</Link>
+          <Button
+            onClick={() => {
+              handleButtonClick("signup");
+              navigate("/signup");
+            }}
+            variant={activeButton === "signup" ? "default" : "ghost"}
+          >
+            Sign Up
           </Button>
         </div>
         {isLoggedIn && <ModeToggle />}
