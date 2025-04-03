@@ -19,7 +19,7 @@ import { useNavigate } from "react-router-dom";
 export function Header() {
   const navigate = useNavigate();
   const { isLoggedIn /*role*/ } = useAuthStore();
-  const [activeButton, setActiveButton] = useState("");
+  const [activeButton, setActiveButton] = useState("home");
   const handleButtonClick = (
     buttonId: "home" | "contact" | "restaurant" | "signup" | "login"
   ) => {

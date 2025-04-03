@@ -6,7 +6,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useTheme } from "@/components/theme-provider";
-import { Link } from "react-router-dom";
 import UseAuthStore from "@/stores/useAuthStore";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
@@ -68,25 +67,25 @@ export function ModeToggle() {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         {role === "admin" && (
-          <DropdownMenuItem>
-            <Link to="/admin-dashboard">Dashboard</Link>
+          <DropdownMenuItem onClick={() => navigate("/admin-dashboard")}>
+            <span>Dashboard</span>
           </DropdownMenuItem>
         )}
         {role === "customer" && (
-          <DropdownMenuItem>
-            <Link to="/customer-dashboard">Dashboard</Link>
+          <DropdownMenuItem onClick={() => navigate("/customer-dashboard")}>
+            <span>Dashboard</span>
           </DropdownMenuItem>
         )}
 
         {role === "restaurant" && (
-          <DropdownMenuItem>
-            <Link to="/restaurant-dashboard">Dashboard</Link>
+          <DropdownMenuItem onClick={() => navigate("/restaurant-dashboard")}>
+            <span>Dashboard</span>
           </DropdownMenuItem>
         )}
 
         {role === "driver" && (
-          <DropdownMenuItem>
-            <Link to="/driver-dashboard">Dashboard</Link>
+          <DropdownMenuItem onClick={() => navigate("/driver-dashboard")}>
+            <span>Dashboard</span>
           </DropdownMenuItem>
         )}
 
