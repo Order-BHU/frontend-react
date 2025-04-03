@@ -1,4 +1,3 @@
-import { Footer } from "@/components/footer";
 import { RestaurantCard } from "@/components/restaurant-card";
 import { PageWrapper } from "@/components/pagewrapper";
 import { useQuery } from "@tanstack/react-query";
@@ -68,7 +67,6 @@ export default function RestaurantsPage() {
           )}
         </div>
       </main>
-      <Footer />
     </div>
   );
 }

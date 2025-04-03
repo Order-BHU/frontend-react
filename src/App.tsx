@@ -21,6 +21,7 @@ import ProtectedRoute from "./components/protectedRoute";
 import ToastAutoDismiss from "./components/dismisstoast"; //handles dismissing toast when screen tapped
 import { waveform, orbit } from "ldrs";
 import Header from "./components/header";
+import Footer from "./components/footer";
 
 function App() {
   waveform.register();
@@ -78,6 +79,7 @@ function App() {
             </Routes>
             <ReactQueryDevtools />
           </QueryClientProvider>
+          <Footer />
         </BrowserRouter>
       </ThemeProvider>
     </div>

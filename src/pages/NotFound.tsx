@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import { Footer } from "@/components/footer";
 import { Button } from "@/components/ui/button";
 
 export default function NotFound() {
@@ -18,7 +17,6 @@ export default function NotFound() {
           </Button>
         </div>
       </main>
-      <Footer />
     </div>
   );
 }

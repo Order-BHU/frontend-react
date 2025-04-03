@@ -7,7 +7,6 @@ import {
   ThumbsUp,
   Utensils,
 } from "lucide-react";
-import { Footer } from "../components/footer";
 import { Link } from "react-router-dom";
 import {
   Card,
@@ -834,7 +833,6 @@ export default function UserDashboardPage() {
           </TabsContent>
         </Tabs>
       </main>
-      <Footer />
     </div>
   );
 }

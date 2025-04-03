@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { Img } from "react-image";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
-import { Footer } from "@/components/footer";
 import {
   Card,
   CardContent,
@@ -721,7 +720,6 @@ export default function RestaurantMenuPage() {
           ))
         )}
       </main>
-      <Footer />
     </div>
   );
 }
