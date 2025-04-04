@@ -90,7 +90,7 @@ export async function viewCart() {
     .get("/view-cart", { headers: { Authorization: `Bearer ${token}` } })
     .then((response: AxiosResponse) => {
       console.log("cart data: ", response.data);
-      return response.data;
+      return response.data.cart_items;
     })
     .catch(handleError);
 }

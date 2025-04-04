@@ -41,6 +41,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
+import { Item } from "@radix-ui/react-select";
 
 // Animation variants
 const fadeIn = {
@@ -223,36 +224,34 @@ const RestaurantMenuPage = () => {
   const { mutateAsync: mutate } = useMutation({
     mutationFn: addToCart,
     onSuccess: (data) => {
-      toast({
-        title: "Success",
-        description: data.message,
-      });
+      console.log(data.message);
     },
     onError: (error) => {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
+      console.log(error.message);
     },
   });
-  const { mutateAsync: removeItemMutate, status: removeItemStatus } =
-    useMutation({
-      mutationFn: removeCartItem,
-      onSuccess: (data) => {
-        toast({
-          title: "Success",
-          description: data.message,
-        });
-      },
-      onError: (error) => {
-        toast({
-          title: "Error",
-          description: error.message,
-          variant: "destructive",
-        });
-      },
-    });
+  const { mutateAsync: removeItemMutate } = useMutation({
+    mutationFn: removeCartItem,
+    onSuccess: (data) => {
+      console.log(data.message);
+    },
+    onError: (error) => {
+      console.log(error.message);
+    },
+  });
+
+  useEffect(() => {
+    cartItems &&
+      setCart(
+        cartItems.map((item: singularCartItem) => ({
+          id: item.menu_id.toString(), // Convert `menu_id` (number) to `id` (string)
+          name: item.item_name, // Map `item_name` to `name`
+          price: item.item_price, // Map `item_price` to `price`
+          quantity: 1, // Default quantity to 1
+          image: item.item_picture, // Directly assign `item_picture`
+        }))
+      );
+  }, [cartItems]);
 
   const [activeCategory, setActiveCategory] = useState<string>("");
   const [restaurant, setRestaurant] = useState<any>(null);
