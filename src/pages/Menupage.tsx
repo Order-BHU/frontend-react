@@ -40,6 +40,7 @@ import {
   DialogTrigger,
   DialogFooter,
 } from "@/components/ui/dialog";
+import { useToast } from "@/hooks/use-toast";
 
 // Animation variants
 const fadeIn = {
@@ -195,11 +196,12 @@ interface CartItem {
   name: string;
   price: number;
   quantity: number;
-  image: string;
+  image: File | null | string;
 }
 
 const RestaurantMenuPage = () => {
   const { id } = useParams<{ id: string }>();
+  const { toast } = useToast();
   const deliveryFee = 250; //this is the delivery fee variable
   const { data: cartItems, refetch } = useQuery({
     queryFn: viewCart,
@@ -218,6 +220,39 @@ const RestaurantMenuPage = () => {
     queryKey: ["categories"],
     queryFn: () => getCategories(),
   });
+  const { mutateAsync: mutate } = useMutation({
+    mutationFn: addToCart,
+    onSuccess: (data) => {
+      toast({
+        title: "Success",
+        description: data.message,
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+  const { mutateAsync: removeItemMutate, status: removeItemStatus } =
+    useMutation({
+      mutationFn: removeCartItem,
+      onSuccess: (data) => {
+        toast({
+          title: "Success",
+          description: data.message,
+        });
+      },
+      onError: (error) => {
+        toast({
+          title: "Error",
+          description: error.message,
+          variant: "destructive",
+        });
+      },
+    });
 
   const [activeCategory, setActiveCategory] = useState<string>("");
   const [restaurant, setRestaurant] = useState<any>(null);
@@ -242,23 +277,26 @@ const RestaurantMenuPage = () => {
   }, [id]);
 
   // Handle adding item to cart
-  const addToCart = (item: any) => {
-    setCart((prevCart) => {
-      const existingItem = prevCart.find((cartItem) => cartItem.id === item.id);
+  const handleAddToCart = async (item: menuItem) => {
+    const existingItem = cart.find(
+      (cartItem) => cartItem.id === String(item.id)
+    );
 
+    setCart((prevCart) => {
       if (existingItem) {
         // Update quantity if item already exists
         return prevCart.map((cartItem) =>
-          cartItem.id === item.id
+          cartItem.id === String(item.id)
             ? { ...cartItem, quantity: cartItem.quantity + 1 }
             : cartItem
         );
       } else {
         // Add new item to cart
+
         return [
           ...prevCart,
           {
-            id: item.id,
+            id: String(item.id),
             name: item.name,
             price: item.price,
             quantity: 1,
@@ -267,13 +305,23 @@ const RestaurantMenuPage = () => {
         ];
       }
     });
+    if (!existingItem) {
+      try {
+        await mutate(Number(item.id));
+        await refetch(); // Refetch cart data to ensure sync with server
+      } catch (error) {
+        // Handle error case
+        console.error("Failed to update cart:", error);
+        refetch(); // Refetch to ensure UI shows correct state
+      }
+    }
   };
 
   // Handle removing item from cart
-  const removeFromCart = (itemId: string) => {
-    setCart((prevCart) => {
-      const existingItem = prevCart.find((item) => item.id === itemId);
+  const removeFromCart = async (itemId: string) => {
+    const existingItem = cart.find((item) => item.id === itemId);
 
+    setCart((prevCart) => {
       if (existingItem && existingItem.quantity > 1) {
         // Decrease quantity if more than 1
         return prevCart.map((item) =>
@@ -284,6 +332,16 @@ const RestaurantMenuPage = () => {
         return prevCart.filter((item) => item.id !== itemId);
       }
     });
+    if (existingItem && existingItem.quantity === 1) {
+      try {
+        await removeItemMutate(Number(itemId));
+        await refetch(); // Refetch cart data to ensure sync with server
+      } catch (error) {
+        // Handle error case
+        console.error("Failed to update cart:", error);
+        refetch(); // Refetch to ensure UI shows correct state
+      }
+    }
   };
 
   // Calculate total price
@@ -433,7 +491,7 @@ const RestaurantMenuPage = () => {
                                     ₦{Number(menuitem?.price)?.toLocaleString()}
                                   </span>
                                   <button
-                                    onClick={() => addToCart(menuitem)}
+                                    onClick={() => handleAddToCart(menuitem)}
                                     className="inline-flex items-center justify-center p-2 rounded-full bg-primary-100 text-primary-600 hover:bg-primary-600 hover:text-white transition-colors"
                                   >
                                     <FiPlus size={16} />
@@ -526,7 +584,7 @@ const RestaurantMenuPage = () => {
                                   {item.quantity}
                                 </span>
                                 <button
-                                  onClick={() => addToCart(item)}
+                                  onClick={() => handleAddToCart(item)}
                                   className="px-2 py-1 text-secondary-500 hover:text-primary-600"
                                 >
                                   <FiPlus size={14} />
