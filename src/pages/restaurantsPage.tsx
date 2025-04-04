@@ -222,7 +222,11 @@ const RestaurantsPage = () => {
               />
             ))
           ) : (
-            <div className="col-span-full text-center py-16">
+            <div
+              className={`col-span-full text-center py-16 ${
+                status === "pending" ? " hidden" : ""
+              }`}
+            >
               <h3 className="text-xl font-medium text-secondary-600">
                 No restaurants found matching your search
               </h3>

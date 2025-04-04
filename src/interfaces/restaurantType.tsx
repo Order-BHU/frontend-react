@@ -7,6 +7,14 @@ export interface menuItem {
   image: File | null | string;
   id: number;
   is_available: "1" | "0";
+  restaurant_id: string;
+}
+
+export interface menu {
+  //I apologize for the weird naming conventions(past me was worse in react than i am now) but this is for the raw api for menu items. Not the items themselves, but the array that holds the categories that holds the items
+  name: string;
+  id: number;
+  menus: menuItem[];
 }
 
 export interface category {
