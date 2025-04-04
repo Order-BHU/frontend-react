@@ -2,7 +2,7 @@ import "./App.css";
 import "./index.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import LandingPage from "./pages/Landingpage";
-import RestaurantsPage from "./pages/Restaurants";
+import RestaurantsPage from "./pages/restaurantsPage";
 import ContactPage from "./pages/Contact";
 import LoginPage from "./pages/Login";
 import SignUpPage from "./pages/Signup";

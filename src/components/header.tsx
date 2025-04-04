@@ -91,7 +91,6 @@ const Header = () => {
 
             {isLoggedIn && <ModeToggle />}
           </div>
-
           {/* Mobile Menu Button */}
         </div>
       </div>
