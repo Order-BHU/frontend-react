@@ -81,6 +81,8 @@ const AboutUs = () => {
             <a
               href="https://instagram.com/bhuorder"
               className="inline-flex items-center text-primary-600 font-medium hover:text-primary-700 transition-colors"
+              target="_blank"
+              rel="noopener noreferrer"
             >
               Learn more about us
               <svg

@@ -56,10 +56,11 @@ const Hero = () => {
                 Order Food
               </Link>
               <Link
-                to="/delivery"
-                className="inline-flex items-center justify-center px-6 py-3 rounded-full text-primary-700 bg-white hover:bg-gray-50 shadow-md hover:shadow-lg transition-all font-medium text-base border border-gray-200"
+                to="/"
+                className="inline-flex items-center flex-col justify-center px-6 py-3 rounded-full text-primary-700 bg-white hover:bg-gray-50 shadow-md hover:shadow-lg transition-all font-medium text-base border border-gray-200"
               >
                 Deliver Parcel
+                <p>(Coming Soon)</p>
               </Link>
             </motion.div>
           </motion.div>
