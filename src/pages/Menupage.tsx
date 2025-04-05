@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import {
   FiClock,
   FiMapPin,
@@ -10,15 +10,6 @@ import {
   FiMinus,
   FiChevronRight,
 } from "react-icons/fi";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
 import {
   getMenuItems,
@@ -28,18 +19,27 @@ import {
   removeCartItem,
   viewCart,
   getLocation,
+  myOrders,
   initializeCheckout,
 } from "@/api/restaurant";
 
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   category,
+  tempapiMenu,
   menuItem,
   menu,
   singularCartItem,
 } from "@/interfaces/restaurantType";
 import useAuthStore from "@/stores/useAuthStore";
-
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 
 // Animation variants
@@ -192,17 +192,14 @@ const restaurants = [
 
 // Cart item type
 interface CartItem {
-  menu_id: string;
-  menu_name: string;
+  id: string;
+  name: string;
   price: number;
   quantity: number;
   image: File | null | string;
 }
 
 const RestaurantMenuPage = () => {
-  const { isLoggedIn } = useAuthStore();
-  const navigate = useNavigate();
-  const [selectedLocation, setLocation] = useState(""); //the location a user selects
   const { id } = useParams<{ id: string }>();
   const { toast } = useToast();
   const deliveryFee = 250; //this is the delivery fee variable
@@ -226,31 +223,10 @@ const RestaurantMenuPage = () => {
   const { mutateAsync: mutate } = useMutation({
     mutationFn: addToCart,
     onSuccess: (data) => {
-      console.log(data.message);
-    },
-    onError: (error) => {
-      console.log(error.message);
-    },
-  });
-  const { mutateAsync: removeItemMutate } = useMutation({
-    mutationFn: removeCartItem,
-    onSuccess: (data) => {
-      console.log(data.message);
-    },
-    onError: (error) => {
-      console.log(error.message);
-    },
-  });
-  const { mutate: checkoutMutate /*status: checkoutStatus*/ } = useMutation({
-    mutationFn: checkout,
-    onSuccess: (data) => {
-      localStorage.setItem("orderCode", data.code);
-      localStorage.setItem("orderId", data.order?.id); //I didn't really finish this, feel free to change stuff.
       toast({
         title: "Success",
         description: data.message,
       });
-      navigate(`/${localStorage.getItem("accountType")}-dashboard/`);
     },
     onError: (error) => {
       toast({
@@ -260,27 +236,23 @@ const RestaurantMenuPage = () => {
       });
     },
   });
-
-  const queryParams = new URLSearchParams(window.location.search);
-  useEffect(() => {
-    //this useEffect sets the reference code for verifying a transaction
-    if (queryParams.get("reference")) {
-      handleCheckout(queryParams.get("reference")!);
-    }
-  }, []);
-
-  useEffect(() => {
-    cartItems &&
-      setCart(
-        cartItems.map((item: singularCartItem) => ({
-          id: item.menu_id.toString(), // Convert `menu_id` (number) to `id` (string)
-          name: item.item_name, // Map `item_name` to `name`
-          price: item.item_price, // Map `item_price` to `price`
-          quantity: 1, // Default quantity to 1
-          image: item.item_picture, // Directly assign `item_picture`
-        }))
-      );
-  }, [cartItems]);
+  const { mutateAsync: removeItemMutate, status: removeItemStatus } =
+    useMutation({
+      mutationFn: removeCartItem,
+      onSuccess: (data) => {
+        toast({
+          title: "Success",
+          description: data.message,
+        });
+      },
+      onError: (error) => {
+        toast({
+          title: "Error",
+          description: error.message,
+          variant: "destructive",
+        });
+      },
+    });
 
   const [activeCategory, setActiveCategory] = useState<string>("");
   const [restaurant, setRestaurant] = useState<any>(null);
@@ -304,38 +276,17 @@ const RestaurantMenuPage = () => {
     }
   }, [id]);
 
-  const handleCheckout = (reference: string) => {
-    checkoutMutate({
-      items: JSON.parse(localStorage.getItem("cart")!),
-      restaurant_id: Number(id),
-      total: Number(localStorage.getItem("totalPrice")! + deliveryFee),
-      location: localStorage.getItem("orderLocation"),
-      reference: reference,
-    });
-    localStorage.removeItem("orderLocation");
-    localStorage.removeItem("totalPrice");
-    localStorage.removeItem("cart");
-  };
-
   // Handle adding item to cart
   const handleAddToCart = async (item: menuItem) => {
-    console.log("le item: ", item);
-    if (!isLoggedIn) {
-      // //save the id to local storage.
-      // localStorage.setItem("previousId", itemId);
-      // localStorage.setItem("restaurantId", String(id)); //gotta pass rest id so we can navigate back to said restaurant
-      navigate("/login/");
-      return;
-    }
     const existingItem = cart.find(
-      (cartItem) => cartItem.menu_id === String(item.id)
+      (cartItem) => cartItem.id === String(item.id)
     );
 
     setCart((prevCart) => {
       if (existingItem) {
         // Update quantity if item already exists
         return prevCart.map((cartItem) =>
-          cartItem.menu_id === String(item.id)
+          cartItem.id === String(item.id)
             ? { ...cartItem, quantity: cartItem.quantity + 1 }
             : cartItem
         );
@@ -345,8 +296,8 @@ const RestaurantMenuPage = () => {
         return [
           ...prevCart,
           {
-            menu_id: String(item.id),
-            menu_name: item.name,
+            id: String(item.id),
+            name: item.name,
             price: item.price,
             quantity: 1,
             image: item.image,
@@ -368,19 +319,17 @@ const RestaurantMenuPage = () => {
 
   // Handle removing item from cart
   const removeFromCart = async (itemId: string) => {
-    const existingItem = cart.find((item) => item.menu_id === itemId);
+    const existingItem = cart.find((item) => item.id === itemId);
 
     setCart((prevCart) => {
       if (existingItem && existingItem.quantity > 1) {
         // Decrease quantity if more than 1
         return prevCart.map((item) =>
-          item.menu_id === itemId
-            ? { ...item, quantity: item.quantity - 1 }
-            : item
+          item.id === itemId ? { ...item, quantity: item.quantity - 1 } : item
         );
       } else {
         // Remove item completely if quantity is 1
-        return prevCart.filter((item) => item.menu_id !== itemId);
+        return prevCart.filter((item) => item.id !== itemId);
       }
     });
     if (existingItem && existingItem.quantity === 1) {
@@ -409,60 +358,13 @@ const RestaurantMenuPage = () => {
     }
   };
 
-  const handlePayment = () => {
-    //this function will store the location in localStorage, so after payment and redirect, we can checkout with said info
-    if (!selectedLocation) {
-      setTimeout(() => {
-        toast({
-          title: "One more step to go",
-          description: "you haven't picked a location yet",
-          variant: "destructive",
-        });
-      }, 500);
-    } else if (cart.length < 1) {
-      toast({
-        title: "Oh no",
-        description: "you haven't picked anything D:",
-        variant: "destructive",
-      });
-    } else {
-      localStorage.setItem("orderLocation", selectedLocation);
-      localStorage.setItem("cart", JSON.stringify(cart));
-      localStorage.setItem("totalPrice", String(calculateTotal()));
-      initializeCheckoutMutate({
-        restaurantId: id!,
-        total: calculateTotal(),
-        callback_id: id!,
-      });
-    }
-  };
-  const {
-    mutateAsync: initializeCheckoutMutate,
-    status: initializeCheckoutStatus,
-  } = useMutation({
-    mutationFn: initializeCheckout,
-    onSuccess: (data) => {
-      toast({
-        title: "redirecting to payment gateway...",
-      });
-      window.location.href = data.data.authorization_url;
-    },
-    onError: (error) => {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
-    },
-  });
-
-  if (menuStatus === "pending") {
-    return (
-      <div className="flex justify-center items-center min-h-screen bg-secondary-50">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
-      </div>
-    );
-  }
+  //   if (!restaurant) {
+  //     return (
+  //       <div className="flex justify-center items-center min-h-screen bg-secondary-50">
+  //         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+  //       </div>
+  //     );
+  //   }
 
   return (
     <div className="bg-secondary-50 min-h-screen pt-16 pb-20">
@@ -655,20 +557,17 @@ const RestaurantMenuPage = () => {
                   <>
                     <div className="divide-y divide-secondary-100 mb-6 max-h-[calc(100vh-350px)] overflow-y-auto">
                       {cart?.map((item) => (
-                        <div
-                          key={item.menu_id}
-                          className="py-3 flex items-center"
-                        >
+                        <div key={item.id} className="py-3 flex items-center">
                           <div className="h-12 w-12 rounded-lg overflow-hidden flex-shrink-0 mr-3">
                             <img
-                              src={String(item.image)}
-                              alt={item.menu_name}
+                              src={item.image}
+                              alt={item.name}
                               className="h-full w-full object-cover"
                             />
                           </div>
                           <div className="flex-grow">
                             <h4 className="text-secondary-900 font-medium">
-                              {item.menu_name}
+                              {item.name}
                             </h4>
                             <div className="flex items-center justify-between mt-1">
                               <span className="text-primary-600 font-medium">
@@ -676,7 +575,7 @@ const RestaurantMenuPage = () => {
                               </span>
                               <div className="flex items-center border border-secondary-200 rounded-lg">
                                 <button
-                                  onClick={() => removeFromCart(item.menu_id)}
+                                  onClick={() => removeFromCart(item.id)}
                                   className="px-2 py-1 text-secondary-500 hover:text-primary-600"
                                 >
                                   <FiMinus size={14} />
@@ -685,20 +584,7 @@ const RestaurantMenuPage = () => {
                                   {item.quantity}
                                 </span>
                                 <button
-                                  onClick={() => {
-                                    const leItem = menuItems?.menu?.map(
-                                      (menu: {
-                                        name: string;
-                                        menus: menuItem[];
-                                      }) =>
-                                        menu?.menus?.find(
-                                          (found) =>
-                                            String(found.id) === item.menu_id
-                                        )
-                                    );
-                                    console.log("leItem: ", leItem);
-                                    leItem && handleAddToCart(leItem);
-                                  }} //bear with me here, cart items and menu items are different so handle add to cart takes in a menuItem and not a cart item
+                                  onClick={() => handleAddToCart(item)}
                                   className="px-2 py-1 text-secondary-500 hover:text-primary-600"
                                 >
                                   <FiPlus size={14} />
@@ -730,35 +616,7 @@ const RestaurantMenuPage = () => {
                         </span>
                       </div>
 
-                      <Select onValueChange={(e) => setLocation(e)}>
-                        <SelectTrigger className="w-[180px] mt-3 sm:mt-0">
-                          <SelectValue placeholder="Select a location" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectGroup>
-                            {locationStatus === "pending" ? (
-                              <SelectLabel>getting locations...</SelectLabel>
-                            ) : (
-                              locations?.locations.map(
-                                (location: { id: number; name: string }) => (
-                                  <SelectItem
-                                    key={location.id}
-                                    value={location.name}
-                                  >
-                                    {location.name}
-                                  </SelectItem>
-                                )
-                              )
-                            )}
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
-
-                      <button
-                        onClick={handlePayment}
-                        disabled={initializeCheckoutStatus === "pending"}
-                        className="w-full mt-6 inline-flex items-center justify-center px-6 py-3 rounded-xl text-white bg-primary-600 hover:bg-primary-700 shadow-md hover:shadow-lg transition-all font-medium text-base"
-                      >
+                      <button className="w-full mt-6 inline-flex items-center justify-center px-6 py-3 rounded-xl text-white bg-primary-600 hover:bg-primary-700 shadow-md hover:shadow-lg transition-all font-medium text-base">
                         <FiShoppingCart className="mr-2" /> Place Order
                       </button>
                     </div>
