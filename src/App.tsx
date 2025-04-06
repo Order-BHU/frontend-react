@@ -54,9 +54,9 @@ function App() {
               <Route
                 path="/restaurant-dashboard"
                 element={
-                  <ProtectedRoute allowedRoles={["restaurant"]}>
-                    <RestaurantDashboardPage />
-                  </ProtectedRoute>
+                  // <ProtectedRoute allowedRoles={["restaurant"]}>
+                  <RestaurantDashboardPage />
+                  // </ProtectedRoute>
                 }
               ></Route>
               <Route
