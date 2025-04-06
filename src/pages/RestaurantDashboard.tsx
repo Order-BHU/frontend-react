@@ -564,7 +564,12 @@ const RestaurantDashboardPage = () => {
                               </div>
                             </div>
                             <div className="flex justify-end mt-4">
-                              <button className="inline-flex items-center justify-center px-4 py-2 rounded-lg text-white bg-green-600 hover:bg-green-700 shadow-sm transition-colors text-sm">
+                              <button
+                                className="inline-flex items-center justify-center px-4 py-2 rounded-lg text-white bg-green-600 hover:bg-green-700 shadow-sm transition-colors text-sm"
+                                onClick={() =>
+                                  handleOrderAccept(order.id, "ready")
+                                }
+                              >
                                 <FiTruck className="mr-1" /> Mark as Ready
                               </button>
                             </div>
