@@ -10,6 +10,15 @@ import {
   FiMinus,
   FiChevronRight,
 } from "react-icons/fi";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 import {
   getMenuItems,
@@ -54,142 +63,6 @@ const fadeIn = {
 };
 
 // Fake restaurant data (in a real app, this would come from an API)
-const restaurants = [
-  {
-    id: "13",
-    name: "Munchbox",
-    image:
-      "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1674&q=80",
-    coverImage:
-      "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2340&q=80",
-    description:
-      "Serving delicious meals right on campus. From quick bites to fulfilling meals, we've got you covered.",
-    rating: 4.8,
-    deliveryTime: "20-30 min",
-    priceRange: "$$",
-    cuisine: "Fast Food",
-    location: "Campus Center",
-    categories: [
-      {
-        id: "1",
-        name: "Burgers",
-        items: [
-          {
-            id: "101",
-            name: "Classic Cheeseburger",
-            description:
-              "Juicy beef patty with melted cheddar, lettuce, tomato, onions, and special sauce",
-            price: 6.99,
-            image:
-              "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1899&q=80",
-          },
-          {
-            id: "102",
-            name: "Double Bacon Burger",
-            description:
-              "Two beef patties, crispy bacon, American cheese, and BBQ sauce",
-            price: 8.99,
-            image:
-              "https://images.unsplash.com/photo-1553979459-d2229ba7433b?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1368&q=80",
-          },
-          {
-            id: "103",
-            name: "Veggie Burger",
-            description:
-              "Plant-based patty with avocado, lettuce, tomato, and vegan mayo",
-            price: 7.49,
-            image:
-              "https://images.unsplash.com/photo-1520072959219-c595dc870360?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2340&q=80",
-          },
-        ],
-      },
-      {
-        id: "2",
-        name: "Sandwiches",
-        items: [
-          {
-            id: "201",
-            name: "Club Sandwich",
-            description:
-              "Triple-decker sandwich with turkey, bacon, lettuce, tomato, and mayo",
-            price: 6.49,
-            image:
-              "https://images.unsplash.com/photo-1550507992-eb63ffee0847?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2340&q=80",
-          },
-          {
-            id: "202",
-            name: "Grilled Cheese",
-            description: "Melted cheese blend between buttery crispy bread",
-            price: 4.99,
-            image:
-              "https://images.unsplash.com/photo-1528736235302-52922df5c122?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2344&q=80",
-          },
-        ],
-      },
-      {
-        id: "3",
-        name: "Sides",
-        items: [
-          {
-            id: "301",
-            name: "French Fries",
-            description: "Crispy golden fries seasoned with sea salt",
-            price: 2.99,
-            image:
-              "https://images.unsplash.com/photo-1630384060421-cb20d0e0649d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2315&q=80",
-          },
-          {
-            id: "302",
-            name: "Onion Rings",
-            description: "Crispy battered onion rings with dipping sauce",
-            price: 3.49,
-            image:
-              "https://images.unsplash.com/photo-1639024471283-03bce8738cc3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2340&q=80",
-          },
-          {
-            id: "303",
-            name: "Mozzarella Sticks",
-            description: "Breaded mozzarella sticks with marinara sauce",
-            price: 4.99,
-            image:
-              "https://images.unsplash.com/photo-1531749668029-2db88e4276c7?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2340&q=80",
-          },
-        ],
-      },
-      {
-        id: "4",
-        name: "Beverages",
-        items: [
-          {
-            id: "401",
-            name: "Soda",
-            description: "Choice of Coke, Diet Coke, Sprite, or Fanta",
-            price: 1.99,
-            image:
-              "https://images.unsplash.com/photo-1581636625402-29b2a704ef13?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2338&q=80",
-          },
-          {
-            id: "402",
-            name: "Milkshake",
-            description:
-              "Hand-spun milkshake in chocolate, vanilla, or strawberry",
-            price: 4.49,
-            image:
-              "https://images.unsplash.com/photo-1572490122747-3968b75cc699?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2340&q=80",
-          },
-          {
-            id: "403",
-            name: "Iced Tea",
-            description: "Freshly brewed iced tea, sweetened or unsweetened",
-            price: 2.49,
-            image:
-              "https://images.unsplash.com/photo-1499638673689-79a0b5115d87?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2264&q=80",
-          },
-        ],
-      },
-    ],
-  },
-];
 
 // Cart item type
 interface CartItem {
@@ -201,6 +74,8 @@ interface CartItem {
 }
 
 const RestaurantMenuPage = () => {
+  const [selectedLocation, setLocation] = useState(""); //the location a user selects
+
   const { id } = useParams<{ id: string }>();
   const { toast } = useToast();
   const deliveryFee = 250; //this is the delivery fee variable
@@ -258,25 +133,9 @@ const RestaurantMenuPage = () => {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [cartOpen, setCartOpen] = useState(false);
 
-  // Find restaurant by ID
-  useEffect(() => {
-    if (id) {
-      const foundRestaurant = restaurants.find((r) => r.id === id);
-      if (foundRestaurant) {
-        setRestaurant(foundRestaurant);
-        // Set first category as active by default
-        if (
-          foundRestaurant.categories &&
-          foundRestaurant.categories.length > 0
-        ) {
-          setActiveCategory(foundRestaurant.categories[0].id);
-        }
-      }
-    }
-  }, [id]);
-
   // Handle adding item to cart
-  const handleAddToCart = async (item: menuItem) => {
+  const handleAddToCart = async (item: any) => {
+    //i know it's set to any type, please bear with, I'm so confused
     const existingItem = cart.find(
       (cartItem) => cartItem.id === String(item.id)
     );
@@ -342,6 +201,55 @@ const RestaurantMenuPage = () => {
       }
     }
   };
+
+  const handlePayment = () => {
+    //this function will store the location in localStorage, so after payment and redirect, we can checkout with said info
+    if (!selectedLocation) {
+      setTimeout(
+        () =>
+          toast({
+            title: "One more step to go",
+            description: "you haven't picked a location yet",
+            variant: "destructive",
+          }),
+        500
+      );
+    } else if (cart.length < 1) {
+      toast({
+        title: "Oh no",
+        description: "you haven't picked anything D:",
+        variant: "destructive",
+      });
+    } else {
+      localStorage.setItem("orderLocation", selectedLocation);
+      localStorage.setItem("cart", JSON.stringify(cart));
+      localStorage.setItem("totalPrice", String(calculateTotal()));
+      initializeCheckoutMutate({
+        restaurantId: id!,
+        total: calculateTotal(),
+        callback_id: id!,
+      });
+    }
+  };
+  const {
+    mutateAsync: initializeCheckoutMutate,
+    status: initializeCheckoutStatus,
+  } = useMutation({
+    mutationFn: initializeCheckout,
+    onSuccess: (data) => {
+      toast({
+        title: "redirecting to payment gateway...",
+      });
+      window.location.href = data.data.authorization_url;
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
 
   // Calculate total price
   const calculateTotal = () => {
@@ -559,7 +467,7 @@ const RestaurantMenuPage = () => {
                         <div key={item.id} className="py-3 flex items-center">
                           <div className="h-12 w-12 rounded-lg overflow-hidden flex-shrink-0 mr-3">
                             <img
-                              src={item.image}
+                              src={String(item.image)!}
                               alt={item.name}
                               className="h-full w-full object-cover"
                             />
@@ -614,8 +522,35 @@ const RestaurantMenuPage = () => {
                           ₦{(calculateTotal() + deliveryFee).toLocaleString()}
                         </span>
                       </div>
+                      <Select onValueChange={(value) => setLocation(value)}>
+                        <SelectTrigger className="w-[180px] mt-3 sm:mt-0">
+                          <SelectValue placeholder="Select a location" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup>
+                            {locationStatus === "pending" ? (
+                              <SelectLabel>getting locations...</SelectLabel>
+                            ) : (
+                              locations?.locations.map(
+                                (location: { id: number; name: string }) => (
+                                  <SelectItem
+                                    key={location.id}
+                                    value={location.name}
+                                  >
+                                    {location.name}
+                                  </SelectItem>
+                                )
+                              )
+                            )}
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
 
-                      <button className="w-full mt-6 inline-flex items-center justify-center px-6 py-3 rounded-xl text-white bg-primary-600 hover:bg-primary-700 shadow-md hover:shadow-lg transition-all font-medium text-base">
+                      <button
+                        className="w-full mt-6 inline-flex items-center justify-center px-6 py-3 rounded-xl text-white bg-primary-600 hover:bg-primary-700 shadow-md hover:shadow-lg transition-all font-medium text-base"
+                        onClick={handlePayment}
+                        disabled={initializeCheckoutStatus === "pending"}
+                      >
                         <FiShoppingCart className="mr-2" /> Place Order
                       </button>
                     </div>
