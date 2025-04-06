@@ -46,9 +46,9 @@ function App() {
               <Route
                 path="/driver-dashboard"
                 element={
-                  <ProtectedRoute allowedRoles={["driver"]}>
-                    <RiderDashboardPage />
-                  </ProtectedRoute>
+                  // <ProtectedRoute allowedRoles={["driver"]}>
+                  <RiderDashboardPage />
+                  // </ProtectedRoute>
                 }
               ></Route>
               <Route
