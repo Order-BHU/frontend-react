@@ -55,8 +55,8 @@ const fadeIn = {
 
 // Cart item type
 interface CartItem {
-  id: string;
-  name: string;
+  menu_id: string;
+  menu_name: string;
   price: number;
   quantity: number;
   image: File | null | string;
@@ -108,14 +108,15 @@ const RestaurantMenuPage = () => {
     cartItems &&
       setCart(
         cartItems.map((item: singularCartItem) => ({
-          id: item.menu_id.toString(), // Convert `menu_id` (number) to `id` (string)
-          name: item.item_name, // Map `item_name` to `name`
+          menu_id: item.menu_id.toString(), // Convert `menu_id` (number) to `id` (string)
+          menu_name: item.item_name, // Map `item_name` to `name`
           price: item.item_price, // Map `item_price` to `price`
           quantity: 1, // Default quantity to 1
           image: item.item_picture, // Directly assign `item_picture`
         }))
       );
   }, [cartItems]);
+
   const queryParams = new URLSearchParams(window.location.search);
   useEffect(() => {
     //this useEffect sets the reference code for verifying a transaction
@@ -128,42 +129,106 @@ const RestaurantMenuPage = () => {
   const [cartOpen, setCartOpen] = useState(false);
 
   // Handle adding item to cart
-  const handleAddToCart = async (item: any) => {
-    //i know it's set to any type, please bear with, I'm so confused
-    const existingItem = cart.find(
-      (cartItem) => cartItem.id === String(item.id)
-    );
+  //   const handleAddToCart = async (item: any) => {
+  //     //i know it's set to any type, please bear with, I'm so confused
+  //     const existingItem = cart.find(
+  //       (cartItem) => cartItem.menu_id === String(item.id)
+  //     );
 
+  //     setCart((prevCart) => {
+  //       if (existingItem) {
+  //         console.log("it exists");
+  //         // Update quantity if item already exists
+  //         return prevCart.map((cartItem) =>
+  //           cartItem.menu_id === String(item.id)
+  //             ? { ...cartItem, quantity: cartItem.quantity + 1 }
+  //             : cartItem
+  //         );
+  //       } else {
+  //         // Add new item to cart
+
+  //         return [
+  //           ...prevCart,
+  //           {
+  //             menu_id: String(item.id),
+  //             menu_name: item.name,
+  //             price: item.price,
+  //             quantity: 1,
+  //             image: item.image,
+  //           },
+  //         ];
+  //       }
+  //     });
+  //     if (!existingItem) {
+  //       try {
+  //         await mutate(Number(item.menu_id));
+  //         await refetch(); // Refetch cart data to ensure sync with server
+  //       } catch (error) {
+  //         // Handle error case
+  //         console.error("Failed to update cart:", error);
+  //         refetch(); // Refetch to ensure UI shows correct state
+  //       }
+  //     }
+  //   };
+
+  const handleAddToCart = async (item: CartItem | menuItem) => {
+    // Check if the item is a CartItem or menuItem
+    const isMenuItem = "id" in item;
+
+    // Extract the relevant properties based on the item type
+    const itemId = isMenuItem
+      ? String((item as menuItem).id)
+      : (item as CartItem).menu_id;
+    const itemName = isMenuItem
+      ? (item as menuItem).name
+      : (item as CartItem).menu_name;
+    const itemPrice = item.price; // Both types have price
+    const itemImage = item.image; // Both types have image
+
+    // Find if the item already exists in the cart
+    const existingItem = cart.find((cartItem) => cartItem.menu_id === itemId);
+
+    // Update the cart state
     setCart((prevCart) => {
       if (existingItem) {
+        console.log(`Increasing quantity for item ${itemName} (${itemId})`);
         // Update quantity if item already exists
         return prevCart.map((cartItem) =>
-          cartItem.id === String(item.id)
+          cartItem.menu_id === itemId
             ? { ...cartItem, quantity: cartItem.quantity + 1 }
             : cartItem
         );
       } else {
         // Add new item to cart
-
+        console.log(`Adding new item to cart: ${itemName} (${itemId})`);
         return [
           ...prevCart,
           {
-            id: String(item.id),
-            name: item.name,
-            price: item.price,
+            menu_id: itemId,
+            menu_name: itemName,
+            price: itemPrice,
             quantity: 1,
-            image: item.image,
+            image: itemImage,
           },
         ];
       }
     });
+
+    // Only call API to add item if it's a new item
+    // (quantity increments are handled client-side only)
     if (!existingItem) {
       try {
-        await mutate(Number(item.id));
+        // Convert itemId to number for the API call
+        await mutate(Number(itemId));
         await refetch(); // Refetch cart data to ensure sync with server
       } catch (error) {
         // Handle error case
-        console.error("Failed to update cart:", error);
+        console.error(`Failed to add item ${itemName} to cart:`, error);
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Failed to add item to cart. Please try again.",
+        });
         refetch(); // Refetch to ensure UI shows correct state
       }
     }
@@ -202,17 +267,19 @@ const RestaurantMenuPage = () => {
   };
   // Handle removing item from cart
   const removeFromCart = async (itemId: string) => {
-    const existingItem = cart.find((item) => item.id === itemId);
+    const existingItem = cart.find((item) => item.menu_id === itemId);
 
     setCart((prevCart) => {
       if (existingItem && existingItem.quantity > 1) {
         // Decrease quantity if more than 1
         return prevCart.map((item) =>
-          item.id === itemId ? { ...item, quantity: item.quantity - 1 } : item
+          item.menu_id === itemId
+            ? { ...item, quantity: item.quantity - 1 }
+            : item
         );
       } else {
         // Remove item completely if quantity is 1
-        return prevCart.filter((item) => item.id !== itemId);
+        return prevCart.filter((item) => item.menu_id !== itemId);
       }
     });
     if (existingItem && existingItem.quantity === 1) {
@@ -226,6 +293,10 @@ const RestaurantMenuPage = () => {
       }
     }
   };
+  useEffect(() => {
+    console.log("offline cart: ", cart);
+    console.log("api Cart: ", cartItems);
+  }, [cart]);
 
   const handlePayment = () => {
     //this function will store the location in localStorage, so after payment and redirect, we can checkout with said info
@@ -489,17 +560,20 @@ const RestaurantMenuPage = () => {
                   <>
                     <div className="divide-y divide-secondary-100 mb-6 max-h-[calc(100vh-350px)] overflow-y-auto">
                       {cart?.map((item) => (
-                        <div key={item.id} className="py-3 flex items-center">
+                        <div
+                          key={item.menu_id}
+                          className="py-3 flex items-center"
+                        >
                           <div className="h-12 w-12 rounded-lg overflow-hidden flex-shrink-0 mr-3">
                             <img
                               src={String(item.image)!}
-                              alt={item.name}
+                              alt={item.menu_name}
                               className="h-full w-full object-cover"
                             />
                           </div>
                           <div className="flex-grow">
                             <h4 className="text-secondary-900 font-medium">
-                              {item.name}
+                              {item?.menu_name}
                             </h4>
                             <div className="flex items-center justify-between mt-1">
                               <span className="text-primary-600 font-medium">
@@ -507,7 +581,7 @@ const RestaurantMenuPage = () => {
                               </span>
                               <div className="flex items-center border border-secondary-200 rounded-lg">
                                 <button
-                                  onClick={() => removeFromCart(item.id)}
+                                  onClick={() => removeFromCart(item.menu_id)}
                                   className="px-2 py-1 text-secondary-500 hover:text-primary-600"
                                 >
                                   <FiMinus size={14} />
