@@ -27,7 +27,7 @@ import {
   deleteMenuItem,
   updateItemAvailability,
 } from "@/api/restaurant";
-import { orderType } from "@/interfaces/restaurantType";
+import { menu, orderType } from "@/interfaces/restaurantType";
 import { useToast } from "@/hooks/use-toast";
 
 // Animation variants
@@ -199,6 +199,16 @@ const RestaurantDashboardPage = () => {
         variant: "destructive",
       });
     },
+  });
+
+  const {
+    status: menuStatus,
+    data: menuItems,
+    refetch: refetchMenuItems,
+  } = useQuery({
+    queryKey: ["menuItems", localStorage.getItem("restaurant_id")],
+    queryFn: () => getMenuItems(localStorage.getItem("restaurant_id")!),
+    staleTime: 30000,
   });
 
   useEffect(() => {
@@ -594,56 +604,58 @@ const RestaurantDashboardPage = () => {
                 </button>
               </div>
               <div className="p-6">
-                {menuCategories.map((category) => (
-                  <div key={category.id} className="mb-8 last:mb-0">
-                    <h3 className="text-xl font-semibold text-secondary-900 mb-4">
-                      {category.name}
-                    </h3>
-                    <div className="border-t border-gray-100 pt-4 space-y-4">
-                      {category.items.map((item) => (
-                        <div
-                          key={item.id}
-                          className="flex flex-col md:flex-row md:items-center p-4 bg-secondary-50 rounded-xl"
-                        >
-                          <div className="flex-grow mb-4 md:mb-0">
-                            <div className="flex items-center">
-                              <h4 className="font-medium text-secondary-900">
-                                {item.name}
-                              </h4>
-                              {!item.available && (
-                                <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                                  Unavailable
-                                </span>
-                              )}
+                {menuItems &&
+                  menuItems.map((category: menu) => (
+                    <div key={category.id} className="mb-8 last:mb-0">
+                      <h3 className="text-xl font-semibold text-secondary-900 mb-4">
+                        {category.name}
+                      </h3>
+                      <div className="border-t border-gray-100 pt-4 space-y-4">
+                        {category.menus.map((item) => (
+                          <div
+                            key={item.id}
+                            className="flex flex-col md:flex-row md:items-center p-4 bg-secondary-50 rounded-xl"
+                          >
+                            <div className="flex-grow mb-4 md:mb-0">
+                              <div className="flex items-center">
+                                <h4 className="font-medium text-secondary-900">
+                                  {item.name}
+                                </h4>
+                                {item.is_available === "0" && (
+                                  <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                    Unavailable
+                                  </span>
+                                )}
+                              </div>
+                              <p className="text-sm text-secondary-600 mt-1 pr-4">
+                                {item.description}
+                              </p>
+                              <p className="text-primary-600 font-medium mt-2">
+                                ₦
+                                {Number(item.price).toFixed(2).toLocaleString()}
+                              </p>
                             </div>
-                            <p className="text-sm text-secondary-600 mt-1 pr-4">
-                              {item.description}
-                            </p>
-                            <p className="text-primary-600 font-medium mt-2">
-                              ${item.price.toFixed(2)}
-                            </p>
+                            <div className="flex space-x-2">
+                              <button className="inline-flex items-center justify-center p-2 rounded-lg border border-secondary-200 text-secondary-700 hover:bg-secondary-50 transition-colors">
+                                <FiEdit2 size={16} />
+                              </button>
+                              <button
+                                className={`inline-flex items-center justify-center px-3 py-2 rounded-lg text-sm font-medium ${
+                                  item.is_available === "1"
+                                    ? "bg-red-100 text-red-800 hover:bg-red-200"
+                                    : "bg-green-100 text-green-800 hover:bg-green-200"
+                                } transition-colors`}
+                              >
+                                {item.is_available === "1"
+                                  ? "Mark Unavailable"
+                                  : "Mark Available"}
+                              </button>
+                            </div>
                           </div>
-                          <div className="flex space-x-2">
-                            <button className="inline-flex items-center justify-center p-2 rounded-lg border border-secondary-200 text-secondary-700 hover:bg-secondary-50 transition-colors">
-                              <FiEdit2 size={16} />
-                            </button>
-                            <button
-                              className={`inline-flex items-center justify-center px-3 py-2 rounded-lg text-sm font-medium ${
-                                item.available
-                                  ? "bg-red-100 text-red-800 hover:bg-red-200"
-                                  : "bg-green-100 text-green-800 hover:bg-green-200"
-                              } transition-colors`}
-                            >
-                              {item.available
-                                ? "Mark Unavailable"
-                                : "Mark Available"}
-                            </button>
-                          </div>
-                        </div>
-                      ))}
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
               </div>
             </div>
           )}
