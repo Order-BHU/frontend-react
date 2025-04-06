@@ -46,17 +46,17 @@ function App() {
               <Route
                 path="/driver-dashboard"
                 element={
-                  <ProtectedRoute allowedRoles={["driver"]}>
-                    <RiderDashboardPage />
-                  </ProtectedRoute>
+                  // <ProtectedRoute allowedRoles={["driver"]}>
+                  <RiderDashboardPage />
+                  // </ProtectedRoute>
                 }
               ></Route>
               <Route
                 path="/restaurant-dashboard"
                 element={
-                  <ProtectedRoute allowedRoles={["restaurant"]}>
-                    <RestaurantDashboardPage />
-                  </ProtectedRoute>
+                  // <ProtectedRoute allowedRoles={["restaurant"]}>
+                  <RestaurantDashboardPage />
+                  // </ProtectedRoute>
                 }
               ></Route>
               <Route
@@ -70,9 +70,9 @@ function App() {
               <Route
                 path="/admin-dashboard"
                 element={
-                  <ProtectedRoute allowedRoles={["admin"]}>
-                    <AdminDashboardPage />
-                  </ProtectedRoute>
+                  // <ProtectedRoute allowedRoles={["admin"]}>
+                  <AdminDashboardPage />
+                  // </ProtectedRoute>
                 }
               ></Route>
             </Routes>
