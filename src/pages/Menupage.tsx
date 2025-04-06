@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import {
   FiClock,
   FiMapPin,
@@ -28,29 +28,18 @@ import {
   removeCartItem,
   viewCart,
   getLocation,
-  myOrders,
   initializeCheckout,
 } from "@/api/restaurant";
 
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   category,
-  tempapiMenu,
   menuItem,
   menu,
   singularCartItem,
 } from "@/interfaces/restaurantType";
 import useAuthStore from "@/stores/useAuthStore";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-  DialogFooter,
-} from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { Item } from "@radix-ui/react-select";
 
 // Animation variants
 const fadeIn = {
@@ -75,7 +64,7 @@ interface CartItem {
 
 const RestaurantMenuPage = () => {
   const [selectedLocation, setLocation] = useState(""); //the location a user selects
-
+  const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const { toast } = useToast();
   const deliveryFee = 250; //this is the delivery fee variable
@@ -127,9 +116,14 @@ const RestaurantMenuPage = () => {
         }))
       );
   }, [cartItems]);
-
+  const queryParams = new URLSearchParams(window.location.search);
+  useEffect(() => {
+    //this useEffect sets the reference code for verifying a transaction
+    if (queryParams.get("reference")) {
+      handleCheckout(queryParams.get("reference")!);
+    }
+  }, []);
   const [activeCategory, setActiveCategory] = useState<string>("");
-  const [restaurant, setRestaurant] = useState<any>(null);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [cartOpen, setCartOpen] = useState(false);
 
@@ -174,7 +168,38 @@ const RestaurantMenuPage = () => {
       }
     }
   };
+  const { mutate: checkoutMutate /*status: checkoutStatus*/ } = useMutation({
+    mutationFn: checkout,
+    onSuccess: (data) => {
+      localStorage.setItem("orderCode", data.code);
+      localStorage.setItem("orderId", data.order?.id); //I didn't really finish this, feel free to change stuff.
+      toast({
+        title: "Success",
+        description: data.message,
+      });
+      navigate(`/${localStorage.getItem("accountType")}-dashboard/`);
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
 
+  const handleCheckout = (reference: string) => {
+    checkoutMutate({
+      items: JSON.parse(localStorage.getItem("cart")!),
+      restaurant_id: Number(id),
+      total: Number(localStorage.getItem("totalPrice")! + deliveryFee),
+      location: localStorage.getItem("orderLocation"),
+      reference: reference,
+    });
+    localStorage.removeItem("orderLocation");
+    localStorage.removeItem("totalPrice");
+    localStorage.removeItem("cart");
+  };
   // Handle removing item from cart
   const removeFromCart = async (itemId: string) => {
     const existingItem = cart.find((item) => item.id === itemId);
@@ -279,7 +304,7 @@ const RestaurantMenuPage = () => {
       <div className="relative h-64 md:h-80 w-full">
         <div className="absolute inset-0">
           <img
-            src={restaurant?.coverImage}
+            src={""}
             alt={/*restaurant.name*/ "nothing"}
             className="w-full h-full object-cover"
           />
