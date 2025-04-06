@@ -64,6 +64,7 @@ interface CartItem {
 
 const RestaurantMenuPage = () => {
   const [selectedLocation, setLocation] = useState(""); //the location a user selects
+  const { isLoggedIn } = useAuthStore();
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const { toast } = useToast();
@@ -129,49 +130,13 @@ const RestaurantMenuPage = () => {
   const [cartOpen, setCartOpen] = useState(false);
 
   // Handle adding item to cart
-  //   const handleAddToCart = async (item: any) => {
-  //     //i know it's set to any type, please bear with, I'm so confused
-  //     const existingItem = cart.find(
-  //       (cartItem) => cartItem.menu_id === String(item.id)
-  //     );
-
-  //     setCart((prevCart) => {
-  //       if (existingItem) {
-  //         console.log("it exists");
-  //         // Update quantity if item already exists
-  //         return prevCart.map((cartItem) =>
-  //           cartItem.menu_id === String(item.id)
-  //             ? { ...cartItem, quantity: cartItem.quantity + 1 }
-  //             : cartItem
-  //         );
-  //       } else {
-  //         // Add new item to cart
-
-  //         return [
-  //           ...prevCart,
-  //           {
-  //             menu_id: String(item.id),
-  //             menu_name: item.name,
-  //             price: item.price,
-  //             quantity: 1,
-  //             image: item.image,
-  //           },
-  //         ];
-  //       }
-  //     });
-  //     if (!existingItem) {
-  //       try {
-  //         await mutate(Number(item.menu_id));
-  //         await refetch(); // Refetch cart data to ensure sync with server
-  //       } catch (error) {
-  //         // Handle error case
-  //         console.error("Failed to update cart:", error);
-  //         refetch(); // Refetch to ensure UI shows correct state
-  //       }
-  //     }
-  //   };
 
   const handleAddToCart = async (item: CartItem | menuItem) => {
+    if (!isLoggedIn) {
+      //save the id to local storage.
+      navigate("/login/");
+      return;
+    }
     // Check if the item is a CartItem or menuItem
     const isMenuItem = "id" in item;
 
@@ -418,248 +383,261 @@ const RestaurantMenuPage = () => {
           </div>
         </div>
       </div>
+      {menuStatus === "pending" ? (
+        <div className="flex justify-center items-center min-h-screen bg-secondary-50">
+          //{" "}
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+          //{" "}
+        </div>
+      ) : (
+        <div className="container mx-auto px-4 py-6 md:py-8">
+          <div className="flex flex-col lg:flex-row gap-8">
+            {/* Left side - Menu categories and items */}
+            <div className="w-full lg:w-2/3">
+              {/* Category Tabs */}
+              <motion.div
+                initial="hidden"
+                animate="visible"
+                variants={fadeIn}
+                custom={1}
+                className="mb-8 overflow-x-auto"
+              >
+                <div className="flex space-x-2 pb-2">
+                  {categories?.map((category: category) => (
+                    <button
+                      key={category.id}
+                      onClick={() => scrollToCategory(String(category.id))}
+                      className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
+                        activeCategory === String(category.id)
+                          ? "bg-primary-600 text-white shadow-md"
+                          : "bg-white border border-secondary-200 text-secondary-700 hover:bg-secondary-50"
+                      }`}
+                    >
+                      {category.name}
+                    </button>
+                  ))}
+                </div>
+              </motion.div>
 
-      <div className="container mx-auto px-4 py-6 md:py-8">
-        <div className="flex flex-col lg:flex-row gap-8">
-          {/* Left side - Menu categories and items */}
-          <div className="w-full lg:w-2/3">
-            {/* Category Tabs */}
+              {/* Menu Items by Category */}
+              <div className="space-y-10">
+                {categories?.map((category: category, index: number) => (
+                  <motion.div
+                    key={category.id}
+                    id={`category-${category.id}`}
+                    initial="hidden"
+                    animate="visible"
+                    variants={fadeIn}
+                    custom={index + 2}
+                    className="scroll-mt-24"
+                  >
+                    <h2 className="text-2xl font-bold text-secondary-900 mb-5 flex items-center">
+                      {category.name}
+                      <div className="ml-4 h-px bg-secondary-200 flex-grow"></div>
+                    </h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {menuItems?.map((item: menu) => (
+                        <>
+                          {item.id === category.id &&
+                            item.menus.map((menuitem: menuItem) => (
+                              <div
+                                key={menuitem.id}
+                                className="bg-white rounded-xl shadow-soft-md overflow-hidden flex flex-col md:flex-row transition-transform hover:shadow-soft-lg hover:-translate-y-1"
+                              >
+                                <div className="h-40 md:h-auto md:w-1/3">
+                                  <img
+                                    src={String(menuitem.image!)}
+                                    alt={item.name}
+                                    className="h-full w-full object-cover"
+                                  />
+                                </div>
+                                <div className="p-4 flex flex-col flex-grow justify-between md:w-2/3">
+                                  <div>
+                                    <h3 className="text-lg font-semibold text-secondary-900 mb-1">
+                                      {menuitem.name}
+                                    </h3>
+                                    <p className="text-secondary-600 text-sm mb-2 line-clamp-2">
+                                      {menuitem.description}
+                                    </p>
+                                  </div>
+                                  <div className="flex justify-between items-center mt-2">
+                                    <span className="text-primary-600 font-semibold">
+                                      ₦
+                                      {Number(
+                                        menuitem?.price
+                                      )?.toLocaleString()}
+                                    </span>
+                                    <button
+                                      disabled={menuitem.is_available === "0"}
+                                      onClick={() => handleAddToCart(menuitem)}
+                                      className="inline-flex items-center justify-center p-2 rounded-full bg-primary-100 text-primary-600 hover:bg-primary-600 hover:text-white transition-colors"
+                                    >
+                                      <FiPlus size={16} />
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                        </>
+                      ))}
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+
+            {/* Right side - Cart */}
             <motion.div
               initial="hidden"
               animate="visible"
               variants={fadeIn}
-              custom={1}
-              className="mb-8 overflow-x-auto"
+              custom={5}
+              className="w-full lg:w-1/3"
             >
-              <div className="flex space-x-2 pb-2">
-                {categories?.map((category: category) => (
-                  <button
-                    key={category.id}
-                    onClick={() => scrollToCategory(String(category.id))}
-                    className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
-                      activeCategory === String(category.id)
-                        ? "bg-primary-600 text-white shadow-md"
-                        : "bg-white border border-secondary-200 text-secondary-700 hover:bg-secondary-50"
-                    }`}
-                  >
-                    {category.name}
-                  </button>
-                ))}
-              </div>
-            </motion.div>
-
-            {/* Menu Items by Category */}
-            <div className="space-y-10">
-              {categories?.map((category: category, index: number) => (
-                <motion.div
-                  key={category.id}
-                  id={`category-${category.id}`}
-                  initial="hidden"
-                  animate="visible"
-                  variants={fadeIn}
-                  custom={index + 2}
-                  className="scroll-mt-24"
-                >
-                  <h2 className="text-2xl font-bold text-secondary-900 mb-5 flex items-center">
-                    {category.name}
-                    <div className="ml-4 h-px bg-secondary-200 flex-grow"></div>
+              <div className="bg-white rounded-2xl shadow-soft-md p-6 lg:sticky lg:top-24">
+                <div className="flex justify-between items-center mb-6">
+                  <h2 className="text-xl font-bold text-secondary-900">
+                    Your Order
                   </h2>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {menuItems?.map((item: menu) => (
-                      <>
-                        {item.id === category.id &&
-                          item.menus.map((menuitem: menuItem) => (
-                            <div
-                              key={menuitem.id}
-                              className="bg-white rounded-xl shadow-soft-md overflow-hidden flex flex-col md:flex-row transition-transform hover:shadow-soft-lg hover:-translate-y-1"
-                            >
-                              <div className="h-40 md:h-auto md:w-1/3">
-                                <img
-                                  src={String(menuitem.image!)}
-                                  alt={item.name}
-                                  className="h-full w-full object-cover"
-                                />
-                              </div>
-                              <div className="p-4 flex flex-col flex-grow justify-between md:w-2/3">
-                                <div>
-                                  <h3 className="text-lg font-semibold text-secondary-900 mb-1">
-                                    {menuitem.name}
-                                  </h3>
-                                  <p className="text-secondary-600 text-sm mb-2 line-clamp-2">
-                                    {menuitem.description}
-                                  </p>
-                                </div>
-                                <div className="flex justify-between items-center mt-2">
-                                  <span className="text-primary-600 font-semibold">
-                                    ₦{Number(menuitem?.price)?.toLocaleString()}
+                  <button
+                    onClick={() => setCartOpen(!cartOpen)}
+                    className="lg:hidden text-secondary-500 hover:text-primary-600"
+                  >
+                    <FiChevronRight
+                      className={`transform transition-transform ${
+                        cartOpen ? "rotate-90" : ""
+                      }`}
+                    />
+                  </button>
+                </div>
+
+                <div
+                  className={`${
+                    cartOpen ? "block" : "hidden lg:block"
+                  } transition-all`}
+                >
+                  {cart.length === 0 ? (
+                    <div className="text-center py-8">
+                      <div className="mx-auto w-16 h-16 bg-secondary-100 rounded-full flex items-center justify-center mb-4">
+                        <FiShoppingCart
+                          size={24}
+                          className="text-secondary-500"
+                        />
+                      </div>
+                      <p className="text-secondary-600 mb-2">
+                        Your cart is empty
+                      </p>
+                      <p className="text-secondary-500 text-sm">
+                        Add items from the menu to get started
+                      </p>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="divide-y divide-secondary-100 mb-6 max-h-[calc(100vh-350px)] overflow-y-auto">
+                        {cart?.map((item) => (
+                          <div
+                            key={item.menu_id}
+                            className="py-3 flex items-center"
+                          >
+                            <div className="h-12 w-12 rounded-lg overflow-hidden flex-shrink-0 mr-3">
+                              <img
+                                src={String(item.image)!}
+                                alt={item.menu_name}
+                                className="h-full w-full object-cover"
+                              />
+                            </div>
+                            <div className="flex-grow">
+                              <h4 className="text-secondary-900 font-medium">
+                                {item?.menu_name}
+                              </h4>
+                              <div className="flex items-center justify-between mt-1">
+                                <span className="text-primary-600 font-medium">
+                                  ${Number(item?.price)?.toLocaleString()}
+                                </span>
+                                <div className="flex items-center border border-secondary-200 rounded-lg">
+                                  <button
+                                    onClick={() => removeFromCart(item.menu_id)}
+                                    className="px-2 py-1 text-secondary-500 hover:text-primary-600"
+                                  >
+                                    <FiMinus size={14} />
+                                  </button>
+                                  <span className="px-2 text-secondary-900">
+                                    {item.quantity}
                                   </span>
                                   <button
-                                    onClick={() => handleAddToCart(menuitem)}
-                                    className="inline-flex items-center justify-center p-2 rounded-full bg-primary-100 text-primary-600 hover:bg-primary-600 hover:text-white transition-colors"
+                                    onClick={() => handleAddToCart(item)}
+                                    className="px-2 py-1 text-secondary-500 hover:text-primary-600"
                                   >
-                                    <FiPlus size={16} />
+                                    <FiPlus size={14} />
                                   </button>
                                 </div>
                               </div>
                             </div>
-                          ))}
-                      </>
-                    ))}
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-
-          {/* Right side - Cart */}
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            variants={fadeIn}
-            custom={5}
-            className="w-full lg:w-1/3"
-          >
-            <div className="bg-white rounded-2xl shadow-soft-md p-6 lg:sticky lg:top-24">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-xl font-bold text-secondary-900">
-                  Your Order
-                </h2>
-                <button
-                  onClick={() => setCartOpen(!cartOpen)}
-                  className="lg:hidden text-secondary-500 hover:text-primary-600"
-                >
-                  <FiChevronRight
-                    className={`transform transition-transform ${
-                      cartOpen ? "rotate-90" : ""
-                    }`}
-                  />
-                </button>
-              </div>
-
-              <div
-                className={`${
-                  cartOpen ? "block" : "hidden lg:block"
-                } transition-all`}
-              >
-                {cart.length === 0 ? (
-                  <div className="text-center py-8">
-                    <div className="mx-auto w-16 h-16 bg-secondary-100 rounded-full flex items-center justify-center mb-4">
-                      <FiShoppingCart
-                        size={24}
-                        className="text-secondary-500"
-                      />
-                    </div>
-                    <p className="text-secondary-600 mb-2">
-                      Your cart is empty
-                    </p>
-                    <p className="text-secondary-500 text-sm">
-                      Add items from the menu to get started
-                    </p>
-                  </div>
-                ) : (
-                  <>
-                    <div className="divide-y divide-secondary-100 mb-6 max-h-[calc(100vh-350px)] overflow-y-auto">
-                      {cart?.map((item) => (
-                        <div
-                          key={item.menu_id}
-                          className="py-3 flex items-center"
-                        >
-                          <div className="h-12 w-12 rounded-lg overflow-hidden flex-shrink-0 mr-3">
-                            <img
-                              src={String(item.image)!}
-                              alt={item.menu_name}
-                              className="h-full w-full object-cover"
-                            />
                           </div>
-                          <div className="flex-grow">
-                            <h4 className="text-secondary-900 font-medium">
-                              {item?.menu_name}
-                            </h4>
-                            <div className="flex items-center justify-between mt-1">
-                              <span className="text-primary-600 font-medium">
-                                ${Number(item?.price)?.toLocaleString()}
-                              </span>
-                              <div className="flex items-center border border-secondary-200 rounded-lg">
-                                <button
-                                  onClick={() => removeFromCart(item.menu_id)}
-                                  className="px-2 py-1 text-secondary-500 hover:text-primary-600"
-                                >
-                                  <FiMinus size={14} />
-                                </button>
-                                <span className="px-2 text-secondary-900">
-                                  {item.quantity}
-                                </span>
-                                <button
-                                  onClick={() => handleAddToCart(item)}
-                                  className="px-2 py-1 text-secondary-500 hover:text-primary-600"
-                                >
-                                  <FiPlus size={14} />
-                                </button>
-                              </div>
-                            </div>
-                          </div>
+                        ))}
+                      </div>
+
+                      <div className="border-t border-secondary-200 pt-4">
+                        <div className="flex justify-between mb-2">
+                          <span className="text-secondary-600">Subtotal</span>
+                          <span className="text-secondary-900 font-medium">
+                            ${calculateTotal().toFixed(2)}
+                          </span>
                         </div>
-                      ))}
-                    </div>
-
-                    <div className="border-t border-secondary-200 pt-4">
-                      <div className="flex justify-between mb-2">
-                        <span className="text-secondary-600">Subtotal</span>
-                        <span className="text-secondary-900 font-medium">
-                          ${calculateTotal().toFixed(2)}
-                        </span>
-                      </div>
-                      <div className="flex justify-between mb-2">
-                        <span className="text-secondary-600">Delivery Fee</span>
-                        <span className="text-secondary-900 font-medium">
-                          {deliveryFee}
-                        </span>
-                      </div>
-                      <div className="flex justify-between font-bold text-lg mt-4">
-                        <span className="text-secondary-900">Total</span>
-                        <span className="text-primary-600">
-                          ₦{(calculateTotal() + deliveryFee).toLocaleString()}
-                        </span>
-                      </div>
-                      <Select onValueChange={(value) => setLocation(value)}>
-                        <SelectTrigger className="w-[180px] mt-3 sm:mt-0">
-                          <SelectValue placeholder="Select a location" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectGroup>
-                            {locationStatus === "pending" ? (
-                              <SelectLabel>getting locations...</SelectLabel>
-                            ) : (
-                              locations?.locations.map(
-                                (location: { id: number; name: string }) => (
-                                  <SelectItem
-                                    key={location.id}
-                                    value={location.name}
-                                  >
-                                    {location.name}
-                                  </SelectItem>
+                        <div className="flex justify-between mb-2">
+                          <span className="text-secondary-600">
+                            Delivery Fee
+                          </span>
+                          <span className="text-secondary-900 font-medium">
+                            {deliveryFee}
+                          </span>
+                        </div>
+                        <div className="flex justify-between font-bold text-lg mt-4">
+                          <span className="text-secondary-900">Total</span>
+                          <span className="text-primary-600">
+                            ₦{(calculateTotal() + deliveryFee).toLocaleString()}
+                          </span>
+                        </div>
+                        <Select onValueChange={(value) => setLocation(value)}>
+                          <SelectTrigger className="w-[180px] mt-3 sm:mt-0">
+                            <SelectValue placeholder="Select a location" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectGroup>
+                              {locationStatus === "pending" ? (
+                                <SelectLabel>getting locations...</SelectLabel>
+                              ) : (
+                                locations?.locations.map(
+                                  (location: { id: number; name: string }) => (
+                                    <SelectItem
+                                      key={location.id}
+                                      value={location.name}
+                                    >
+                                      {location.name}
+                                    </SelectItem>
+                                  )
                                 )
-                              )
-                            )}
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
+                              )}
+                            </SelectGroup>
+                          </SelectContent>
+                        </Select>
 
-                      <button
-                        className="w-full mt-6 inline-flex items-center justify-center px-6 py-3 rounded-xl text-white bg-primary-600 hover:bg-primary-700 shadow-md hover:shadow-lg transition-all font-medium text-base"
-                        onClick={handlePayment}
-                        disabled={initializeCheckoutStatus === "pending"}
-                      >
-                        <FiShoppingCart className="mr-2" /> Place Order
-                      </button>
-                    </div>
-                  </>
-                )}
+                        <button
+                          className="w-full mt-6 inline-flex items-center justify-center px-6 py-3 rounded-xl text-white bg-primary-600 hover:bg-primary-700 shadow-md hover:shadow-lg transition-all font-medium text-base"
+                          onClick={handlePayment}
+                          disabled={initializeCheckoutStatus === "pending"}
+                        >
+                          <FiShoppingCart className="mr-2" /> Place Order
+                        </button>
+                      </div>
+                    </>
+                  )}
+                </div>
               </div>
-            </div>
-          </motion.div>
+            </motion.div>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
