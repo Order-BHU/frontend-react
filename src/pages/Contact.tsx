@@ -8,6 +8,9 @@ import {
   FiUser,
   FiCoffee,
 } from "react-icons/fi";
+import { contact } from "@/api/misc";
+import { useMutation } from "@tanstack/react-query";
+import { useToast } from "@/hooks/use-toast";
 
 // Animation variants
 const fadeIn = {
@@ -26,9 +29,17 @@ const ContactPage = () => {
     subject: "",
     message: "",
   });
-
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [formSubmitted, setFormSubmitted] = useState(false);
+  const { toast } = useToast();
+  const { mutate: contactMutate, status: contactStatus } = useMutation({
+    mutationFn: contact,
+    onError: (error) => {
+      toast({
+        variant: "destructive",
+        title: "Something Went Wrong",
+        description: error.message,
+      });
+    },
+  });
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -42,24 +53,10 @@ const ContactPage = () => {
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
-
-    // Simulate form submission (in a real app, you'd send this to your backend)
-    setTimeout(() => {
-      setIsSubmitting(false);
-      setFormSubmitted(true);
-      setFormData({
-        name: "",
-        email: "",
-        subject: "",
-        message: "",
-      });
-
-      // Reset success message after 5 seconds
-      setTimeout(() => {
-        setFormSubmitted(false);
-      }, 5000);
-    }, 1500);
+    contactMutate({
+      subject: formData.subject,
+      message: formData.message,
+    });
   };
 
   return (
@@ -249,7 +246,7 @@ const ContactPage = () => {
                 Send Us a Message
               </h2>
 
-              {formSubmitted ? (
+              {contactStatus === "success" ? (
                 <div className="bg-green-50 border border-green-200 rounded-xl p-6 text-center">
                   <div className="w-16 h-16 mx-auto bg-green-100 rounded-full flex items-center justify-center text-green-600 mb-4">
                     <svg
@@ -276,7 +273,7 @@ const ContactPage = () => {
                   </p>
                 </div>
               ) : (
-                <form onSubmit={handleSubmit} className="space-y-6">
+                <form onSubmit={handleSubmit} className="space-y-6 text-black">
                   <div>
                     <label
                       htmlFor="name"
@@ -365,10 +362,10 @@ const ContactPage = () => {
 
                   <button
                     type="submit"
-                    disabled={isSubmitting}
+                    disabled={contactStatus === "pending"}
                     className="w-full inline-flex items-center justify-center px-6 py-3 rounded-xl text-white bg-primary-600 hover:bg-primary-700 shadow-md hover:shadow-lg transition-all font-medium text-base disabled:opacity-70 disabled:cursor-not-allowed"
                   >
-                    {isSubmitting ? (
+                    {contactStatus === "pending" ? (
                       <>
                         <svg
                           className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
