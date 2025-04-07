@@ -305,7 +305,7 @@ export default function RestaurantDashboardPage() {
       category_id: newMenuItem.category_id,
       price: newMenuItem.price,
       image: newMenuItem.image,
-      id: Number(restaurant_id),
+      id: 1,
       category: "",
       is_available: "1",
     });
