@@ -55,109 +55,12 @@ const restaurantProfile = {
   address: "Campus Center, Block A",
 };
 
-const walletBalance = 42500;
-const completedOrders = 128;
 const averageOrderValue = 3450;
 const orderValueChange = 5; // percentage
 
 // Order data
-const pendingOrdersArray = [
-  {
-    id: "ORD-1234",
-    customer: "Alex Johnson",
-    items: ["Classic Cheeseburger", "French Fries", "Soda"],
-    total: 12.99,
-    location: "Hostel A",
-    time: "10:30 AM",
-    status: "pending",
-  },
-  {
-    id: "ORD-1235",
-    customer: "Sarah Williams",
-    items: ["Veggie Burger", "Onion Rings", "Milkshake"],
-    total: 15.99,
-    location: "Library",
-    time: "11:15 AM",
-    status: "pending",
-  },
-];
-
-const acceptedOrders = [
-  {
-    id: "ORD-1232",
-    customer: "Michael Brown",
-    items: ["Double Bacon Burger", "Mozzarella Sticks", "Iced Tea"],
-    total: 18.99,
-    location: "Academic Block",
-    time: "10:05 AM",
-    status: "accepted",
-    estimated: "10:35 AM",
-  },
-  {
-    id: "ORD-1233",
-    customer: "Emily Davis",
-    items: ["Club Sandwich", "French Fries", "Soda"],
-    total: 14.99,
-    location: "Student Center",
-    time: "10:20 AM",
-    status: "accepted",
-    estimated: "10:50 AM",
-  },
-];
 
 // Menu categories and items
-const menuCategories = [
-  {
-    id: "cat-1",
-    name: "Burgers",
-    items: [
-      {
-        id: "item-101",
-        name: "Classic Cheeseburger",
-        description:
-          "Juicy beef patty with melted cheddar, lettuce, tomato, onions, and special sauce",
-        price: 6.99,
-        available: true,
-      },
-      {
-        id: "item-102",
-        name: "Double Bacon Burger",
-        description:
-          "Two beef patties, crispy bacon, American cheese, and BBQ sauce",
-        price: 8.99,
-        available: true,
-      },
-      {
-        id: "item-103",
-        name: "Veggie Burger",
-        description:
-          "Plant-based patty with avocado, lettuce, tomato, and vegan mayo",
-        price: 7.49,
-        available: false,
-      },
-    ],
-  },
-  {
-    id: "cat-2",
-    name: "Sides",
-    items: [
-      {
-        id: "item-201",
-        name: "French Fries",
-        description: "Crispy golden fries seasoned with sea salt",
-        price: 2.99,
-        available: true,
-      },
-      {
-        id: "item-202",
-        name: "Onion Rings",
-        description: "Crispy battered onion rings with dipping sauce",
-        price: 3.49,
-        available: true,
-      },
-    ],
-  },
-];
 
 const RestaurantDashboardPage = () => {
   const { toast } = useToast();
