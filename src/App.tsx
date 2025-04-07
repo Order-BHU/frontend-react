@@ -17,7 +17,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Toaster } from "@/components/ui/toaster";
 import NotFound from "./pages/NotFound";
-import ProtectedRoute from "./components/protectedRoute";
+//import ProtectedRoute from "./components/protectedRoute";
 import ToastAutoDismiss from "./components/dismisstoast"; //handles dismissing toast when screen tapped
 import { waveform, orbit } from "ldrs";
 import { Header } from "./components/header";
@@ -62,9 +62,9 @@ function App() {
               <Route
                 path="/customer-dashboard"
                 element={
-                  <ProtectedRoute allowedRoles={["customer"]}>
-                    <UserDashboardPage />
-                  </ProtectedRoute>
+                  // <ProtectedRoute allowedRoles={["customer"]}>
+                  <UserDashboardPage />
+                  // </ProtectedRoute>
                 }
               ></Route>
               <Route
