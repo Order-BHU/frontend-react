@@ -1,532 +1,385 @@
-import { useState } from "react";
-import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import {
-  FiHome,
-  FiShoppingBag,
-  FiUser,
-  FiHeart,
-  FiMapPin,
-  FiCreditCard,
-  FiLogOut,
-  FiPlus,
-  FiChevronRight,
-  FiStar,
-  FiClock,
-} from "react-icons/fi";
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { Progress } from "@/components/ui/progress";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Menu,
+  ShoppingBag,
+  Bell,
+  User,
+  Clock,
+  LogOut,
+  ChevronRight,
+  MapPin,
+  CreditCard,
+  Star,
+  Calendar,
+  Settings,
+} from "lucide-react";
+import { Link } from "react-router-dom";
 
-// Animation variants
-const fadeIn = {
-  hidden: { opacity: 0, y: 20 },
-  visible: (custom: number) => ({
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.5, delay: custom * 0.1 },
-  }),
-};
-
-// Sample user data
-const user = {
-  name: "John Doe",
-  email: "john.doe@example.com",
-  avatar: "https://randomuser.me/api/portraits/men/32.jpg",
-  addresses: [
-    {
-      id: 1,
-      name: "Home",
-      address: "123 University Ave, Campus Area, Hostel A",
-      isDefault: true,
-    },
-    {
-      id: 2,
-      name: "Academic Block",
-      address: "Central Campus, Knowledge Center, Room 302",
-      isDefault: false,
-    },
-  ],
-  paymentMethods: [
-    {
-      id: 1,
-      type: "Credit Card",
-      last4: "4242",
-      expiryDate: "04/25",
-      isDefault: true,
-    },
-    {
-      id: 2,
-      type: "Debit Card",
-      last4: "8765",
-      expiryDate: "09/26",
-      isDefault: false,
-    },
-  ],
-};
-
-// Sample order data
-const orders = [
-  {
-    id: "ORD-1234",
-    date: "2023-05-15",
-    restaurant: "Munchbox",
-    status: "Delivered",
-    total: 24.99,
-    items: [
-      { name: "Double Bacon Burger", quantity: 1, price: 8.99 },
-      { name: "French Fries", quantity: 1, price: 2.99 },
-      { name: "Milkshake", quantity: 1, price: 4.49 },
-    ],
-    deliveryAddress: "123 University Ave, Campus Area, Hostel A",
-    image:
-      "https://images.unsplash.com/photo-1553979459-d2229ba7433b?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1368&q=80",
-  },
-  {
-    id: "ORD-1235",
-    date: "2023-05-10",
-    restaurant: "Nabiss",
-    status: "Delivered",
-    total: 18.96,
-    items: [
-      { name: "Butter Chicken", quantity: 1, price: 12.99 },
-      { name: "Naan", quantity: 2, price: 1.99 },
-    ],
-    deliveryAddress: "123 University Ave, Campus Area, Hostel A",
-    image:
-      "https://images.unsplash.com/photo-1559925393-8be0ec4767c8?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1741&q=80",
-  },
-  {
-    id: "ORD-1236",
-    date: "2023-05-05",
-    restaurant: "Pizza Palace",
-    status: "Delivered",
-    total: 22.48,
-    items: [
-      { name: "Pepperoni Pizza", quantity: 1, price: 14.99 },
-      { name: "Garlic Breadsticks", quantity: 1, price: 3.99 },
-      { name: "Soda", quantity: 1, price: 1.99 },
-    ],
-    deliveryAddress: "Central Campus, Knowledge Center, Room 302",
-    image:
-      "https://images.unsplash.com/photo-1593504049359-74330189a345?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1665&q=80",
-  },
-];
-
-// Sample favorite restaurants
-const favoriteRestaurants = [
-  {
-    id: 13,
-    name: "Munchbox",
-    cuisine: "Fast Food",
-    rating: 4.8,
-    image:
-      "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1674&q=80",
-  },
-  {
-    id: 14,
-    name: "Nabiss",
-    cuisine: "Indian",
-    rating: 4.5,
-    image:
-      "https://images.unsplash.com/photo-1559925393-8be0ec4767c8?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1741&q=80",
-  },
-  {
-    id: 15,
-    name: "Pizza Palace",
-    cuisine: "Italian",
-    rating: 4.6,
-    image:
-      "https://images.unsplash.com/photo-1593504049359-74330189a345?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1665&q=80",
-  },
-];
-
-const UserDashboardPage = () => {
-  const [activeTab, setActiveTab] = useState("orders");
-
+export default function UserDashboardPage() {
   return (
-    <div className="bg-secondary-50 min-h-screen pt-24 pb-20">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Dashboard Header */}
-        <motion.div
-          initial="hidden"
-          animate="visible"
-          variants={fadeIn}
-          custom={1}
-          className="mb-8"
-        >
-          <div className="bg-white rounded-2xl shadow-soft-md p-6 flex flex-col md:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-4">
-              <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-primary-200">
-                <img
-                  src={user.avatar}
-                  alt={user.name}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div>
-                <h1 className="text-2xl font-bold text-secondary-900">
-                  {user.name}
-                </h1>
-                <p className="text-secondary-600">{user.email}</p>
-              </div>
+    <div className="flex min-h-screen flex-col bg-slate-50">
+      {/* Header */}
+
+      {/* Main Content */}
+      <main className="flex-grow">
+        <div className="container mx-auto px-4 py-8">
+          {/* Page Title */}
+          <div className="mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">
+                Customer Dashboard
+              </h1>
+              <p className="text-gray-500 mt-1">
+                Welcome back! Manage your orders and account settings
+              </p>
             </div>
-            <Link
-              to="/profile/edit"
-              className="inline-flex items-center justify-center px-4 py-2 rounded-full text-primary-600 border border-primary-200 hover:bg-primary-50 transition-colors"
-            >
-              <FiUser className="mr-2" /> Edit Profile
-            </Link>
           </div>
-        </motion.div>
 
-        {/* Dashboard Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          {/* Sidebar */}
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            variants={fadeIn}
-            custom={2}
-            className="lg:col-span-1"
-          >
-            <div className="bg-white rounded-2xl shadow-soft-md overflow-hidden">
-              <nav className="flex flex-col">
-                <button
-                  onClick={() => setActiveTab("orders")}
-                  className={`flex items-center gap-3 px-6 py-4 text-left transition-colors hover:bg-secondary-50 ${
-                    activeTab === "orders"
-                      ? "bg-primary-50 text-primary-600 border-l-4 border-primary-600"
-                      : "text-secondary-700"
-                  }`}
-                >
-                  <FiShoppingBag size={20} />
-                  <span className="font-medium">My Orders</span>
-                </button>
-                <button
-                  onClick={() => setActiveTab("favorites")}
-                  className={`flex items-center gap-3 px-6 py-4 text-left transition-colors hover:bg-secondary-50 ${
-                    activeTab === "favorites"
-                      ? "bg-primary-50 text-primary-600 border-l-4 border-primary-600"
-                      : "text-secondary-700"
-                  }`}
-                >
-                  <FiHeart size={20} />
-                  <span className="font-medium">Favorites</span>
-                </button>
-                <button
-                  onClick={() => setActiveTab("addresses")}
-                  className={`flex items-center gap-3 px-6 py-4 text-left transition-colors hover:bg-secondary-50 ${
-                    activeTab === "addresses"
-                      ? "bg-primary-50 text-primary-600 border-l-4 border-primary-600"
-                      : "text-secondary-700"
-                  }`}
-                >
-                  <FiMapPin size={20} />
-                  <span className="font-medium">Addresses</span>
-                </button>
-                <button
-                  onClick={() => setActiveTab("payment")}
-                  className={`flex items-center gap-3 px-6 py-4 text-left transition-colors hover:bg-secondary-50 ${
-                    activeTab === "payment"
-                      ? "bg-primary-50 text-primary-600 border-l-4 border-primary-600"
-                      : "text-secondary-700"
-                  }`}
-                >
-                  <FiCreditCard size={20} />
-                  <span className="font-medium">Payment Methods</span>
-                </button>
-                <Link
-                  to="/logout"
-                  className="flex items-center gap-3 px-6 py-4 text-left text-red-500 transition-colors hover:bg-red-50"
-                >
-                  <FiLogOut size={20} />
-                  <span className="font-medium">Logout</span>
-                </Link>
-              </nav>
-            </div>
-
-            {/* Quick Actions */}
-            <div className="mt-6 bg-white rounded-2xl shadow-soft-md p-6">
-              <h3 className="text-lg font-semibold text-secondary-900 mb-4">
-                Quick Actions
-              </h3>
-              <div className="space-y-3">
-                <Link
-                  to="/restaurants"
-                  className="flex items-center justify-between p-3 bg-secondary-50 rounded-xl hover:bg-secondary-100 transition-colors"
-                >
-                  <div className="flex items-center">
-                    <FiHome className="text-primary-600 mr-3" />
-                    <span className="font-medium">Browse Restaurants</span>
-                  </div>
-                  <FiChevronRight className="text-secondary-400" />
-                </Link>
-                <Link
-                  to="/track-order"
-                  className="flex items-center justify-between p-3 bg-secondary-50 rounded-xl hover:bg-secondary-100 transition-colors"
-                >
-                  <div className="flex items-center">
-                    <FiClock className="text-primary-600 mr-3" />
-                    <span className="font-medium">Track Current Order</span>
-                  </div>
-                  <FiChevronRight className="text-secondary-400" />
-                </Link>
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Main Content */}
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            variants={fadeIn}
-            custom={3}
-            className="lg:col-span-3"
-          >
-            {/* Orders Tab */}
-            {activeTab === "orders" && (
-              <div className="bg-white rounded-2xl shadow-soft-md p-6">
-                <div className="flex justify-between items-center mb-6">
-                  <h2 className="text-2xl font-bold text-secondary-900">
-                    My Orders
-                  </h2>
+          {/* Dashboard Grid */}
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+            {/* Profile Card */}
+            <Card className="card-hover-effect md:col-span-2 overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-r from-orange-50 to-transparent h-40" />
+              <CardHeader className="flex flex-row items-center justify-between relative z-10">
+                <div>
+                  <CardTitle className="text-xl text-gray-900">
+                    Profile Information
+                  </CardTitle>
+                  <CardDescription>
+                    Manage your account details and preferences
+                  </CardDescription>
                 </div>
+              </CardHeader>
+              <CardContent className="relative z-10">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                  <Avatar className="h-20 w-20 border-4 border-white shadow-md">
+                    <AvatarFallback className="bg-orange-100 text-orange-600">
+                      <User className="h-10 w-10" />
+                    </AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <h2 className="text-xl font-semibold text-gray-900">
+                      John Smith
+                    </h2>
+                    <p className="text-sm text-gray-500">
+                      john.smith@example.com
+                    </p>
+                    <p className="text-sm text-gray-500">(123) 456-7890</p>
+                    <div className="flex items-center mt-2"></div>
+                    <div className="mt-2 flex items-center text-xs text-gray-500">
+                      <MapPin className="mr-1 h-3 w-3" />
+                      <span>123 Main Street, Apt 4B, New York, NY 10001</span>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
 
-                <div className="space-y-6">
-                  {orders.map((order) => (
-                    <div
-                      key={order.id}
-                      className="border border-secondary-200 rounded-xl overflow-hidden"
-                    >
-                      <div className="flex items-center justify-between bg-secondary-50 px-4 py-3 border-b border-secondary-200">
+            {/* Quick Actions Card */}
+            <Card className="card-hover-effect">
+              <CardHeader>
+                <CardTitle className="text-xl text-gray-900">
+                  Quick Actions
+                </CardTitle>
+                <CardDescription>
+                  Frequently used actions and tools
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <Button className="w-full justify-between rounded-xl bg-orange-500 hover:bg-orange-600 shadow-sm shadow-orange-200">
+                  <span className="flex items-center">
+                    <User className="mr-2 h-4 w-4" />
+                    Edit Profile
+                  </span>
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="outline"
+                  className="w-full justify-between rounded-xl border-gray-200 bg-white shadow-sm"
+                >
+                  <span className="flex items-center">
+                    <CreditCard className="mr-2 h-4 w-4" />
+                    View Transactions
+                  </span>
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+
+                <Button
+                  variant="outline"
+                  className="w-full justify-between rounded-xl border-gray-200 bg-white shadow-sm"
+                >
+                  <span className="flex items-center">
+                    <LogOut className="mr-2 h-4 w-4" />
+                    Log Out
+                  </span>
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Orders Section */}
+          <div className="mt-8">
+            <Tabs defaultValue="active" className="w-full">
+              <TabsList className="grid w-full max-w-sm grid-cols-2 rounded-xl bg-slate-100">
+                <TabsTrigger
+                  value="active"
+                  className="rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm"
+                >
+                  Active Orders
+                </TabsTrigger>
+                <TabsTrigger
+                  value="history"
+                  className="rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm"
+                >
+                  Order History
+                </TabsTrigger>
+              </TabsList>
+              <TabsContent value="active" className="mt-4">
+                <Card className="gradient-border">
+                  <CardHeader>
+                    <CardTitle className="text-xl text-gray-900">
+                      Active Orders
+                    </CardTitle>
+                    <CardDescription>
+                      Track your current orders in real-time
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="rounded-lg bg-orange-50 p-4 border border-orange-100">
+                      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                         <div>
-                          <span className="text-sm text-secondary-500">
-                            Order ID: {order.id}
-                          </span>
-                          <p className="font-medium">
-                            {new Date(order.date).toLocaleDateString("en-US", {
-                              year: "numeric",
-                              month: "long",
-                              day: "numeric",
-                            })}
+                          <div className="flex items-center">
+                            <span className="text-sm font-medium text-gray-500">
+                              Order #BHU-12345
+                            </span>
+                            <span className="ml-3 rounded-full bg-orange-200 px-2.5 py-0.5 text-xs font-medium text-orange-700">
+                              In Progress
+                            </span>
+                          </div>
+                          <h3 className="mt-1 text-lg font-medium text-gray-900">
+                            Deluxe Burger Combo
+                          </h3>
+                          <p className="text-sm text-gray-600">
+                            Burger King - Est. delivery in 25-30 mins
                           </p>
                         </div>
                         <div className="flex flex-col items-end">
-                          <span className="px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs font-medium">
-                            {order.status}
-                          </span>
-                          <span className="text-primary-600 font-semibold mt-1">
-                            ${order.total.toFixed(2)}
+                          <Button
+                            variant="default"
+                            className="rounded-xl bg-orange-500 hover:bg-orange-600"
+                          >
+                            Track Order
+                          </Button>
+                          <span className="mt-2 font-medium text-gray-900">
+                            $23.50
                           </span>
                         </div>
                       </div>
-                      <div className="p-4 flex flex-col md:flex-row gap-4">
-                        <div className="md:w-1/4 h-24 rounded-lg overflow-hidden">
-                          <img
-                            src={order.image}
-                            alt={order.restaurant}
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                        <div className="md:w-3/4 flex flex-col justify-between">
-                          <div>
-                            <h3 className="text-lg font-semibold text-secondary-900">
-                              {order.restaurant}
-                            </h3>
-                            <div className="mt-2 text-sm text-secondary-600">
-                              {order.items.map((item, index) => (
-                                <p
-                                  key={`${order.id}-item-${index}-${item.name}`}
-                                >
-                                  {item.quantity}x {item.name} - $
-                                  {item.price.toFixed(2)}
-                                </p>
-                              ))}
-                            </div>
-                          </div>
-                          <div className="mt-3 flex items-center justify-between">
-                            <div className="text-sm text-secondary-500">
-                              <FiMapPin className="inline mr-1" />
-                              {order.deliveryAddress}
-                            </div>
-                            <Link
-                              to={`/order-details/${order.id}`}
-                              className="text-primary-600 hover:text-primary-700 font-medium text-sm"
-                            >
-                              View Details
-                            </Link>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
 
-            {/* Favorites Tab */}
-            {activeTab === "favorites" && (
-              <div className="bg-white rounded-2xl shadow-soft-md p-6">
-                <div className="flex justify-between items-center mb-6">
-                  <h2 className="text-2xl font-bold text-secondary-900">
-                    Favorite Restaurants
-                  </h2>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {favoriteRestaurants.map((restaurant) => (
-                    <Link
-                      key={restaurant.id}
-                      to={`/menu/${restaurant.id}`}
-                      className="bg-white border border-secondary-200 rounded-xl overflow-hidden hover:shadow-soft-lg transition-shadow"
-                    >
-                      <div className="h-40 overflow-hidden">
-                        <img
-                          src={restaurant.image}
-                          alt={restaurant.name}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                      <div className="p-4">
-                        <h3 className="text-lg font-semibold text-secondary-900">
-                          {restaurant.name}
-                        </h3>
-                        <div className="flex justify-between items-center mt-2">
-                          <span className="text-secondary-600">
-                            {restaurant.cuisine}
+                      <div className="mt-6">
+                        <div className="flex justify-between mb-2">
+                          <span className="text-sm font-medium text-gray-900">
+                            Order Progress
                           </span>
-                          <div className="flex items-center">
-                            <FiStar className="text-yellow-400 mr-1" />
-                            <span className="text-secondary-700">
-                              {restaurant.rating}
+                          <span className="text-sm font-medium text-orange-600">
+                            40%
+                          </span>
+                        </div>
+                        <Progress value={40} className="h-2" />
+
+                        <div className="flex w-full justify-between text-xs text-gray-600 mt-2">
+                          <span className="flex flex-col items-center">
+                            <span className="h-4 w-4 rounded-full bg-orange-500 flex items-center justify-center text-white text-[10px]">
+                              ✓
                             </span>
-                          </div>
-                        </div>
-                      </div>
-                    </Link>
-                  ))}
-                  <div className="bg-secondary-50 border border-dashed border-secondary-300 rounded-xl flex flex-col items-center justify-center p-6 h-full">
-                    <Link
-                      to="/restaurants"
-                      className="flex flex-col items-center text-center text-secondary-600 hover:text-primary-600 transition-colors"
-                    >
-                      <div className="w-12 h-12 rounded-full bg-secondary-100 flex items-center justify-center mb-3">
-                        <FiPlus className="text-secondary-500" size={24} />
-                      </div>
-                      <span className="font-medium">
-                        Discover More Restaurants
-                      </span>
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Addresses Tab */}
-            {activeTab === "addresses" && (
-              <div className="bg-white rounded-2xl shadow-soft-md p-6">
-                <div className="flex justify-between items-center mb-6">
-                  <h2 className="text-2xl font-bold text-secondary-900">
-                    My Addresses
-                  </h2>
-                  <button className="inline-flex items-center px-3 py-2 bg-primary-50 text-primary-600 rounded-lg hover:bg-primary-100 transition-colors">
-                    <FiPlus className="mr-1" size={16} /> Add New
-                  </button>
-                </div>
-
-                <div className="space-y-4">
-                  {user.addresses.map((address) => (
-                    <div
-                      key={address.id}
-                      className={`border ${
-                        address.isDefault
-                          ? "border-primary-200 bg-primary-50"
-                          : "border-secondary-200"
-                      } rounded-xl p-4`}
-                    >
-                      <div className="flex justify-between">
-                        <div>
-                          <div className="flex items-center">
-                            <h3 className="text-lg font-semibold text-secondary-900">
-                              {address.name}
-                            </h3>
-                            {address.isDefault && (
-                              <span className="ml-2 px-2 py-0.5 bg-primary-100 text-primary-700 text-xs rounded-full">
-                                Default
-                              </span>
-                            )}
-                          </div>
-                          <p className="text-secondary-600 mt-1">
-                            {address.address}
-                          </p>
-                        </div>
-                        <div className="flex items-start space-x-2">
-                          <button className="text-secondary-500 hover:text-secondary-700 p-1">
-                            <FiUser size={16} />
-                          </button>
+                            <span className="mt-1">Placed</span>
+                          </span>
+                          <span className="flex flex-col items-center">
+                            <span className="h-4 w-4 rounded-full bg-orange-500 flex items-center justify-center text-white relative text-[10px]">
+                              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-orange-400 opacity-75" />
+                              ✓
+                            </span>
+                            <span className="mt-1">Preparing</span>
+                          </span>
+                          <span className="flex flex-col items-center">
+                            <span className="h-4 w-4 rounded-full bg-gray-200 flex items-center justify-center text-gray-400 text-[10px]">
+                              3
+                            </span>
+                            <span className="mt-1">On the way</span>
+                          </span>
+                          <span className="flex flex-col items-center">
+                            <span className="h-4 w-4 rounded-full bg-gray-200 flex items-center justify-center text-gray-400 text-[10px]">
+                              4
+                            </span>
+                            <span className="mt-1">Delivered</span>
+                          </span>
                         </div>
                       </div>
                     </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Payment Methods Tab */}
-            {activeTab === "payment" && (
-              <div className="bg-white rounded-2xl shadow-soft-md p-6">
-                <div className="flex justify-between items-center mb-6">
-                  <h2 className="text-2xl font-bold text-secondary-900">
-                    Payment Methods
-                  </h2>
-                  <button className="inline-flex items-center px-3 py-2 bg-primary-50 text-primary-600 rounded-lg hover:bg-primary-100 transition-colors">
-                    <FiPlus className="mr-1" size={16} /> Add New
-                  </button>
-                </div>
-
-                <div className="space-y-4">
-                  {user.paymentMethods.map((method) => (
-                    <div
-                      key={method.id}
-                      className={`border ${
-                        method.isDefault
-                          ? "border-primary-200 bg-primary-50"
-                          : "border-secondary-200"
-                      } rounded-xl p-4`}
-                    >
-                      <div className="flex justify-between">
-                        <div>
-                          <div className="flex items-center">
-                            <h3 className="text-lg font-semibold text-secondary-900">
-                              {method.type}
-                            </h3>
-                            {method.isDefault && (
-                              <span className="ml-2 px-2 py-0.5 bg-primary-100 text-primary-700 text-xs rounded-full">
-                                Default
+                  </CardContent>
+                </Card>
+              </TabsContent>
+              <TabsContent value="history" className="mt-4">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-xl text-gray-900">
+                      Order History
+                    </CardTitle>
+                    <CardDescription>
+                      View your past orders and reorder your favorites
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      {/* Past order item */}
+                      <div className="rounded-lg border border-gray-200 p-4 transition-all hover:bg-gray-50 hover:border-orange-200">
+                        <div className="flex flex-col sm:flex-row justify-between">
+                          <div>
+                            <div className="flex items-center">
+                              <span className="text-sm font-medium text-gray-500">
+                                Order #BHU-12344
                               </span>
-                            )}
+                              <span className="ml-3 rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-700">
+                                Delivered
+                              </span>
+                            </div>
+                            <h3 className="mt-1 text-lg font-medium text-gray-900">
+                              Pasta Primavera
+                            </h3>
+                            <p className="text-sm text-gray-600">
+                              Olive Garden - Delivered May 10, 2023
+                            </p>
                           </div>
-                          <p className="text-secondary-600 mt-1">
-                            **** **** **** {method.last4}
-                          </p>
-                          <p className="text-secondary-500 text-sm">
-                            Expires: {method.expiryDate}
-                          </p>
+                          <div className="flex flex-col sm:items-end mt-3 sm:mt-0">
+                            <span className="font-medium text-gray-900">
+                              $18.99
+                            </span>
+                            <div className="flex items-center mt-2">
+                              <StarRating rating={5} size="small" />
+                            </div>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="mt-2 rounded-xl text-orange-600 border-orange-200"
+                            >
+                              Reorder
+                            </Button>
+                          </div>
                         </div>
-                        <div className="flex items-start space-x-2">
-                          <button className="text-secondary-500 hover:text-secondary-700 p-1">
-                            <FiCreditCard size={16} />
-                          </button>
+                      </div>
+
+                      {/* Past order item */}
+                      <div className="rounded-lg border border-gray-200 p-4 transition-all hover:bg-gray-50 hover:border-orange-200">
+                        <div className="flex flex-col sm:flex-row justify-between">
+                          <div>
+                            <div className="flex items-center">
+                              <span className="text-sm font-medium text-gray-500">
+                                Order #BHU-12343
+                              </span>
+                              <span className="ml-3 rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-700">
+                                Delivered
+                              </span>
+                            </div>
+                            <h3 className="mt-1 text-lg font-medium text-gray-900">
+                              Veggie Pizza Combo
+                            </h3>
+                            <p className="text-sm text-gray-600">
+                              Pizza Hut - Delivered May 3, 2023
+                            </p>
+                          </div>
+                          <div className="flex flex-col sm:items-end mt-3 sm:mt-0">
+                            <span className="font-medium text-gray-900">
+                              $24.50
+                            </span>
+                            <div className="flex items-center mt-2">
+                              <StarRating rating={4} size="small" />
+                            </div>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="mt-2 rounded-xl text-orange-600 border-orange-200"
+                            >
+                              Reorder
+                            </Button>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </motion.div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+            </Tabs>
+          </div>
         </div>
-      </div>
+      </main>
     </div>
   );
-};
+}
 
-export default UserDashboardPage;
+// StarRating component for displaying ratings
+function StarRating({ rating = 0, size = "default" }) {
+  const filledStars = Math.floor(rating);
+  const partialStar = rating % 1 !== 0;
+  const emptyStars = 5 - filledStars - (partialStar ? 1 : 0);
+
+  const starSize = size === "small" ? "h-3 w-3" : "h-4 w-4";
+
+  return (
+    <div className="flex items-center">
+      {Array.from({ length: filledStars }).map((_, i) => (
+        <Star
+          key={`star-filled-${i}-${rating}`}
+          className={`${starSize} text-yellow-400 fill-yellow-400`}
+        />
+      ))}
+
+      {partialStar && (
+        <div className="relative">
+          <Star className={`${starSize} text-yellow-400 fill-yellow-400`} />
+          <div
+            className="absolute inset-0 overflow-hidden"
+            style={{ width: `${(rating % 1) * 100}%` }}
+          >
+            <Star className={`${starSize} text-yellow-400 fill-yellow-400`} />
+          </div>
+        </div>
+      )}
+
+      {Array.from({ length: emptyStars }).map((_, i) => (
+        <Star
+          key={`star-empty-${i}-${rating}`}
+          className={`${starSize} text-yellow-400`}
+        />
+      ))}
+
+      {size !== "small" && (
+        <span className="ml-1 text-sm font-medium text-gray-700">
+          {rating.toFixed(1)}
+        </span>
+      )}
+    </div>
+  );
+}
