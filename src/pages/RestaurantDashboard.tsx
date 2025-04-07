@@ -1,5 +1,22 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogClose,
+} from "@/components/ui/dialog";
 import {
   FiEdit2,
   FiShoppingBag,
@@ -27,7 +44,7 @@ import {
   deleteMenuItem,
   updateItemAvailability,
 } from "@/api/restaurant";
-import { menu, orderType } from "@/interfaces/restaurantType";
+import { menu, orderType, menuItem } from "@/interfaces/restaurantType";
 import { useToast } from "@/hooks/use-toast";
 
 // Animation variants
@@ -67,6 +84,7 @@ const RestaurantDashboardPage = () => {
   const [activeTab, setActiveTab] = useState<TabType>("orders");
   const [showEditProfileModal, setShowEditProfileModal] = useState(false);
   const [acceptedOrderState, setAccepted] = useState<orderType[]>([]);
+  const [menuItemArrayState, setmenuItemArray] = useState<menuItem[]>([]); //to store the menu Items for fast UI response when marking as unavailable
   const [pendingOrderState, setPendingOrders] = useState<orderType[]>([]); //this is for the pending orders. Storing in state for a smooth ui experience
 
   const { data: userDetails, refetch: refetchDetails } = useQuery({
@@ -113,6 +131,28 @@ const RestaurantDashboardPage = () => {
     queryFn: () => getMenuItems(localStorage.getItem("restaurant_id")!),
     staleTime: 30000,
   });
+  const { mutate: passwordMutate, status: passwordStatus } = useMutation({
+    mutationFn: changePassword,
+    onSuccess: (data) => {
+      setPasswordDetails({
+        current_password: "",
+        new_password: "",
+        confirm_password: "",
+      });
+      toast({
+        title: "Success",
+        description: data.message,
+      });
+      refetchDetails();
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
 
   useEffect(() => {
     //this sets the pending orders state to the pending orders response
@@ -128,6 +168,20 @@ const RestaurantDashboardPage = () => {
     }
   }, [acceptedOrders]);
 
+  useEffect(() => {
+    //this sets the menu Items we get from the server to a state.
+    if (menuItems) {
+      const allMenus = menuItems.flatMap(
+        (category: { id: number; menus: menuItem[] }) => category.menus
+      );
+      setmenuItemArray(allMenus);
+    }
+  }, [menuItems]);
+
+  const handleUpdatePassword = () => {
+    passwordMutate(passwordDeetails);
+  };
+
   const handleOrderAccept = (orderId: number, newcategoryStatus: string) => {
     orderStatusMutate({
       orderId: Number(orderId),
@@ -135,6 +189,82 @@ const RestaurantDashboardPage = () => {
     });
     refetchOrders();
     // Here you would typically update the order categoryStatus in your backend
+  };
+  const handleEditProfile = (e: React.FormEvent) => {
+    e.preventDefault();
+    editProfileMutate(filteredData);
+    console.log(restaurant);
+  };
+  const handlePfpImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setRestaurant({ ...restaurant, profile_picture: e.target.files[0] });
+    }
+  };
+  const [restaurant, setRestaurant] = useState({
+    name: "",
+    profile_picture: null as File | null,
+    phone_number_type: "",
+  });
+  const filteredData = Object.fromEntries(
+    //this is here to filter only the truthy values from the edit profile form and we pass it to mutate, since the api can't accept empty strings as they'll override whatever is already there
+    Object.entries(restaurant).filter(([_, value]) => value)
+  );
+
+  const { mutate: isAvailableMutate } = useMutation({
+    mutationFn: updateItemAvailability,
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+      refetchMenuItems();
+    },
+  });
+
+  const handlePhoneTypeChange = (type: "whatsapp" | "phone") => {
+    setRestaurant((prev) => ({ ...prev, phone_number_type: type }));
+  };
+  const { mutate: editProfileMutate, status: editProfileMutateStatus } =
+    useMutation({
+      mutationFn: editProfile,
+      onSuccess: (data) => {
+        refetchDetails();
+        localStorage.setItem("name", restaurant.name);
+        toast({
+          title: "Success",
+          description: data.message,
+        });
+      },
+      onError: (error) => {
+        toast({
+          title: "Error",
+          description: error.message,
+          variant: "destructive",
+        });
+      },
+    });
+  const [passwordDeetails, setPasswordDetails] = useState({
+    current_password: "",
+    new_password: "",
+    confirm_password: "",
+  });
+  const handleItemAvailability = (menuId: number, value: "1" | "0") => {
+    const foundItem = menuItemArrayState.find(
+      (item: menuItem) => item.id === menuId
+    );
+    if (foundItem) {
+      setmenuItemArray((prev) =>
+        prev.map((item) =>
+          item.id === menuId ? { ...item, is_available: value } : item
+        )
+      );
+    }
+    isAvailableMutate({
+      menuid: menuId,
+      value: value,
+    });
+    refetchMenuItems();
   };
   return (
     <div className="bg-secondary-50 min-h-screen pt-20 pb-20">
@@ -186,12 +316,173 @@ const RestaurantDashboardPage = () => {
                 </div>
               </div>
               <div className="flex-shrink-0">
-                <button
-                  onClick={() => setShowEditProfileModal(true)}
-                  className="inline-flex items-center justify-center px-4 py-2 rounded-full text-sm font-medium border border-secondary-200 bg-white text-secondary-700 hover:bg-secondary-50 transition-colors"
-                >
-                  <FiEdit2 className="mr-2" /> Edit Profile
-                </button>
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <button
+                      //onClick={() => setShowEditProfileModal(true)}
+                      className="inline-flex items-center justify-center px-4 py-2 rounded-full text-sm font-medium border border-secondary-200 bg-white text-secondary-700 hover:bg-secondary-50 transition-colors"
+                    >
+                      <FiEdit2 className="mr-2" /> Edit Profile
+                    </button>
+                  </DialogTrigger>
+                  <DialogContent className="dark:text-cfont-dark overflow-auto max-h-[95vh]">
+                    <DialogHeader>
+                      <DialogTitle>Edit Restaurant Profile</DialogTitle>
+                    </DialogHeader>
+                    <form onSubmit={handleEditProfile} className="space-y-4">
+                      <div>
+                        <Label
+                          htmlFor="restaurantPhoto"
+                          className="dark:text-cfont-dark"
+                        >
+                          Restaurant Photo
+                        </Label>
+                        <Input
+                          id="photo"
+                          type="file"
+                          accept="image/*"
+                          onChange={handlePfpImageChange}
+                        />
+                      </div>
+                      <div>
+                        <Label
+                          htmlFor="restaurantName"
+                          className="dark:text-cfont-dark"
+                        >
+                          Restaurant Name
+                        </Label>
+                        <Input
+                          id="restaurantName"
+                          value={userDetails?.message?.restaurant_name}
+                          className="dark:text-cfont-dark"
+                          onChange={(e) =>
+                            setRestaurant({
+                              ...restaurant,
+                              name: e.target.value,
+                            })
+                          }
+                        />
+                      </div>
+                      <div>
+                        <Label
+                          htmlFor="restaurantPhoto"
+                          className="dark:text-cfont-dark"
+                        >
+                          Phone Number Type:
+                        </Label>
+                        <div className="flex space-x-2 mt-2">
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant={
+                              restaurant.phone_number_type === "whatsapp"
+                                ? "default"
+                                : "outline"
+                            }
+                            onClick={() => handlePhoneTypeChange("whatsapp")}
+                          >
+                            WhatsApp
+                          </Button>
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant={
+                              restaurant.phone_number_type === "phone"
+                                ? "default"
+                                : "outline"
+                            }
+                            onClick={() => handlePhoneTypeChange("phone")}
+                          >
+                            Phone
+                          </Button>
+                        </div>
+                      </div>
+
+                      <Button
+                        type="submit"
+                        disabled={editProfileMutateStatus === "pending"}
+                      >
+                        Update Profile
+                      </Button>
+
+                      <Accordion type="single" collapsible>
+                        <AccordionItem value="item-1">
+                          <AccordionTrigger>Change Password</AccordionTrigger>
+                          <AccordionContent>
+                            <div className="mb-4">
+                              <Label
+                                htmlFor="oldPassword"
+                                className="dark:text-cfont-dark"
+                              >
+                                Old Password
+                              </Label>
+                              <Input
+                                id="oldPassword"
+                                type="password"
+                                value={passwordDeetails?.current_password}
+                                className="dark:text-cfont-dark max-w-[90%] mx-3"
+                                onChange={(e) =>
+                                  setPasswordDetails({
+                                    ...passwordDeetails,
+                                    current_password: e.target.value,
+                                  })
+                                }
+                              />
+                            </div>
+
+                            <div className="mb-4">
+                              <Label
+                                htmlFor="newPassword"
+                                className="dark:text-cfont-dark"
+                              >
+                                New Password
+                              </Label>
+                              <Input
+                                id="newPassword"
+                                type="password"
+                                value={passwordDeetails?.new_password}
+                                className="dark:text-cfont-dark max-w-[90%] mx-3"
+                                onChange={(e) =>
+                                  setPasswordDetails({
+                                    ...passwordDeetails,
+                                    new_password: e.target.value,
+                                  })
+                                }
+                              />
+                            </div>
+
+                            <div className="mb-4">
+                              <Label
+                                htmlFor="confirmPassword"
+                                className="dark:text-cfont-dark max-w-[90%] mx-3"
+                              >
+                                Confirm Password
+                              </Label>
+                              <Input
+                                type="password"
+                                id="confirmPassword"
+                                value={passwordDeetails?.confirm_password}
+                                className="dark:text-cfont-dark max-w-[90%] mx-3"
+                                onChange={(e) =>
+                                  setPasswordDetails({
+                                    ...passwordDeetails,
+                                    confirm_password: e.target.value,
+                                  })
+                                }
+                              />
+                            </div>
+                            <Button
+                              onClick={handleUpdatePassword}
+                              disabled={passwordStatus === "pending"}
+                            >
+                              Update Password
+                            </Button>
+                          </AccordionContent>
+                        </AccordionItem>
+                      </Accordion>
+                    </form>
+                  </DialogContent>
+                </Dialog>
               </div>
             </div>
           </div>
@@ -514,48 +805,61 @@ const RestaurantDashboardPage = () => {
                         {category.name}
                       </h3>
                       <div className="border-t border-gray-100 pt-4 space-y-4">
-                        {category.menus.map((item) => (
-                          <div
-                            key={item.id}
-                            className="flex flex-col md:flex-row md:items-center p-4 bg-secondary-50 rounded-xl"
-                          >
-                            <div className="flex-grow mb-4 md:mb-0">
-                              <div className="flex items-center">
-                                <h4 className="font-medium text-secondary-900">
-                                  {item.name}
-                                </h4>
-                                {item.is_available === "0" && (
-                                  <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                                    Unavailable
-                                  </span>
-                                )}
-                              </div>
-                              <p className="text-sm text-secondary-600 mt-1 pr-4">
-                                {item.description}
-                              </p>
-                              <p className="text-primary-600 font-medium mt-2">
-                                ₦
-                                {Number(item.price).toFixed(2).toLocaleString()}
-                              </p>
-                            </div>
-                            <div className="flex space-x-2">
-                              <button className="inline-flex items-center justify-center p-2 rounded-lg border border-secondary-200 text-secondary-700 hover:bg-secondary-50 transition-colors">
-                                <FiEdit2 size={16} />
-                              </button>
-                              <button
-                                className={`inline-flex items-center justify-center px-3 py-2 rounded-lg text-sm font-medium ${
-                                  item.is_available === "1"
-                                    ? "bg-red-100 text-red-800 hover:bg-red-200"
-                                    : "bg-green-100 text-green-800 hover:bg-green-200"
-                                } transition-colors`}
+                        {menuItemArrayState.map(
+                          (item) =>
+                            String(item.category_id) ===
+                              String(category.id) && (
+                              <div
+                                key={item.id}
+                                className="flex flex-col md:flex-row md:items-center p-4 bg-secondary-50 rounded-xl"
                               >
-                                {item.is_available === "1"
-                                  ? "Mark Unavailable"
-                                  : "Mark Available"}
-                              </button>
-                            </div>
-                          </div>
-                        ))}
+                                <div className="flex-grow mb-4 md:mb-0">
+                                  <div className="flex items-center">
+                                    <h4 className="font-medium text-secondary-900">
+                                      {item.name}
+                                    </h4>
+                                    {item.is_available === "0" && (
+                                      <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                        Unavailable
+                                      </span>
+                                    )}
+                                  </div>
+                                  <p className="text-sm text-secondary-600 mt-1 pr-4">
+                                    {item.description}
+                                  </p>
+                                  <p className="text-primary-600 font-medium mt-2">
+                                    ₦
+                                    {Number(item.price)
+                                      .toFixed(2)
+                                      .toLocaleString()}
+                                  </p>
+                                </div>
+                                <div className="flex space-x-2">
+                                  <button className="inline-flex items-center justify-center p-2 rounded-lg border border-secondary-200 text-secondary-700 hover:bg-secondary-50 transition-colors">
+                                    <FiEdit2 size={16} />
+                                  </button>
+                                  <button
+                                    className={`inline-flex items-center justify-center px-3 py-2 rounded-lg text-sm font-medium ${
+                                      item.is_available === "1"
+                                        ? "bg-red-100 text-red-800 hover:bg-red-200"
+                                        : "bg-green-100 text-green-800 hover:bg-green-200"
+                                    } transition-colors`}
+                                    onClick={() => {
+                                      if (item.is_available === "1") {
+                                        handleItemAvailability(item.id, "0");
+                                      } else {
+                                        handleItemAvailability(item.id, "1");
+                                      }
+                                    }}
+                                  >
+                                    {item.is_available === "1"
+                                      ? "Mark Unavailable"
+                                      : "Mark Available"}
+                                  </button>
+                                </div>
+                              </div>
+                            )
+                        )}
                       </div>
                     </div>
                   ))}
