@@ -8,36 +8,27 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+
 import { Progress } from "@/components/ui/progress";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  Menu,
-  ShoppingBag,
-  Bell,
-  User,
-  Clock,
-  LogOut,
-  ChevronRight,
-  MapPin,
-  CreditCard,
-  Star,
-  Calendar,
-  Settings,
-} from "lucide-react";
-import { Link } from "react-router-dom";
+
+import { User, LogOut, ChevronRight, MapPin, CreditCard } from "lucide-react";
+import { editProfile, dashboard, changePassword } from "@/api/misc";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { myOrders, trackOrder } from "@/api/restaurant";
+import { orderType } from "@/interfaces/restaurantType";
 
 export default function UserDashboardPage() {
+  const { data: userDetails, refetch: refetchDetails } = useQuery({
+    queryKey: ["userDetails"],
+    queryFn: dashboard,
+    refetchOnWindowFocus: false,
+  });
+
+  const { data: trackedOrder, status: trackedStatus } = useQuery({
+    queryFn: () => trackOrder(),
+    queryKey: ["trackedorders"], // Ensure key changes when userOrder changes
+    staleTime: 30000,
+  });
   return (
     <div className="flex min-h-screen flex-col bg-slate-50">
       {/* Header */}
@@ -75,18 +66,24 @@ export default function UserDashboardPage() {
               <CardContent className="relative z-10">
                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
                   <Avatar className="h-20 w-20 border-4 border-white shadow-md">
+                    <AvatarImage
+                      src={userDetails?.user?.profile_picture_url}
+                      alt={userDetails?.user?.name}
+                    />
                     <AvatarFallback className="bg-orange-100 text-orange-600">
                       <User className="h-10 w-10" />
                     </AvatarFallback>
                   </Avatar>
                   <div>
                     <h2 className="text-xl font-semibold text-gray-900">
-                      John Smith
+                      {userDetails?.user?.name}
                     </h2>
                     <p className="text-sm text-gray-500">
-                      john.smith@example.com
+                      {userDetails?.user?.email}
                     </p>
-                    <p className="text-sm text-gray-500">(123) 456-7890</p>
+                    <p className="text-sm text-gray-500">
+                      {userDetails?.user?.phone_number}
+                    </p>
                     <div className="flex items-center mt-2"></div>
                     <div className="mt-2 flex items-center text-xs text-gray-500">
                       <MapPin className="mr-1 h-3 w-3" />
@@ -158,89 +155,100 @@ export default function UserDashboardPage() {
                 </TabsTrigger>
               </TabsList>
               <TabsContent value="active" className="mt-4">
-                <Card className="gradient-border">
-                  <CardHeader>
-                    <CardTitle className="text-xl text-gray-900">
-                      Active Orders
-                    </CardTitle>
-                    <CardDescription>
-                      Track your current orders in real-time
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="rounded-lg bg-orange-50 p-4 border border-orange-100">
-                      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-                        <div>
-                          <div className="flex items-center">
-                            <span className="text-sm font-medium text-gray-500">
-                              Order #BHU-12345
-                            </span>
-                            <span className="ml-3 rounded-full bg-orange-200 px-2.5 py-0.5 text-xs font-medium text-orange-700">
-                              In Progress
+                {trackedOrder && (
+                  <Card className="gradient-border">
+                    <CardHeader>
+                      <CardTitle className="text-xl text-gray-900">
+                        Active Orders
+                      </CardTitle>
+                      <CardDescription>
+                        Track your current orders in real-time
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="rounded-lg bg-orange-50 p-4 border border-orange-100">
+                        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                          <div>
+                            <div className="flex items-center">
+                              <span className="text-sm font-medium text-gray-500">
+                                Order BHUO-{trackedOrder.order_id}
+                              </span>
+                              <span className="ml-3 rounded-full bg-orange-200 px-2.5 py-0.5 text-xs font-medium text-orange-700">
+                                {trackedOrder.status}
+                              </span>
+                            </div>
+                            <ul>
+                              {trackedOrder.items.map(
+                                (order: {
+                                  menu_id: number;
+                                  quantity: number;
+                                  menu_name: string;
+                                  menu_price: number;
+                                  item_name: string /*man... he changed the names without telling, and now idk what to add or remove. bear with me here, this is for pending orders but idk if the change carries over to all order types */;
+                                }) => (
+                                  <li>
+                                    <h3 className="mt-1 text-lg font-medium text-gray-900">
+                                      {`${order.menu_name} X${order.quantity}`}
+                                    </h3>
+                                  </li>
+                                )
+                              )}
+                            </ul>
+
+                            <p className="text-sm text-gray-600">
+                              {trackedOrder.restaurant_name}
+                            </p>
+                          </div>
+                          <div className="flex flex-col items-end">
+                            <span className="mt-2 font-medium text-gray-900">
+                              ₦{Number(trackedOrder.total).toLocaleString()}
                             </span>
                           </div>
-                          <h3 className="mt-1 text-lg font-medium text-gray-900">
-                            Deluxe Burger Combo
-                          </h3>
-                          <p className="text-sm text-gray-600">
-                            Burger King - Est. delivery in 25-30 mins
-                          </p>
                         </div>
-                        <div className="flex flex-col items-end">
-                          <Button
-                            variant="default"
-                            className="rounded-xl bg-orange-500 hover:bg-orange-600"
-                          >
-                            Track Order
-                          </Button>
-                          <span className="mt-2 font-medium text-gray-900">
-                            $23.50
-                          </span>
+
+                        <div className="mt-6">
+                          <div className="flex justify-between mb-2">
+                            <span className="text-sm font-medium text-gray-900">
+                              Order Progress
+                            </span>
+                            <span className="text-sm font-medium text-orange-600">
+                              40%
+                            </span>
+                          </div>
+                          <Progress value={40} className="h-2" />
+
+                          <div className="flex w-full justify-between text-xs text-gray-600 mt-2">
+                            <span className="flex flex-col items-center">
+                              <span className="h-4 w-4 rounded-full bg-orange-500 flex items-center justify-center text-white text-[10px]">
+                                ✓
+                              </span>
+                              <span className="mt-1">Accepted</span>
+                            </span>
+                            <span className="flex flex-col items-center">
+                              <span className="h-4 w-4 rounded-full bg-orange-500 flex items-center justify-center text-white relative text-[10px]">
+                                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-orange-400 opacity-75" />
+                                ✓
+                              </span>
+                              <span className="mt-1">Preparing</span>
+                            </span>
+                            <span className="flex flex-col items-center">
+                              <span className="h-4 w-4 rounded-full bg-gray-200 flex items-center justify-center text-gray-400 text-[10px]">
+                                3
+                              </span>
+                              <span className="mt-1">On the way</span>
+                            </span>
+                            <span className="flex flex-col items-center">
+                              <span className="h-4 w-4 rounded-full bg-gray-200 flex items-center justify-center text-gray-400 text-[10px]">
+                                4
+                              </span>
+                              <span className="mt-1">Delivered</span>
+                            </span>
+                          </div>
                         </div>
                       </div>
-
-                      <div className="mt-6">
-                        <div className="flex justify-between mb-2">
-                          <span className="text-sm font-medium text-gray-900">
-                            Order Progress
-                          </span>
-                          <span className="text-sm font-medium text-orange-600">
-                            40%
-                          </span>
-                        </div>
-                        <Progress value={40} className="h-2" />
-
-                        <div className="flex w-full justify-between text-xs text-gray-600 mt-2">
-                          <span className="flex flex-col items-center">
-                            <span className="h-4 w-4 rounded-full bg-orange-500 flex items-center justify-center text-white text-[10px]">
-                              ✓
-                            </span>
-                            <span className="mt-1">Placed</span>
-                          </span>
-                          <span className="flex flex-col items-center">
-                            <span className="h-4 w-4 rounded-full bg-orange-500 flex items-center justify-center text-white relative text-[10px]">
-                              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-orange-400 opacity-75" />
-                              ✓
-                            </span>
-                            <span className="mt-1">Preparing</span>
-                          </span>
-                          <span className="flex flex-col items-center">
-                            <span className="h-4 w-4 rounded-full bg-gray-200 flex items-center justify-center text-gray-400 text-[10px]">
-                              3
-                            </span>
-                            <span className="mt-1">On the way</span>
-                          </span>
-                          <span className="flex flex-col items-center">
-                            <span className="h-4 w-4 rounded-full bg-gray-200 flex items-center justify-center text-gray-400 text-[10px]">
-                              4
-                            </span>
-                            <span className="mt-1">Delivered</span>
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                    </CardContent>
+                  </Card>
+                )}
               </TabsContent>
               <TabsContent value="history" className="mt-4">
                 <Card>
@@ -277,9 +285,7 @@ export default function UserDashboardPage() {
                             <span className="font-medium text-gray-900">
                               $18.99
                             </span>
-                            <div className="flex items-center mt-2">
-                              <StarRating rating={5} size="small" />
-                            </div>
+
                             <Button
                               variant="outline"
                               size="sm"
@@ -314,9 +320,7 @@ export default function UserDashboardPage() {
                             <span className="font-medium text-gray-900">
                               $24.50
                             </span>
-                            <div className="flex items-center mt-2">
-                              <StarRating rating={4} size="small" />
-                            </div>
+
                             <Button
                               variant="outline"
                               size="sm"
@@ -340,46 +344,3 @@ export default function UserDashboardPage() {
 }
 
 // StarRating component for displaying ratings
-function StarRating({ rating = 0, size = "default" }) {
-  const filledStars = Math.floor(rating);
-  const partialStar = rating % 1 !== 0;
-  const emptyStars = 5 - filledStars - (partialStar ? 1 : 0);
-
-  const starSize = size === "small" ? "h-3 w-3" : "h-4 w-4";
-
-  return (
-    <div className="flex items-center">
-      {Array.from({ length: filledStars }).map((_, i) => (
-        <Star
-          key={`star-filled-${i}-${rating}`}
-          className={`${starSize} text-yellow-400 fill-yellow-400`}
-        />
-      ))}
-
-      {partialStar && (
-        <div className="relative">
-          <Star className={`${starSize} text-yellow-400 fill-yellow-400`} />
-          <div
-            className="absolute inset-0 overflow-hidden"
-            style={{ width: `${(rating % 1) * 100}%` }}
-          >
-            <Star className={`${starSize} text-yellow-400 fill-yellow-400`} />
-          </div>
-        </div>
-      )}
-
-      {Array.from({ length: emptyStars }).map((_, i) => (
-        <Star
-          key={`star-empty-${i}-${rating}`}
-          className={`${starSize} text-yellow-400`}
-        />
-      ))}
-
-      {size !== "small" && (
-        <span className="ml-1 text-sm font-medium text-gray-700">
-          {rating.toFixed(1)}
-        </span>
-      )}
-    </div>
-  );
-}

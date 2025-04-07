@@ -221,10 +221,6 @@ export default function RestaurantDashboardPage() {
   const { mutate: deleteMenuItemMutate } = useMutation({
     mutationFn: deleteMenuItem,
     onSuccess: (data) => {
-      toast({
-        title: "Success",
-        description: data.message,
-      });
       refetchMenuItems();
     },
     onError: (error) => {
