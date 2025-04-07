@@ -18,6 +18,13 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   FiEdit2,
   FiShoppingBag,
   FiDollarSign,
@@ -44,8 +51,14 @@ import {
   deleteMenuItem,
   updateItemAvailability,
 } from "@/api/restaurant";
-import { menu, orderType, menuItem } from "@/interfaces/restaurantType";
+import {
+  menu,
+  orderType,
+  menuItem,
+  category,
+} from "@/interfaces/restaurantType";
 import { useToast } from "@/hooks/use-toast";
+import { Textarea } from "@/components/ui/textarea";
 
 // Animation variants
 const fadeIn = {
@@ -86,7 +99,15 @@ const RestaurantDashboardPage = () => {
   const [acceptedOrderState, setAccepted] = useState<orderType[]>([]);
   const [menuItemArrayState, setmenuItemArray] = useState<menuItem[]>([]); //to store the menu Items for fast UI response when marking as unavailable
   const [pendingOrderState, setPendingOrders] = useState<orderType[]>([]); //this is for the pending orders. Storing in state for a smooth ui experience
-
+  const [newMenuItem, setNewMenuItem] = useState({
+    //what we pass when editing a menu Item
+    name: "",
+    price: 0,
+    description: "",
+    image: null as File | null,
+    category_id: 0,
+    menuId: "",
+  });
   const { data: userDetails, refetch: refetchDetails } = useQuery({
     queryKey: ["userDetails"],
     queryFn: () => dashboard(),
@@ -154,6 +175,58 @@ const RestaurantDashboardPage = () => {
     },
   });
 
+  const { status: editStatus, mutate: editMutate } = useMutation({
+    mutationFn: editMenu,
+    onSuccess: (data) => {
+      refetchMenuItems();
+      toast({
+        title: "Success",
+        description: data.message,
+      });
+      refetchMenuItems();
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleEditMenuItem = (
+    itemId: number,
+    restId: string,
+    e: React.FormEvent
+  ) => {
+    const found = menuItemArrayState.find((item) => item.id === itemId);
+    e.preventDefault();
+    found &&
+      editMutate({
+        name: found.name,
+        description: found.description,
+        category_id: found.category_id,
+        price: found.price,
+        image: found.image,
+        id: Number(itemId),
+        category: found.category,
+        is_available: "1",
+        restaurant_id: restId,
+      });
+  };
+  const handleImageChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    itemId: number
+  ) => {
+    const file = e.target.files?.[0];
+    if (!file) {
+      return;
+    }
+    setmenuItemArray((prev) =>
+      prev.map((item) => (item.id === itemId ? { ...item, image: file } : item))
+    );
+  };
+
   useEffect(() => {
     //this sets the pending orders state to the pending orders response
     console.log(localStorage.getItem("token"));
@@ -209,6 +282,11 @@ const RestaurantDashboardPage = () => {
     //this is here to filter only the truthy values from the edit profile form and we pass it to mutate, since the api can't accept empty strings as they'll override whatever is already there
     Object.entries(restaurant).filter(([_, value]) => value)
   );
+  const { status: categoryStatus, data: categories } = useQuery({
+    queryKey: ["categories"],
+    queryFn: getCategories,
+    staleTime: 30000,
+  });
 
   const { mutate: isAvailableMutate } = useMutation({
     mutationFn: updateItemAvailability,
@@ -835,9 +913,173 @@ const RestaurantDashboardPage = () => {
                                   </p>
                                 </div>
                                 <div className="flex space-x-2">
-                                  <button className="inline-flex items-center justify-center p-2 rounded-lg border border-secondary-200 text-secondary-700 hover:bg-secondary-50 transition-colors">
-                                    <FiEdit2 size={16} />
-                                  </button>
+                                  <Dialog>
+                                    <DialogTrigger asChild>
+                                      <button className="inline-flex items-center justify-center p-2 rounded-lg border border-secondary-200 text-secondary-700 hover:bg-secondary-50 transition-colors">
+                                        <FiEdit2 size={16} />
+                                      </button>
+                                    </DialogTrigger>
+                                    <DialogContent className="dark:text-cfont-dark overflow-auto max-h-[95vh]">
+                                      <DialogHeader>
+                                        <DialogTitle>
+                                          Edit Menu Item
+                                        </DialogTitle>
+                                      </DialogHeader>
+                                      <form
+                                        onSubmit={(e) =>
+                                          handleEditMenuItem(
+                                            item.id,
+                                            item.restaurant_id,
+                                            e
+                                          )
+                                        }
+                                        className="mt-4 space-y-4"
+                                      >
+                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                          <div>
+                                            <Label htmlFor="name">Name</Label>
+                                            <Input
+                                              id="name"
+                                              value={item.name}
+                                              onChange={(e) =>
+                                                setmenuItemArray((prev) =>
+                                                  prev.map((p) =>
+                                                    p.id === item.id
+                                                      ? {
+                                                          ...p,
+                                                          name: e.target.value,
+                                                        }
+                                                      : p
+                                                  )
+                                                )
+                                              }
+                                              required
+                                            />
+                                          </div>
+                                          <div>
+                                            <Label htmlFor="price">
+                                              Price (₦)
+                                            </Label>
+                                            <Input
+                                              id="price"
+                                              value={item.price}
+                                              onChange={(e) => {
+                                                setmenuItemArray((prev) =>
+                                                  prev.map((p) =>
+                                                    p.id === item.id
+                                                      ? {
+                                                          ...p,
+                                                          price: Number(
+                                                            e.target.value
+                                                          ),
+                                                        }
+                                                      : p
+                                                  )
+                                                );
+                                              }}
+                                              required
+                                            />
+                                          </div>
+                                          <div>
+                                            <Label htmlFor="description">
+                                              Description
+                                            </Label>
+                                            <Textarea
+                                              id="description"
+                                              value={item.description}
+                                              onChange={(e) =>
+                                                setmenuItemArray((prev) =>
+                                                  prev.map((p) =>
+                                                    p.id === item.id
+                                                      ? {
+                                                          ...p,
+                                                          description:
+                                                            e.target.value,
+                                                        }
+                                                      : p
+                                                  )
+                                                )
+                                              }
+                                              required
+                                            />
+                                          </div>
+
+                                          <div>
+                                            <Label htmlFor="image">Image</Label>
+                                            <Input
+                                              id="image"
+                                              type="file"
+                                              accept="image/*"
+                                              onChange={(event) =>
+                                                handleImageChange(
+                                                  event,
+                                                  item.id
+                                                )
+                                              }
+                                              required
+                                            />
+                                          </div>
+
+                                          <div>
+                                            <Label htmlFor="category">
+                                              Category
+                                            </Label>
+                                            <Select
+                                              onValueChange={(value) => {
+                                                setmenuItemArray((prev) =>
+                                                  prev.map((p) =>
+                                                    p.id === item.id
+                                                      ? {
+                                                          ...p,
+                                                          category_id:
+                                                            Number(value),
+                                                        }
+                                                      : p
+                                                  )
+                                                );
+                                              }}
+                                            >
+                                              <SelectTrigger className="w-[180px]">
+                                                <SelectValue placeholder="Choose Category" />
+                                              </SelectTrigger>
+                                              <SelectContent>
+                                                {categoryStatus ===
+                                                "pending" ? (
+                                                  <SelectItem value="" disabled>
+                                                    Loading categories...
+                                                  </SelectItem>
+                                                ) : categoryStatus ===
+                                                  "error" ? (
+                                                  <SelectItem value="" disabled>
+                                                    Error loading categories
+                                                  </SelectItem>
+                                                ) : (
+                                                  categories?.map(
+                                                    (category: category) => (
+                                                      <SelectItem
+                                                        key={category.id}
+                                                        value={String(
+                                                          category.id
+                                                        )}
+                                                      >
+                                                        {category.name}
+                                                      </SelectItem>
+                                                    )
+                                                  )
+                                                )}
+                                              </SelectContent>
+                                            </Select>
+                                          </div>
+                                        </div>
+                                        <Button
+                                          type="submit"
+                                          disabled={editStatus === "pending"}
+                                        >
+                                          Update Menu Item
+                                        </Button>
+                                      </form>
+                                    </DialogContent>
+                                  </Dialog>
                                   <button
                                     className={`inline-flex items-center justify-center px-3 py-2 rounded-lg text-sm font-medium ${
                                       item.is_available === "1"
