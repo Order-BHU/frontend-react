@@ -401,13 +401,6 @@ export default function RestaurantDashboardPage() {
 
   const { mutate: isAvailableMutate } = useMutation({
     mutationFn: updateItemAvailability,
-    onSuccess: (data) => {
-      toast({
-        title: "Success",
-        description: data.message,
-      });
-      refetchMenuItems();
-    },
     onError: (error) => {
       toast({
         title: "Error",

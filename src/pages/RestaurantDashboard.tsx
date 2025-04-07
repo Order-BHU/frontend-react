@@ -15,7 +15,6 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-  DialogClose,
 } from "@/components/ui/dialog";
 import {
   Select,
@@ -34,10 +33,10 @@ import {
   FiPieChart,
   FiCalendar,
   FiPlus,
-  FiCheck,
   FiX,
   FiMapPin,
   FiClock,
+  FiTrash,
 } from "react-icons/fi";
 import { editProfile, dashboard, changePassword } from "@/api/misc";
 import { useQuery, useMutation } from "@tanstack/react-query";
@@ -95,7 +94,6 @@ const orderValueChange = 5; // percentage
 const RestaurantDashboardPage = () => {
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState<TabType>("orders");
-  const [showEditProfileModal, setShowEditProfileModal] = useState(false);
   const [acceptedOrderState, setAccepted] = useState<orderType[]>([]);
   const [menuItemArrayState, setmenuItemArray] = useState<menuItem[]>([]); //to store the menu Items for fast UI response when marking as unavailable
   const [pendingOrderState, setPendingOrders] = useState<orderType[]>([]); //this is for the pending orders. Storing in state for a smooth ui experience
@@ -122,11 +120,7 @@ const RestaurantDashboardPage = () => {
     queryFn: () => myOrders("pending"),
     staleTime: 30000,
   });
-  const {
-    status: acceptedStatus,
-    data: acceptedOrders,
-    refetch: refetchaccepted,
-  } = useQuery({
+  const { data: acceptedOrders } = useQuery({
     queryKey: ["acceptedOrders"],
     queryFn: () => myOrders("accepted"),
     staleTime: 30000,
@@ -194,6 +188,33 @@ const RestaurantDashboardPage = () => {
     },
   });
 
+  const { status: mutateStatus, mutate: addMenuMutate } = useMutation({
+    mutationFn: addMenu,
+    onSuccess: (data) => {
+      console.log("add menu response: ", data);
+      toast({
+        title: "Success",
+        description: data.message,
+      });
+      setNewMenuItem({
+        name: "",
+        price: 0,
+        description: "",
+        image: null as File | null,
+        category_id: 0,
+        menuId: "",
+      });
+      refetchMenuItems();
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
   const handleEditMenuItem = (
     itemId: number,
     restId: string,
@@ -225,6 +246,29 @@ const RestaurantDashboardPage = () => {
     setmenuItemArray((prev) =>
       prev.map((item) => (item.id === itemId ? { ...item, image: file } : item))
     );
+  };
+
+  const handleAddMenuImageChange = (
+    //i know it's redundant, please bear with me here
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    if (e.target.files && e.target.files[0]) {
+      setNewMenuItem({ ...newMenuItem, image: e.target.files[0] });
+    }
+  };
+  const handleAddMenuItem = (e: React.FormEvent) => {
+    e.preventDefault();
+    addMenuMutate({
+      name: newMenuItem.name,
+      description: newMenuItem.description,
+      category_id: newMenuItem.category_id,
+      price: newMenuItem.price,
+      image: newMenuItem.image,
+      id: userDetails?.restaurant_details?.id,
+      restaurant_id: "",
+      category: "",
+      is_available: "1",
+    });
   };
 
   useEffect(() => {
@@ -343,6 +387,26 @@ const RestaurantDashboardPage = () => {
       value: value,
     });
     refetchMenuItems();
+  };
+  const { mutate: deleteMenuItemMutate } = useMutation({
+    mutationFn: deleteMenuItem,
+    onSuccess: () => {
+      refetchMenuItems();
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+      refetchMenuItems();
+    },
+  });
+  const handleDeleteMenuItem = (id: number) => {
+    console.log("deleting");
+    deleteMenuItemMutate(id);
+
+    setmenuItemArray((prev) => prev.filter((item) => item.id !== id));
   };
   return (
     <div className="bg-secondary-50 min-h-screen pt-20 pb-20">
@@ -687,182 +751,187 @@ const RestaurantDashboardPage = () => {
           custom={5}
         >
           {/* Order Management Tab */}
-          {activeTab === "orders" && (
-            <div className="space-y-8">
-              {/* Pending Orders */}
-              <div className="bg-white rounded-2xl shadow-soft-md overflow-hidden">
-                <div className="p-6 border-b border-gray-100">
-                  <h2 className="text-2xl font-bold text-secondary-900">
-                    Pending Orders
-                  </h2>
-                </div>
-                <div className="p-6">
-                  {pendingOrderState?.length === 0 ? (
-                    <div className="text-center py-8">
-                      <div className="mx-auto w-16 h-16 bg-secondary-100 rounded-full flex items-center justify-center mb-4">
-                        <FiShoppingBag className="w-8 h-8 text-secondary-400" />
-                      </div>
-                      <p className="text-secondary-600 mb-2">
-                        No pending orders
-                      </p>
-                      <p className="text-secondary-500 text-sm">
-                        New orders will appear here
-                      </p>
-                    </div>
-                  ) : (
-                    <div className="space-y-4">
-                      {pendingOrderState &&
-                        pendingOrderState.map((order) => (
-                          <div
-                            key={order.id}
-                            className="bg-secondary-50 rounded-xl p-4 shadow-sm"
-                          >
-                            <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
-                              <div>
-                                <div className="flex items-center">
-                                  <span className="text-lg font-semibold text-secondary-900 mr-3">
-                                    Order {order.id}
-                                  </span>
-                                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                                    {order.status}
-                                  </span>
-                                </div>
-                                <p className="text-secondary-600 text-sm mt-1">
-                                  {order.user_phoneNumber}
-                                </p>
-                              </div>
-                              <div className="mt-2 md:mt-0">
-                                <span className="text-primary-600 font-semibold">
-                                  ₦{order.total.toFixed(2)}
-                                </span>
-                              </div>
-                            </div>
-                            <div className="border-t border-secondary-200 pt-3 pb-2">
-                              <h4 className="text-sm font-medium text-secondary-600 mb-2">
-                                Items:
-                              </h4>
-                              <ul className="pl-5 list-disc text-sm text-secondary-600 mb-3">
-                                {order.items.map((item, index) => (
-                                  <li
-                                    key={index}
-                                  >{`${item.item_name} X${item.quantity}`}</li>
-                                ))}
-                              </ul>
-                              <div className="flex items-center text-sm text-secondary-600">
-                                <FiMapPin className="mr-1" />
-                                <span>Delivery to: {order.location}</span>
-                              </div>
-                            </div>
-                            <div className="flex justify-end mt-4 space-x-3">
-                              <button
-                                className="inline-flex items-center justify-center px-4 py-2 rounded-lg text-white bg-red-500 hover:bg-red-600 transition-colors text-sm"
-                                onClick={() =>
-                                  handleOrderAccept(order.id, "accepted")
-                                }
-                              >
-                                <FiX className="mr-1" /> Reject
-                              </button>
-                              {/* <button className="inline-flex items-center justify-center px-4 py-2 rounded-lg text-white bg-primary-600 hover:bg-primary-700 shadow-sm transition-colors text-sm">
-                                <FiCheck className="mr-1" /> Accept
-                              </button> */}
-                            </div>
-                          </div>
-                        ))}
-                    </div>
-                  )}
-                </div>
+          {activeTab === "orders" &&
+            (orderStatus === "pending" ? (
+              <div className="flex justify-center items-center min-h-screen bg-secondary-50">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
               </div>
-
-              {/* Accepted Orders */}
-              <div className="bg-white rounded-2xl shadow-soft-md overflow-hidden">
-                <div className="p-6 border-b border-gray-100">
-                  <h2 className="text-2xl font-bold text-secondary-900">
-                    Accepted Orders
-                  </h2>
-                </div>
-                <div className="p-6">
-                  {acceptedOrderState?.length === 0 ? (
-                    <div className="text-center py-8">
-                      <div className="mx-auto w-16 h-16 bg-secondary-100 rounded-full flex items-center justify-center mb-4">
-                        <FiTruck className="w-8 h-8 text-secondary-400" />
+            ) : (
+              <div className="space-y-8">
+                {/* Pending Orders */}
+                <div className="bg-white rounded-2xl shadow-soft-md overflow-hidden">
+                  <div className="p-6 border-b border-gray-100">
+                    <h2 className="text-2xl font-bold text-secondary-900">
+                      Pending Orders
+                    </h2>
+                  </div>
+                  <div className="p-6">
+                    {pendingOrderState?.length === 0 ? (
+                      <div className="text-center py-8">
+                        <div className="mx-auto w-16 h-16 bg-secondary-100 rounded-full flex items-center justify-center mb-4">
+                          <FiShoppingBag className="w-8 h-8 text-secondary-400" />
+                        </div>
+                        <p className="text-secondary-600 mb-2">
+                          No pending orders
+                        </p>
+                        <p className="text-secondary-500 text-sm">
+                          New orders will appear here
+                        </p>
                       </div>
-                      <p className="text-secondary-600 mb-2">
-                        No accepted orders
-                      </p>
-                      <p className="text-secondary-500 text-sm">
-                        Accepted orders will appear here
-                      </p>
-                    </div>
-                  ) : (
-                    <div className="space-y-4">
-                      {acceptedOrderState &&
-                        acceptedOrderState.map((order) => (
-                          <div
-                            key={order.id}
-                            className="bg-secondary-50 rounded-xl p-4 shadow-sm"
-                          >
-                            <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
-                              <div>
-                                <div className="flex items-center">
-                                  <span className="text-lg font-semibold text-secondary-900 mr-3">
-                                    {order.id}
-                                  </span>
-                                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                    Accepted
+                    ) : (
+                      <div className="space-y-4">
+                        {pendingOrderState &&
+                          pendingOrderState.map((order) => (
+                            <div
+                              key={order.id}
+                              className="bg-secondary-50 rounded-xl p-4 shadow-sm"
+                            >
+                              <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
+                                <div>
+                                  <div className="flex items-center">
+                                    <span className="text-lg font-semibold text-secondary-900 mr-3">
+                                      Order {order.id}
+                                    </span>
+                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                      {order.status}
+                                    </span>
+                                  </div>
+                                  <p className="text-secondary-600 text-sm mt-1">
+                                    {order.user_phoneNumber}
+                                  </p>
+                                </div>
+                                <div className="mt-2 md:mt-0">
+                                  <span className="text-primary-600 font-semibold">
+                                    ₦{order.total.toFixed(2)}
                                   </span>
                                 </div>
-                                <p className="text-secondary-600 text-sm mt-1">
-                                  {order.user_phoneNumber}
-                                </p>
                               </div>
-                              <div className="mt-2 md:mt-0">
-                                <span className="text-primary-600 font-semibold">
-                                  ${order.total.toFixed(2)}
-                                </span>
-                              </div>
-                            </div>
-                            <div className="border-t border-secondary-200 pt-3 pb-2">
-                              <h4 className="text-sm font-medium text-secondary-600 mb-2">
-                                Items:
-                              </h4>
-                              <ul className="pl-5 list-disc text-sm text-secondary-600 mb-3">
-                                {order.items.map((item, index) => (
-                                  <li
-                                    key={index}
-                                  >{`${item.item_name} X${item.quantity}`}</li>
-                                ))}
-                              </ul>
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
-                                <div className="flex items-center text-secondary-600">
+                              <div className="border-t border-secondary-200 pt-3 pb-2">
+                                <h4 className="text-sm font-medium text-secondary-600 mb-2">
+                                  Items:
+                                </h4>
+                                <ul className="pl-5 list-disc text-sm text-secondary-600 mb-3">
+                                  {order.items.map((item, index) => (
+                                    <li
+                                      key={index}
+                                    >{`${item.item_name} X${item.quantity}`}</li>
+                                  ))}
+                                </ul>
+                                <div className="flex items-center text-sm text-secondary-600">
                                   <FiMapPin className="mr-1" />
                                   <span>Delivery to: {order.location}</span>
                                 </div>
-                                <div className="flex items-center text-secondary-600">
-                                  <FiClock className="mr-1" />
-                                  <span>
-                                    Estimated delivery: soon enough {":)"}
+                              </div>
+                              <div className="flex justify-end mt-4 space-x-3">
+                                <button
+                                  className="inline-flex items-center justify-center px-4 py-2 rounded-lg text-white bg-red-500 hover:bg-red-600 transition-colors text-sm"
+                                  onClick={() =>
+                                    handleOrderAccept(order.id, "accepted")
+                                  }
+                                >
+                                  <FiX className="mr-1" /> Reject
+                                </button>
+                                {/* <button className="inline-flex items-center justify-center px-4 py-2 rounded-lg text-white bg-primary-600 hover:bg-primary-700 shadow-sm transition-colors text-sm">
+                                <FiCheck className="mr-1" /> Accept
+                              </button> */}
+                              </div>
+                            </div>
+                          ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Accepted Orders */}
+                <div className="bg-white rounded-2xl shadow-soft-md overflow-hidden">
+                  <div className="p-6 border-b border-gray-100">
+                    <h2 className="text-2xl font-bold text-secondary-900">
+                      Accepted Orders
+                    </h2>
+                  </div>
+                  <div className="p-6">
+                    {acceptedOrderState?.length === 0 ? (
+                      <div className="text-center py-8">
+                        <div className="mx-auto w-16 h-16 bg-secondary-100 rounded-full flex items-center justify-center mb-4">
+                          <FiTruck className="w-8 h-8 text-secondary-400" />
+                        </div>
+                        <p className="text-secondary-600 mb-2">
+                          No accepted orders
+                        </p>
+                        <p className="text-secondary-500 text-sm">
+                          Accepted orders will appear here
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="space-y-4">
+                        {acceptedOrderState &&
+                          acceptedOrderState.map((order) => (
+                            <div
+                              key={order.id}
+                              className="bg-secondary-50 rounded-xl p-4 shadow-sm"
+                            >
+                              <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
+                                <div>
+                                  <div className="flex items-center">
+                                    <span className="text-lg font-semibold text-secondary-900 mr-3">
+                                      {order.id}
+                                    </span>
+                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                      Accepted
+                                    </span>
+                                  </div>
+                                  <p className="text-secondary-600 text-sm mt-1">
+                                    {order.user_phoneNumber}
+                                  </p>
+                                </div>
+                                <div className="mt-2 md:mt-0">
+                                  <span className="text-primary-600 font-semibold">
+                                    ${order.total.toFixed(2)}
                                   </span>
                                 </div>
                               </div>
+                              <div className="border-t border-secondary-200 pt-3 pb-2">
+                                <h4 className="text-sm font-medium text-secondary-600 mb-2">
+                                  Items:
+                                </h4>
+                                <ul className="pl-5 list-disc text-sm text-secondary-600 mb-3">
+                                  {order.items.map((item, index) => (
+                                    <li
+                                      key={index}
+                                    >{`${item.item_name} X${item.quantity}`}</li>
+                                  ))}
+                                </ul>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
+                                  <div className="flex items-center text-secondary-600">
+                                    <FiMapPin className="mr-1" />
+                                    <span>Delivery to: {order.location}</span>
+                                  </div>
+                                  <div className="flex items-center text-secondary-600">
+                                    <FiClock className="mr-1" />
+                                    <span>
+                                      Estimated delivery: soon enough {":)"}
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="flex justify-end mt-4">
+                                <button
+                                  className="inline-flex items-center justify-center px-4 py-2 rounded-lg text-white bg-green-600 hover:bg-green-700 shadow-sm transition-colors text-sm"
+                                  onClick={() =>
+                                    handleOrderAccept(order.id, "ready")
+                                  }
+                                >
+                                  <FiTruck className="mr-1" /> Mark as Ready
+                                </button>
+                              </div>
                             </div>
-                            <div className="flex justify-end mt-4">
-                              <button
-                                className="inline-flex items-center justify-center px-4 py-2 rounded-lg text-white bg-green-600 hover:bg-green-700 shadow-sm transition-colors text-sm"
-                                onClick={() =>
-                                  handleOrderAccept(order.id, "ready")
-                                }
-                              >
-                                <FiTruck className="mr-1" /> Mark as Ready
-                              </button>
-                            </div>
-                          </div>
-                        ))}
-                    </div>
-                  )}
+                          ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
+            ))}
 
           {/* Menu Management Tab */}
           {activeTab === "menu" && (
@@ -871,12 +940,134 @@ const RestaurantDashboardPage = () => {
                 <h2 className="text-2xl font-bold text-secondary-900">
                   Menu Items
                 </h2>
-                <button className="inline-flex items-center justify-center px-4 py-2 rounded-lg text-white bg-primary-600 hover:bg-primary-700 shadow-sm transition-colors text-sm">
-                  <FiPlus className="mr-1" /> Add Item
-                </button>
+
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <button className="inline-flex items-center justify-center px-4 py-2 rounded-lg text-white bg-primary-600 hover:bg-primary-700 shadow-sm transition-colors text-sm">
+                      <FiPlus className="mr-1" /> Add Item
+                    </button>
+                  </DialogTrigger>
+                  <DialogContent className="dark:text-cfont-dark overflow-auto max-h-[95vh]">
+                    <DialogHeader>
+                      <DialogTitle>Add Menu Item</DialogTitle>
+                    </DialogHeader>
+                    <form
+                      onSubmit={handleAddMenuItem}
+                      className="mt-4 space-y-4"
+                    >
+                      <h3 className="text-lg font-semibold">
+                        Add New Menu Item
+                      </h3>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                          <Label htmlFor="name">Name</Label>
+                          <Input
+                            id="name"
+                            value={newMenuItem.name}
+                            onChange={(e) =>
+                              setNewMenuItem({
+                                ...newMenuItem,
+                                name: e.target.value,
+                              })
+                            }
+                            required
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="price">Price (₦)</Label>
+                          <Input
+                            id="price"
+                            value={newMenuItem.price}
+                            onChange={(e) => {
+                              const { value } = e.target;
+
+                              setNewMenuItem({
+                                ...newMenuItem,
+                                price: Number(value.replace(/[^0-9]/g, "")),
+                              });
+                            }}
+                            required
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="description">Description</Label>
+                          <Textarea
+                            id="description"
+                            value={newMenuItem.description}
+                            onChange={(e) =>
+                              setNewMenuItem({
+                                ...newMenuItem,
+                                description: e.target.value,
+                              })
+                            }
+                            required
+                          />
+                        </div>
+
+                        <div>
+                          <Label htmlFor="image">Image</Label>
+                          <Input
+                            id="image"
+                            type="file"
+                            accept="image/*"
+                            onChange={handleAddMenuImageChange}
+                            required
+                          />
+                        </div>
+
+                        <div>
+                          <Label htmlFor="category">Category</Label>
+                          <Select
+                            onValueChange={(value) => {
+                              setNewMenuItem({
+                                ...newMenuItem,
+                                category_id: Number(value),
+                              });
+                            }}
+                          >
+                            <SelectTrigger className="w-[180px]">
+                              <SelectValue placeholder="Choose Category" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {categoryStatus === "pending" ? (
+                                <SelectItem value="" disabled>
+                                  Loading categories...
+                                </SelectItem>
+                              ) : categoryStatus === "error" ? (
+                                <SelectItem value="" disabled>
+                                  Error loading categories
+                                </SelectItem>
+                              ) : (
+                                categories?.map((category: category) => (
+                                  <SelectItem
+                                    key={category.id}
+                                    value={String(category.id)}
+                                  >
+                                    {category.name}
+                                  </SelectItem>
+                                ))
+                              )}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                      <Button
+                        type="submit"
+                        disabled={mutateStatus === "pending"}
+                      >
+                        Add Menu Item
+                      </Button>
+                    </form>
+                  </DialogContent>
+                </Dialog>
               </div>
               <div className="p-6">
-                {menuItems &&
+                {menuStatus === "pending" ? (
+                  <div className="flex justify-center items-center min-h-screen bg-secondary-50">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+                  </div>
+                ) : (
+                  menuItems &&
                   menuItems.map((category: menu) => (
                     <div key={category.id} className="mb-8 last:mb-0">
                       <h3 className="text-xl font-semibold text-secondary-900 mb-4">
@@ -913,6 +1104,14 @@ const RestaurantDashboardPage = () => {
                                   </p>
                                 </div>
                                 <div className="flex space-x-2">
+                                  <button
+                                    className="inline-flex items-center justify-center p-2 rounded-lg border border-secondary-200 text-secondary-700 hover:bg-secondary-50 transition-colors"
+                                    onClick={() =>
+                                      handleDeleteMenuItem(item.id)
+                                    }
+                                  >
+                                    <FiTrash size={16} />
+                                  </button>
                                   <Dialog>
                                     <DialogTrigger asChild>
                                       <button className="inline-flex items-center justify-center p-2 rounded-lg border border-secondary-200 text-secondary-700 hover:bg-secondary-50 transition-colors">
@@ -1104,7 +1303,8 @@ const RestaurantDashboardPage = () => {
                         )}
                       </div>
                     </div>
-                  ))}
+                  ))
+                )}
               </div>
             </div>
           )}
