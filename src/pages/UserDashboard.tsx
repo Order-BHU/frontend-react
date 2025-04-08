@@ -11,15 +11,22 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { Progress } from "@/components/ui/progress";
 
-import { User, LogOut, ChevronRight, MapPin, CreditCard } from "lucide-react";
-import { editProfile, dashboard, changePassword } from "@/api/misc";
+import { User, LogOut, ChevronRight } from "lucide-react";
+import { logOut } from "@/api/auth";
+import { dashboard } from "@/api/misc";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { myOrders, trackOrder } from "@/api/restaurant";
-import { orderType, orderHistoryType } from "@/interfaces/restaurantType";
+import { orderHistoryType } from "@/interfaces/restaurantType";
 import Loader from "@/components/loaderAnimation";
 import EditProfileModal from "@/components/editProfileModal";
+import { useNavigate } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
+import UseAuthStore from "@/stores/useAuthStore";
 
 export default function UserDashboardPage() {
+  const navigate = useNavigate();
+  const { logout } = UseAuthStore();
+  const { toast } = useToast();
   const { data: userDetails, refetch: refetchDetails } = useQuery({
     queryKey: ["userDetails"],
     queryFn: dashboard,
@@ -35,6 +42,38 @@ export default function UserDashboardPage() {
     queryFn: () => myOrders("history"),
     queryKey: ["history"],
   });
+  const { status: logoutStatus, mutate: logoutMutate } = useMutation({
+    mutationFn: logOut,
+    onSuccess: (data) => {
+      logout();
+      navigate("/login/");
+      toast({
+        title: "success!",
+        description: data.message,
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+      return;
+    },
+  });
+
+  const handleLogout = () => {
+    const usertoken = localStorage.getItem("token");
+    if (!usertoken) {
+      toast({
+        title: "Error",
+        description: "Not authenticated",
+        variant: "destructive",
+      });
+      return;
+    }
+    logoutMutate(usertoken);
+  };
   const setTrackedProgress = () => {
     if (!trackedOrder) {
       return {
@@ -82,6 +121,14 @@ export default function UserDashboardPage() {
     }
     //this passes the progress to the progress element
   };
+  if (logoutStatus === "pending") {
+    return (
+      <div>
+        <Loader />
+        <p>Logging you Out</p>
+      </div>
+    );
+  }
   return (
     <div className="flex min-h-screen flex-col bg-slate-50">
       {/* Header */}
@@ -138,10 +185,10 @@ export default function UserDashboardPage() {
                       {userDetails?.user?.phone_number}
                     </p>
                     <div className="flex items-center mt-2"></div>
-                    <div className="mt-2 flex items-center text-xs text-gray-500">
+                    {/* <div className="mt-2 flex items-center text-xs text-gray-500">
                       <MapPin className="mr-1 h-3 w-3" />
-                      <span>123 Main Street, Apt 4B, New York, NY 10001</span>
-                    </div>
+                      <span></span>
+                    </div> */}
                   </div>
                 </div>
               </CardContent>
@@ -165,7 +212,7 @@ export default function UserDashboardPage() {
                     phone_number_type: userDetails?.user?.phone_number_type,
                   }}
                 />
-                <Button
+                {/* <Button
                   variant="outline"
                   className="w-full justify-between rounded-xl border-gray-200 bg-white shadow-sm"
                 >
@@ -174,11 +221,12 @@ export default function UserDashboardPage() {
                     View Transactions
                   </span>
                   <ChevronRight className="h-4 w-4" />
-                </Button>
+                </Button> */}
 
                 <Button
                   variant="outline"
                   className="w-full justify-between rounded-xl border-gray-200 bg-white shadow-sm"
+                  onClick={handleLogout}
                 >
                   <span className="flex items-center">
                     <LogOut className="mr-2 h-4 w-4" />
@@ -215,10 +263,10 @@ export default function UserDashboardPage() {
                     <Card className="gradient-border">
                       <CardHeader>
                         <CardTitle className="text-xl text-gray-900">
-                          Active Orders
+                          Active Order
                         </CardTitle>
                         <CardDescription>
-                          Track your current orders in real-time
+                          Track your order in real-time
                         </CardDescription>
                       </CardHeader>
                       <CardContent>
@@ -331,7 +379,10 @@ export default function UserDashboardPage() {
                   <CardContent>
                     <div className="space-y-4">
                       {/* Past order item */}
-                      {orderHistory &&
+                      {historyStatus === "pending" ? (
+                        <Loader />
+                      ) : (
+                        orderHistory &&
                         orderHistory.orders.map((order: orderHistoryType) => (
                           <div
                             key={order.order_id}
@@ -383,7 +434,8 @@ export default function UserDashboardPage() {
                               </div>
                             </div>
                           </div>
-                        ))}
+                        ))
+                      )}
 
                       {/* Past order item */}
                     </div>
