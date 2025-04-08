@@ -71,6 +71,21 @@ export interface orderType {
   driver_number: string;
 }
 
+export interface orderHistoryType {
+  order_id: number;
+  restaurant_name: string;
+  items: {
+    menu_id: number;
+    quantity: number;
+    menu_name: string;
+    menu_price: number;
+    is_available: string; // If this should be a boolean, convert it to `boolean` in your code.
+    menu_picture: string;
+  }[];
+  total: string;
+  order_date: string | null;
+}
+
 export interface restaurantMetric {
   average_order_value: number;
   id: number;

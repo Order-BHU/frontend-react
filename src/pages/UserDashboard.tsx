@@ -15,7 +15,8 @@ import { User, LogOut, ChevronRight, MapPin, CreditCard } from "lucide-react";
 import { editProfile, dashboard, changePassword } from "@/api/misc";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { myOrders, trackOrder } from "@/api/restaurant";
-import { orderType } from "@/interfaces/restaurantType";
+import { orderType, orderHistoryType } from "@/interfaces/restaurantType";
+import Loader from "@/components/loaderAnimation";
 
 export default function UserDashboardPage() {
   const { data: userDetails, refetch: refetchDetails } = useQuery({
@@ -29,6 +30,57 @@ export default function UserDashboardPage() {
     queryKey: ["trackedorders"], // Ensure key changes when userOrder changes
     staleTime: 30000,
   });
+  const { data: orderHistory, status: historyStatus } = useQuery({
+    queryFn: () => myOrders("history"),
+    queryKey: ["history"],
+  });
+  const setTrackedProgress = () => {
+    if (!trackedOrder) {
+      return {
+        progress: 0,
+        message: "no order",
+      };
+    } else {
+      const status: string = trackedOrder.status;
+      switch (status) {
+        case "pending":
+          return {
+            progress: 0,
+            message:
+              "Your order has been made and is waiting to be confirmed by the restaurant",
+          };
+        case "accepted":
+          return {
+            progress: 20,
+            message:
+              "Your order has been accepted. Waiting for the chefs to work their magic",
+          };
+        case "ready":
+          return {
+            progress: 50,
+            message:
+              "Almost There! A delivery person will be assigned in no time!",
+          };
+        case "delivering":
+          return {
+            progress: 80,
+            message: "Any minute now... Your food is on its way to you",
+          };
+        case "delivered":
+          return {
+            progress: 100,
+            message: "Enjoy your meal!!",
+          };
+        default:
+          return {
+            progress: 0,
+            message:
+              "Your order has been made and is waiting to be confirmed by the restaurant",
+          };
+      }
+    }
+    //this passes the progress to the progress element
+  };
   return (
     <div className="flex min-h-screen flex-col bg-slate-50">
       {/* Header */}
@@ -155,99 +207,114 @@ export default function UserDashboardPage() {
                 </TabsTrigger>
               </TabsList>
               <TabsContent value="active" className="mt-4">
-                {trackedOrder && (
-                  <Card className="gradient-border">
-                    <CardHeader>
-                      <CardTitle className="text-xl text-gray-900">
-                        Active Orders
-                      </CardTitle>
-                      <CardDescription>
-                        Track your current orders in real-time
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="rounded-lg bg-orange-50 p-4 border border-orange-100">
-                        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-                          <div>
-                            <div className="flex items-center">
-                              <span className="text-sm font-medium text-gray-500">
-                                Order BHUO-{trackedOrder.order_id}
-                              </span>
-                              <span className="ml-3 rounded-full bg-orange-200 px-2.5 py-0.5 text-xs font-medium text-orange-700">
-                                {trackedOrder.status}
+                {trackedStatus === "pending" ? (
+                  <Loader />
+                ) : (
+                  trackedOrder && (
+                    <Card className="gradient-border">
+                      <CardHeader>
+                        <CardTitle className="text-xl text-gray-900">
+                          Active Orders
+                        </CardTitle>
+                        <CardDescription>
+                          Track your current orders in real-time
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="rounded-lg bg-orange-50 p-4 border border-orange-100">
+                          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                            <div>
+                              <div className="flex items-center">
+                                <span className="text-sm font-medium text-gray-500">
+                                  Order BHUO-{trackedOrder.order_id}{" "}
+                                  <span className="italic text-sm font-medium text-black">
+                                    {trackedOrder.order_code}
+                                  </span>
+                                </span>
+                                <span className="ml-3 rounded-full bg-orange-200 px-2.5 py-0.5 text-xs font-medium text-orange-700">
+                                  {trackedOrder.status === "pending"
+                                    ? "Waiting for restaurant..."
+                                    : trackedOrder.status}
+                                </span>
+                              </div>
+                              <ul>
+                                {trackedOrder.items.map(
+                                  (order: {
+                                    menu_id: number;
+                                    quantity: number;
+                                    menu_name: string;
+                                    menu_price: number;
+                                    item_name: string /*man... he changed the names without telling, and now idk what to add or remove. bear with me here, this is for pending orders but idk if the change carries over to all order types */;
+                                  }) => (
+                                    <li>
+                                      <h3 className="mt-1 text-lg font-medium text-gray-900">
+                                        {`${order.menu_name} X${order.quantity}`}
+                                      </h3>
+                                    </li>
+                                  )
+                                )}
+                              </ul>
+
+                              <p className="text-sm text-gray-600">
+                                {trackedOrder.restaurant_name}
+                              </p>
+                            </div>
+                            <div className="flex flex-col items-end">
+                              <span className="mt-2 font-medium text-gray-900">
+                                ₦{Number(trackedOrder.total).toLocaleString()}
                               </span>
                             </div>
-                            <ul>
-                              {trackedOrder.items.map(
-                                (order: {
-                                  menu_id: number;
-                                  quantity: number;
-                                  menu_name: string;
-                                  menu_price: number;
-                                  item_name: string /*man... he changed the names without telling, and now idk what to add or remove. bear with me here, this is for pending orders but idk if the change carries over to all order types */;
-                                }) => (
-                                  <li>
-                                    <h3 className="mt-1 text-lg font-medium text-gray-900">
-                                      {`${order.menu_name} X${order.quantity}`}
-                                    </h3>
-                                  </li>
-                                )
-                              )}
-                            </ul>
+                          </div>
 
-                            <p className="text-sm text-gray-600">
-                              {trackedOrder.restaurant_name}
-                            </p>
+                          <div className="mt-6">
+                            <div className="flex justify-between mb-2">
+                              <span className="text-sm font-medium text-gray-900">
+                                Order Progress
+                              </span>
+                              <span className="text-sm font-medium text-orange-600">
+                                {setTrackedProgress().progress}%
+                              </span>
+                            </div>
+                            <Progress
+                              value={setTrackedProgress().progress}
+                              className="h-2"
+                            />
+
+                            <div className="flex w-full justify-between text-xs text-gray-600 mt-2">
+                              <span className="flex flex-col items-center">
+                                <span className="h-4 w-4 rounded-full bg-orange-500 flex items-center justify-center text-white text-[10px]">
+                                  ✓
+                                </span>
+                                <span className="mt-1">Preparing</span>
+                              </span>
+                              <span className="flex flex-col items-center">
+                                <span className="h-4 w-4 rounded-full bg-orange-500 flex items-center justify-center text-white relative text-[10px]">
+                                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-orange-400 opacity-75" />
+                                  ✓
+                                </span>
+                                <span className="mt-1">Ready for Pickup</span>
+                              </span>
+                              <span className="flex flex-col items-center">
+                                <span className="h-4 w-4 rounded-full bg-gray-200 flex items-center justify-center text-gray-400 text-[10px]">
+                                  3
+                                </span>
+                                <span className="mt-1">On the way</span>
+                              </span>
+                              <span className="flex flex-col items-center">
+                                <span className="h-4 w-4 rounded-full bg-gray-200 flex items-center justify-center text-gray-400 text-[10px]">
+                                  4
+                                </span>
+                                <span className="mt-1">Delivered</span>
+                              </span>
+                            </div>
                           </div>
-                          <div className="flex flex-col items-end">
-                            <span className="mt-2 font-medium text-gray-900">
-                              ₦{Number(trackedOrder.total).toLocaleString()}
-                            </span>
-                          </div>
+                          <span className="italic h-4 flex items-center justify-left text-gray-500 text-[12px] mt-3">
+                            {setTrackedProgress().message}
+                          </span>
                         </div>
-
-                        <div className="mt-6">
-                          <div className="flex justify-between mb-2">
-                            <span className="text-sm font-medium text-gray-900">
-                              Order Progress
-                            </span>
-                            <span className="text-sm font-medium text-orange-600">
-                              40%
-                            </span>
-                          </div>
-                          <Progress value={40} className="h-2" />
-
-                          <div className="flex w-full justify-between text-xs text-gray-600 mt-2">
-                            <span className="flex flex-col items-center">
-                              <span className="h-4 w-4 rounded-full bg-orange-500 flex items-center justify-center text-white text-[10px]">
-                                ✓
-                              </span>
-                              <span className="mt-1">Accepted</span>
-                            </span>
-                            <span className="flex flex-col items-center">
-                              <span className="h-4 w-4 rounded-full bg-orange-500 flex items-center justify-center text-white relative text-[10px]">
-                                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-orange-400 opacity-75" />
-                                ✓
-                              </span>
-                              <span className="mt-1">Preparing</span>
-                            </span>
-                            <span className="flex flex-col items-center">
-                              <span className="h-4 w-4 rounded-full bg-gray-200 flex items-center justify-center text-gray-400 text-[10px]">
-                                3
-                              </span>
-                              <span className="mt-1">On the way</span>
-                            </span>
-                            <span className="flex flex-col items-center">
-                              <span className="h-4 w-4 rounded-full bg-gray-200 flex items-center justify-center text-gray-400 text-[10px]">
-                                4
-                              </span>
-                              <span className="mt-1">Delivered</span>
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
+                      </CardContent>
+                    </Card>
+                  )
                 )}
               </TabsContent>
               <TabsContent value="history" className="mt-4">
@@ -263,74 +330,61 @@ export default function UserDashboardPage() {
                   <CardContent>
                     <div className="space-y-4">
                       {/* Past order item */}
-                      <div className="rounded-lg border border-gray-200 p-4 transition-all hover:bg-gray-50 hover:border-orange-200">
-                        <div className="flex flex-col sm:flex-row justify-between">
-                          <div>
-                            <div className="flex items-center">
-                              <span className="text-sm font-medium text-gray-500">
-                                Order #BHU-12344
-                              </span>
-                              <span className="ml-3 rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-700">
-                                Delivered
-                              </span>
-                            </div>
-                            <h3 className="mt-1 text-lg font-medium text-gray-900">
-                              Pasta Primavera
-                            </h3>
-                            <p className="text-sm text-gray-600">
-                              Olive Garden - Delivered May 10, 2023
-                            </p>
-                          </div>
-                          <div className="flex flex-col sm:items-end mt-3 sm:mt-0">
-                            <span className="font-medium text-gray-900">
-                              $18.99
-                            </span>
+                      {orderHistory &&
+                        orderHistory.orders.map((order: orderHistoryType) => (
+                          <div
+                            key={order.order_id}
+                            className="rounded-lg border border-gray-200 p-4 transition-all hover:bg-gray-50 hover:border-orange-200"
+                          >
+                            <div className="flex flex-col sm:flex-row justify-between">
+                              <div>
+                                <div className="flex items-center">
+                                  <span className="text-sm font-medium text-gray-500">
+                                    Order #BHUO-{order.order_id}
+                                  </span>
+                                  <span className="ml-3 rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-700">
+                                    Delivered
+                                  </span>
+                                </div>
+                                <h3 className="mt-1 text-lg font-medium text-gray-900">
+                                  {order.restaurant_name}
+                                </h3>
+                                <p className="text-sm text-gray-600">
+                                  {order.order_date}
+                                </p>
+                                <ul>
+                                  {order.items.map(
+                                    (item: {
+                                      menu_id: number;
+                                      quantity: number;
+                                      menu_name: string;
+                                      menu_price: number;
+                                      is_available: string;
+                                      menu_picture: string;
+                                    }) => (
+                                      <li className="text-sm font-medium text-gray-500">{`${item.menu_name} X${item.quantity} `}</li>
+                                    )
+                                  )}
+                                </ul>
+                              </div>
+                              <div className="flex flex-col sm:items-end mt-3 sm:mt-0">
+                                <span className="font-medium text-gray-900">
+                                  ₦{order.total}
+                                </span>
 
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="mt-2 rounded-xl text-orange-600 border-orange-200"
-                            >
-                              Reorder
-                            </Button>
+                                {/* <Button
+                            variant="outline"
+                            size="sm"
+                            className="mt-2 rounded-xl text-orange-600 border-orange-200"
+                          >
+                            Reorder
+                          </Button> */}
+                              </div>
+                            </div>
                           </div>
-                        </div>
-                      </div>
+                        ))}
 
                       {/* Past order item */}
-                      <div className="rounded-lg border border-gray-200 p-4 transition-all hover:bg-gray-50 hover:border-orange-200">
-                        <div className="flex flex-col sm:flex-row justify-between">
-                          <div>
-                            <div className="flex items-center">
-                              <span className="text-sm font-medium text-gray-500">
-                                Order #BHU-12343
-                              </span>
-                              <span className="ml-3 rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-700">
-                                Delivered
-                              </span>
-                            </div>
-                            <h3 className="mt-1 text-lg font-medium text-gray-900">
-                              Veggie Pizza Combo
-                            </h3>
-                            <p className="text-sm text-gray-600">
-                              Pizza Hut - Delivered May 3, 2023
-                            </p>
-                          </div>
-                          <div className="flex flex-col sm:items-end mt-3 sm:mt-0">
-                            <span className="font-medium text-gray-900">
-                              $24.50
-                            </span>
-
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="mt-2 rounded-xl text-orange-600 border-orange-200"
-                            >
-                              Reorder
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
                     </div>
                   </CardContent>
                 </Card>
