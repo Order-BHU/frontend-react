@@ -1,5 +1,5 @@
 import React, { useState, FormEvent, ChangeEvent } from "react";
-import { FiEdit2 } from "react-icons/fi";
+import { User, ChevronRight } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -16,17 +16,16 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { editProfile, changePassword } from "@/api/misc";
+import { useMutation } from "@tanstack/react-query";
+import { useToast } from "@/hooks/use-toast";
 
 interface UserDetails {
-  message?: {
-    restaurant_name?: string;
-    // Add other user details properties as needed
-  };
-}
-
-interface RestaurantState {
-  name: string;
-  phone_number_type: "whatsapp" | "phone";
+  restaurant_name?: string;
+  name?: string;
+  profile_picture?: File | null;
+  phone_number_type?: "whatsapp" | "phone";
+  // Add other user details properties as needed
 }
 
 interface PasswordState {
@@ -35,31 +34,49 @@ interface PasswordState {
   confirm_password: string;
 }
 
-type MutationStatus = "idle" | "pending" | "success" | "error";
-
-interface RestaurantProfileModalProps {
+interface EditProfileModalProps {
   userDetails?: UserDetails;
+  successFn: () => void; //this is the function passed to run onSuccess when mutate is done so it refetches user Data. I don't want to have to query for user details in this modal as well the actual dashboard page
 }
 
-const RestaurantProfileModal: React.FC<RestaurantProfileModalProps> = ({
+const EditProfileModal: React.FC<EditProfileModalProps> = ({
   userDetails = {},
+  successFn,
 }) => {
-  const [restaurant, setRestaurant] = useState<RestaurantState>({
-    name: userDetails?.message?.restaurant_name || "",
-    phone_number_type: "whatsapp", // Default value
+  const [formData, setFormData] = useState<UserDetails>({
+    name: userDetails.name || "",
+    restaurant_name: userDetails.restaurant_name || "",
+    profile_picture: userDetails.profile_picture || null,
+    phone_number_type: userDetails.phone_number_type || undefined, // Default value
   });
 
-  const [passwordDetails, setPasswordDetails] = useState<PasswordState>({
-    current_password: "",
-    new_password: "",
-    confirm_password: "",
-  });
-
-  const [editProfileMutateStatus, setEditProfileMutateStatus] =
-    useState<MutationStatus>("idle");
-  const [passwordStatus, setPasswordStatus] = useState<MutationStatus>("idle");
+  const { toast } = useToast();
   const [showEditProfileModal, setShowEditProfileModal] =
     useState<boolean>(false);
+
+  const { mutate: editProfileMutate, status: editProfileMutateStatus } =
+    useMutation({
+      mutationFn: editProfile,
+      onSuccess: (data) => {
+        successFn();
+        toast({
+          title: "Success",
+          description: data.message,
+        });
+      },
+      onError: (error) => {
+        toast({
+          title: "Error",
+          description: error.message,
+          variant: "destructive",
+        });
+      },
+    });
+
+  const filteredData = Object.fromEntries(
+    //this is here to filter only the truthy values from the edit profile form and we pass it to mutate, since the api can't accept empty strings as they'll override whatever is already there
+    Object.entries(formData).filter(([_, value]) => value)
+  );
 
   const handlePfpImageChange = (e: ChangeEvent<HTMLInputElement>): void => {
     // Handle image change logic
@@ -69,55 +86,60 @@ const RestaurantProfileModal: React.FC<RestaurantProfileModalProps> = ({
   };
 
   const handlePhoneTypeChange = (type: "whatsapp" | "phone"): void => {
-    setRestaurant({
-      ...restaurant,
+    setFormData({
+      ...formData,
       phone_number_type: type,
     });
   };
 
-  const handleEditProfile = (e: FormEvent<HTMLFormElement>): void => {
+  const handleEditProfile = (e: React.FormEvent) => {
     e.preventDefault();
-    setEditProfileMutateStatus("pending");
-
-    // Simulate API call
-    setTimeout(() => {
-      console.log("Profile updated:", restaurant);
-      setEditProfileMutateStatus("success");
-      setShowEditProfileModal(false);
-    }, 1000);
+    editProfileMutate(filteredData);
+    console.log(formData);
   };
-
-  const handleUpdatePassword = (): void => {
-    setPasswordStatus("pending");
-
-    // Password validation
-    if (passwordDetails.new_password !== passwordDetails.confirm_password) {
-      alert("Passwords don't match!");
-      setPasswordStatus("idle");
-      return;
-    }
-
-    // Simulate API call
-    setTimeout(() => {
-      console.log("Password updated");
-      setPasswordStatus("success");
+  const { mutate: passwordMutate, status: passwordStatus } = useMutation({
+    mutationFn: changePassword,
+    onSuccess: (data) => {
       setPasswordDetails({
         current_password: "",
         new_password: "",
         confirm_password: "",
       });
-    }, 1000);
+      toast({
+        title: "Success",
+        description: data.message,
+      });
+      successFn();
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+  const [passwordDetails, setPasswordDetails] = useState<PasswordState>({
+    current_password: "",
+    new_password: "",
+    confirm_password: "",
+  });
+  const handleUpdatePassword = () => {
+    passwordMutate(passwordDetails);
   };
-
   return (
     <Dialog open={showEditProfileModal} onOpenChange={setShowEditProfileModal}>
       <DialogTrigger asChild>
-        <button
+        <Button
+          className="w-full justify-between rounded-xl bg-orange-500 hover:bg-orange-600 shadow-sm shadow-orange-200"
           onClick={() => setShowEditProfileModal(true)}
-          className="inline-flex items-center justify-center px-4 py-2 rounded-full text-sm font-medium border border-secondary-200 bg-white text-secondary-700 hover:bg-secondary-50 transition-colors"
         >
-          <FiEdit2 className="mr-2" /> Edit Profile
-        </button>
+          <span className="flex items-center">
+            <User className="mr-2 h-4 w-4" />
+            Edit Profile
+          </span>
+          <ChevronRight className="h-4 w-4" />
+        </Button>
       </DialogTrigger>
       <DialogContent className="dark:text-cfont-dark overflow-auto max-h-screen">
         <DialogHeader>
@@ -135,22 +157,42 @@ const RestaurantProfileModal: React.FC<RestaurantProfileModalProps> = ({
               onChange={handlePfpImageChange}
             />
           </div>
-          <div>
-            <Label htmlFor="restaurantName" className="dark:text-cfont-dark">
-              Restaurant Name
-            </Label>
-            <Input
-              id="restaurantName"
-              value={restaurant.name}
-              className="dark:text-cfont-dark"
-              onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                setRestaurant({
-                  ...restaurant,
-                  name: e.target.value,
-                })
-              }
-            />
-          </div>
+          {userDetails.restaurant_name ? (
+            <div>
+              <Label htmlFor="restaurantName" className="dark:text-cfont-dark">
+                Restaurant Name
+              </Label>
+              <Input
+                id="restaurantName"
+                value={formData.restaurant_name}
+                className="dark:text-cfont-dark"
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                  setFormData({
+                    ...formData,
+                    name: e.target.value,
+                  })
+                }
+              />
+            </div>
+          ) : (
+            <div>
+              <Label htmlFor="Name" className="dark:text-cfont-dark">
+                Name
+              </Label>
+              <Input
+                id="Name"
+                value={formData.name}
+                className="dark:text-cfont-dark"
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                  setFormData({
+                    ...formData,
+                    name: e.target.value,
+                  })
+                }
+              />
+            </div>
+          )}
+
           <div>
             <Label htmlFor="phoneNumberType" className="dark:text-cfont-dark">
               Phone Number Type:
@@ -160,7 +202,7 @@ const RestaurantProfileModal: React.FC<RestaurantProfileModalProps> = ({
                 type="button"
                 size="sm"
                 variant={
-                  restaurant.phone_number_type === "whatsapp"
+                  formData.phone_number_type === "whatsapp"
                     ? "default"
                     : "outline"
                 }
@@ -172,9 +214,7 @@ const RestaurantProfileModal: React.FC<RestaurantProfileModalProps> = ({
                 type="button"
                 size="sm"
                 variant={
-                  restaurant.phone_number_type === "phone"
-                    ? "default"
-                    : "outline"
+                  formData.phone_number_type === "phone" ? "default" : "outline"
                 }
                 onClick={() => handlePhoneTypeChange("phone")}
               >
@@ -269,4 +309,4 @@ const RestaurantProfileModal: React.FC<RestaurantProfileModalProps> = ({
   );
 };
 
-export default RestaurantProfileModal;
+export default EditProfileModal;

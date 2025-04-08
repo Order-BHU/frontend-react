@@ -17,6 +17,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { myOrders, trackOrder } from "@/api/restaurant";
 import { orderType, orderHistoryType } from "@/interfaces/restaurantType";
 import Loader from "@/components/loaderAnimation";
+import EditProfileModal from "@/components/editProfileModal";
 
 export default function UserDashboardPage() {
   const { data: userDetails, refetch: refetchDetails } = useQuery({
@@ -157,13 +158,13 @@ export default function UserDashboardPage() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
-                <Button className="w-full justify-between rounded-xl bg-orange-500 hover:bg-orange-600 shadow-sm shadow-orange-200">
-                  <span className="flex items-center">
-                    <User className="mr-2 h-4 w-4" />
-                    Edit Profile
-                  </span>
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
+                <EditProfileModal
+                  successFn={refetchDetails}
+                  userDetails={{
+                    name: userDetails?.user?.name,
+                    phone_number_type: userDetails?.user?.phone_number_type,
+                  }}
+                />
                 <Button
                   variant="outline"
                   className="w-full justify-between rounded-xl border-gray-200 bg-white shadow-sm"
@@ -248,7 +249,7 @@ export default function UserDashboardPage() {
                                   }) => (
                                     <li>
                                       <h3 className="mt-1 text-lg font-medium text-gray-900">
-                                        {`${order.menu_name} X${order.quantity}`}
+                                        {`${order.menu_name} x${order.quantity}`}
                                       </h3>
                                     </li>
                                   )
@@ -362,7 +363,7 @@ export default function UserDashboardPage() {
                                       is_available: string;
                                       menu_picture: string;
                                     }) => (
-                                      <li className="text-sm font-medium text-gray-500">{`${item.menu_name} X${item.quantity} `}</li>
+                                      <li className="text-sm font-medium text-gray-500">{`${item.menu_name} x${item.quantity} `}</li>
                                     )
                                   )}
                                 </ul>
