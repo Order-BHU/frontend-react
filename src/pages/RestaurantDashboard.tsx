@@ -2,12 +2,6 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -38,7 +32,7 @@ import {
   FiClock,
   FiTrash,
 } from "react-icons/fi";
-import { editProfile, dashboard, changePassword } from "@/api/misc";
+import { dashboard } from "@/api/misc";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import {
   getCategories,
@@ -58,6 +52,7 @@ import {
 } from "@/interfaces/restaurantType";
 import { useToast } from "@/hooks/use-toast";
 import { Textarea } from "@/components/ui/textarea";
+import EditProfileModal from "@/components/editProfileModal";
 
 // Animation variants
 const fadeIn = {
@@ -145,28 +140,6 @@ const RestaurantDashboardPage = () => {
     queryKey: ["menuItems", localStorage.getItem("restaurant_id")],
     queryFn: () => getMenuItems(localStorage.getItem("restaurant_id")!),
     staleTime: 30000,
-  });
-  const { mutate: passwordMutate, status: passwordStatus } = useMutation({
-    mutationFn: changePassword,
-    onSuccess: (data) => {
-      setPasswordDetails({
-        current_password: "",
-        new_password: "",
-        confirm_password: "",
-      });
-      toast({
-        title: "Success",
-        description: data.message,
-      });
-      refetchDetails();
-    },
-    onError: (error) => {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
-    },
   });
 
   const { status: editStatus, mutate: editMutate } = useMutation({
@@ -295,10 +268,6 @@ const RestaurantDashboardPage = () => {
     }
   }, [menuItems]);
 
-  const handleUpdatePassword = () => {
-    passwordMutate(passwordDeetails);
-  };
-
   const handleOrderAccept = (orderId: number, newcategoryStatus: string) => {
     orderStatusMutate({
       orderId: Number(orderId),
@@ -307,25 +276,7 @@ const RestaurantDashboardPage = () => {
     refetchOrders();
     // Here you would typically update the order categoryStatus in your backend
   };
-  const handleEditProfile = (e: React.FormEvent) => {
-    e.preventDefault();
-    editProfileMutate(filteredData);
-    console.log(restaurant);
-  };
-  const handlePfpImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setRestaurant({ ...restaurant, profile_picture: e.target.files[0] });
-    }
-  };
-  const [restaurant, setRestaurant] = useState({
-    name: "",
-    profile_picture: null as File | null,
-    phone_number_type: "",
-  });
-  const filteredData = Object.fromEntries(
-    //this is here to filter only the truthy values from the edit profile form and we pass it to mutate, since the api can't accept empty strings as they'll override whatever is already there
-    Object.entries(restaurant).filter(([_, value]) => value)
-  );
+
   const { status: categoryStatus, data: categories } = useQuery({
     queryKey: ["categories"],
     queryFn: getCategories,
@@ -344,33 +295,6 @@ const RestaurantDashboardPage = () => {
     },
   });
 
-  const handlePhoneTypeChange = (type: "whatsapp" | "phone") => {
-    setRestaurant((prev) => ({ ...prev, phone_number_type: type }));
-  };
-  const { mutate: editProfileMutate, status: editProfileMutateStatus } =
-    useMutation({
-      mutationFn: editProfile,
-      onSuccess: (data) => {
-        refetchDetails();
-        localStorage.setItem("name", restaurant.name);
-        toast({
-          title: "Success",
-          description: data.message,
-        });
-      },
-      onError: (error) => {
-        toast({
-          title: "Error",
-          description: error.message,
-          variant: "destructive",
-        });
-      },
-    });
-  const [passwordDeetails, setPasswordDetails] = useState({
-    current_password: "",
-    new_password: "",
-    confirm_password: "",
-  });
   const handleItemAvailability = (menuId: number, value: "1" | "0") => {
     const foundItem = menuItemArrayState.find(
       (item: menuItem) => item.id === menuId
@@ -458,173 +382,10 @@ const RestaurantDashboardPage = () => {
                 </div>
               </div>
               <div className="flex-shrink-0">
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <button
-                      //onClick={() => setShowEditProfileModal(true)}
-                      className="inline-flex items-center justify-center px-4 py-2 rounded-full text-sm font-medium border border-secondary-200 bg-white text-secondary-700 hover:bg-secondary-50 transition-colors"
-                    >
-                      <FiEdit2 className="mr-2" /> Edit Profile
-                    </button>
-                  </DialogTrigger>
-                  <DialogContent className="dark:text-cfont-dark overflow-auto max-h-[95vh]">
-                    <DialogHeader>
-                      <DialogTitle>Edit Restaurant Profile</DialogTitle>
-                    </DialogHeader>
-                    <form onSubmit={handleEditProfile} className="space-y-4">
-                      <div>
-                        <Label
-                          htmlFor="restaurantPhoto"
-                          className="dark:text-cfont-dark"
-                        >
-                          Restaurant Photo
-                        </Label>
-                        <Input
-                          id="photo"
-                          type="file"
-                          accept="image/*"
-                          onChange={handlePfpImageChange}
-                        />
-                      </div>
-                      <div>
-                        <Label
-                          htmlFor="restaurantName"
-                          className="dark:text-cfont-dark"
-                        >
-                          Restaurant Name
-                        </Label>
-                        <Input
-                          id="restaurantName"
-                          value={userDetails?.message?.restaurant_name}
-                          className="dark:text-cfont-dark"
-                          onChange={(e) =>
-                            setRestaurant({
-                              ...restaurant,
-                              name: e.target.value,
-                            })
-                          }
-                        />
-                      </div>
-                      <div>
-                        <Label
-                          htmlFor="restaurantPhoto"
-                          className="dark:text-cfont-dark"
-                        >
-                          Phone Number Type:
-                        </Label>
-                        <div className="flex space-x-2 mt-2">
-                          <Button
-                            type="button"
-                            size="sm"
-                            variant={
-                              restaurant.phone_number_type === "whatsapp"
-                                ? "default"
-                                : "outline"
-                            }
-                            onClick={() => handlePhoneTypeChange("whatsapp")}
-                          >
-                            WhatsApp
-                          </Button>
-                          <Button
-                            type="button"
-                            size="sm"
-                            variant={
-                              restaurant.phone_number_type === "phone"
-                                ? "default"
-                                : "outline"
-                            }
-                            onClick={() => handlePhoneTypeChange("phone")}
-                          >
-                            Phone
-                          </Button>
-                        </div>
-                      </div>
-
-                      <Button
-                        type="submit"
-                        disabled={editProfileMutateStatus === "pending"}
-                      >
-                        Update Profile
-                      </Button>
-
-                      <Accordion type="single" collapsible>
-                        <AccordionItem value="item-1">
-                          <AccordionTrigger>Change Password</AccordionTrigger>
-                          <AccordionContent>
-                            <div className="mb-4">
-                              <Label
-                                htmlFor="oldPassword"
-                                className="dark:text-cfont-dark"
-                              >
-                                Old Password
-                              </Label>
-                              <Input
-                                id="oldPassword"
-                                type="password"
-                                value={passwordDeetails?.current_password}
-                                className="dark:text-cfont-dark max-w-[90%] mx-3"
-                                onChange={(e) =>
-                                  setPasswordDetails({
-                                    ...passwordDeetails,
-                                    current_password: e.target.value,
-                                  })
-                                }
-                              />
-                            </div>
-
-                            <div className="mb-4">
-                              <Label
-                                htmlFor="newPassword"
-                                className="dark:text-cfont-dark"
-                              >
-                                New Password
-                              </Label>
-                              <Input
-                                id="newPassword"
-                                type="password"
-                                value={passwordDeetails?.new_password}
-                                className="dark:text-cfont-dark max-w-[90%] mx-3"
-                                onChange={(e) =>
-                                  setPasswordDetails({
-                                    ...passwordDeetails,
-                                    new_password: e.target.value,
-                                  })
-                                }
-                              />
-                            </div>
-
-                            <div className="mb-4">
-                              <Label
-                                htmlFor="confirmPassword"
-                                className="dark:text-cfont-dark max-w-[90%] mx-3"
-                              >
-                                Confirm Password
-                              </Label>
-                              <Input
-                                type="password"
-                                id="confirmPassword"
-                                value={passwordDeetails?.confirm_password}
-                                className="dark:text-cfont-dark max-w-[90%] mx-3"
-                                onChange={(e) =>
-                                  setPasswordDetails({
-                                    ...passwordDeetails,
-                                    confirm_password: e.target.value,
-                                  })
-                                }
-                              />
-                            </div>
-                            <Button
-                              onClick={handleUpdatePassword}
-                              disabled={passwordStatus === "pending"}
-                            >
-                              Update Password
-                            </Button>
-                          </AccordionContent>
-                        </AccordionItem>
-                      </Accordion>
-                    </form>
-                  </DialogContent>
-                </Dialog>
+                <EditProfileModal
+                  successFn={refetchDetails}
+                  userDetails={{ name: userDetails?.restaurant_details?.name }}
+                />
               </div>
             </div>
           </div>
