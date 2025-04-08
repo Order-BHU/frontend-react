@@ -5,7 +5,7 @@ import LandingPage from "./pages/Landingpage";
 import RestaurantsPage from "./pages/restaurantsPage";
 import ContactPage from "./pages/Contact";
 import LoginPage from "./pages/Login";
-import SignUpPage from "./pages/Signup";
+import SignUpPage from "./pages/SignUpPage";
 import RiderDashboardPage from "./pages/RiderDashboard";
 import RestaurantDashboardPage from "./pages/RestaurantDashboard";
 import UserDashboardPage from "./pages/UserDashboard";

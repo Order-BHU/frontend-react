@@ -4,11 +4,11 @@ import { FiCheckSquare } from "react-icons/fi";
 const AboutUs = () => {
   const features = [
     { id: "feature-1", text: "Quick, reliable delivery" },
-    { id: "feature-2", text: "Wide variety of restaurants" },
+    { id: "feature-2", text: "Wide variety of BHU restaurants" },
     { id: "feature-3", text: "Seamless ordering experience" },
     { id: "feature-4", text: "Live order tracking" },
     { id: "feature-5", text: "Secure payments" },
-    { id: "feature-6", text: "24/7 customer support" },
+    { id: "feature-6", text: "Customer support" },
   ];
 
   return (
