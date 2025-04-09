@@ -1,19 +1,30 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Clock, MapPin, DollarSign, Package, ExternalLink } from "lucide-react";
+import { Clock, DollarSign, Package } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-interface OrderCardProps {
-  id: string;
+// Order type definition
+export interface Order {
+  id: number;
   restaurant: string;
-  status: "pending" | "delivering" | "delivered" | "cancelled";
+  status: string;
   time: string;
-  distance: string;
-  amount: string;
-  address: string;
+  amount: number;
   customerName: string;
-  items: number;
+  address: string;
+  items: {
+    menu_id: number;
+    quantity: number;
+    menu_name: string;
+    menu_price: number;
+    item_name: string /*man... he changed the names without telling, and now idk what to add or remove. bear with me here, this is for ready orders but idk if the change carries over to all order types */;
+  }[];
+}
+
+// Props for the OrderCard component
+interface OrderCardProps {
+  order: Order;
   className?: string;
   onViewDetails?: (id: string) => void;
   onAccept?: (id: string) => void;
@@ -22,24 +33,19 @@ interface OrderCardProps {
 }
 
 export function OrderCard({
-  id,
-  restaurant,
-  status,
-  time,
-  distance,
-  amount,
-  address,
-  customerName,
-  items,
+  order,
   className,
-  onViewDetails,
+  //onViewDetails,
   onAccept,
-  onReject,
+  //onReject,
   onComplete,
 }: OrderCardProps) {
+  const { id, restaurant, status, time, amount, customerName, items, address } =
+    order;
+
   const statusConfig = {
-    pending: {
-      label: "Pending",
+    ready: {
+      label: "ready",
       color: "bg-yellow-100 text-yellow-800 border-yellow-200",
     },
     delivering: {
@@ -57,19 +63,30 @@ export function OrderCard({
   };
 
   return (
-    <Card className={cn("animate-scale overflow-hidden", className)}>
+    <Card className={cn("animate-scale overflow-hidden mb-4", className)}>
       <CardContent className="p-0">
         {/* Card Header with Restaurant Name */}
         <div className="p-4 bg-gray-50 border-b flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <h3 className="font-medium">{restaurant}</h3>
-            <span className="text-gray-400 text-sm">#{id.slice(-4)}</span>
+            <h3 className="font-medium text-black">{restaurant}</h3>
+            <span className="text-gray-400 text-sm">
+              #{String(id).slice(-4)}
+            </span>
           </div>
           <Badge
             variant="outline"
-            className={cn("font-medium", statusConfig[status].color)}
+            className={cn(
+              "font-medium",
+              statusConfig[
+                status as "ready" | "delivering" | "delivered" | "cancelled"
+              ].color
+            )}
           >
-            {statusConfig[status].label}
+            {
+              statusConfig[
+                status as "ready" | "delivering" | "delivered" | "cancelled"
+              ].label
+            }
           </Badge>
         </div>
 
@@ -80,24 +97,29 @@ export function OrderCard({
               <Clock size={16} className="text-gray-500" />
               <span className="text-sm">{time}</span>
             </div>
-            <div className="flex items-center gap-2">
-              <MapPin size={16} className="text-gray-500" />
-              <span className="text-sm">{distance}</span>
-            </div>
+
             <div className="flex items-center gap-2">
               <DollarSign size={16} className="text-gray-500" />
               <span className="text-sm font-medium">{amount}</span>
             </div>
             <div className="flex items-center gap-2">
               <Package size={16} className="text-gray-500" />
-              <span className="text-sm">{items} items</span>
+              <ul>
+                {items.map((item) => (
+                  <li
+                    key={item.menu_id}
+                  >{`${item.menu_name} x${item.quantity}`}</li>
+                ))}
+              </ul>
             </div>
           </div>
 
-          <div className="space-y-1">
-            <span className="text-sm font-medium">Delivery Address:</span>
-            <p className="text-sm text-gray-500">{address}</p>
-          </div>
+          {
+            <div className="space-y-1">
+              <span className="text-sm font-medium">Delivery Address:</span>
+              <p className="text-sm text-gray-500">{address}</p>
+            </div>
+          }
 
           <div className="border-t pt-3 flex justify-between items-center">
             <div className="text-sm">
@@ -105,22 +127,22 @@ export function OrderCard({
             </div>
 
             <div className="flex gap-2 items-center">
-              {status === "pending" && (
+              {status === "ready" && (
                 <>
-                  <Button
+                  {/* <Button
                     size="sm"
                     variant="outline"
                     className="text-red-600 border-red-200 hover:bg-red-50"
-                    onClick={() => onReject && onReject(id)}
+                    onClick={() => onReject && onReject(String(id))}
                   >
                     Reject
-                  </Button>
+                  </Button> */}
                   <Button
                     size="sm"
                     variant="orange"
-                    onClick={() => onAccept && onAccept(id)}
+                    onClick={() => onAccept && onAccept(String(id))}
                   >
-                    Accept
+                    Start Order
                   </Button>
                 </>
               )}
@@ -130,23 +152,23 @@ export function OrderCard({
                   size="sm"
                   variant="green"
                   className="bg-green-600 hover:bg-green-700 text-white"
-                  onClick={() => onComplete && onComplete(id)}
+                  onClick={() => onComplete && onComplete(String(id))}
                 >
                   Complete Delivery
                 </Button>
               )}
 
-              {onViewDetails && (
+              {/* {onViewDetails && (
                 <Button
                   size="sm"
                   variant="ghost"
                   className="flex gap-1 items-center"
-                  onClick={() => onViewDetails(id)}
+                  onClick={() => onViewDetails(String(id))}
                 >
                   <span className="sr-md:inline-block">Details</span>
                   <ExternalLink size={14} />
                 </Button>
-              )}
+              )} */}
             </div>
           </div>
         </div>
