@@ -181,6 +181,7 @@ export default function RiderDashboardPage() {
     code?: string
   ) => {
     console.log("order id: ", orderId);
+    console.log("verification code: ", code);
     orderStatusMutate({
       orderId: Number(orderId),
       status: newcategoryStatus,
@@ -470,10 +471,11 @@ export default function RiderDashboardPage() {
                                     "delivering"
                                   );
                                 }}
-                                onComplete={() =>
+                                onComplete={(code) =>
                                   handlecategoryStatusChange(
                                     item.order_id,
-                                    "completed"
+                                    "completed",
+                                    code
                                   )
                                 }
                               />

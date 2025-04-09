@@ -3,6 +3,15 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Clock, DollarSign, Package } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useState } from "react";
+import { Input } from "@/components/ui/input";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 
 // Order type definition
 export interface Order {
@@ -29,7 +38,7 @@ interface OrderCardProps {
   onViewDetails?: (id: string) => void;
   onAccept?: (id: string) => void;
   onReject?: (id: string) => void;
-  onComplete?: (id: string) => void;
+  onComplete?: (code: string) => void;
 }
 
 export function OrderCard({
@@ -42,6 +51,18 @@ export function OrderCard({
 }: OrderCardProps) {
   const { id, restaurant, status, time, amount, customerName, items, address } =
     order;
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [completionCode, setCompletionCode] = useState("");
+
+  const handleCompleteClick = () => {
+    setIsDialogOpen(true);
+  };
+
+  const handleSubmitCode = () => {
+    onComplete && onComplete(completionCode);
+    setIsDialogOpen(false);
+    setCompletionCode(""); // Reset code after submission
+  };
 
   const statusConfig = {
     ready: {
@@ -63,80 +84,72 @@ export function OrderCard({
   };
 
   return (
-    <Card className={cn("animate-scale overflow-hidden mb-4", className)}>
-      <CardContent className="p-0">
-        {/* Card Header with Restaurant Name */}
-        <div className="p-4 bg-gray-50 border-b flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <h3 className="font-medium text-black">{restaurant}</h3>
-            <span className="text-gray-400 text-sm">
-              #{String(id).slice(-4)}
-            </span>
+    <>
+      <Card className={cn("animate-scale overflow-hidden mb-4", className)}>
+        <CardContent className="p-0">
+          {/* Card Header with Restaurant Name */}
+          <div className="p-4 bg-gray-50 border-b flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <h3 className="font-medium text-black">{restaurant}</h3>
+              <span className="text-gray-400 text-sm">
+                #{String(id).slice(-4)}
+              </span>
+            </div>
+            <Badge
+              variant="outline"
+              className={cn(
+                "font-medium",
+                statusConfig[
+                  status as "ready" | "delivering" | "delivered" | "cancelled"
+                ].color
+              )}
+            >
+              {
+                statusConfig[
+                  status as "ready" | "delivering" | "delivered" | "cancelled"
+                ].label
+              }
+            </Badge>
           </div>
-          <Badge
-            variant="outline"
-            className={cn(
-              "font-medium",
-              statusConfig[
-                status as "ready" | "delivering" | "delivered" | "cancelled"
-              ].color
-            )}
-          >
+
+          {/* Order Details */}
+          <div className="p-4 space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="flex items-center gap-2">
+                <Clock size={16} className="text-gray-500" />
+                <span className="text-sm">{time}</span>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <DollarSign size={16} className="text-gray-500" />
+                <span className="text-sm font-medium">{amount}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Package size={16} className="text-gray-500" />
+                <ul>
+                  {items.map((item) => (
+                    <li
+                      key={item.menu_id}
+                    >{`${item.menu_name} x${item.quantity}`}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+
             {
-              statusConfig[
-                status as "ready" | "delivering" | "delivered" | "cancelled"
-              ].label
+              <div className="space-y-1">
+                <span className="text-sm font-medium">Delivery Address:</span>
+                <p className="text-sm text-gray-500">{address}</p>
+              </div>
             }
-          </Badge>
-        </div>
 
-        {/* Order Details */}
-        <div className="p-4 space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="flex items-center gap-2">
-              <Clock size={16} className="text-gray-500" />
-              <span className="text-sm">{time}</span>
-            </div>
+            <div className="border-t pt-3 flex justify-between items-center">
+              <div className="text-sm">
+                <span className="font-medium">Customer:</span> {customerName}
+              </div>
 
-            <div className="flex items-center gap-2">
-              <DollarSign size={16} className="text-gray-500" />
-              <span className="text-sm font-medium">{amount}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Package size={16} className="text-gray-500" />
-              <ul>
-                {items.map((item) => (
-                  <li
-                    key={item.menu_id}
-                  >{`${item.menu_name} x${item.quantity}`}</li>
-                ))}
-              </ul>
-            </div>
-          </div>
-
-          {
-            <div className="space-y-1">
-              <span className="text-sm font-medium">Delivery Address:</span>
-              <p className="text-sm text-gray-500">{address}</p>
-            </div>
-          }
-
-          <div className="border-t pt-3 flex justify-between items-center">
-            <div className="text-sm">
-              <span className="font-medium">Customer:</span> {customerName}
-            </div>
-
-            <div className="flex gap-2 items-center">
-              {status === "ready" && (
-                <>
-                  {/* <Button
-                    size="sm"
-                    variant="outline"
-                    className="text-red-600 border-red-200 hover:bg-red-50"
-                    onClick={() => onReject && onReject(String(id))}
-                  >
-                    Reject
-                  </Button> */}
+              <div className="flex gap-2 items-center">
+                {status === "ready" && (
                   <Button
                     size="sm"
                     variant="orange"
@@ -144,35 +157,57 @@ export function OrderCard({
                   >
                     Start Order
                   </Button>
-                </>
-              )}
+                )}
 
-              {status === "delivering" && (
-                <Button
-                  size="sm"
-                  variant="green"
-                  className="bg-green-600 hover:bg-green-700 text-white"
-                  onClick={() => onComplete && onComplete(String(id))}
-                >
-                  Complete Delivery
-                </Button>
-              )}
-
-              {/* {onViewDetails && (
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  className="flex gap-1 items-center"
-                  onClick={() => onViewDetails(String(id))}
-                >
-                  <span className="sr-md:inline-block">Details</span>
-                  <ExternalLink size={14} />
-                </Button>
-              )} */}
+                {status === "delivering" && (
+                  <Button
+                    size="sm"
+                    variant="green"
+                    className="bg-green-600 hover:bg-green-700 text-white"
+                    onClick={handleCompleteClick}
+                  >
+                    Complete Delivery
+                  </Button>
+                )}
+              </div>
             </div>
           </div>
-        </div>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+
+      {/* Completion Code Dialog */}
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Enter Delivery Completion Code</DialogTitle>
+          </DialogHeader>
+          <div className="py-4">
+            <Input
+              placeholder="Enter the verification code"
+              value={completionCode}
+              onChange={(e) => setCompletionCode(e.target.value)}
+              className="mb-2"
+            />
+            <p className="text-sm text-gray-500">
+              Please enter the code provided by the customer to complete this
+              delivery.
+            </p>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button
+              variant="green"
+              className="bg-green-600 hover:bg-green-700 text-white"
+              onClick={handleSubmitCode}
+              disabled={!completionCode.trim()}
+            >
+              Verify & Complete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
