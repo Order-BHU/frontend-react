@@ -22,6 +22,7 @@ import EditProfileModal from "@/components/editProfileModal";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import UseAuthStore from "@/stores/useAuthStore";
+import { useEffect } from "react";
 
 export default function UserDashboardPage() {
   const navigate = useNavigate();
@@ -41,6 +42,7 @@ export default function UserDashboardPage() {
   const { data: orderHistory, status: historyStatus } = useQuery({
     queryFn: () => myOrders("history"),
     queryKey: ["history"],
+    staleTime: 300000,
   });
   const { status: logoutStatus, mutate: logoutMutate } = useMutation({
     mutationFn: logOut,
@@ -74,6 +76,11 @@ export default function UserDashboardPage() {
     }
     logoutMutate(usertoken);
   };
+  useEffect(() => {
+    if (userDetails) {
+      localStorage.setItem("pfp", userDetails.user.profile_picture_url);
+    }
+  }, [userDetails]);
   const setTrackedProgress = () => {
     if (!trackedOrder) {
       return {
@@ -121,6 +128,11 @@ export default function UserDashboardPage() {
     }
     //this passes the progress to the progress element
   };
+  useEffect(() => {
+    if (trackedOrder) {
+      console.log("tracked: ", trackedOrder);
+    }
+  }, [trackedOrder]);
   if (logoutStatus === "pending") {
     return (
       <div>
@@ -130,7 +142,7 @@ export default function UserDashboardPage() {
     );
   }
   return (
-    <div className="flex min-h-screen flex-col bg-slate-50">
+    <div className="flex min-h-screen flex-col bg-slate-50 pt-32">
       {/* Header */}
 
       {/* Main Content */}
@@ -167,8 +179,13 @@ export default function UserDashboardPage() {
                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
                   <Avatar className="h-20 w-20 border-4 border-white shadow-md">
                     <AvatarImage
-                      src={userDetails?.user?.profile_picture_url}
-                      alt={userDetails?.user?.name}
+                      src={
+                        localStorage.getItem("pfp") ||
+                        userDetails?.user?.profile_picture_url
+                      }
+                      alt={
+                        localStorage.getItem("name") || userDetails?.user?.name
+                      }
                     />
                     <AvatarFallback className="bg-orange-100 text-orange-600">
                       <User className="h-10 w-10" />
@@ -331,29 +348,74 @@ export default function UserDashboardPage() {
 
                             <div className="flex w-full justify-between text-xs text-gray-600 mt-2">
                               <span className="flex flex-col items-center">
-                                <span className="h-4 w-4 rounded-full bg-orange-500 flex items-center justify-center text-white text-[10px]">
-                                  ✓
-                                </span>
+                                {setTrackedProgress().progress > 19 ? (
+                                  <span className="h-4 w-4 rounded-full bg-orange-500 flex items-center justify-center text-white relative text-[10px]">
+                                    {trackedOrder?.status === "accepted" ? (
+                                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-orange-400 opacity-75">
+                                        {""}
+                                      </span>
+                                    ) : (
+                                      <>✓</>
+                                    )}
+                                  </span>
+                                ) : (
+                                  <span className="h-4 w-4 rounded-full bg-gray-200 flex items-center justify-center text-gray-400 text-[10px]">
+                                    1
+                                  </span>
+                                )}
+
                                 <span className="mt-1">Preparing</span>
                               </span>
                               <span className="flex flex-col items-center">
-                                <span className="h-4 w-4 rounded-full bg-orange-500 flex items-center justify-center text-white relative text-[10px]">
-                                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-orange-400 opacity-75" />
-                                  ✓
-                                </span>
-                                <span className="mt-1">Ready for Pickup</span>
+                                {setTrackedProgress().progress > 49 ? (
+                                  <span className="h-4 w-4 rounded-full bg-orange-500 flex items-center justify-center text-white relative text-[10px]">
+                                    {trackedOrder?.status === "ready" ? (
+                                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-orange-400 opacity-75">
+                                        {""}
+                                      </span>
+                                    ) : (
+                                      <>✓</>
+                                    )}
+                                  </span>
+                                ) : (
+                                  <span className="h-4 w-4 rounded-full bg-gray-200 flex items-center justify-center text-gray-400 text-[10px]">
+                                    2
+                                  </span>
+                                )}
                               </span>
                               <span className="flex flex-col items-center">
-                                <span className="h-4 w-4 rounded-full bg-gray-200 flex items-center justify-center text-gray-400 text-[10px]">
-                                  3
-                                </span>
-                                <span className="mt-1">On the way</span>
+                                {setTrackedProgress().progress > 79 ? (
+                                  <span className="h-4 w-4 rounded-full bg-orange-500 flex items-center justify-center text-white relative text-[10px]">
+                                    {trackedOrder?.status === "delivering" ? (
+                                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-orange-400 opacity-75">
+                                        {""}
+                                      </span>
+                                    ) : (
+                                      <>✓</>
+                                    )}
+                                  </span>
+                                ) : (
+                                  <span className="h-4 w-4 rounded-full bg-gray-200 flex items-center justify-center text-gray-400 relative text-[10px]">
+                                    3
+                                  </span>
+                                )}
                               </span>
                               <span className="flex flex-col items-center">
-                                <span className="h-4 w-4 rounded-full bg-gray-200 flex items-center justify-center text-gray-400 text-[10px]">
-                                  4
-                                </span>
-                                <span className="mt-1">Delivered</span>
+                                {setTrackedProgress().progress > 99 ? (
+                                  <span className="h-4 w-4 rounded-full bg-orange-500 flex items-center justify-center text-white text-[10px]">
+                                    {trackedOrder?.status === "completed" ? (
+                                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-orange-400 opacity-75">
+                                        ✓
+                                      </span>
+                                    ) : (
+                                      <>✓</>
+                                    )}
+                                  </span>
+                                ) : (
+                                  <span className="h-4 w-4 rounded-full bg-gray-200 flex items-center justify-center text-gray-400 text-[10px]">
+                                    4
+                                  </span>
+                                )}
                               </span>
                             </div>
                           </div>

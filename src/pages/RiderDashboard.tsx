@@ -151,14 +151,6 @@ export default function RiderDashboardPage() {
     logoutMutate(usertoken);
   };
 
-  if (logoutStatus === "pending") {
-    return (
-      <div>
-        <Loader />
-        <p>Logging you Out</p>
-      </div>
-    );
-  }
   const { mutate: orderStatusMutate } = useMutation({
     mutationFn: updateOrderStatus,
     onSuccess: (data) => {
@@ -235,6 +227,14 @@ export default function RiderDashboardPage() {
     }
     refetchDetails();
   };
+  if (logoutStatus === "pending") {
+    return (
+      <div>
+        <Loader />
+        <p>Logging you Out</p>
+      </div>
+    );
+  }
   return (
     <div className="flex flex-col bg-slate-50 pt-32">
       {/* Main Content */}
