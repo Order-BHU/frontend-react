@@ -21,14 +21,25 @@ export interface Order {
   time: string;
   amount: number;
   customerName: string;
+  phone_number: string;
   address: string;
-  items: {
-    menu_id: number;
-    quantity: number;
-    menu_name: string;
-    menu_price: number;
-    item_name: string /*man... he changed the names without telling, and now idk what to add or remove. bear with me here, this is for ready orders but idk if the change carries over to all order types */;
-  }[];
+  date?: string | null;
+  items:
+    | {
+        menu_id: number;
+        quantity: number;
+        menu_name: string;
+        menu_price: number;
+        item_name: string;
+      }[]
+    | {
+        menu_id: number; //this is here to accomodate orderHistoryType as it has two extra fields
+        quantity: number;
+        menu_name: string;
+        menu_price: number;
+        is_available: string;
+        menu_picture: string;
+      }[];
 }
 
 // Props for the OrderCard component
@@ -49,8 +60,18 @@ export function OrderCard({
   //onReject,
   onComplete,
 }: OrderCardProps) {
-  const { id, restaurant, status, time, amount, customerName, items, address } =
-    order;
+  const {
+    id,
+    restaurant,
+    status,
+    time,
+    amount,
+    customerName,
+    items,
+    address,
+    phone_number,
+    date,
+  } = order;
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [completionCode, setCompletionCode] = useState("");
 
@@ -73,7 +94,7 @@ export function OrderCard({
       label: "In Progress",
       color: "bg-blue-100 text-blue-800 border-blue-200",
     },
-    delivered: {
+    completed: {
       label: "completed",
       color: "bg-green-100 text-green-800 border-green-200",
     },
@@ -100,13 +121,13 @@ export function OrderCard({
               className={cn(
                 "font-medium",
                 statusConfig[
-                  status as "ready" | "delivering" | "delivered" | "cancelled"
+                  status as "ready" | "delivering" | "completed" | "cancelled"
                 ].color
               )}
             >
               {
                 statusConfig[
-                  status as "ready" | "delivering" | "delivered" | "cancelled"
+                  status as "ready" | "delivering" | "completed" | "cancelled"
                 ].label
               }
             </Badge>
@@ -139,13 +160,17 @@ export function OrderCard({
             {
               <div className="space-y-1">
                 <span className="text-sm font-medium">Delivery Address:</span>
-                <p className="text-sm text-gray-500">{address}</p>
+                <p className="text-sm text-gray-500">
+                  {address}
+                  {date ? `•${date}` : ""}
+                </p>
               </div>
             }
 
             <div className="border-t pt-3 flex justify-between items-center">
               <div className="text-sm">
-                <span className="font-medium">Customer:</span> {customerName}
+                <span className="font-medium">Customer:</span> {customerName} •{" "}
+                {phone_number}
               </div>
 
               <div className="flex gap-2 items-center">

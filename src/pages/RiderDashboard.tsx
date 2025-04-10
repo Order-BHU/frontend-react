@@ -10,14 +10,11 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
-import { Progress } from "@/components/ui/progress";
-
 import { User, LogOut, ChevronRight } from "lucide-react";
 import { logOut } from "@/api/auth";
 import { dashboard } from "@/api/misc";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { myOrders, updateOrderStatus } from "@/api/restaurant";
+import { myOrders, updateOrderStatus, setDriverStatus } from "@/api/restaurant";
 import { orderHistoryType, orderType } from "@/interfaces/restaurantType";
 import Loader from "@/components/loaderAnimation";
 import EditProfileModal from "@/components/editProfileModal";
@@ -133,6 +130,10 @@ export default function RiderDashboardPage() {
     },
   });
 
+  useEffect(() => {
+    console.log("history: ", orderHistory);
+  }, [orderHistory]);
+
   const handleLogout = () => {
     const usertoken = localStorage.getItem("token");
     if (!usertoken) {
@@ -187,7 +188,47 @@ export default function RiderDashboardPage() {
       status: newcategoryStatus,
       code: code,
     });
-    // Here you would typically update the order categoryStatus in your backend
+  };
+  const { mutate: driverStatusMutate } = useMutation({
+    mutationFn: setDriverStatus,
+    onSuccess: () => {
+      refetchPending();
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+  const handleDriverStatusChange = () => {
+    console.log("running");
+    if (!userDetails) {
+      return;
+    }
+    if (userDetails && userDetails.user.status === "online") {
+      driverStatusMutate("offline", {
+        onError: () => {
+          toast({
+            title: "Error",
+            description: "Failed to update driver status. Please try again.",
+            variant: "destructive",
+          });
+        },
+      });
+    } else if (userDetails && userDetails.user.status === "offline") {
+      driverStatusMutate("online", {
+        onError: () => {
+          toast({
+            title: "Error",
+            description: "Failed to update driver status. Please try again.",
+            variant: "destructive",
+          });
+        },
+      });
+    }
+    refetchDetails();
   };
   return (
     <div className="flex min-h-screen flex-col bg-slate-50">
@@ -280,10 +321,19 @@ export default function RiderDashboardPage() {
                     }}
                   />
                   <Button
+                    onClick={handleDriverStatusChange}
                     variant="outline"
-                    className="w-full justify-between rounded-xl border-gray-200 bg-white shadow-sm"
+                    className={`${
+                      userDetails?.user?.status === "online"
+                        ? " bg-green-600"
+                        : ""
+                    }w-full justify-between rounded-xl border-gray-200 bg-white shadow-sm overflow-hidden px-0`}
                   >
-                    <span className="flex items-center">Go Online</span>
+                    <span className="flex items-center">
+                      {userDetails?.user?.status === "online"
+                        ? "Online"
+                        : "Offline: Click to go online"}
+                    </span>
                     <ChevronRight className="h-4 w-4" />
                   </Button>
 
@@ -410,8 +460,9 @@ export default function RiderDashboardPage() {
                                   restaurant: item.restaurant_name,
                                   status: item.status,
                                   time: "30 min",
+                                  phone_number: item.user_phoneNumber,
                                   amount: item.total,
-                                  customerName: item.user_phoneNumber,
+                                  customerName: item.user_name,
                                   items: item.items,
                                   address: item.location,
                                 }}
@@ -456,7 +507,8 @@ export default function RiderDashboardPage() {
                                   status: item.status,
                                   time: "30 min",
                                   amount: item.total,
-                                  customerName: item.user_phoneNumber,
+                                  customerName: item.user_name,
+                                  phone_number: item.user_phoneNumber,
                                   items: item.items,
                                   address: item.location,
                                 }}
@@ -486,7 +538,51 @@ export default function RiderDashboardPage() {
                   )}
                 </TabsContent>
                 <TabsContent value="history" className="mt-4">
-                  {deliveringStatus === "pending" ? <Loader /> : <></>}
+                  {historyStatus === "pending" ? (
+                    <Loader />
+                  ) : (
+                    <>
+                      <div>
+                        {orderHistory &&
+                          orderHistory.orders.map((item: orderHistoryType) => (
+                            <OrderCard
+                              key={item.order_id}
+                              order={{
+                                id: item.order_id,
+                                restaurant: item.restaurant_name,
+                                status: "completed",
+                                time: "30 min",
+                                amount: Number(item.total),
+                                phone_number: item.user_phoneNumber,
+                                customerName: item.user_name,
+                                items: item.items,
+                                address: item.location,
+                                date: item.order_date,
+                              }}
+                              onAccept={() => {
+                                setAllOrders((prev) =>
+                                  prev.map((order) =>
+                                    item.order_id === order.order_id
+                                      ? { ...order, status: "delivering" }
+                                      : order
+                                  )
+                                );
+                                handlecategoryStatusChange(
+                                  item.order_id,
+                                  "delivering"
+                                );
+                              }}
+                              onComplete={() =>
+                                handlecategoryStatusChange(
+                                  item.order_id,
+                                  "completed"
+                                )
+                              }
+                            />
+                          ))}
+                      </div>
+                    </>
+                  )}
                 </TabsContent>
               </Tabs>
             </div>
