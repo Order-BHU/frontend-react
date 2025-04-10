@@ -92,11 +92,11 @@ export function OrderCard({
     },
     delivering: {
       label: "In Progress",
-      color: "bg-blue-100 text-blue-800 border-blue-200",
+      color: "bg-orange-400 text-black border-blue-200",
     },
     completed: {
       label: "completed",
-      color: "bg-green-100 text-green-800 border-green-200",
+      color: "bg-green-500 text-green-800 border-green-200",
     },
     cancelled: {
       label: "Cancelled",
@@ -106,7 +106,12 @@ export function OrderCard({
 
   return (
     <>
-      <Card className={cn("animate-scale overflow-hidden mb-4", className)}>
+      <Card
+        className={cn(
+          "animate-scale overflow-hidden mb-4 shadow-soft-md",
+          className
+        )}
+      >
         <CardContent className="p-0">
           {/* Card Header with Restaurant Name */}
           <div className="p-4 bg-gray-50 border-b flex items-center justify-between">

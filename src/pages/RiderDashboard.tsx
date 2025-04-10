@@ -38,6 +38,7 @@ export default function RiderDashboardPage() {
   const navigate = useNavigate();
   const { logout } = UseAuthStore();
   const { toast } = useToast();
+  const [driverState, setDriverState] = useState("");
   const { data: userDetails, refetch: refetchDetails } = useQuery({
     queryKey: ["userDetails"],
     queryFn: dashboard,
@@ -130,6 +131,13 @@ export default function RiderDashboardPage() {
     console.log("history: ", orderHistory);
   }, [orderHistory]);
 
+  useEffect(() => {
+    //this is here so the driver's state gets stored somewhere for the button
+    if (userDetails) {
+      setDriverState(userDetails.status || "");
+    }
+  }, [userDetails]);
+
   const handleLogout = () => {
     const usertoken = localStorage.getItem("token");
     if (!usertoken) {
@@ -212,6 +220,7 @@ export default function RiderDashboardPage() {
           });
         },
       });
+      setDriverState("offline");
     } else if (userDetails && userDetails.user.status === "offline") {
       driverStatusMutate("online", {
         onError: () => {
@@ -222,6 +231,7 @@ export default function RiderDashboardPage() {
           });
         },
       });
+      setDriverState("online");
     }
     refetchDetails();
   };
@@ -237,7 +247,7 @@ export default function RiderDashboardPage() {
                 Rider Dashboard
               </h1>
               <p className="text-gray-500 mt-1">
-                Welcome back! Manage your orders and account settings
+                Welcome back! Manage your deliveries and account settings
               </p>
             </div>
           </div>
@@ -315,17 +325,15 @@ export default function RiderDashboardPage() {
                   />
                   <Button
                     onClick={handleDriverStatusChange}
-                    variant="outline"
-                    className={`${
-                      userDetails?.user?.status === "online"
-                        ? " bg-green-600"
-                        : ""
-                    }w-full justify-between rounded-xl border-gray-200 bg-white shadow-sm overflow-hidden px-0`}
+                    variant={driverState === "online" ? "green" : "outline"}
+                    className={`
+                      
+                    w-full justify-between rounded-xl border-gray-200 shadow-sm overflow-hidden`}
                   >
                     <span className="flex items-center">
-                      {userDetails?.user?.status === "online"
+                      {driverState === "online"
                         ? "Online"
-                        : "Offline: Click to go online"}
+                        : "Click to go online"}
                     </span>
                     <ChevronRight className="h-4 w-4" />
                   </Button>
@@ -366,7 +374,7 @@ export default function RiderDashboardPage() {
                 </div>
               </div>
               <div className="text-2xl font-bold text-secondary-900">
-                number
+                {userDetails?.total_deliveries}
               </div>
             </div>
 
@@ -374,21 +382,21 @@ export default function RiderDashboardPage() {
             <div className="bg-white rounded-2xl shadow-soft-md p-6">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-sm font-medium text-secondary-500">
-                  Completed Orders
+                  In Progress
                 </h3>
                 <div className="w-8 h-8 flex items-center justify-center rounded-full bg-primary-100 text-primary-600">
                   <FiShoppingBag />
                 </div>
               </div>
               <div className="text-2xl font-bold text-secondary-900">
-                {userDetails?.statistics?.completed_orders}
+                {userDetails?.delivering_deliveries}
               </div>
-              <p className="text-xs mt-1 text-secondary-900">
+              {/* <p className="text-xs mt-1 text-secondary-900">
                 {userDetails?.statistics?.pending_orders} Pending
               </p>
               <p className="text-xs mt-1 text-secondary-900">
                 {userDetails?.statistics?.accepted_orders} Accepted
-              </p>
+              </p> */}
             </div>
 
             {/* Total Earnings */}
@@ -401,10 +409,8 @@ export default function RiderDashboardPage() {
                   <FiDollarSign />
                 </div>
               </div>
-              <div className="text-2xl font-bold text-secondary-900">₦50</div>
-              <p className="text-xs text-green-600 mt-1">
-                +50% from last month
-              </p>
+              <div className="text-2xl font-bold text-secondary-900">...</div>
+              <p className="text-xs text-green-600 mt-1">+50%</p>
             </div>
           </motion.div>
 
