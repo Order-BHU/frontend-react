@@ -29,7 +29,7 @@ export async function getMenuItems(id: string) {
     .get(`/${id}/menu-list`)
     .then((response: AxiosResponse) => {
       console.log("menuItems: ", response.data);
-      return response.data.menu;
+      return response.data;
     })
     .catch(handleError);
 }

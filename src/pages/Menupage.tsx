@@ -81,6 +81,8 @@ const RestaurantMenuPage = () => {
   const { status: menuStatus, data: menuItems } = useQuery({
     queryKey: ["menuItems", id],
     queryFn: () => getMenuItems(id!),
+    refetchOnWindowFocus: false,
+    staleTime: 3000000,
   });
   const { data: categories } = useQuery({
     queryKey: ["categories"],
@@ -340,7 +342,7 @@ const RestaurantMenuPage = () => {
       <div className="relative h-64 md:h-80 w-full">
         <div className="absolute inset-0">
           <img
-            src={""}
+            src={(menuItems && menuItems.restaurant.cover_picture) || ""}
             alt={/*restaurant.name*/ "nothing"}
             className="w-full h-full object-cover"
           />
@@ -354,7 +356,7 @@ const RestaurantMenuPage = () => {
               transition={{ duration: 0.5 }}
             >
               <h1 className="text-3xl md:text-4xl font-bold mb-2">
-                {/*restaurant.name*/ "rest name"}
+                {menuItems && menuItems.restaurant.name}
               </h1>
               <p className="text-white/90 mb-4">
                 {/*restaurant.description*/ "it's description"}
@@ -436,54 +438,57 @@ const RestaurantMenuPage = () => {
                       <div className="ml-4 h-px bg-secondary-200 flex-grow"></div>
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {menuItems?.map((item: menu) => (
-                        <>
-                          {item.id === category.id &&
-                            item.menus.map((menuitem: menuItem) => (
-                              <div
-                                key={menuitem.id}
-                                className="bg-white rounded-xl shadow-soft-md overflow-hidden flex flex-col md:flex-row transition-transform hover:shadow-soft-lg hover:-translate-y-1"
-                              >
-                                <div className="h-40 md:h-auto md:w-1/3">
-                                  <img
-                                    src={String(menuitem.image!)}
-                                    alt={item.name}
-                                    className="h-full w-full object-cover"
-                                  />
-                                </div>
-                                <div className="p-4 flex flex-col flex-grow justify-between md:w-2/3">
-                                  <div>
-                                    <h3 className="text-lg font-semibold text-secondary-900 mb-1">
-                                      {menuitem.name}
-                                    </h3>
-                                    <p className="text-secondary-600 text-sm mb-2 line-clamp-2">
-                                      {menuitem.description}
-                                    </p>
+                      {menuItems &&
+                        menuItems.menu.map((item: menu) => (
+                          <>
+                            {item.id === category.id &&
+                              item.menus.map((menuitem: menuItem) => (
+                                <div
+                                  key={menuitem.id}
+                                  className="bg-white rounded-xl shadow-soft-md overflow-hidden flex flex-col md:flex-row transition-transform hover:shadow-soft-lg hover:-translate-y-1"
+                                >
+                                  <div className="h-40 md:h-auto md:w-1/3">
+                                    <img
+                                      src={String(menuitem.image!)}
+                                      alt={item.name}
+                                      className="h-full w-full object-cover"
+                                    />
                                   </div>
-                                  <div className="flex justify-between items-center mt-2">
-                                    <span className="text-primary-600 font-semibold">
-                                      ₦
-                                      {Number(
-                                        menuitem?.price
-                                      )?.toLocaleString()}
-                                    </span>
-                                    <button
-                                      disabled={menuitem.is_available === "0"}
-                                      onClick={() => handleAddToCart(menuitem)}
-                                      className="inline-flex items-center justify-center p-2 rounded-full bg-primary-100 text-primary-600 hover:bg-primary-600 hover:text-white transition-colors"
-                                    >
-                                      {menuitem.is_available === "1" ? (
-                                        <FiPlus size={16} />
-                                      ) : (
-                                        "Item Unavailable"
-                                      )}
-                                    </button>
+                                  <div className="p-4 flex flex-col flex-grow justify-between md:w-2/3">
+                                    <div>
+                                      <h3 className="text-lg font-semibold text-secondary-900 mb-1">
+                                        {menuitem.name}
+                                      </h3>
+                                      <p className="text-secondary-600 text-sm mb-2 line-clamp-2">
+                                        {menuitem.description}
+                                      </p>
+                                    </div>
+                                    <div className="flex justify-between items-center mt-2">
+                                      <span className="text-primary-600 font-semibold">
+                                        ₦
+                                        {Number(
+                                          menuitem?.price
+                                        )?.toLocaleString()}
+                                      </span>
+                                      <button
+                                        disabled={menuitem.is_available === "0"}
+                                        onClick={() =>
+                                          handleAddToCart(menuitem)
+                                        }
+                                        className="inline-flex items-center justify-center p-2 rounded-full bg-primary-100 text-primary-600 hover:bg-primary-600 hover:text-white transition-colors"
+                                      >
+                                        {menuitem.is_available === "1" ? (
+                                          <FiPlus size={16} />
+                                        ) : (
+                                          "Item Unavailable"
+                                        )}
+                                      </button>
+                                    </div>
                                   </div>
                                 </div>
-                              </div>
-                            ))}
-                        </>
-                      ))}
+                              ))}
+                          </>
+                        ))}
                     </div>
                   </motion.div>
                 ))}

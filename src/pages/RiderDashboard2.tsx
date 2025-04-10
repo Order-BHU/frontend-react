@@ -174,12 +174,8 @@ export default function RiderDashboardPage() {
 
   const { mutate: driverStatusMutate } = useMutation({
     mutationFn: setDriverStatus,
-    onSuccess: (data) => {
+    onSuccess: () => {
       refetchPending();
-      toast({
-        title: "Success",
-        description: data.message,
-      });
     },
     onError: (error) => {
       toast({
