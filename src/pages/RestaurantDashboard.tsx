@@ -261,7 +261,7 @@ const RestaurantDashboardPage = () => {
   useEffect(() => {
     //this sets the menu Items we get from the server to a state.
     if (menuItems) {
-      const allMenus = menuItems.flatMap(
+      const allMenus = menuItems.menu.flatMap(
         (category: { id: number; menus: menuItem[] }) => category.menus
       );
       setmenuItemArray(allMenus);
@@ -829,7 +829,7 @@ const RestaurantDashboardPage = () => {
                   </div>
                 ) : (
                   menuItems &&
-                  menuItems.map((category: menu) => (
+                  menuItems.menu.map((category: menu) => (
                     <div key={category.id} className="mb-8 last:mb-0">
                       <h3 className="text-xl font-semibold text-secondary-900 mb-4">
                         {category.name}
