@@ -1,56 +1,29 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FiFacebook, FiTwitter, FiInstagram } from "react-icons/fi";
 
 const Footer = () => {
+  const navigate = useNavigate();
   return (
     <footer className="bg-white border-t border-gray-100 pt-16 pb-12">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
           {/* Logo and Short Description */}
           <div className="col-span-1 md:col-span-1">
-            <Link to="/" className="flex items-center space-x-2 mb-5">
+            <div className="flex items-center space-x-2 mb-5">
               <img
-                src="https://ext.same-assets.com/905646781/234163757.jpeg"
+                onClick={() => navigate("/")}
+                src="/orderLogo.JPG"
                 alt="Order Logo"
-                className="h-10 w-auto"
+                className="h-40 w-40 object-cover md:w-full md:h-full"
               />
-              <span className="text-xl font-display font-bold text-primary-600">
+              {/* <span className="text-xl font-display font-bold text-primary-600">
                 Order
-              </span>
-            </Link>
-            <p className="text-secondary-600 mb-5 text-sm">
+              </span> */}
+            </div>
+            {/* <p className="text-secondary-600 mb-5 text-sm">
               Your go-to platform for convenient, delicious meals delivered
               straight to your door.
-            </p>
-            <div className="flex space-x-4">
-              <a
-                href="https://facebook.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-secondary-400 hover:text-primary-600 transition-colors"
-                aria-label="Facebook"
-              >
-                <FiFacebook size={20} />
-              </a>
-              <a
-                href="https://twitter.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-secondary-400 hover:text-primary-600 transition-colors"
-                aria-label="Twitter"
-              >
-                <FiTwitter size={20} />
-              </a>
-              <a
-                href="https://instagram.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-secondary-400 hover:text-primary-600 transition-colors"
-                aria-label="Instagram"
-              >
-                <FiInstagram size={20} />
-              </a>
-            </div>
+            </p> */}
           </div>
 
           {/* Quick Links */}
@@ -117,9 +90,38 @@ const Footer = () => {
             <h3 className="text-base font-semibold text-secondary-900 mb-4">
               Contact Us
             </h3>
-            <ul className="space-y-2 text-sm text-secondary-600">
+            <ul className="space-y-2 text-sm text-secondary-600 mb-4">
               <li>Email: bhuorder@gmail.com</li>
             </ul>
+            <div className="flex space-x-4">
+              <a
+                href="https://facebook.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-secondary-400 hover:text-primary-600 transition-colors"
+                aria-label="Facebook"
+              >
+                <FiFacebook size={20} />
+              </a>
+              <a
+                href="https://twitter.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-secondary-400 hover:text-primary-600 transition-colors"
+                aria-label="Twitter"
+              >
+                <FiTwitter size={20} />
+              </a>
+              <a
+                href="https://instagram.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-secondary-400 hover:text-primary-600 transition-colors"
+                aria-label="Instagram"
+              >
+                <FiInstagram size={20} />
+              </a>
+            </div>
           </div>
         </div>
 

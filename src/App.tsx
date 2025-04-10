@@ -27,9 +27,11 @@ function App() {
   waveform.register();
   orbit.register();
   const queryClient = new QueryClient();
+
   return (
     <div className="app">
       <ToastAutoDismiss />
+
       <Toaster />
       <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
         <BrowserRouter future={{ v7_relativeSplatPath: true }}>

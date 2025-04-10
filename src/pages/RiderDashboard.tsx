@@ -53,11 +53,7 @@ export default function RiderDashboardPage() {
     queryFn: () => myOrders("ready"),
   });
 
-  const {
-    data: deliveringOrders,
-    refetch: refetchDelivering,
-    status: deliveringStatus,
-  } = useQuery({
+  const { data: deliveringOrders, refetch: refetchDelivering } = useQuery({
     queryKey: ["deliveringOrders"],
     queryFn: () => myOrders("delivering"),
   });
@@ -155,26 +151,25 @@ export default function RiderDashboardPage() {
       </div>
     );
   }
-  const { mutate: orderStatusMutate, status: completeOrderStatus } =
-    useMutation({
-      mutationFn: updateOrderStatus,
-      onSuccess: (data) => {
-        toast({
-          title: "Success",
-          description: data.message,
-        });
-        refetchPending();
-        refetchDelivering();
-        // refetchHistory();
-      },
-      onError: (error) => {
-        toast({
-          title: "Error",
-          description: error.message,
-          variant: "destructive",
-        });
-      },
-    });
+  const { mutate: orderStatusMutate } = useMutation({
+    mutationFn: updateOrderStatus,
+    onSuccess: (data) => {
+      toast({
+        title: "Success",
+        description: data.message,
+      });
+      refetchPending();
+      refetchDelivering();
+      // refetchHistory();
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
 
   const handlecategoryStatusChange = (
     orderId: number,
@@ -231,9 +226,7 @@ export default function RiderDashboardPage() {
     refetchDetails();
   };
   return (
-    <div className="flex min-h-screen flex-col bg-slate-50">
-      {/* Header */}
-
+    <div className="flex flex-col bg-slate-50 pt-32">
       {/* Main Content */}
       <main className="flex-grow">
         <div className="container mx-auto px-4 py-8">
@@ -241,7 +234,7 @@ export default function RiderDashboardPage() {
           <div className="mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
               <h1 className="text-3xl font-bold text-gray-900">
-                Customer Dashboard
+                Rider Dashboard
               </h1>
               <p className="text-gray-500 mt-1">
                 Welcome back! Manage your orders and account settings
