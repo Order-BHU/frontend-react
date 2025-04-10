@@ -38,14 +38,14 @@ const Header = () => {
         <div className="flex items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
-            <div className="w-20 h-15 overflow-hidden">
+            <div className="w-20 h-16 overflow-hidden">
               <img
                 src={
                   window.matchMedia("(prefers-color-scheme: dark)").matches
                     ? "/DarkerOrderLogo.PNG"
-                    : "/orderLogo.JPG"
+                    : "/DarkOrderLogo.JPG"
                 }
-                className="h-full object-cover"
+                className="h-full w-full object-cover"
               ></img>
             </div>
           </Link>
