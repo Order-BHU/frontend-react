@@ -387,9 +387,9 @@ const RestaurantMenuPage = () => {
       </div>
       {menuStatus === "pending" ? (
         <div className="flex justify-center items-center min-h-screen bg-secondary-50">
-          //{" "}
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
-          //{" "}
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600">
+            {""}
+          </div>
         </div>
       ) : (
         <div className="container mx-auto px-4 py-6 md:py-8">
