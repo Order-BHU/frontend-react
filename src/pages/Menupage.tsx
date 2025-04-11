@@ -1,43 +1,15 @@
 import { useState, useEffect } from "react";
-import { Img } from "react-image";
-import { useParams, useNavigate, useLocation } from "react-router-dom";
-import { Footer } from "@/components/footer";
+import { motion } from "framer-motion";
+import { useParams, useNavigate } from "react-router-dom";
 import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardFooter,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Plus, Minus, ShoppingCart } from "lucide-react";
-import { PageWrapper } from "@/components/pagewrapper";
-import {
-  getMenuItems,
-  getCategories,
-  addToCart,
-  checkout,
-  removeCartItem,
-  viewCart,
-  getLocation,
-  myOrders,
-  initializeCheckout,
-} from "@/api/restaurant";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { category, tempapiMenu, menuItem } from "@/interfaces/restaurantType";
-import { useToast } from "@/hooks/use-toast";
-import useAuthStore from "@/stores/useAuthStore";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-  DialogFooter,
-} from "@/components/ui/dialog";
-import { singularCartItem } from "@/interfaces/restaurantType";
+  FiClock,
+  FiMapPin,
+  FiStar,
+  FiShoppingCart,
+  FiPlus,
+  FiMinus,
+  FiChevronRight,
+} from "react-icons/fi";
 import {
   Select,
   SelectContent,
@@ -48,14 +20,55 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-// import { verifyPayment } from "@/api/payments";
-//import PaystackPop from "@paystack/inline-js";
+import {
+  getMenuItems,
+  getCategories,
+  addToCart,
+  checkout,
+  removeCartItem,
+  viewCart,
+  getLocation,
+  initializeCheckout,
+} from "@/api/restaurant";
 
-// interface CartItem extends singularCartItem {
-//   total: number
-// }
+import { useMutation, useQuery } from "@tanstack/react-query";
+import {
+  category,
+  menuItem,
+  menu,
+  singularCartItem,
+} from "@/interfaces/restaurantType";
+import useAuthStore from "@/stores/useAuthStore";
+import { useToast } from "@/hooks/use-toast";
 
-export default function RestaurantMenuPage() {
+// Animation variants
+const fadeIn = {
+  hidden: { opacity: 0, y: 20 },
+  visible: (custom: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5, delay: custom * 0.1 },
+  }),
+};
+
+// Fake restaurant data (in a real app, this would come from an API)
+
+// Cart item type
+interface CartItem {
+  menu_id: string;
+  menu_name: string;
+  price: number;
+  quantity: number;
+  image: File | null | string;
+}
+
+const RestaurantMenuPage = () => {
+  const [selectedLocation, setLocation] = useState(""); //the location a user selects
+  const { isLoggedIn } = useAuthStore();
+  const navigate = useNavigate();
+  const { id } = useParams<{ id: string }>();
+  const { toast } = useToast();
+  const deliveryFee = 250; //this is the delivery fee variable
   const { data: cartItems, refetch } = useQuery({
     queryFn: viewCart,
     queryKey: ["cartItems"],
@@ -65,155 +78,128 @@ export default function RestaurantMenuPage() {
     queryFn: getLocation,
     queryKey: ["locations"],
   });
-
-  const location = useLocation();
-  const { id } = useParams<{ id: string }>(); //restaurant id container
-  var previousId = location.state?.itemId; //container for the id of item user tried to access before logging in
-  //const navigate = useNavigate();
-  const [selectedLocation, setLocation] = useState(""); //the location a user selects
-  const [displayedMenuItems, setDisplayedMenuItems] = useState<menuItem[]>([]);
-  const [totalPrice, setTotalPrice] = useState(0); //this is here so we can pass the price during checkout
-  const [checkoutItems, setCheckoutItems] = useState<
-    {
-      menu_id: number;
-      quantity: number;
-      menu_name: string;
-      menu_price: number;
-      menu_picture: File | null | string;
-      is_available: "1" | "0";
-    }[]
-  >([]); //every time a menu item gets added or removed(hitting the plus button) we'll set the state here so we can pass it to checkout route
   const { status: menuStatus, data: menuItems } = useQuery({
     queryKey: ["menuItems", id],
     queryFn: () => getMenuItems(id!),
-  });
-  const deliveryFee = 250; //this is the delivery fee variable
-  const { data: userOrders } = useQuery({
-    //this'll help check if the user has a pending order before checkout
-    queryFn: () => myOrders("pending"),
-    queryKey: ["userOrders"],
-    enabled: !!selectedLocation,
     refetchOnWindowFocus: false,
+    staleTime: 3000000,
   });
-
   const { data: categories } = useQuery({
     queryKey: ["categories"],
     queryFn: () => getCategories(),
   });
-
-  const navigate = useNavigate();
-  useEffect(() => {
-    console.log(totalPrice);
-    if (menuItems && categories) {
-      // Flatten all menus from all categories into a single array
-      const allMenus = menuItems.reduce(
-        (acc: menuItem[], category: tempapiMenu) => {
-          return [...acc, ...category.menus];
-        },
-        []
-      );
-
-      allMenus.map((menu: menuItem) => {
-        const visible: any = {};
-        visible[menu.category] = true;
-      });
-
-      // Process each menu item with its category
-      const processedItems = allMenus.map((menu: menuItem) => {
-        const menuCategory = menuItems.find(
-          (category: category) => category.id === Number(menu.category_id)
-        );
-        return {
-          ...menu,
-          category: menuCategory?.name || "Uncategorized",
-        } as menuItem;
-      });
-
-      setDisplayedMenuItems(processedItems);
-    }
-  }, [menuItems, categories]);
-
-  useEffect(() => {
-    //this calculates the total price of cart Items
-    const total_price = cartItems?.cart_items?.reduce(
-      (sum: number, item: singularCartItem) => sum + Number(item.item_price),
-      0
-    );
-    setTotalPrice(total_price);
-
-    const transformedItems: {
-      menu_id: number;
-      quantity: number;
-      menu_name: string;
-      menu_picture: File | null | string;
-      menu_price: number;
-      is_available: "1" | "0";
-    }[] = cartItems?.cart_items.map((item: singularCartItem) => ({
-      menu_id: item.menu_id,
-      quantity: 1, //we don't store quantity in the backend anymore, so I just default them to 1
-      menu_name: item.item_name,
-      menu_picture: item.item_picture,
-      menu_price: Number(item.item_price),
-      is_available: item.is_available,
-    }));
-    //so the values only update or show for logged in users
-    isLoggedIn && setCheckoutItems(transformedItems); //so that we can get the user's checkout items so they can continue from when they left off in selecting in cart if they refresh the page or something.
-    console.log("items in cart: ", checkoutItems);
-  }, [cartItems]);
-
-  useEffect(() => {
-    // This function handles a situation where the user tried to add to cart before logging in. It gets the Id of what they tried to add(which was passed all the way to whatever page they're coming from) and adds it to the cart
-    if (localStorage.getItem("previousId")) {
-      handleAddToCart(
-        localStorage.getItem("previousId")!,
-        menuItems?.find((item: menuItem) => item.id === previousId)?.price
-      );
-      localStorage.removeItem("previousId");
-      localStorage.removeItem("restaurantId");
-    }
-  }, []);
-
-  useEffect(() => {
-    //this function removes unavailable menu items from the user's cart
-    if (checkoutItems?.some((item) => item.is_available === "0")) {
-      checkoutItems.map((item) => {
-        item.is_available === "0" ? handleRemoveFromCart(item.menu_id) : item;
-      });
-      // const newCart = checkoutItems?.filter(
-      //   (item) => item.is_available === "1"
-      // );
-      // setCheckoutItems(newCart);
-    }
-  }, [menuItems]);
-
-  useEffect(() => {
-    //this function makes sure that if the quantity of an item is less than zero, it should be removed from the cart(checkout items)
-    if (checkoutItems?.some((item) => item.quantity <= 0)) {
-      setCheckoutItems((prevItems) =>
-        prevItems.filter((item) => item.quantity > 0)
-      );
-    }
-  }, [checkoutItems]);
-  const { toast } = useToast();
-  const { isLoggedIn } = useAuthStore();
-
   const { mutateAsync: mutate } = useMutation({
     mutationFn: addToCart,
     onSuccess: (data) => {
-      toast({
-        title: "Success",
-        description: data.message,
-      });
+      console.log(data.message);
     },
     onError: (error) => {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
+      console.log(error.message);
+    },
+  });
+  const { mutateAsync: removeItemMutate } = useMutation({
+    mutationFn: removeCartItem,
+    onSuccess: (data) => {
+      console.log(data.message);
+    },
+    onError: (error) => {
+      console.log(error.message);
     },
   });
 
+  useEffect(() => {
+    cartItems &&
+      setCart(
+        cartItems.map((item: singularCartItem) => ({
+          menu_id: item.menu_id.toString(), // Convert `menu_id` (number) to `id` (string)
+          menu_name: item.item_name, // Map `item_name` to `name`
+          price: item.item_price, // Map `item_price` to `price`
+          quantity: 1, // Default quantity to 1
+          image: item.item_picture, // Directly assign `item_picture`
+        }))
+      );
+  }, [cartItems]);
+
+  const queryParams = new URLSearchParams(window.location.search);
+  useEffect(() => {
+    //this useEffect sets the reference code for verifying a transaction
+    if (queryParams.get("reference")) {
+      handleCheckout(queryParams.get("reference")!);
+    }
+  }, []);
+  const [activeCategory, setActiveCategory] = useState<string>("");
+  const [cart, setCart] = useState<CartItem[]>([]);
+  const [cartOpen, setCartOpen] = useState(false);
+
+  // Handle adding item to cart
+
+  const handleAddToCart = async (item: CartItem | menuItem) => {
+    if (!isLoggedIn) {
+      //save the id to local storage.
+      navigate("/login/");
+      return;
+    }
+    // Check if the item is a CartItem or menuItem
+    const isMenuItem = "id" in item;
+
+    // Extract the relevant properties based on the item type
+    const itemId = isMenuItem
+      ? String((item as menuItem).id)
+      : (item as CartItem).menu_id;
+    const itemName = isMenuItem
+      ? (item as menuItem).name
+      : (item as CartItem).menu_name;
+    const itemPrice = item.price; // Both types have price
+    const itemImage = item.image; // Both types have image
+
+    // Find if the item already exists in the cart
+    const existingItem = cart.find((cartItem) => cartItem.menu_id === itemId);
+
+    // Update the cart state
+    setCart((prevCart) => {
+      if (existingItem) {
+        console.log(`Increasing quantity for item ${itemName} (${itemId})`);
+        // Update quantity if item already exists
+        return prevCart.map((cartItem) =>
+          cartItem.menu_id === itemId
+            ? { ...cartItem, quantity: cartItem.quantity + 1 }
+            : cartItem
+        );
+      } else {
+        // Add new item to cart
+        console.log(`Adding new item to cart: ${itemName} (${itemId})`);
+        return [
+          ...prevCart,
+          {
+            menu_id: itemId,
+            menu_name: itemName,
+            price: itemPrice,
+            quantity: 1,
+            image: itemImage,
+          },
+        ];
+      }
+    });
+
+    // Only call API to add item if it's a new item
+    // (quantity increments are handled client-side only)
+    if (!existingItem) {
+      try {
+        // Convert itemId to number for the API call
+        await mutate(Number(itemId));
+        await refetch(); // Refetch cart data to ensure sync with server
+      } catch (error) {
+        // Handle error case
+        console.error(`Failed to add item ${itemName} to cart:`, error);
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Failed to add item to cart. Please try again.",
+        });
+        refetch(); // Refetch to ensure UI shows correct state
+      }
+    }
+  };
   const { mutate: checkoutMutate /*status: checkoutStatus*/ } = useMutation({
     mutationFn: checkout,
     onSuccess: (data) => {
@@ -234,121 +220,64 @@ export default function RestaurantMenuPage() {
     },
   });
 
-  const { mutateAsync: removeItemMutate, status: removeItemStatus } =
-    useMutation({
-      mutationFn: removeCartItem,
-      onSuccess: (data) => {
-        toast({
-          title: "Success",
-          description: data.message,
-        });
-      },
-      onError: (error) => {
-        toast({
-          title: "Error",
-          description: error.message,
-          variant: "destructive",
-        });
-      },
+  const handleCheckout = (reference: string) => {
+    checkoutMutate({
+      items: JSON.parse(localStorage.getItem("cart")!),
+      restaurant_id: Number(id),
+      total: Number(localStorage.getItem("totalPrice")! + deliveryFee),
+      location: localStorage.getItem("orderLocation"),
+      reference: reference,
     });
+    localStorage.removeItem("orderLocation");
+    localStorage.removeItem("totalPrice");
+    localStorage.removeItem("cart");
+  };
+  // Handle removing item from cart
+  const removeFromCart = async (itemId: string) => {
+    const existingItem = cart.find((item) => item.menu_id === itemId);
 
-  const handleAddToCart = async (itemId: string, price: number) => {
-    //this function updates the state for cartItems and that updates in the input field. the onError makes it refetch the data since cartItemarray get reset whenever cartitem from the api changes. If the data gets refetched, what failed won't display anymore
-    if (!isLoggedIn) {
-      //save the id to local storage.
-      localStorage.setItem("previousId", itemId);
-      localStorage.setItem("restaurantId", String(id)); //gotta pass rest id so we can navigate back to said restaurant
-      navigate("/login/");
-      return;
-    }
-    //all this below sets the quantity for chekout items so we can... have the quantity
-    setCheckoutItems((prevItems) => {
-      const newItems = [
-        ...prevItems,
-        {
-          menu_id: Number(itemId),
-          quantity: 1,
-          menu_name: menuItems?.find(
-            (item: menuItem) => item.id === Number(itemId)
-          )?.name,
-          menu_picture: menuItems?.find(
-            (item: menuItem) => item.id === Number(itemId)
-          )?.item_picture,
-          menu_price: menuItems?.find(
-            (item: menuItem) => item.id === Number(itemId)
-          )?.price,
-          is_available: menuItems?.find(
-            (item: menuItem) => item.id === Number(itemId)
-          )?.is_available,
-        },
-      ];
-
-      return newItems;
+    setCart((prevCart) => {
+      if (existingItem && existingItem.quantity > 1) {
+        // Decrease quantity if more than 1
+        return prevCart.map((item) =>
+          item.menu_id === itemId
+            ? { ...item, quantity: item.quantity - 1 }
+            : item
+        );
+      } else {
+        // Remove item completely if quantity is 1
+        return prevCart.filter((item) => item.menu_id !== itemId);
+      }
     });
-    setTotalPrice((prevPrice) => {
-      const currentPrice = Number(prevPrice); // Force convert to number. Somewhere along the line, it adds them as strings and i can't find where so i just fell back to this
-      const addPrice = Number(price); // Force convert to number
-      return currentPrice + addPrice;
-    });
-    console.log("checkout items", checkoutItems);
-    localStorage.removeItem("previousId");
-
-    // Move these after the state update
-    try {
-      await mutate(Number(itemId));
-      await refetch(); // Refetch cart data to ensure sync with server
-    } catch (error) {
-      // Handle error case
-      console.error("Failed to update cart:", error);
-      refetch(); // Refetch to ensure UI shows correct state
+    if (existingItem && existingItem.quantity === 1) {
+      try {
+        await removeItemMutate(Number(itemId));
+        await refetch(); // Refetch cart data to ensure sync with server
+      } catch (error) {
+        // Handle error case
+        console.error("Failed to update cart:", error);
+        refetch(); // Refetch to ensure UI shows correct state
+      }
     }
   };
-
-  const handleRemoveFromCart = async (itemId: number) => {
-    setCheckoutItems(() =>
-      checkoutItems.filter((item) => item.menu_id != itemId)
-    );
-
-    try {
-      await removeItemMutate(itemId);
-      await refetch(); // Refetch cart data to ensure sync with server
-    } catch (error) {
-      // Handle error case
-      console.error("Failed to update cart:", error);
-      refetch(); // Refetch to ensure UI shows correct state
-    }
-  };
-
-  //the two variables below will get the transaction id when we get redirected from the paystack page to here
-  // const [transactionReference, setTransactionReference] = useState("");
-  const queryParams = new URLSearchParams(window.location.search);
   useEffect(() => {
-    //this useEffect sets the reference code for verifying a transaction
-    if (queryParams.get("reference")) {
-      handleCheckout(queryParams.get("reference")!);
-    }
-  }, []);
-  // const { data: verifyPaymentData } = useQuery({
-  //   queryFn: () => verifyPayment(transactionReference),
-  //   queryKey: ["paymentDetails"],
-  //   enabled: !!transactionReference,
-  // });
+    console.log("offline cart: ", cart);
+    console.log("api Cart: ", cartItems);
+  }, [cart]);
+
   const handlePayment = () => {
     //this function will store the location in localStorage, so after payment and redirect, we can checkout with said info
     if (!selectedLocation) {
-      toast({
-        title: "One more step to go",
-        description: "you haven't picked a location yet",
-        variant: "destructive",
-      });
-    } else if (userOrders?.order) {
-      toast({
-        title: "Oops",
-        description:
-          "Looks like you already have a pending order right now. Finish that one to place a new order",
-        variant: "destructive",
-      });
-    } else if (checkoutItems.length < 1) {
+      setTimeout(
+        () =>
+          toast({
+            title: "One more step to go",
+            description: "you haven't picked a location yet",
+            variant: "destructive",
+          }),
+        500
+      );
+    } else if (cart.length < 1) {
       toast({
         title: "Oh no",
         description: "you haven't picked anything D:",
@@ -356,16 +285,15 @@ export default function RestaurantMenuPage() {
       });
     } else {
       localStorage.setItem("orderLocation", selectedLocation);
-      localStorage.setItem("checkoutItems", JSON.stringify(checkoutItems));
-      localStorage.setItem("totalPrice", String(totalPrice));
+      localStorage.setItem("cart", JSON.stringify(cart));
+      localStorage.setItem("totalPrice", String(calculateTotal()));
       initializeCheckoutMutate({
         restaurantId: id!,
-        total: totalPrice + deliveryFee,
+        total: calculateTotal(),
         callback_id: id!,
       });
     }
   };
-
   const {
     mutateAsync: initializeCheckoutMutate,
     status: initializeCheckoutStatus,
@@ -386,342 +314,341 @@ export default function RestaurantMenuPage() {
     },
   });
 
-  const handleCheckout = (reference: string) => {
-    console.log("rest id: ", id);
-    console.log(checkoutItems);
-    checkoutMutate({
-      items: JSON.parse(localStorage.getItem("checkoutItems")!),
-      restaurant_id: Number(id),
-      total: Number(localStorage.getItem("totalPrice")! + deliveryFee),
-      location: localStorage.getItem("orderLocation"),
-      reference: reference,
-    });
-    localStorage.removeItem("orderLocation");
-    localStorage.removeItem("totalPrice");
-    localStorage.removeItem("checkoutItems");
+  // Calculate total price
+  const calculateTotal = () => {
+    return cart.reduce((total, item) => total + item.price * item.quantity, 0);
   };
-  // useEffect(() => {
-  //   //this function handles checkout after payments have been made
-  //   if (verifyPaymentData) {
-  //     if (verifyPaymentData?.data?.status === "success") {
-  //       navigate(`/menu/${id}`, { replace: true });
-  //       handleCheckout();
-  //       setTransactionReference(""); //so that another reload doesn't trigger verifyPayments to run
-  //     } else if (verifyPaymentData?.data?.status === "failed") {
-  //       toast({
-  //         title: "Error",
-  //         description: verifyPaymentData?.message,
-  //         variant: "destructive",
-  //       });
-  //       setTransactionReference(""); //so that another reload doesn't trigger verifyPayments to run
-  //     }
+
+  // Scroll to category section
+  const scrollToCategory = (categoryId: string) => {
+    setActiveCategory(categoryId);
+    const element = document.getElementById(`category-${categoryId}`);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
+  //   if (!restaurant) {
+  //     return (
+  //       <div className="flex justify-center items-center min-h-screen bg-secondary-50">
+  //         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+  //       </div>
+  //     );
   //   }
-  // }, [verifyPaymentData]);
-  const handleSelectLocationChange = (value: string) => {
-    setLocation(value);
-  };
-
-  const setCartItemQuantity = (
-    menu_id: number,
-    operator: number,
-    price: number
-  ) => {
-    //this function increases the quantity for cart items
-    if (operator === 1) {
-      setCheckoutItems((prevItems) =>
-        prevItems.map((item) =>
-          item.menu_id === menu_id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        )
-      );
-      setTotalPrice((prevItems) => prevItems + Number(price));
-    }
-
-    if (operator === -1) {
-      setCheckoutItems((prevItems) =>
-        prevItems.map((item) =>
-          item.menu_id === menu_id
-            ? { ...item, quantity: item.quantity - 1 }
-            : item
-        )
-      );
-      setTotalPrice((prevItems) => prevItems - Number(price));
-    }
-
-    if (operator === 0) {
-      setCheckoutItems((prevItems) =>
-        prevItems.map((item) =>
-          item.menu_id === menu_id
-            ? { ...item, quantity: item.quantity - 1 }
-            : item
-        )
-      );
-      setTotalPrice((prevItems) => prevItems - Number(price));
-      //Do all that but also remove from the backend
-
-      removeItemMutate(menu_id);
-    }
-  };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-cbg-dark">
-      <PageWrapper className="sticky top-[4rem] z-10 bg-white shadow-md p-4 dark:bg-cbg-darkaccent">
-        <div className="container mx-auto flex justify-between items-center">
-          <h1 className="text-xl md:text-2xl font-bold text-gray-800 dark:text-cfont-dark">
-            {/*allMenus.name*/} Menu
-          </h1>
-          <Dialog>
-            <DialogTrigger>
-              <Button className="w-32 sm:w-48 text-xs md:text-md overflow">
-                <ShoppingCart className="mr-2 h-4 w-4 text-md" />{" "}
-                <span>View Cart</span>
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px] dark:text-cfont-dark">
-              <DialogHeader>
-                <DialogTitle>My Cart</DialogTitle>
-              </DialogHeader>
-              <div>
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex justify-between items-center">
-                      <span>Cart Items</span>
-                      {/* {Number(item.quantity) > 1 ? (
-                          <Badge variant="default">{item.quantity}</Badge>
-                        ) : (
-                          <></>
-                        )} */}
-                    </CardTitle>
-                  </CardHeader>
-                  <ScrollArea className="h-[300px] pr-4">
-                    {checkoutItems?.map((item) => (
-                      <div
-                        key={item.menu_id}
-                        className="flex items-center justify-between py-2"
-                      >
-                        <div className="flex items-center">
-                          <Img
-                            className="rounded-md mr-2 max-w-[35%] h-auto"
-                            src={String(item.menu_picture!)}
-                            alt={item.menu_name}
-                            loading="lazy"
-                            unloader={
-                              <div className="flex justify-center p-5 max-h-[40%] items-center">
-                                <l-orbit
-                                  size="35"
-                                  speed="1.5"
-                                  color="#6C757D"
-                                ></l-orbit>
-                              </div>
-                            }
-                          />
-                          <div>
-                            <p className="font-medium">{item.menu_name}</p>
-                            <p className="text-sm text-gray-500">
-                              {item.menu_price?.toLocaleString()}
-                            </p>
-                          </div>
-                        </div>
-                        <div className="flex items-center">
-                          <Button
-                            variant="outline"
-                            size="icon"
-                            onClick={() => {
-                              checkoutItems.find(
-                                (citem) => item.menu_id === citem.menu_id
-                              )?.quantity === 1
-                                ? setCartItemQuantity(
-                                    item.menu_id,
-                                    0,
-                                    item.menu_price
-                                  )
-                                : setCartItemQuantity(
-                                    item.menu_id,
-                                    -1,
-                                    item.menu_price
-                                  );
-                            }}
-                          >
-                            <Minus className="h-4 w-4" />
-                          </Button>
-                          <span className="mx-2">{item.quantity}</span>
-                          <Button
-                            variant="outline"
-                            size="icon"
-                            onClick={() =>
-                              setCartItemQuantity(
-                                item.menu_id,
-                                1,
-                                item.menu_price
-                              )
-                            }
-                          >
-                            <Plus className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </div>
-                    ))}
-                    {checkoutItems?.length > 0 && (
-                      <div className="flex justify-between ml-2">
-                        <span className="font-semibold">Delivery Fee:</span>
-                        <span className="font-semibold">
-                          ₦{deliveryFee.toLocaleString()}
-                        </span>
-                      </div>
-                    )}
-                  </ScrollArea>
-                  <div className="mb-4 ml-4 flex flex-col justify-between items-left">
-                    <span className="font-semibold">Total:</span>
-
-                    {checkoutItems?.length > 0 ? (
-                      <span className="font-semibold">
-                        ₦{(totalPrice! + deliveryFee).toLocaleString()}
-                      </span>
-                    ) : (
-                      <span className="font-semibold">
-                        ₦{totalPrice?.toLocaleString()}
-                      </span>
-                    )}
-                  </div>
-                </Card>
-              </div>
-              <DialogFooter>
-                <Select onValueChange={handleSelectLocationChange}>
-                  <SelectTrigger className="w-[180px] mt-3 sm:mt-0">
-                    <SelectValue placeholder="Select a location" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      {locationStatus === "pending" ? (
-                        <SelectLabel>getting locations...</SelectLabel>
-                      ) : (
-                        locations?.locations.map(
-                          (location: { id: number; name: string }) => (
-                            <SelectItem key={location.id} value={location.name}>
-                              {location.name}
-                            </SelectItem>
-                          )
-                        )
-                      )}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-                <Button
-                  onClick={handlePayment}
-                  disabled={initializeCheckoutStatus === "pending"}
-                >
-                  Checkout
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+    <div className="bg-secondary-50 min-h-screen pt-16 pb-20">
+      {/* Restaurant Header */}
+      <div className="relative h-64 md:h-80 w-full">
+        <div className="absolute inset-0">
+          <img
+            src={(menuItems && menuItems.restaurant.cover_picture) || ""}
+            alt={/*restaurant.name*/ "nothing"}
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
         </div>
-      </PageWrapper>
-
-      <main className="flex-grow container mx-auto px-4 py-8">
-        {menuStatus === "pending" ? (
-          <div className="flex flex-col justify-center items-center">
-            <l-waveform
-              size="35"
-              stroke="3.5"
-              speed="1"
-              color="#6C757D"
-            ></l-waveform>
-            <h3 className="text-l font-bold mb-8 text-center text-gray-800 dark:text-cfont-dark m-8">
-              Getting Meals
-            </h3>
-          </div>
-        ) : (
-          categories?.map((category: category) => (
-            /*groupedItems[category] && */ <PageWrapper
-              key={category.id}
-              className="mb-8"
+        <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8 text-white">
+          <div className="container mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
             >
-              <h2 className="text-2xl font-semibold mb-4 text-gray-700 dark:text-cfont-dark">
-                {category.name}
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {displayedMenuItems.map((item: menuItem) =>
-                  Number(item.category_id) === Number(category.id) ? (
-                    <Card key={item.id} className="flex flex-col">
-                      <div className="relative h-48 w-full mb-2">
-                        {
-                          <Img
-                            className="w-full h-full object-cover"
-                            loading="lazy"
-                            src={String(item.image!)}
-                            alt={item.name}
-                            unloader={
-                              <div className="flex justify-center p-5 h-[200px] items-center">
-                                <l-orbit
-                                  size="35"
-                                  speed="1.5"
-                                  color="#6C757D"
-                                ></l-orbit>
-                              </div>
-                            }
-                          />
-                        }
-                      </div>
-                      <CardHeader>
-                        <CardTitle className="flex justify-between items-center">
-                          <span className="text-lg">{item.name}</span>
-                          <Badge>{item.category}</Badge>
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent className="flex-grow">
-                        <p className="text-sm text-gray-600 mb-2">
-                          {item.description}
-                        </p>
-                        <p className="font-semibold">
-                          ₦{Number(item.price).toLocaleString()}
-                        </p>
-                      </CardContent>
-                      <CardFooter className="flex justify-between items-center">
-                        <div className="flex items-center space-x-2">
-                          <Button
-                            disabled={item.is_available === "0"}
-                            className={`${
-                              checkoutItems?.find(
-                                (cItem) => cItem.menu_id === item.id
-                              )
-                                ? "hidden"
-                                : "flex items-center gap-2"
-                            } disabled:opacity-50 cursor-pointer disabled:pointer-events-none `}
-                            onClick={() =>
-                              handleAddToCart(String(item.id), item.price)
-                            }
-                          >
-                            Add To Cart
-                          </Button>
-
-                          <Button
-                            disabled={removeItemStatus === "pending"}
-                            className={`${
-                              checkoutItems?.find(
-                                (cItem) => cItem.menu_id === item.id
-                              )
-                                ? "flex items-center gap-2"
-                                : "hidden"
-                            } disabled:opacity-100 cursor-pointer disabled:pointer-events-none `}
-                            onClick={() => handleRemoveFromCart(item.id)}
-                          >
-                            Remove
-                          </Button>
-                        </div>
-                      </CardFooter>
-                    </Card>
-                  ) : (
-                    <></>
-                  )
-                )}
+              <h1 className="text-3xl md:text-4xl font-bold mb-2">
+                {menuItems && menuItems.restaurant.name}
+              </h1>
+              <p className="text-white/90 mb-4">
+                {/*restaurant.description*/ "it's description"}
+              </p>
+              <div className="flex flex-wrap items-center gap-4 text-sm">
+                <div className="flex items-center">
+                  <FiStar className="mr-1 text-yellow-400" />
+                  <span>{/*restaurant.rating*/ "rating"}</span>
+                </div>
+                <div className="flex items-center">
+                  <FiClock className="mr-1" />
+                  <span>{/*restaurant.deliveryTime*/ "delivery time"}</span>
+                </div>
+                <div className="flex items-center">
+                  <FiMapPin className="mr-1" />
+                  <span>{/*restaurant.location*/ "location"}</span>
+                </div>
+                <span className="px-2 py-1 bg-white/20 rounded-full">
+                  {/*restaurant.cuisine*/ "cuisine"}
+                </span>
+                <span className="px-2 py-1 bg-white/20 rounded-full">
+                  {/*restaurant.priceRange*/ "price range"}
+                </span>
               </div>
-            </PageWrapper>
-          ))
-        )}
-      </main>
-      <Footer />
+            </motion.div>
+          </div>
+        </div>
+      </div>
+      {menuStatus === "pending" ? (
+        <div className="flex justify-center items-center min-h-screen bg-secondary-50">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600">
+            {""}
+          </div>
+        </div>
+      ) : (
+        <div className="container mx-auto px-4 py-6 md:py-8">
+          <div className="flex flex-col lg:flex-row gap-8">
+            {/* Left side - Menu categories and items */}
+            <div className="w-full lg:w-2/3">
+              {/* Category Tabs */}
+              <motion.div
+                initial="hidden"
+                animate="visible"
+                variants={fadeIn}
+                custom={1}
+                className="mb-8 overflow-x-auto"
+              >
+                <div className="flex space-x-2 pb-2">
+                  {categories?.map((category: category) => (
+                    <button
+                      key={category.id}
+                      onClick={() => scrollToCategory(String(category.id))}
+                      className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
+                        activeCategory === String(category.id)
+                          ? "bg-primary-600 text-white shadow-md"
+                          : "bg-white border border-secondary-200 text-secondary-700 hover:bg-secondary-50"
+                      }`}
+                    >
+                      {category.name}
+                    </button>
+                  ))}
+                </div>
+              </motion.div>
+
+              {/* Menu Items by Category */}
+              <div className="space-y-10">
+                {categories?.map((category: category, index: number) => (
+                  <motion.div
+                    key={category.id}
+                    id={`category-${category.id}`}
+                    initial="hidden"
+                    animate="visible"
+                    variants={fadeIn}
+                    custom={index + 2}
+                    className="scroll-mt-24"
+                  >
+                    <h2 className="text-2xl font-bold text-secondary-900 mb-5 flex items-center">
+                      {category.name}
+                      <div className="ml-4 h-px bg-secondary-200 flex-grow"></div>
+                    </h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {menuItems &&
+                        menuItems.menu.map((item: menu) => (
+                          <>
+                            {item.id === category.id &&
+                              item.menus.map((menuitem: menuItem) => (
+                                <div
+                                  key={menuitem.id}
+                                  className="bg-white rounded-xl shadow-soft-md overflow-hidden flex flex-col md:flex-row transition-transform hover:shadow-soft-lg hover:-translate-y-1"
+                                >
+                                  <div className="h-40 md:h-auto md:w-1/3">
+                                    <img
+                                      src={String(menuitem.image!)}
+                                      alt={item.name}
+                                      className="h-full w-full object-cover"
+                                    />
+                                  </div>
+                                  <div className="p-4 flex flex-col flex-grow justify-between md:w-2/3">
+                                    <div>
+                                      <h3 className="text-lg font-semibold text-secondary-900 mb-1">
+                                        {menuitem.name}
+                                      </h3>
+                                      <p className="text-secondary-600 text-sm mb-2 line-clamp-2">
+                                        {menuitem.description}
+                                      </p>
+                                    </div>
+                                    <div className="flex justify-between items-center mt-2">
+                                      <span className="text-primary-600 font-semibold">
+                                        ₦
+                                        {Number(
+                                          menuitem?.price
+                                        )?.toLocaleString()}
+                                      </span>
+                                      <button
+                                        disabled={menuitem.is_available === "0"}
+                                        onClick={() =>
+                                          handleAddToCart(menuitem)
+                                        }
+                                        className="inline-flex items-center justify-center p-2 rounded-full bg-primary-100 text-primary-600 hover:bg-primary-600 hover:text-white transition-colors"
+                                      >
+                                        {menuitem.is_available === "1" ? (
+                                          <FiPlus size={16} />
+                                        ) : (
+                                          "Item Unavailable"
+                                        )}
+                                      </button>
+                                    </div>
+                                  </div>
+                                </div>
+                              ))}
+                          </>
+                        ))}
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+
+            {/* Right side - Cart */}
+            <motion.div
+              initial="hidden"
+              animate="visible"
+              variants={fadeIn}
+              custom={5}
+              className="w-full lg:w-1/3"
+            >
+              <div className="bg-white rounded-2xl shadow-soft-md p-6 lg:sticky lg:top-24">
+                <div className="flex justify-between items-center mb-6">
+                  <h2 className="text-xl font-bold text-secondary-900">
+                    Your Order
+                  </h2>
+                  <button
+                    onClick={() => setCartOpen(!cartOpen)}
+                    className="lg:hidden text-secondary-500 hover:text-primary-600"
+                  >
+                    <FiChevronRight
+                      className={`transform transition-transform ${
+                        cartOpen ? "rotate-90" : ""
+                      }`}
+                    />
+                  </button>
+                </div>
+
+                <div
+                  className={`${
+                    cartOpen ? "block" : "hidden lg:block"
+                  } transition-all`}
+                >
+                  {cart.length === 0 ? (
+                    <div className="text-center py-8">
+                      <div className="mx-auto w-16 h-16 bg-secondary-100 rounded-full flex items-center justify-center mb-4">
+                        <FiShoppingCart
+                          size={24}
+                          className="text-secondary-500"
+                        />
+                      </div>
+                      <p className="text-secondary-600 mb-2">
+                        Your cart is empty
+                      </p>
+                      <p className="text-secondary-500 text-sm">
+                        Add items from the menu to get started
+                      </p>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="divide-y divide-secondary-100 mb-6 max-h-[calc(100vh-350px)] overflow-y-auto">
+                        {cart?.map((item) => (
+                          <div
+                            key={item.menu_id}
+                            className="py-3 flex items-center"
+                          >
+                            <div className="h-12 w-12 rounded-lg overflow-hidden flex-shrink-0 mr-3">
+                              <img
+                                src={String(item.image)!}
+                                alt={item.menu_name}
+                                className="h-full w-full object-cover"
+                              />
+                            </div>
+                            <div className="flex-grow">
+                              <h4 className="text-secondary-900 font-medium">
+                                {item?.menu_name}
+                              </h4>
+                              <div className="flex items-center justify-between mt-1">
+                                <span className="text-primary-600 font-medium">
+                                  ${Number(item?.price)?.toLocaleString()}
+                                </span>
+                                <div className="flex items-center border border-secondary-200 rounded-lg">
+                                  <button
+                                    onClick={() => removeFromCart(item.menu_id)}
+                                    className="px-2 py-1 text-secondary-500 hover:text-primary-600"
+                                  >
+                                    <FiMinus size={14} />
+                                  </button>
+                                  <span className="px-2 text-secondary-900">
+                                    {item.quantity}
+                                  </span>
+                                  <button
+                                    onClick={() => handleAddToCart(item)}
+                                    className="px-2 py-1 text-secondary-500 hover:text-primary-600"
+                                  >
+                                    <FiPlus size={14} />
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      <div className="border-t border-secondary-200 pt-4">
+                        <div className="flex justify-between mb-2">
+                          <span className="text-secondary-600">Subtotal</span>
+                          <span className="text-secondary-900 font-medium">
+                            ${calculateTotal().toFixed(2)}
+                          </span>
+                        </div>
+                        <div className="flex justify-between mb-2">
+                          <span className="text-secondary-600">
+                            Delivery Fee
+                          </span>
+                          <span className="text-secondary-900 font-medium">
+                            {deliveryFee}
+                          </span>
+                        </div>
+                        <div className="flex justify-between font-bold text-lg mt-4">
+                          <span className="text-secondary-900">Total</span>
+                          <span className="text-primary-600">
+                            ₦{(calculateTotal() + deliveryFee).toLocaleString()}
+                          </span>
+                        </div>
+                        <Select onValueChange={(value) => setLocation(value)}>
+                          <SelectTrigger className="w-[180px] mt-3 sm:mt-0">
+                            <SelectValue placeholder="Select a location" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectGroup>
+                              {locationStatus === "pending" ? (
+                                <SelectLabel>getting locations...</SelectLabel>
+                              ) : (
+                                locations?.locations.map(
+                                  (location: { id: number; name: string }) => (
+                                    <SelectItem
+                                      key={location.id}
+                                      value={location.name}
+                                    >
+                                      {location.name}
+                                    </SelectItem>
+                                  )
+                                )
+                              )}
+                            </SelectGroup>
+                          </SelectContent>
+                        </Select>
+
+                        <button
+                          className="w-full mt-6 inline-flex items-center justify-center px-6 py-3 rounded-xl text-white bg-primary-600 hover:bg-primary-700 shadow-md hover:shadow-lg transition-all font-medium text-base"
+                          onClick={handlePayment}
+                          disabled={initializeCheckoutStatus === "pending"}
+                        >
+                          <FiShoppingCart className="mr-2" /> Place Order
+                        </button>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      )}
     </div>
   );
-}
+};
+
+export default RestaurantMenuPage;

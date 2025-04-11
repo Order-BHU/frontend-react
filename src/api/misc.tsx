@@ -120,3 +120,29 @@ export async function changePassword(data: {
       throw error.response?.data;
     });
 }
+
+export async function contact(data: { subject: string; message: string }) {
+  const token = localStorage.getItem("token");
+  return axios
+    .post(
+      `${apiUrl}/contact`,
+      data,
+
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        timeout: 90000,
+      }
+    )
+    .then(function (response: AxiosResponse) {
+      return response.data;
+    })
+    .catch(function (error: AxiosError) {
+      if (error.code === "ERR_NETWORK") {
+        throw new Error("Network error: Unable to reach the server.");
+      }
+      console.log(error);
+      throw error.response?.data;
+    });
+}

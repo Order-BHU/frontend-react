@@ -2,10 +2,10 @@ import "./App.css";
 import "./index.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import LandingPage from "./pages/Landingpage";
-import RestaurantsPage from "./pages/Restaurants";
+import RestaurantsPage from "./pages/restaurantsPage";
 import ContactPage from "./pages/Contact";
 import LoginPage from "./pages/Login";
-import SignUpPage from "./pages/Signup";
+import SignUpPage from "./pages/SignUpPage";
 import RiderDashboardPage from "./pages/RiderDashboard";
 import RestaurantDashboardPage from "./pages/RestaurantDashboard";
 import UserDashboardPage from "./pages/UserDashboard";
@@ -20,15 +20,18 @@ import NotFound from "./pages/NotFound";
 //import ProtectedRoute from "./components/protectedRoute";
 import ToastAutoDismiss from "./components/dismisstoast"; //handles dismissing toast when screen tapped
 import { waveform, orbit } from "ldrs";
-import { Header } from "./components/header";
+import Header from "./components/header";
+import Footer from "./components/footer";
 
 function App() {
   waveform.register();
   orbit.register();
   const queryClient = new QueryClient();
+
   return (
     <div className="app">
       <ToastAutoDismiss />
+
       <Toaster />
       <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
         <BrowserRouter future={{ v7_relativeSplatPath: true }}>
@@ -78,6 +81,7 @@ function App() {
             </Routes>
             <ReactQueryDevtools />
           </QueryClientProvider>
+          <Footer />
         </BrowserRouter>
       </ThemeProvider>
     </div>

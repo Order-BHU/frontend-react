@@ -1,30 +1,41 @@
-import { Link } from "react-router-dom";
-import { Facebook, Twitter, Instagram } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { FiFacebook, FiTwitter, FiInstagram } from "react-icons/fi";
 
-export function Footer() {
+const Footer = () => {
+  const navigate = useNavigate();
   return (
-    <footer className="bg-gray-50 text-gray-600 py-12 dark:bg-header-dark dark:text-cfont-dark">
-      <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div>
-            <div className="w-52 h-52 overflow-hidden flex flex-col align-top">
+    <footer className="bg-white border-t border-gray-100 pt-16 pb-12">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
+          {/* Logo and Short Description */}
+          <div className="col-span-1 md:col-span-1">
+            <div className="flex items-center space-x-2 mb-5">
               <img
-                src={
-                  window.matchMedia("(prefers-color-scheme: dark)").matches
-                    ? "/DarkOrderLogo.PNG"
-                    : "/orderLogo.JPG"
-                }
-                className="h-full top-0"
-              ></img>
+                onClick={() => navigate("/")}
+                src="/orderLogo.JPG"
+                alt="Order Logo"
+                className="h-40 w-40 object-cover md:w-full md:h-full"
+              />
+              {/* <span className="text-xl font-display font-bold text-primary-600">
+                Order
+              </span> */}
             </div>
+            {/* <p className="text-secondary-600 mb-5 text-sm">
+              Your go-to platform for convenient, delicious meals delivered
+              straight to your door.
+            </p> */}
           </div>
+
+          {/* Quick Links */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
-            <ul className="space-y-2 text-sm">
+            <h3 className="text-base font-semibold text-secondary-900 mb-4">
+              Quick Links
+            </h3>
+            <ul className="space-y-2">
               <li>
                 <Link
                   to="/"
-                  className="hover:text-stone-900 transition-colors dark:hover:text-stone-50"
+                  className="text-secondary-600 hover:text-primary-600 transition-colors text-sm"
                 >
                   Home
                 </Link>
@@ -32,7 +43,7 @@ export function Footer() {
               <li>
                 <Link
                   to="/restaurants"
-                  className="hover:text-stone-900 transition-colors dark:hover:text-stone-50"
+                  className="text-secondary-600 hover:text-primary-600 transition-colors text-sm"
                 >
                   Restaurants
                 </Link>
@@ -40,58 +51,110 @@ export function Footer() {
               <li>
                 <Link
                   to="/contact"
-                  className="hover:text-stone-900 transition-colors dark:hover:text-stone-50"
+                  className="text-secondary-600 hover:text-primary-600 transition-colors text-sm"
                 >
                   Contact Us
                 </Link>
               </li>
+            </ul>
+          </div>
+
+          {/* Services */}
+          <div>
+            <h3 className="text-base font-semibold text-secondary-900 mb-4">
+              Our Services
+            </h3>
+            <ul className="space-y-2">
+              <li>
+                <Link
+                  to="/food-delivery"
+                  className="text-secondary-600 hover:text-primary-600 transition-colors text-sm"
+                >
+                  Food Delivery
+                </Link>
+              </li>
+
               <li>
                 <a
-                  href="mailto:bhuorder@gmail.com"
-                  className="hover:text-stone-900 transition-colors dark:hover:text-stone-50"
+                  href="/contact"
+                  className="text-secondary-600 hover:text-primary-600 transition-colors text-sm"
                 >
                   Become a Driver
                 </a>
               </li>
             </ul>
           </div>
+
+          {/* Contact */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">Follow Us</h3>
+            <h3 className="text-base font-semibold text-secondary-900 mb-4">
+              Contact Us
+            </h3>
+            <ul className="space-y-2 text-sm text-secondary-600 mb-4">
+              <li>Email: bhuorder@gmail.com</li>
+            </ul>
             <div className="flex space-x-4">
               <a
                 href="https://facebook.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-400 hover:text-stone-900 transition-colors dark:hover:text-stone-50"
+                className="text-secondary-400 hover:text-primary-600 transition-colors"
+                aria-label="Facebook"
               >
-                <Facebook size={24} />
-                <span className="sr-only">Facebook</span>
+                <FiFacebook size={20} />
               </a>
               <a
                 href="https://twitter.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-400 hover:text-stone-900 transition-colors dark:hover:text-stone-50"
+                className="text-secondary-400 hover:text-primary-600 transition-colors"
+                aria-label="Twitter"
               >
-                <Twitter size={24} />
-                <span className="sr-only">Twitter</span>
+                <FiTwitter size={20} />
               </a>
               <a
                 href="https://instagram.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-400 hover:text-stone-900 transition-colors dark:hover:text-stone-50"
+                className="text-secondary-400 hover:text-primary-600 transition-colors"
+                aria-label="Instagram"
               >
-                <Instagram size={24} />
-                <span className="sr-only">Instagram</span>
+                <FiInstagram size={20} />
               </a>
             </div>
           </div>
         </div>
-        <div className="mt-8 pt-8 border-t border-gray-200 text-center text-sm">
-          <p>&copy; {new Date().getFullYear()} Order. All rights reserved.</p>
+
+        <div className="mt-12 pt-8 border-t border-gray-100">
+          <div className="flex flex-col md:flex-row md:justify-between md:items-center space-y-4 md:space-y-0">
+            <p className="text-sm text-secondary-500">
+              &copy; {new Date().getFullYear()} Order. All rights reserved.
+            </p>
+            <div className="flex space-x-6">
+              <Link
+                to="/privacy"
+                className="text-xs text-secondary-500 hover:text-primary-600 transition-colors"
+              >
+                Privacy Policy
+              </Link>
+              <Link
+                to="/terms"
+                className="text-xs text-secondary-500 hover:text-primary-600 transition-colors"
+              >
+                Terms of Service
+              </Link>
+              <Link
+                to="/cookies"
+                className="text-xs text-secondary-500 hover:text-primary-600 transition-colors"
+              >
+                Cookie Policy
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
     </footer>
   );
-}
+};
+
+export default Footer;

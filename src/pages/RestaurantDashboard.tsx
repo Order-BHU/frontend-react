@@ -1,10 +1,15 @@
-import React, { useState, useEffect } from "react";
-import { Footer } from "../components/footer";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import {
   Select,
   SelectContent,
@@ -12,29 +17,23 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { PageWrapper } from "@/components/pagewrapper";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { CreditCard, DollarSign, Package } from "lucide-react";
-//import { Separator } from "@/components/ui/separator";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-  DialogClose,
-} from "@/components/ui/dialog";
-import { useMutation } from "@tanstack/react-query";
-import { useQuery } from "@tanstack/react-query";
+  FiEdit2,
+  FiShoppingBag,
+  FiDollarSign,
+  FiCreditCard,
+  FiTruck,
+  FiList,
+  FiPieChart,
+  FiCalendar,
+  FiPlus,
+  FiX,
+  FiMapPin,
+  FiClock,
+  FiTrash,
+} from "react-icons/fi";
+import { dashboard } from "@/api/misc";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import {
   getCategories,
   getMenuItems,
@@ -45,30 +44,56 @@ import {
   deleteMenuItem,
   updateItemAvailability,
 } from "@/api/restaurant";
-import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/hooks/use-toast";
 import {
-  category,
-  menuItem,
-  tempapiMenu,
+  menu,
   orderType,
+  menuItem,
+  category,
 } from "@/interfaces/restaurantType";
-import { editProfile, dashboard, changePassword } from "@/api/misc";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
+import { useToast } from "@/hooks/use-toast";
+import { Textarea } from "@/components/ui/textarea";
+import EditProfileModal from "@/components/editProfileModal";
 
-export default function RestaurantDashboardPage() {
-  const [displayedMenuItems, setDisplayedMenuItems] = useState<menuItem[]>([]);
-  const [pendingOrderState, setPendingOrders] = useState<orderType[]>([]);
-  const [acceptedOrderState, setAccepted] = useState<orderType[]>([]);
-  const username = localStorage.getItem("name")?.slice(0, 2).toUpperCase();
-  const restaurant_id = localStorage.getItem("restaurant_id");
+// Animation variants
+const fadeIn = {
+  hidden: { opacity: 0, y: 20 },
+  visible: (custom: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5, delay: custom * 0.1 },
+  }),
+};
+
+// Dashboard tabs
+type TabType = "orders" | "menu" | "financial";
+
+// Sample data for demonstration
+const restaurantProfile = {
+  id: "rest-1",
+  name: "Munchbox",
+  logo: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1674&q=80",
+  description: "Fast food restaurant on campus",
+  owner: "John Smith",
+  contact: "john@munchbox.com",
+  phone: "+91 9876543210",
+  address: "Campus Center, Block A",
+};
+
+const averageOrderValue = 3450;
+const orderValueChange = 5; // percentage
+
+// Order data
+
+// Menu categories and items
+
+const RestaurantDashboardPage = () => {
   const { toast } = useToast();
+  const [activeTab, setActiveTab] = useState<TabType>("orders");
+  const [acceptedOrderState, setAccepted] = useState<orderType[]>([]);
+  const [menuItemArrayState, setmenuItemArray] = useState<menuItem[]>([]); //to store the menu Items for fast UI response when marking as unavailable
+  const [pendingOrderState, setPendingOrders] = useState<orderType[]>([]); //this is for the pending orders. Storing in state for a smooth ui experience
   const [newMenuItem, setNewMenuItem] = useState({
+    //what we pass when editing a menu Item
     name: "",
     price: 0,
     description: "",
@@ -76,152 +101,51 @@ export default function RestaurantDashboardPage() {
     category_id: 0,
     menuId: "",
   });
-
-  //APIs
-  const {
-    status: orderStatus,
-    data: pendingOrders,
-    refetch: refetchOrders,
-  } = useQuery({
-    queryKey: ["pendingOrders"],
-    queryFn: () => myOrders("pending"),
-    staleTime: 30000,
-  });
-
   const { data: userDetails, refetch: refetchDetails } = useQuery({
     queryKey: ["userDetails"],
     queryFn: () => dashboard(),
     refetchOnWindowFocus: false,
   });
-
   const {
-    status: acceptedStatus,
-    data: acceptedOrders,
-    refetch: refetchaccepted,
+    status: orderStatus,
+    data: pendingOrders,
+    refetch: refetchOrders,
   } = useQuery({
+    queryKey: ["pendingOrdersArray"],
+    queryFn: () => myOrders("pending"),
+    staleTime: 30000,
+  });
+  const { data: acceptedOrders } = useQuery({
     queryKey: ["acceptedOrders"],
     queryFn: () => myOrders("accepted"),
     staleTime: 30000,
   });
-  const { status: categoryStatus, data: categories } = useQuery({
-    queryKey: ["categories"],
-    queryFn: getCategories,
-    staleTime: 30000,
+
+  const { mutate: orderStatusMutate } = useMutation({
+    mutationFn: updateOrderStatus,
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
   });
+
   const {
     status: menuStatus,
     data: menuItems,
     refetch: refetchMenuItems,
   } = useQuery({
-    queryKey: ["menuItems", restaurant_id],
-    queryFn: () => getMenuItems(restaurant_id!),
+    queryKey: ["menuItems", localStorage.getItem("restaurant_id")],
+    queryFn: () => getMenuItems(localStorage.getItem("restaurant_id")!),
     staleTime: 30000,
   });
 
-  useEffect(() => {
-    //this'll take user data and store the pfp in localeStorage and also store the default values in restaurant object
-    if (userDetails) {
-      localStorage.setItem("pfp", userDetails?.message?.profile_picture_url);
-      setRestaurant((prev) => ({
-        ...prev,
-        name: userDetails?.message?.name || prev.name, // Ensure fallback to previous name if undefined
-      }));
-    }
-    console.log("userdeets: ", userDetails);
-  }, [userDetails]);
-
-  useEffect(() => {
-    console.log(localStorage.getItem("token"));
-    if (pendingOrders) {
-      setPendingOrders(pendingOrders.orders);
-    }
-  }, [pendingOrders]);
-
-  useEffect(() => {
-    if (acceptedOrders) {
-      setAccepted(acceptedOrders.orders);
-      console.log("my orders: ", acceptedOrders);
-    }
-  }, [acceptedOrders]);
-
-  useEffect(() => {
-    if (menuItems && categories) {
-      // Flatten all menus from all categories into a single array
-      const allMenus = menuItems.reduce((acc: any[], category: tempapiMenu) => {
-        return [...acc, ...category.menus];
-      }, []);
-
-      // Process each menu item with its category
-      const processedItems = allMenus.map((menu: menuItem) => {
-        const menuCategory = menuItems.find(
-          (category: category) => category.id === Number(menu.category_id)
-        );
-        return {
-          ...menu,
-          category: menuCategory?.name || "Uncategorized",
-        };
-      });
-
-      setDisplayedMenuItems(processedItems);
-    }
-  }, [menuItems, categories]);
-
-  const { mutate: orderStatusMutate } = useMutation({
-    mutationFn: updateOrderStatus,
+  const { status: editStatus, mutate: editMutate } = useMutation({
+    mutationFn: editMenu,
     onSuccess: (data) => {
-      toast({
-        title: "Success",
-        description: data.message,
-      });
-      refetchOrders();
-      refetchaccepted();
-    },
-    onError: (error) => {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
-    },
-  });
-
-  const { mutate: passwordMutate, status: passwordStatus } = useMutation({
-    mutationFn: changePassword,
-    onSuccess: (data) => {
-      setPasswordDetails({
-        current_password: "",
-        new_password: "",
-        confirm_password: "",
-      });
-      toast({
-        title: "Success",
-        description: data.message,
-      });
-      refetchDetails();
-    },
-    onError: (error) => {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
-    },
-  });
-
-  const handleUpdatePassword = () => {
-    passwordMutate(passwordDeetails);
-  };
-
-  //this is what we'll pass to the change password mutate function
-  const [passwordDeetails, setPasswordDetails] = useState({
-    current_password: "",
-    new_password: "",
-    confirm_password: "",
-  });
-
-  const { mutate: deleteMenuItemMutate } = useMutation({
-    mutationFn: deleteMenuItem,
-    onSuccess: (data) => {
+      refetchMenuItems();
       toast({
         title: "Success",
         description: data.message,
@@ -234,112 +158,13 @@ export default function RestaurantDashboardPage() {
         description: error.message,
         variant: "destructive",
       });
-      refetchMenuItems();
     },
   });
 
-  const handleDeleteMenuItem = (id: number) => {
-    deleteMenuItemMutate(id);
-
-    setDisplayedMenuItems((prev) => prev.filter((item) => item.id !== id));
-  };
-
-  const { mutate: editProfileMutate, status: editProfileMutateStatus } =
-    useMutation({
-      mutationFn: editProfile,
-      onSuccess: (data) => {
-        refetchDetails();
-        localStorage.setItem("name", restaurant.name);
-        toast({
-          title: "Success",
-          description: data.message,
-        });
-      },
-      onError: (error) => {
-        toast({
-          title: "Error",
-          description: error.message,
-          variant: "destructive",
-        });
-      },
-    });
-
-  const handleEditProfile = (e: React.FormEvent) => {
-    e.preventDefault();
-    editProfileMutate(filteredData);
-    console.log(restaurant);
-  };
-
-  const handlePfpImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setRestaurant({ ...restaurant, profile_picture: e.target.files[0] });
-    }
-  };
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setNewMenuItem({ ...newMenuItem, image: e.target.files[0] });
-    }
-  };
-  const [restaurant, setRestaurant] = useState({
-    name: "",
-    profile_picture: null as File | null,
-    phone_number_type: "",
-  });
-  const filteredData = Object.fromEntries(
-    //this is here to filter only the truthy values from the edit profile form and we pass it to mutate, since the api can't accept empty strings as they'll override whatever is already there
-    Object.entries(restaurant).filter(([_, value]) => value)
-  );
-
-  const handlePhoneTypeChange = (type: "whatsapp" | "phone") => {
-    setRestaurant((prev) => ({ ...prev, phone_number_type: type }));
-  };
-  const [editingMenuItem, setEditingMenuItem] = useState<
-    (typeof menuItems)[0] | null
-  >(null);
-
-  const handleAddMenuItem = (e: React.FormEvent) => {
-    e.preventDefault();
-    mutate({
-      name: newMenuItem.name,
-      description: newMenuItem.description,
-      category_id: newMenuItem.category_id,
-      price: newMenuItem.price,
-      image: newMenuItem.image,
-      id: 1,
-      category: "",
-      is_available: "1",
-    });
-  };
-
-  const handleEditMenuItem = (itemId: number, e: React.FormEvent) => {
-    e.preventDefault();
-    editMutate({
-      name: newMenuItem.name,
-      description: newMenuItem.description,
-      category_id: newMenuItem.category_id,
-      price: newMenuItem.price,
-      image: newMenuItem.image,
-      id: Number(itemId),
-      category: "",
-      is_available: "1",
-    });
-  };
-
-  const handlecategoryStatusChange = (
-    orderId: number,
-    newcategoryStatus: string
-  ) => {
-    orderStatusMutate({
-      orderId: Number(orderId),
-      status: newcategoryStatus,
-    });
-    refetchOrders();
-    // Here you would typically update the order categoryStatus in your backend
-  };
-
-  const { status: mutateStatus, mutate } = useMutation({
+  const { status: mutateStatus, mutate: addMenuMutate } = useMutation({
     mutationFn: addMenu,
     onSuccess: (data) => {
+      console.log("add menu response: ", data);
       toast({
         title: "Success",
         description: data.message,
@@ -363,52 +188,103 @@ export default function RestaurantDashboardPage() {
     },
   });
 
-  const { /*status: editStatus,*/ mutate: editMutate } = useMutation({
-    mutationFn: editMenu,
-    onSuccess: (data) => {
-      refetchMenuItems();
-      toast({
-        title: "Success",
-        description: data.message,
+  const handleEditMenuItem = (
+    itemId: number,
+    restId: string,
+    e: React.FormEvent
+  ) => {
+    const found = menuItemArrayState.find((item) => item.id === itemId);
+    e.preventDefault();
+    found &&
+      editMutate({
+        name: found.name,
+        description: found.description,
+        category_id: found.category_id,
+        price: found.price,
+        image: found.image,
+        id: Number(itemId),
+        category: found.category,
+        is_available: "1",
+        restaurant_id: restId,
       });
-      refetchMenuItems();
-    },
-    onError: (error) => {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
-    },
-  });
-
-  const formatPrice = (price: number | string) => {
-    // Convert to number if it's a string
-    const numericPrice = typeof price === "string" ? parseFloat(price) : price;
-
-    // Check if it's a valid number
-    if (isNaN(numericPrice)) {
-      return "₦0.00";
-    }
-
-    // Format with Nigerian Naira and proper decimal places
-    return new Intl.NumberFormat("en-NG", {
-      style: "currency",
-      currency: "NGN",
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(numericPrice);
   };
+  const handleImageChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    itemId: number
+  ) => {
+    const file = e.target.files?.[0];
+    if (!file) {
+      return;
+    }
+    setmenuItemArray((prev) =>
+      prev.map((item) => (item.id === itemId ? { ...item, image: file } : item))
+    );
+  };
+
+  const handleAddMenuImageChange = (
+    //i know it's redundant, please bear with me here
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    if (e.target.files && e.target.files[0]) {
+      setNewMenuItem({ ...newMenuItem, image: e.target.files[0] });
+    }
+  };
+  const handleAddMenuItem = (e: React.FormEvent) => {
+    e.preventDefault();
+    addMenuMutate({
+      name: newMenuItem.name,
+      description: newMenuItem.description,
+      category_id: newMenuItem.category_id,
+      price: newMenuItem.price,
+      image: newMenuItem.image,
+      id: userDetails?.restaurant_details?.id,
+      restaurant_id: "",
+      category: "",
+      is_available: "1",
+    });
+  };
+
+  useEffect(() => {
+    //this sets the pending orders state to the pending orders response
+    console.log(localStorage.getItem("token"));
+    if (pendingOrders) {
+      setPendingOrders(pendingOrders.orders);
+    }
+  }, [pendingOrders]);
+  useEffect(() => {
+    if (acceptedOrders) {
+      setAccepted(acceptedOrders.orders);
+      console.log("my orders: ", acceptedOrders);
+    }
+  }, [acceptedOrders]);
+
+  useEffect(() => {
+    //this sets the menu Items we get from the server to a state.
+    if (menuItems) {
+      const allMenus = menuItems.menu.flatMap(
+        (category: { id: number; menus: menuItem[] }) => category.menus
+      );
+      setmenuItemArray(allMenus);
+    }
+  }, [menuItems]);
+
+  const handleOrderAccept = (orderId: number, newcategoryStatus: string) => {
+    orderStatusMutate({
+      orderId: Number(orderId),
+      status: newcategoryStatus,
+    });
+    refetchOrders();
+    // Here you would typically update the order categoryStatus in your backend
+  };
+
+  const { status: categoryStatus, data: categories } = useQuery({
+    queryKey: ["categories"],
+    queryFn: getCategories,
+    staleTime: 30000,
+  });
 
   const { mutate: isAvailableMutate } = useMutation({
     mutationFn: updateItemAvailability,
-    onSuccess: (data) => {
-      toast({
-        title: "Success",
-        description: data.message,
-      });
-      refetchMenuItems();
-    },
     onError: (error) => {
       toast({
         title: "Error",
@@ -420,11 +296,11 @@ export default function RestaurantDashboardPage() {
   });
 
   const handleItemAvailability = (menuId: number, value: "1" | "0") => {
-    const foundItem = displayedMenuItems.find(
-      (item) => item.category_id === menuId
+    const foundItem = menuItemArrayState.find(
+      (item: menuItem) => item.id === menuId
     );
     if (foundItem) {
-      setDisplayedMenuItems((prev) =>
+      setmenuItemArray((prev) =>
         prev.map((item) =>
           item.id === menuId ? { ...item, is_available: value } : item
         )
@@ -434,855 +310,841 @@ export default function RestaurantDashboardPage() {
       menuid: menuId,
       value: value,
     });
+    refetchMenuItems();
   };
+  const { mutate: deleteMenuItemMutate } = useMutation({
+    mutationFn: deleteMenuItem,
+    onSuccess: () => {
+      refetchMenuItems();
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+      refetchMenuItems();
+    },
+  });
+  const handleDeleteMenuItem = (id: number) => {
+    console.log("deleting");
+    deleteMenuItemMutate(id);
 
+    setmenuItemArray((prev) => prev.filter((item) => item.id !== id));
+  };
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-cbg-dark">
-      <main className="flex-grow container mx-auto px-4 py-8">
-        <PageWrapper>
-          <h1 className="text-3xl font-bold mb-6 text-gray-800 dark:text-cfont-dark">
+    <div className="bg-secondary-50 min-h-screen pt-20 pb-20">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <motion.div
+          initial="hidden"
+          animate="visible"
+          variants={fadeIn}
+          custom={1}
+        >
+          <h1 className="text-3xl md:text-4xl font-bold text-secondary-900 mb-6">
             Restaurant Dashboard
           </h1>
-        </PageWrapper>
+        </motion.div>
 
-        <PageWrapper className="col-span-full mb-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Restaurant Profile</CardTitle>
-            </CardHeader>
-            <CardContent className="flex items-center space-x-4 flex-col sm:flex-row sm:items-center sm:space-x-4 space-y-4 sm:space-y-0">
-              <Avatar className="h-20 w-20">
-                <AvatarImage src={userDetails?.message?.profile_picture_url} />
-                <AvatarFallback className="text-gray-900 dark:text-gray-300">
-                  {username}
-                </AvatarFallback>
-              </Avatar>
-              <div>
-                <h2 className="md:text-xl font-semibold sm:text-lg text-sm">
-                  {localStorage.getItem("name")}
-                </h2>
+        {/* Restaurant Profile */}
+        <motion.div
+          initial="hidden"
+          animate="visible"
+          variants={fadeIn}
+          custom={2}
+          className="mb-8"
+        >
+          <div className="bg-white rounded-2xl shadow-soft-md overflow-hidden">
+            <div className="p-6 border-b border-gray-100">
+              <h2 className="text-2xl font-bold text-secondary-900">
+                Restaurant Profile
+              </h2>
+            </div>
+            <div className="p-6 flex flex-col sm:flex-row items-center gap-6">
+              <div className="flex-shrink-0">
+                <div className="w-24 h-24 rounded-full overflow-hidden bg-secondary-100">
+                  <img
+                    src={userDetails?.restaurant_details?.logo}
+                    alt={userDetails?.restaurant_details?.name}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
               </div>
+              <div className="flex-grow text-center sm:text-left">
+                <h3 className="text-xl font-semibold text-secondary-900 mb-2">
+                  {userDetails?.restaurant_details?.name}
+                </h3>
+                <p className="text-secondary-600 mb-2">
+                  {restaurantProfile.description}
+                </p>
+                <div className="text-sm text-secondary-500">
+                  <p>Contact: {userDetails?.user?.email}</p>
+                </div>
+              </div>
+              <div className="flex-shrink-0">
+                <EditProfileModal
+                  successFn={refetchDetails}
+                  userDetails={{ name: userDetails?.restaurant_details?.name }}
+                />
+              </div>
+            </div>
+          </div>
+        </motion.div>
 
-              <Dialog>
-                <DialogTrigger asChild>
-                  <Button variant="outline" className="sm:mt-8">
-                    Edit Profile
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="dark:text-cfont-dark overflow-auto max-h-[95vh]">
-                  <DialogHeader>
-                    <DialogTitle>Edit Restaurant Profile</DialogTitle>
-                  </DialogHeader>
-                  <form onSubmit={handleEditProfile} className="space-y-4">
-                    <div>
-                      <Label
-                        htmlFor="restaurantPhoto"
-                        className="dark:text-cfont-dark"
-                      >
-                        Restaurant Photo
-                      </Label>
-                      <Input
-                        id="photo"
-                        type="file"
-                        accept="image/*"
-                        onChange={handlePfpImageChange}
-                      />
-                    </div>
-                    <div>
-                      <Label
-                        htmlFor="restaurantName"
-                        className="dark:text-cfont-dark"
-                      >
-                        Restaurant Name
-                      </Label>
-                      <Input
-                        id="restaurantName"
-                        value={userDetails?.message?.restaurant_name}
-                        className="dark:text-cfont-dark"
-                        onChange={(e) =>
-                          setRestaurant({
-                            ...restaurant,
-                            name: e.target.value,
-                          })
-                        }
-                      />
-                    </div>
-                    <div>
-                      <Label
-                        htmlFor="restaurantPhoto"
-                        className="dark:text-cfont-dark"
-                      >
-                        Phone Number Type:
-                      </Label>
-                      <div className="flex space-x-2 mt-2">
-                        <Button
-                          type="button"
-                          size="sm"
-                          variant={
-                            restaurant.phone_number_type === "whatsapp"
-                              ? "default"
-                              : "outline"
-                          }
-                          onClick={() => handlePhoneTypeChange("whatsapp")}
-                        >
-                          WhatsApp
-                        </Button>
-                        <Button
-                          type="button"
-                          size="sm"
-                          variant={
-                            restaurant.phone_number_type === "phone"
-                              ? "default"
-                              : "outline"
-                          }
-                          onClick={() => handlePhoneTypeChange("phone")}
-                        >
-                          Phone
-                        </Button>
-                      </div>
-                    </div>
-
-                    <Button
-                      type="submit"
-                      disabled={editProfileMutateStatus === "pending"}
-                    >
-                      Update Profile
-                    </Button>
-
-                    <Accordion type="single" collapsible>
-                      <AccordionItem value="item-1">
-                        <AccordionTrigger>Change Password</AccordionTrigger>
-                        <AccordionContent>
-                          <div className="mb-4">
-                            <Label
-                              htmlFor="oldPassword"
-                              className="dark:text-cfont-dark"
-                            >
-                              Old Password
-                            </Label>
-                            <Input
-                              id="oldPassword"
-                              type="password"
-                              value={passwordDeetails?.current_password}
-                              className="dark:text-cfont-dark max-w-[90%] mx-3"
-                              onChange={(e) =>
-                                setPasswordDetails({
-                                  ...passwordDeetails,
-                                  current_password: e.target.value,
-                                })
-                              }
-                            />
-                          </div>
-
-                          <div className="mb-4">
-                            <Label
-                              htmlFor="newPassword"
-                              className="dark:text-cfont-dark"
-                            >
-                              New Password
-                            </Label>
-                            <Input
-                              id="newPassword"
-                              type="password"
-                              value={passwordDeetails?.new_password}
-                              className="dark:text-cfont-dark max-w-[90%] mx-3"
-                              onChange={(e) =>
-                                setPasswordDetails({
-                                  ...passwordDeetails,
-                                  new_password: e.target.value,
-                                })
-                              }
-                            />
-                          </div>
-
-                          <div className="mb-4">
-                            <Label
-                              htmlFor="confirmPassword"
-                              className="dark:text-cfont-dark max-w-[90%] mx-3"
-                            >
-                              Confirm Password
-                            </Label>
-                            <Input
-                              type="password"
-                              id="confirmPassword"
-                              value={passwordDeetails?.confirm_password}
-                              className="dark:text-cfont-dark max-w-[90%] mx-3"
-                              onChange={(e) =>
-                                setPasswordDetails({
-                                  ...passwordDeetails,
-                                  confirm_password: e.target.value,
-                                })
-                              }
-                            />
-                          </div>
-                          <Button
-                            onClick={handleUpdatePassword}
-                            disabled={passwordStatus === "pending"}
-                          >
-                            Update Password
-                          </Button>
-                        </AccordionContent>
-                      </AccordionItem>
-                    </Accordion>
-                  </form>
-                </DialogContent>
-              </Dialog>
-            </CardContent>
-          </Card>
-        </PageWrapper>
-
-        <PageWrapper className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
+        {/* Dashboard Stats */}
+        <motion.div
+          initial="hidden"
+          animate="visible"
+          variants={fadeIn}
+          custom={3}
+          className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8"
+        >
+          {/* Wallet Balance */}
+          <div className="bg-white rounded-2xl shadow-soft-md p-6">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-sm font-medium text-secondary-500">
                 Wallet Balance
-              </CardTitle>
-              <CreditCard className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                ₦{userDetails?.wallet_balance}
+              </h3>
+              <div className="w-8 h-8 flex items-center justify-center rounded-full bg-primary-100 text-primary-600">
+                <FiCreditCard />
               </div>
-              {/* <p className="text-xs text-muted-foreground">
-                +20.1% from last month
-              </p> */}
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
+            </div>
+            <div className="text-2xl font-bold text-secondary-900">
+              ₦{Number(userDetails?.wallet_balance).toLocaleString()}
+            </div>
+          </div>
+
+          {/* Completed Orders */}
+          <div className="bg-white rounded-2xl shadow-soft-md p-6">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-sm font-medium text-secondary-500">
                 Completed Orders
-              </CardTitle>
-              <Package className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {userDetails?.statistics?.completed_orders}
+              </h3>
+              <div className="w-8 h-8 flex items-center justify-center rounded-full bg-primary-100 text-primary-600">
+                <FiShoppingBag />
               </div>
-              {/* <p className="text-xs text-muted-foreground">
-                +15% from last month
-              </p> */}
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
+            </div>
+            <div className="text-2xl font-bold text-secondary-900">
+              {userDetails?.statistics?.completed_orders}
+            </div>
+            <p className="text-xs mt-1 text-secondary-900">
+              {userDetails?.statistics?.pending_orders} Pending
+            </p>
+            <p className="text-xs mt-1 text-secondary-900">
+              {userDetails?.statistics?.accepted_orders} Accepted
+            </p>
+          </div>
+
+          {/* Average Order Value */}
+          <div className="bg-white rounded-2xl shadow-soft-md p-6">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-sm font-medium text-secondary-500">
                 Average Order Value
-              </CardTitle>
-              <DollarSign className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">₦3,450</div>
-              <p className="text-xs text-muted-foreground">
-                +5% from last month
-              </p>
-            </CardContent>
-          </Card>
-        </PageWrapper>
+              </h3>
+              <div className="w-8 h-8 flex items-center justify-center rounded-full bg-primary-100 text-primary-600">
+                <FiDollarSign />
+              </div>
+            </div>
+            <div className="text-2xl font-bold text-secondary-900">
+              ₦{averageOrderValue.toLocaleString()}
+            </div>
+            <p className="text-xs text-green-600 mt-1">
+              +{orderValueChange}% from last month
+            </p>
+          </div>
+        </motion.div>
 
-        <PageWrapper>
-          <Tabs
-            defaultValue="orders"
-            className="space-y-4 w-full space-x-2 box-content"
-          >
-            <TabsList className="w-full flex flex-wrap overflow-auto h-auto">
-              <TabsTrigger
-                value="orders"
-                className="flex-1 whitespace-normal min-w-[120px] text-center"
+        {/* Dashboard Tabs */}
+        <motion.div
+          initial="hidden"
+          animate="visible"
+          variants={fadeIn}
+          custom={4}
+          className="mb-8"
+        >
+          <div className="bg-secondary-100 rounded-xl p-1">
+            <div className="flex flex-wrap">
+              <button
+                onClick={() => setActiveTab("orders")}
+                className={`flex-1 min-w-[120px] px-4 py-3 text-sm font-medium rounded-lg transition-all ${
+                  activeTab === "orders"
+                    ? "bg-white text-secondary-900 shadow-sm"
+                    : "text-secondary-600 hover:text-secondary-900"
+                }`}
               >
-                Order Management
-              </TabsTrigger>
-              <TabsTrigger
-                value="menu"
-                className="flex-1 whitespace-normal min-w-[120px] text-center"
+                <span className="flex items-center justify-center">
+                  <FiShoppingBag className="mr-2" /> Order Management
+                </span>
+              </button>
+              <button
+                onClick={() => setActiveTab("menu")}
+                className={`flex-1 min-w-[120px] px-4 py-3 text-sm font-medium rounded-lg transition-all ${
+                  activeTab === "menu"
+                    ? "bg-white text-secondary-900 shadow-sm"
+                    : "text-secondary-600 hover:text-secondary-900"
+                }`}
               >
-                Menu Management
-              </TabsTrigger>
-              <TabsTrigger
-                value="financial"
-                className="flex-1 whitespace-normal min-w-[120px] text-center"
+                <span className="flex items-center justify-center">
+                  <FiList className="mr-2" /> Menu Management
+                </span>
+              </button>
+              <button
+                onClick={() => setActiveTab("financial")}
+                className={`flex-1 min-w-[120px] px-4 py-3 text-sm font-medium rounded-lg transition-all ${
+                  activeTab === "financial"
+                    ? "bg-white text-secondary-900 shadow-sm"
+                    : "text-secondary-600 hover:text-secondary-900"
+                }`}
               >
-                Financial Management
-              </TabsTrigger>
-            </TabsList>
-            <TabsContent value="orders">
-              <PageWrapper>
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Orders</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    {orderStatus === "pending" ? (
-                      <div className="flex flex-col justify-center items-center">
-                        <l-waveform
-                          size="35"
-                          stroke="3.5"
-                          speed="1"
-                          color="var(--loader-color)"
-                        ></l-waveform>
+                <span className="flex items-center justify-center">
+                  <FiPieChart className="mr-2" /> Financial Management
+                </span>
+              </button>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Tab Content */}
+        <motion.div
+          initial="hidden"
+          animate="visible"
+          variants={fadeIn}
+          custom={5}
+        >
+          {/* Order Management Tab */}
+          {activeTab === "orders" &&
+            (orderStatus === "pending" ? (
+              <div className="flex justify-center items-center min-h-screen bg-secondary-50">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+              </div>
+            ) : (
+              <div className="space-y-8">
+                {/* Pending Orders */}
+                <div className="bg-white rounded-2xl shadow-soft-md overflow-hidden">
+                  <div className="p-6 border-b border-gray-100">
+                    <h2 className="text-2xl font-bold text-secondary-900">
+                      Pending Orders
+                    </h2>
+                  </div>
+                  <div className="p-6">
+                    {pendingOrderState?.length === 0 ? (
+                      <div className="text-center py-8">
+                        <div className="mx-auto w-16 h-16 bg-secondary-100 rounded-full flex items-center justify-center mb-4">
+                          <FiShoppingBag className="w-8 h-8 text-secondary-400" />
+                        </div>
+                        <p className="text-secondary-600 mb-2">
+                          No pending orders
+                        </p>
+                        <p className="text-secondary-500 text-sm">
+                          New orders will appear here
+                        </p>
                       </div>
                     ) : (
-                      <Table>
-                        <TableHeader>
-                          <TableRow>
-                            <TableHead>Order ID</TableHead>
-                            {/* <TableHead>Customer</TableHead> */}
-                            <TableHead>Items</TableHead>
-                            <TableHead>Total</TableHead>
-                            <TableHead>categoryStatus</TableHead>
-                            <TableHead>Action</TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {pendingOrderState?.map((order) => (
-                            <TableRow key={order.id}>
-                              <TableCell>{order.id}</TableCell>
-                              {/* <TableCell>{order.customer}</TableCell> */}
-                              <TableCell>
-                                {order.items
-                                  ?.map(
-                                    (item) =>
-                                      item.menu_name + `(x${item.quantity})`
-                                  )
-                                  .join(", ")}
-                              </TableCell>
-                              <TableCell>
-                                ₦{Number(order.total).toLocaleString()}
-                              </TableCell>
-                              <TableCell>
-                                <Badge
-                                  variant={
-                                    order.status === "ready"
-                                      ? "secondary"
-                                      : "default"
+                      <div className="space-y-4">
+                        {pendingOrderState &&
+                          pendingOrderState.map((order) => (
+                            <div
+                              key={order.id}
+                              className="bg-secondary-50 rounded-xl p-4 shadow-sm"
+                            >
+                              <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
+                                <div>
+                                  <div className="flex items-center">
+                                    <span className="text-lg font-semibold text-secondary-900 mr-3">
+                                      Order {order.id}
+                                    </span>
+                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                      {order.status}
+                                    </span>
+                                  </div>
+                                  <p className="text-secondary-600 text-sm mt-1">
+                                    {order.user_phoneNumber}
+                                  </p>
+                                </div>
+                                <div className="mt-2 md:mt-0">
+                                  <span className="text-primary-600 font-semibold">
+                                    ₦{order.total.toFixed(2)}
+                                  </span>
+                                </div>
+                              </div>
+                              <div className="border-t border-secondary-200 pt-3 pb-2">
+                                <h4 className="text-sm font-medium text-secondary-600 mb-2">
+                                  Items:
+                                </h4>
+                                <ul className="pl-5 list-disc text-sm text-secondary-600 mb-3">
+                                  {order.items.map((item, index) => (
+                                    <li
+                                      key={index}
+                                    >{`${item.item_name} X${item.quantity}`}</li>
+                                  ))}
+                                </ul>
+                                <div className="flex items-center text-sm text-secondary-600">
+                                  <FiMapPin className="mr-1" />
+                                  <span>Delivery to: {order.location}</span>
+                                </div>
+                              </div>
+                              <div className="flex justify-end mt-4 space-x-3">
+                                <button
+                                  className="inline-flex items-center justify-center px-4 py-2 rounded-lg text-white bg-red-500 hover:bg-red-600 transition-colors text-sm"
+                                  onClick={() =>
+                                    handleOrderAccept(order.id, "accepted")
                                   }
                                 >
-                                  {order.status}
-                                </Badge>
-                              </TableCell>
-                              <TableCell>
-                                <Select
-                                  value={order.status}
-                                  onValueChange={(value) =>
-                                    handlecategoryStatusChange(order.id, value)
-                                  }
-                                >
-                                  <SelectTrigger className="w-[180px]">
-                                    <SelectValue placeholder="Update categoryStatus" />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value="accepted">
-                                      Accept
-                                    </SelectItem>
-                                    <SelectItem value="ready">Ready</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                              </TableCell>
-                            </TableRow>
+                                  <FiX className="mr-1" /> Reject
+                                </button>
+                                {/* <button className="inline-flex items-center justify-center px-4 py-2 rounded-lg text-white bg-primary-600 hover:bg-primary-700 shadow-sm transition-colors text-sm">
+                                <FiCheck className="mr-1" /> Accept
+                              </button> */}
+                              </div>
+                            </div>
                           ))}
-                        </TableBody>
-                      </Table>
+                      </div>
                     )}
-                  </CardContent>
-                </Card>
+                  </div>
+                </div>
 
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Accepted Orders</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    {acceptedStatus === "pending" ? (
-                      <div className="flex flex-col justify-center items-center">
-                        <l-waveform
-                          size="35"
-                          stroke="3.5"
-                          speed="1"
-                          color="var(--loader-color)"
-                        ></l-waveform>
+                {/* Accepted Orders */}
+                <div className="bg-white rounded-2xl shadow-soft-md overflow-hidden">
+                  <div className="p-6 border-b border-gray-100">
+                    <h2 className="text-2xl font-bold text-secondary-900">
+                      Accepted Orders
+                    </h2>
+                  </div>
+                  <div className="p-6">
+                    {acceptedOrderState?.length === 0 ? (
+                      <div className="text-center py-8">
+                        <div className="mx-auto w-16 h-16 bg-secondary-100 rounded-full flex items-center justify-center mb-4">
+                          <FiTruck className="w-8 h-8 text-secondary-400" />
+                        </div>
+                        <p className="text-secondary-600 mb-2">
+                          No accepted orders
+                        </p>
+                        <p className="text-secondary-500 text-sm">
+                          Accepted orders will appear here
+                        </p>
                       </div>
                     ) : (
-                      <Table>
-                        <TableHeader>
-                          <TableRow>
-                            <TableHead>Order ID</TableHead>
-                            {/* <TableHead>Customer</TableHead> */}
-                            <TableHead>Items</TableHead>
-                            <TableHead>Total</TableHead>
-                            <TableHead>categoryStatus</TableHead>
-                            <TableHead>Action</TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {acceptedOrderState?.map((order) => (
-                            <TableRow key={order?.order_id}>
-                              <TableCell>{order.order_id}</TableCell>
-                              {/* <TableCell>{order.customer}</TableCell> */}
-                              <TableCell>
-                                {order.items
-                                  ?.map(
-                                    (item) =>
-                                      item.menu_name + `(x${item.quantity})`
-                                  )
-                                  .join(", ")}
-                              </TableCell>
-                              <TableCell>
-                                ₦{Number(order.total).toLocaleString()}
-                              </TableCell>
-                              <TableCell>
-                                <Badge variant={"secondary"}>
-                                  {order.status}
-                                </Badge>
-                              </TableCell>
-                              <TableCell>
-                                <Select
-                                  value={order.status}
-                                  onValueChange={(value) =>
-                                    handlecategoryStatusChange(
-                                      order.order_id,
-                                      value
-                                    )
-                                  }
-                                >
-                                  <SelectTrigger className="w-[180px]">
-                                    <SelectValue placeholder="Update categoryStatus" />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value="accepted">
+                      <div className="space-y-4">
+                        {acceptedOrderState &&
+                          acceptedOrderState.map((order) => (
+                            <div
+                              key={order.id}
+                              className="bg-secondary-50 rounded-xl p-4 shadow-sm"
+                            >
+                              <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
+                                <div>
+                                  <div className="flex items-center">
+                                    <span className="text-lg font-semibold text-secondary-900 mr-3">
+                                      {order.id}
+                                    </span>
+                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                       Accepted
-                                    </SelectItem>
-                                    <SelectItem value="ready">Ready</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                              </TableCell>
-                            </TableRow>
+                                    </span>
+                                  </div>
+                                  <p className="text-secondary-600 text-sm mt-1">
+                                    {order.user_phoneNumber}
+                                  </p>
+                                </div>
+                                <div className="mt-2 md:mt-0">
+                                  <span className="text-primary-600 font-semibold">
+                                    ${order.total.toFixed(2)}
+                                  </span>
+                                </div>
+                              </div>
+                              <div className="border-t border-secondary-200 pt-3 pb-2">
+                                <h4 className="text-sm font-medium text-secondary-600 mb-2">
+                                  Items:
+                                </h4>
+                                <ul className="pl-5 list-disc text-sm text-secondary-600 mb-3">
+                                  {order.items.map((item, index) => (
+                                    <li
+                                      key={index}
+                                    >{`${item.item_name} X${item.quantity}`}</li>
+                                  ))}
+                                </ul>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
+                                  <div className="flex items-center text-secondary-600">
+                                    <FiMapPin className="mr-1" />
+                                    <span>Delivery to: {order.location}</span>
+                                  </div>
+                                  <div className="flex items-center text-secondary-600">
+                                    <FiClock className="mr-1" />
+                                    <span>
+                                      Estimated delivery: soon enough {":)"}
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="flex justify-end mt-4">
+                                <button
+                                  className="inline-flex items-center justify-center px-4 py-2 rounded-lg text-white bg-green-600 hover:bg-green-700 shadow-sm transition-colors text-sm"
+                                  onClick={() =>
+                                    handleOrderAccept(order.id, "ready")
+                                  }
+                                >
+                                  <FiTruck className="mr-1" /> Mark as Ready
+                                </button>
+                              </div>
+                            </div>
                           ))}
-                        </TableBody>
-                      </Table>
+                      </div>
                     )}
-                  </CardContent>
-                </Card>
-              </PageWrapper>
-            </TabsContent>
-            <TabsContent value="menu">
-              <PageWrapper>
+                  </div>
+                </div>
+              </div>
+            ))}
+
+          {/* Menu Management Tab */}
+          {activeTab === "menu" && (
+            <div className="bg-white rounded-2xl shadow-soft-md overflow-hidden">
+              <div className="p-6 border-b border-gray-100 flex justify-between items-center">
+                <h2 className="text-2xl font-bold text-secondary-900">
+                  Menu Items
+                </h2>
+
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <button className="inline-flex items-center justify-center px-4 py-2 rounded-lg text-white bg-primary-600 hover:bg-primary-700 shadow-sm transition-colors text-sm">
+                      <FiPlus className="mr-1" /> Add Item
+                    </button>
+                  </DialogTrigger>
+                  <DialogContent className="dark:text-cfont-dark overflow-auto max-h-[95vh]">
+                    <DialogHeader>
+                      <DialogTitle>Add Menu Item</DialogTitle>
+                    </DialogHeader>
+                    <form
+                      onSubmit={handleAddMenuItem}
+                      className="mt-4 space-y-4"
+                    >
+                      <h3 className="text-lg font-semibold">
+                        Add New Menu Item
+                      </h3>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                          <Label htmlFor="name">Name</Label>
+                          <Input
+                            id="name"
+                            value={newMenuItem.name}
+                            onChange={(e) =>
+                              setNewMenuItem({
+                                ...newMenuItem,
+                                name: e.target.value,
+                              })
+                            }
+                            required
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="price">Price (₦)</Label>
+                          <Input
+                            id="price"
+                            value={newMenuItem.price}
+                            onChange={(e) => {
+                              const { value } = e.target;
+
+                              setNewMenuItem({
+                                ...newMenuItem,
+                                price: Number(value.replace(/[^0-9]/g, "")),
+                              });
+                            }}
+                            required
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="description">Description</Label>
+                          <Textarea
+                            id="description"
+                            value={newMenuItem.description}
+                            onChange={(e) =>
+                              setNewMenuItem({
+                                ...newMenuItem,
+                                description: e.target.value,
+                              })
+                            }
+                            required
+                          />
+                        </div>
+
+                        <div>
+                          <Label htmlFor="image">Image</Label>
+                          <Input
+                            id="image"
+                            type="file"
+                            accept="image/*"
+                            onChange={handleAddMenuImageChange}
+                            required
+                          />
+                        </div>
+
+                        <div>
+                          <Label htmlFor="category">Category</Label>
+                          <Select
+                            onValueChange={(value) => {
+                              setNewMenuItem({
+                                ...newMenuItem,
+                                category_id: Number(value),
+                              });
+                            }}
+                          >
+                            <SelectTrigger className="w-[180px]">
+                              <SelectValue placeholder="Choose Category" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {categoryStatus === "pending" ? (
+                                <SelectItem value="" disabled>
+                                  Loading categories...
+                                </SelectItem>
+                              ) : categoryStatus === "error" ? (
+                                <SelectItem value="" disabled>
+                                  Error loading categories
+                                </SelectItem>
+                              ) : (
+                                categories?.map((category: category) => (
+                                  <SelectItem
+                                    key={category.id}
+                                    value={String(category.id)}
+                                  >
+                                    {category.name}
+                                  </SelectItem>
+                                ))
+                              )}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                      <Button
+                        type="submit"
+                        disabled={mutateStatus === "pending"}
+                      >
+                        Add Menu Item
+                      </Button>
+                    </form>
+                  </DialogContent>
+                </Dialog>
+              </div>
+              <div className="p-6">
                 {menuStatus === "pending" ? (
-                  <div className="flex flex-col justify-center items-center">
-                    <l-waveform
-                      size="35"
-                      stroke="3.5"
-                      speed="1"
-                      color="white"
-                    ></l-waveform>
+                  <div className="flex justify-center items-center min-h-screen bg-secondary-50">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
                   </div>
                 ) : (
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Menu Items</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <Table>
-                        <TableHeader>
-                          <TableRow>
-                            <TableHead>Name</TableHead>
-                            <TableHead>Price</TableHead>
-                            <TableHead>Category</TableHead>
-                            <TableHead>Availability</TableHead>
-                            <TableHead className="text-center">
-                              Action
-                            </TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {displayedMenuItems?.map((item: menuItem) => (
-                            <TableRow key={item.id}>
-                              <TableCell>{item.name}</TableCell>
-                              <TableCell>{formatPrice(item.price)}</TableCell>
-                              <TableCell>{item.category}</TableCell>
-                              <TableCell>
-                                <Select
-                                  onValueChange={(value: "1" | "0") => {
-                                    handleItemAvailability(item.id, value);
-                                  }}
-                                >
-                                  <SelectTrigger className="w-[180px]">
-                                    <SelectValue
-                                      placeholder={
-                                        item.is_available === "1"
-                                          ? "Available"
-                                          : item.is_available === "0"
-                                          ? "Unavailable"
-                                          : "Select availability"
-                                      }
-                                    />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value="1">Available</SelectItem>
-
-                                    <SelectItem value="0">
-                                      Unavailable
-                                    </SelectItem>
-                                  </SelectContent>
-                                </Select>
-                              </TableCell>
-                              <TableCell>
-                                <div className="flex flex-col items-center md:flex-row md:justify-center">
+                  menuItems &&
+                  menuItems.menu.map((category: menu) => (
+                    <div key={category.id} className="mb-8 last:mb-0">
+                      <h3 className="text-xl font-semibold text-secondary-900 mb-4">
+                        {category.name}
+                      </h3>
+                      <div className="border-t border-gray-100 pt-4 space-y-4">
+                        {menuItemArrayState.map(
+                          (item) =>
+                            String(item.category_id) ===
+                              String(category.id) && (
+                              <div
+                                key={item.id}
+                                className="flex flex-col md:flex-row md:items-center p-4 bg-secondary-50 rounded-xl"
+                              >
+                                <div className="flex-grow mb-4 md:mb-0">
+                                  <div className="flex items-center">
+                                    <h4 className="font-medium text-secondary-900">
+                                      {item.name}
+                                    </h4>
+                                    {item.is_available === "0" && (
+                                      <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                        Unavailable
+                                      </span>
+                                    )}
+                                  </div>
+                                  <p className="text-sm text-secondary-600 mt-1 pr-4">
+                                    {item.description}
+                                  </p>
+                                  <p className="text-primary-600 font-medium mt-2">
+                                    ₦
+                                    {Number(item.price)
+                                      .toFixed(2)
+                                      .toLocaleString()}
+                                  </p>
+                                </div>
+                                <div className="flex space-x-2">
+                                  <button
+                                    className="inline-flex items-center justify-center p-2 rounded-lg border border-secondary-200 text-secondary-700 hover:bg-secondary-50 transition-colors"
+                                    onClick={() =>
+                                      handleDeleteMenuItem(item.id)
+                                    }
+                                  >
+                                    <FiTrash size={16} />
+                                  </button>
                                   <Dialog>
                                     <DialogTrigger asChild>
-                                      <Button
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() => setEditingMenuItem(item)}
-                                      >
-                                        Edit
-                                      </Button>
+                                      <button className="inline-flex items-center justify-center p-2 rounded-lg border border-secondary-200 text-secondary-700 hover:bg-secondary-50 transition-colors">
+                                        <FiEdit2 size={16} />
+                                      </button>
                                     </DialogTrigger>
-                                    <DialogContent className="dark: text-cfont-dark">
+                                    <DialogContent className="dark:text-cfont-dark overflow-auto max-h-[95vh]">
                                       <DialogHeader>
                                         <DialogTitle>
                                           Edit Menu Item
                                         </DialogTitle>
                                       </DialogHeader>
-                                      {editingMenuItem && (
-                                        <form
-                                          onSubmit={(e) =>
-                                            handleEditMenuItem(item.id, e)
-                                          }
-                                          className="mt-4 space-y-4"
-                                        >
-                                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                            <div>
-                                              <Label htmlFor="name">Name</Label>
-                                              <Input
-                                                id="name"
-                                                value={item.name}
-                                                onChange={(e) =>
-                                                  setNewMenuItem({
-                                                    ...newMenuItem,
-                                                    name: e.target.value,
-                                                  })
-                                                }
-                                                required
-                                              />
-                                            </div>
-                                            <div>
-                                              <Label htmlFor="price">
-                                                Price (₦)
-                                              </Label>
-                                              <Input
-                                                id="price"
-                                                value={item.price}
-                                                onChange={(e) => {
-                                                  const { value } = e.target;
-
-                                                  setNewMenuItem({
-                                                    ...newMenuItem,
-                                                    price: Number(
-                                                      value.replace(
-                                                        /[^0-9]/g,
-                                                        ""
-                                                      )
-                                                    ),
-                                                  });
-                                                }}
-                                                required
-                                              />
-                                            </div>
-                                            <div>
-                                              <Label htmlFor="description">
-                                                Description
-                                              </Label>
-                                              <Textarea
-                                                id="description"
-                                                value={item.description}
-                                                onChange={(e) =>
-                                                  setNewMenuItem({
-                                                    ...newMenuItem,
-                                                    description: e.target.value,
-                                                  })
-                                                }
-                                                required
-                                              />
-                                            </div>
-
-                                            <div>
-                                              <Label htmlFor="image">
-                                                Image
-                                              </Label>
-                                              <Input
-                                                id="image"
-                                                type="file"
-                                                accept="image/*"
-                                                onChange={handleImageChange}
-                                                required
-                                              />
-                                            </div>
-
-                                            <div>
-                                              <Label htmlFor="category">
-                                                Category
-                                              </Label>
-                                              <Select
-                                                onValueChange={(value) => {
-                                                  setNewMenuItem({
-                                                    ...newMenuItem,
-                                                    category_id: Number(value),
-                                                  });
-                                                }}
-                                              >
-                                                <SelectTrigger className="w-[180px]">
-                                                  <SelectValue placeholder="Choose Category" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                  {categoryStatus ===
-                                                  "pending" ? (
-                                                    <SelectItem
-                                                      value=""
-                                                      disabled
-                                                    >
-                                                      Loading categories...
-                                                    </SelectItem>
-                                                  ) : categoryStatus ===
-                                                    "error" ? (
-                                                    <SelectItem
-                                                      value=""
-                                                      disabled
-                                                    >
-                                                      Error loading categories
-                                                    </SelectItem>
-                                                  ) : (
-                                                    categories?.map(
-                                                      (category: category) => (
-                                                        <SelectItem
-                                                          key={category.id}
-                                                          value={String(
-                                                            category.id
-                                                          )}
-                                                        >
-                                                          {category.name}
-                                                        </SelectItem>
-                                                      )
-                                                    )
-                                                  )}
-                                                </SelectContent>
-                                              </Select>
-                                            </div>
-                                          </div>
-                                          <Button
-                                            type="submit"
-                                            disabled={
-                                              mutateStatus === "pending"
-                                            }
-                                          >
-                                            Update Menu Item
-                                          </Button>
-                                        </form>
-                                      )}
-                                    </DialogContent>
-                                  </Dialog>
-                                  <Dialog>
-                                    <DialogTrigger asChild>
-                                      <Button
-                                        className="ml-3"
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() => setEditingMenuItem(item)}
+                                      <form
+                                        onSubmit={(e) =>
+                                          handleEditMenuItem(
+                                            item.id,
+                                            item.restaurant_id,
+                                            e
+                                          )
+                                        }
+                                        className="mt-4 space-y-4"
                                       >
-                                        Delete
-                                      </Button>
-                                    </DialogTrigger>
-                                    <DialogContent className="dark: text-cfont-dark">
-                                      <DialogHeader>
-                                        <DialogTitle>
-                                          Delete Item '{item.name}'
-                                        </DialogTitle>
-                                      </DialogHeader>
-                                      <div className="flex justify-around">
+                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                          <div>
+                                            <Label htmlFor="name">Name</Label>
+                                            <Input
+                                              id="name"
+                                              value={item.name}
+                                              onChange={(e) =>
+                                                setmenuItemArray((prev) =>
+                                                  prev.map((p) =>
+                                                    p.id === item.id
+                                                      ? {
+                                                          ...p,
+                                                          name: e.target.value,
+                                                        }
+                                                      : p
+                                                  )
+                                                )
+                                              }
+                                              required
+                                            />
+                                          </div>
+                                          <div>
+                                            <Label htmlFor="price">
+                                              Price (₦)
+                                            </Label>
+                                            <Input
+                                              id="price"
+                                              value={item.price}
+                                              onChange={(e) => {
+                                                setmenuItemArray((prev) =>
+                                                  prev.map((p) =>
+                                                    p.id === item.id
+                                                      ? {
+                                                          ...p,
+                                                          price: Number(
+                                                            e.target.value
+                                                          ),
+                                                        }
+                                                      : p
+                                                  )
+                                                );
+                                              }}
+                                              required
+                                            />
+                                          </div>
+                                          <div>
+                                            <Label htmlFor="description">
+                                              Description
+                                            </Label>
+                                            <Textarea
+                                              id="description"
+                                              value={item.description}
+                                              onChange={(e) =>
+                                                setmenuItemArray((prev) =>
+                                                  prev.map((p) =>
+                                                    p.id === item.id
+                                                      ? {
+                                                          ...p,
+                                                          description:
+                                                            e.target.value,
+                                                        }
+                                                      : p
+                                                  )
+                                                )
+                                              }
+                                              required
+                                            />
+                                          </div>
+
+                                          <div>
+                                            <Label htmlFor="image">Image</Label>
+                                            <Input
+                                              id="image"
+                                              type="file"
+                                              accept="image/*"
+                                              onChange={(event) =>
+                                                handleImageChange(
+                                                  event,
+                                                  item.id
+                                                )
+                                              }
+                                              required
+                                            />
+                                          </div>
+
+                                          <div>
+                                            <Label htmlFor="category">
+                                              Category
+                                            </Label>
+                                            <Select
+                                              onValueChange={(value) => {
+                                                setmenuItemArray((prev) =>
+                                                  prev.map((p) =>
+                                                    p.id === item.id
+                                                      ? {
+                                                          ...p,
+                                                          category_id:
+                                                            Number(value),
+                                                        }
+                                                      : p
+                                                  )
+                                                );
+                                              }}
+                                            >
+                                              <SelectTrigger className="w-[180px]">
+                                                <SelectValue placeholder="Choose Category" />
+                                              </SelectTrigger>
+                                              <SelectContent>
+                                                {categoryStatus ===
+                                                "pending" ? (
+                                                  <SelectItem value="" disabled>
+                                                    Loading categories...
+                                                  </SelectItem>
+                                                ) : categoryStatus ===
+                                                  "error" ? (
+                                                  <SelectItem value="" disabled>
+                                                    Error loading categories
+                                                  </SelectItem>
+                                                ) : (
+                                                  categories?.map(
+                                                    (category: category) => (
+                                                      <SelectItem
+                                                        key={category.id}
+                                                        value={String(
+                                                          category.id
+                                                        )}
+                                                      >
+                                                        {category.name}
+                                                      </SelectItem>
+                                                    )
+                                                  )
+                                                )}
+                                              </SelectContent>
+                                            </Select>
+                                          </div>
+                                        </div>
                                         <Button
-                                          variant="destructive"
-                                          onClick={() =>
-                                            handleDeleteMenuItem(item.id)
-                                          }
+                                          type="submit"
+                                          disabled={editStatus === "pending"}
                                         >
-                                          Yes
+                                          Update Menu Item
                                         </Button>
-                                        <DialogClose asChild>
-                                          <Button>No</Button>
-                                        </DialogClose>
-                                      </div>
+                                      </form>
                                     </DialogContent>
                                   </Dialog>
+                                  <button
+                                    className={`inline-flex items-center justify-center px-3 py-2 rounded-lg text-sm font-medium ${
+                                      item.is_available === "1"
+                                        ? "bg-red-100 text-red-800 hover:bg-red-200"
+                                        : "bg-green-100 text-green-800 hover:bg-green-200"
+                                    } transition-colors`}
+                                    onClick={() => {
+                                      if (item.is_available === "1") {
+                                        handleItemAvailability(item.id, "0");
+                                      } else {
+                                        handleItemAvailability(item.id, "1");
+                                      }
+                                    }}
+                                  >
+                                    {item.is_available === "1"
+                                      ? "Mark Unavailable"
+                                      : "Mark Available"}
+                                  </button>
                                 </div>
-                              </TableCell>
-                            </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
-                      <form
-                        onSubmit={handleAddMenuItem}
-                        className="mt-4 space-y-4"
-                      >
-                        <h3 className="text-lg font-semibold">
-                          Add New Menu Item
-                        </h3>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                          <div>
-                            <Label htmlFor="name">Name</Label>
-                            <Input
-                              id="name"
-                              value={newMenuItem.name}
-                              onChange={(e) =>
-                                setNewMenuItem({
-                                  ...newMenuItem,
-                                  name: e.target.value,
-                                })
-                              }
-                              required
-                            />
-                          </div>
-                          <div>
-                            <Label htmlFor="price">Price (₦)</Label>
-                            <Input
-                              id="price"
-                              value={newMenuItem.price}
-                              onChange={(e) => {
-                                const { value } = e.target;
-
-                                setNewMenuItem({
-                                  ...newMenuItem,
-                                  price: Number(value.replace(/[^0-9]/g, "")),
-                                });
-                              }}
-                              required
-                            />
-                          </div>
-                          <div>
-                            <Label htmlFor="description">Description</Label>
-                            <Textarea
-                              id="description"
-                              value={newMenuItem.description}
-                              onChange={(e) =>
-                                setNewMenuItem({
-                                  ...newMenuItem,
-                                  description: e.target.value,
-                                })
-                              }
-                              required
-                            />
-                          </div>
-
-                          <div>
-                            <Label htmlFor="image">Image</Label>
-                            <Input
-                              id="image"
-                              type="file"
-                              accept="image/*"
-                              onChange={handleImageChange}
-                              required
-                            />
-                          </div>
-
-                          <div>
-                            <Label htmlFor="category">Category</Label>
-                            <Select
-                              onValueChange={(value) => {
-                                setNewMenuItem({
-                                  ...newMenuItem,
-                                  category_id: Number(value),
-                                });
-                              }}
-                            >
-                              <SelectTrigger className="w-[180px]">
-                                <SelectValue placeholder="Choose Category" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {categoryStatus === "pending" ? (
-                                  <SelectItem value="" disabled>
-                                    Loading categories...
-                                  </SelectItem>
-                                ) : categoryStatus === "error" ? (
-                                  <SelectItem value="" disabled>
-                                    Error loading categories
-                                  </SelectItem>
-                                ) : (
-                                  categories?.map((category: category) => (
-                                    <SelectItem
-                                      key={category.id}
-                                      value={String(category.id)}
-                                    >
-                                      {category.name}
-                                    </SelectItem>
-                                  ))
-                                )}
-                              </SelectContent>
-                            </Select>
-                          </div>
-                        </div>
-                        <Button
-                          type="submit"
-                          disabled={mutateStatus === "pending"}
-                        >
-                          Add Menu Item
-                        </Button>
-                      </form>
-                    </CardContent>
-                  </Card>
+                              </div>
+                            )
+                        )}
+                      </div>
+                    </div>
+                  ))
                 )}
-              </PageWrapper>
-            </TabsContent>
-            <TabsContent value="financial">
-              <div className="grid grid-cols-1 gap-6">
-                <PageWrapper>
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Transactions</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      {/* {userDetails?.statistics?.transactions?.map(
-                        <Card>
-                          <CardHeader>
-                            <CardTitle>Transaction name</CardTitle>
-                          </CardHeader>
-                          <CardContent>content would go here</CardContent>
-                        </Card>
-                      )} */}
-                      {/* <div className="space-y-4">
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm font-medium">
-                            Food Sales
-                          </span>
-                          <span className="text-sm font-semibold">
-                            ₦180,000
-                          </span>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm font-medium">
-                            Beverage Sales
-                          </span>
-                          <span className="text-sm font-semibold">₦45,000</span>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm font-medium">
-                            Delivery Fees
-                          </span>
-                          <span className="text-sm font-semibold">₦9,567</span>
-                        </div>
-                        <Separator />
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm font-bold">
-                            Total Revenue
-                          </span>
-                          <span className="text-sm font-bold">₦234,567</span>
-                        </div>
-                      </div> */}
-                    </CardContent>
-                  </Card>
-                </PageWrapper>
               </div>
-            </TabsContent>
-          </Tabs>
-        </PageWrapper>
-      </main>
-      <Footer />
+            </div>
+          )}
+
+          {/* Financial Management Tab */}
+          {activeTab === "financial" && (
+            <div className="bg-white rounded-2xl shadow-soft-md overflow-hidden">
+              <div className="p-6 border-b border-gray-100">
+                <h2 className="text-2xl font-bold text-secondary-900">
+                  Financial Summary
+                </h2>
+              </div>
+              <div className="p-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                  <div className="bg-secondary-50 rounded-xl p-6">
+                    <h3 className="text-lg font-semibold text-secondary-900 mb-4">
+                      Recent Earnings
+                    </h3>
+                    <div className="space-y-4">
+                      <div className="flex justify-between items-center">
+                        <span className="text-secondary-600">Today</span>
+                        <span className="font-medium text-secondary-900">
+                          ₦ 12,450
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-secondary-600">This Week</span>
+                        <span className="font-medium text-secondary-900">
+                          ₦ 78,320
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-secondary-600">This Month</span>
+                        <span className="font-medium text-secondary-900">
+                          ₦ 205,750
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="bg-secondary-50 rounded-xl p-6">
+                    <h3 className="text-lg font-semibold text-secondary-900 mb-4">
+                      Payment Methods
+                    </h3>
+                    <div className="space-y-4">
+                      <div className="flex justify-between items-center">
+                        <span className="text-secondary-600">Cash</span>
+                        <span className="font-medium text-secondary-900">
+                          48%
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-secondary-600">Card</span>
+                        <span className="font-medium text-secondary-900">
+                          37%
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-secondary-600">
+                          Digital Wallet
+                        </span>
+                        <span className="font-medium text-secondary-900">
+                          15%
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="mt-6 flex justify-center">
+                  <button className="inline-flex items-center justify-center px-6 py-3 rounded-xl text-white bg-primary-600 hover:bg-primary-700 shadow-md hover:shadow-lg transition-all font-medium text-base">
+                    <FiCalendar className="mr-2" /> View Full Financial Report
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </motion.div>
+      </div>
     </div>
   );
-}
+};
+
+export default RestaurantDashboardPage;

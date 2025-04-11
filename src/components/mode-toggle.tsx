@@ -11,6 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { logOut } from "@/api/auth";
+import { useState, useEffect } from "react";
 
 export function ModeToggle() {
   const { toast } = useToast();
@@ -20,6 +21,39 @@ export function ModeToggle() {
   const { setTheme } = useTheme();
   const { role } = UseAuthStore();
   const username = localStorage.getItem("name")?.slice(0, 2).toUpperCase();
+  const [open, setOpen] = useState(false);
+
+  //NOTE:: this component has a lot of chatgpt code to fix the issue with content going to the side when i try to open the modal
+  // Calculate scrollbar width once
+  const getScrollbarWidth = () => {
+    return window.innerWidth - document.documentElement.clientWidth;
+  };
+
+  const handleOpenChange = (isOpen: boolean) => {
+    setOpen(isOpen);
+
+    // When dropdown opens, add padding to header to prevent layout shift
+    const scrollbarWidth = getScrollbarWidth();
+    const header = document.querySelector("header");
+
+    if (header) {
+      if (isOpen) {
+        header.style.paddingRight = `${scrollbarWidth}px`;
+      } else {
+        header.style.paddingRight = "0px";
+      }
+    }
+  };
+
+  useEffect(() => {
+    // Cleanup on unmount
+    return () => {
+      const header = document.querySelector("header");
+      if (header) {
+        header.style.paddingRight = "0px";
+      }
+    };
+  }, []);
 
   const { status, mutate } = useMutation({
     mutationFn: logOut,
@@ -54,9 +88,9 @@ export function ModeToggle() {
   };
 
   return (
-    <DropdownMenu>
+    <DropdownMenu open={open} onOpenChange={handleOpenChange}>
       <DropdownMenuTrigger asChild>
-        <div className="h-12 w-12 mr-[1rem]">
+        <div className="h-10 w-10 mr-[1rem]">
           <Avatar className="w-full h-full">
             <AvatarImage src={localStorage.getItem("pfp")!} />
             <AvatarFallback className="text-gray-900 dark:text-gray-300">

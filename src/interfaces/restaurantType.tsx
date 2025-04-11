@@ -7,6 +7,14 @@ export interface menuItem {
   image: File | null | string;
   id: number;
   is_available: "1" | "0";
+  restaurant_id: string;
+}
+
+export interface menu {
+  //I apologize for the weird naming conventions(past me was worse in react than i am now) but this is for the raw api for menu items. Not the items themselves, but the array that holds the categories that holds the items
+  name: string;
+  id: number;
+  menus: menuItem[];
 }
 
 export interface category {
@@ -56,11 +64,30 @@ export interface orderType {
   restaurant_name: string;
   location: string;
   user_phoneNumber: string;
+  user_name: string;
   order_id: number; //honestly, man, idek why this is here. It's to complete the checkout order for the drivers, but idk we couldn't just use the id. DO NOT FUCKING REMOVE ANYTHING, it's from the backend and it's very important istg.
 
   driver_name: string;
   driver_profile_photo: string;
   driver_number: string;
+}
+
+export interface orderHistoryType {
+  order_id: number;
+  restaurant_name: string;
+  user_name: string;
+  user_phoneNumber: string;
+  location: string;
+  items: {
+    menu_id: number;
+    quantity: number;
+    menu_name: string;
+    menu_price: number;
+    is_available: string; // If this should be a boolean, convert it to `boolean` in your code.
+    menu_picture: string;
+  }[];
+  total: string;
+  order_date: string | null;
 }
 
 export interface restaurantMetric {
