@@ -11,7 +11,9 @@ import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { logOut } from "@/api/auth";
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { notifyHeaderDropdownState } from "./header"; // Import the function from Header
+//this component has some claude stuff to fix the dropdown making the header twitch and glitch. I don't get it, but it works. It doesn't actually work, but it does make the glitching less evident
 
 export function ModeToggle() {
   const { toast } = useToast();
@@ -21,39 +23,14 @@ export function ModeToggle() {
   const { setTheme } = useTheme();
   const { role } = UseAuthStore();
   const username = localStorage.getItem("name")?.slice(0, 2).toUpperCase();
-  const [open, setOpen] = useState(false);
-
-  //NOTE:: this component has a lot of chatgpt code to fix the issue with content going to the side when i try to open the modal
-  // Calculate scrollbar width once
-  const getScrollbarWidth = () => {
-    return window.innerWidth - document.documentElement.clientWidth;
-  };
+  const [open, setOpen] = useState<boolean>(false);
 
   const handleOpenChange = (isOpen: boolean) => {
     setOpen(isOpen);
 
-    // When dropdown opens, add padding to header to prevent layout shift
-    const scrollbarWidth = getScrollbarWidth();
-    const header = document.querySelector("header");
-
-    if (header) {
-      if (isOpen) {
-        header.style.paddingRight = `${scrollbarWidth}px`;
-      } else {
-        header.style.paddingRight = "0px";
-      }
-    }
+    // Notify Header component about dropdown state changes
+    notifyHeaderDropdownState(isOpen);
   };
-
-  useEffect(() => {
-    // Cleanup on unmount
-    return () => {
-      const header = document.querySelector("header");
-      if (header) {
-        header.style.paddingRight = "0px";
-      }
-    };
-  }, []);
 
   const { status, mutate } = useMutation({
     mutationFn: logOut,
@@ -65,7 +42,7 @@ export function ModeToggle() {
         description: data.message,
       });
     },
-    onError: (error) => {
+    onError: (error: any) => {
       toast({
         title: "Error",
         description: error.message,
@@ -92,7 +69,7 @@ export function ModeToggle() {
       <DropdownMenuTrigger asChild>
         <div className="h-10 w-10 mr-[1rem]">
           <Avatar className="w-full h-full">
-            <AvatarImage src={localStorage.getItem("pfp")!} />
+            <AvatarImage src={localStorage.getItem("pfp") || ""} />
             <AvatarFallback className="text-gray-900 dark:text-gray-300">
               {username}
             </AvatarFallback>

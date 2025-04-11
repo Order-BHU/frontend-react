@@ -5,11 +5,54 @@ import { FiMenu, FiX } from "react-icons/fi";
 import useAuthStore from "@/stores/useAuthStore";
 import { ModeToggle } from "./mode-toggle";
 
-const Header = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-  const { isLoggedIn /*role*/ } = useAuthStore();
+// Define custom event type
+type DropdownStateChangeEvent = CustomEvent<{ isOpen: boolean }>;
 
+// Create a custom event name
+export const DROPDOWN_STATE_CHANGE_EVENT = "dropdown-state-change";
+
+// Export function for the ModeToggle component to use
+export const notifyHeaderDropdownState = (isOpen: boolean): void => {
+  const event = new CustomEvent<{ isOpen: boolean }>(
+    DROPDOWN_STATE_CHANGE_EVENT,
+    {
+      detail: { isOpen },
+    }
+  );
+  document.dispatchEvent(event);
+};
+
+const Header = () => {
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [scrolled, setScrolled] = useState<boolean>(false);
+  const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);
+  const { isLoggedIn } = useAuthStore();
+
+  // Calculate scrollbar width
+  const getScrollbarWidth = (): number => {
+    return window.innerWidth - document.documentElement.clientWidth;
+  };
+
+  // Listen for dropdown state changes
+  useEffect(() => {
+    const handleDropdownStateChange = (event: DropdownStateChangeEvent) => {
+      setDropdownOpen(event.detail.isOpen);
+    };
+
+    document.addEventListener(
+      DROPDOWN_STATE_CHANGE_EVENT,
+      handleDropdownStateChange as EventListener
+    );
+
+    return () => {
+      document.removeEventListener(
+        DROPDOWN_STATE_CHANGE_EVENT,
+        handleDropdownStateChange as EventListener
+      );
+    };
+  }, []);
+
+  // Handle scroll effects
   useEffect(() => {
     const handleScroll = () => {
       const offset = window.scrollY;
@@ -26,6 +69,11 @@ const Header = () => {
     };
   }, []);
 
+  // Calculate dynamic header styles
+  const headerStyle = dropdownOpen
+    ? { paddingRight: `${getScrollbarWidth()}px` }
+    : {};
+
   return (
     <header
       className={`fixed w-full z-50 transition-all duration-300 ${
@@ -33,6 +81,7 @@ const Header = () => {
           ? "bg-white/90 backdrop-blur-md shadow-soft-md py-3"
           : "bg-transparent py-5"
       }`}
+      style={headerStyle}
     >
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between">
@@ -46,7 +95,8 @@ const Header = () => {
                     : "/DarkOrderLogo.JPG"
                 }
                 className="h-full w-full object-cover"
-              ></img>
+                alt="Logo"
+              />
             </div>
           </Link>
 
@@ -91,7 +141,6 @@ const Header = () => {
 
             {isLoggedIn && <ModeToggle />}
           </div>
-          {/* Mobile Menu Button */}
         </div>
       </div>
 
@@ -143,13 +192,12 @@ const Header = () => {
   );
 };
 
-const NavLink = ({
-  to,
-  children,
-}: {
+interface NavLinkProps {
   to: string;
   children: React.ReactNode;
-}) => (
+}
+
+const NavLink = ({ to, children }: NavLinkProps) => (
   <Link
     to={to}
     className="text-base font-medium text-secondary-700 hover:text-primary-600 transition-colors relative after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-primary-600 after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-300"
@@ -158,15 +206,13 @@ const NavLink = ({
   </Link>
 );
 
-const MobileNavLink = ({
-  to,
-  children,
-  onClick,
-}: {
+interface MobileNavLinkProps {
   to: string;
   children: React.ReactNode;
   onClick: () => void;
-}) => (
+}
+
+const MobileNavLink = ({ to, children, onClick }: MobileNavLinkProps) => (
   <Link
     to={to}
     onClick={onClick}
