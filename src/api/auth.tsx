@@ -143,3 +143,19 @@ export async function resolveBank(data: {
       throw error.response?.data;
     });
 }
+
+export async function googleSignIn() {
+  return api
+    .get(`/auth/google`)
+    .then((response: AxiosResponse) => {
+      console.log("google Response: ", response.data);
+      return response.data;
+    })
+    .catch((error: AxiosError) => {
+      if (error.code === "ERR_NETWORK") {
+        throw new Error("Network error: Unable to reach the server.");
+      }
+      console.log(error);
+      throw error.response?.data;
+    });
+}

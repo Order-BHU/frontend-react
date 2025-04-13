@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useMutation } from "@tanstack/react-query";
-import { loginUser } from "@/api/auth";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { loginUser, googleSignIn } from "@/api/auth";
 import { useToast } from "@/hooks/use-toast";
 import UseAuthStore from "@/stores/useAuthStore";
 import driverStore from "@/stores/driverStore";
@@ -79,6 +79,17 @@ export default function LoginPage() {
       email: formData.email,
       password: formData.password,
     });
+  };
+  const [startGoogle, setStartGoogle] = useState(false);
+  const { data: googleResponse } = useQuery({
+    queryKey: ["userDetails"],
+    queryFn: googleSignIn,
+    refetchOnWindowFocus: false,
+    enabled: startGoogle!!,
+  });
+  const handleGoogleSignIn = () => {
+    console.log("starting google...", googleResponse); //google response is just here to prevent unused variable error
+    setStartGoogle(true);
   };
 
   return (
@@ -216,6 +227,7 @@ export default function LoginPage() {
 
             <div className="mt-6">
               <button
+                onClick={handleGoogleSignIn}
                 type="button"
                 className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition-all hover:border-gray-400 shadow-sm hover:shadow transform hover:-translate-y-0.5 active:translate-y-0"
               >
