@@ -2,6 +2,13 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useParams, useNavigate } from "react-router-dom";
 import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
   FiClock,
   FiMapPin,
   FiStar,
@@ -501,7 +508,7 @@ const RestaurantMenuPage = () => {
               animate="visible"
               variants={fadeIn}
               custom={5}
-              className="w-full lg:w-1/3"
+              className="w-full lg:w-1/3 hidden md:block"
             >
               <div className="bg-white rounded-2xl shadow-soft-md p-6 lg:sticky lg:top-24">
                 <div className="flex justify-between items-center mb-6">
@@ -647,6 +654,126 @@ const RestaurantMenuPage = () => {
           </div>
         </div>
       )}
+      <div className="fixed bottom-0 justify-center flex min-w-full bg-white md:hidden">
+        <Dialog>
+          <DialogTrigger asChild>
+            <button className="my-4 inline-flex items-center justify-center px-6 py-3 rounded-xl text-white bg-primary-600 hover:bg-primary-700 shadow-md hover:shadow-lg transition-all font-medium text-base">
+              <FiShoppingCart className="mr-2" /> {`View Cart(${cart.length})`}
+            </button>
+          </DialogTrigger>
+          <DialogContent className="dark:text-cfont-dark overflow-auto max-h-[95vh]">
+            <DialogHeader>
+              <DialogTitle></DialogTitle>
+            </DialogHeader>
+            {cart.length === 0 ? (
+              <div className="text-center py-8">
+                <div className="mx-auto w-16 h-16 bg-secondary-100 rounded-full flex items-center justify-center mb-4">
+                  <FiShoppingCart size={24} className="text-secondary-500" />
+                </div>
+                <p className="text-secondary-600 mb-2">Your cart is empty</p>
+                <p className="text-secondary-500 text-sm">
+                  Add items from the menu to get started
+                </p>
+              </div>
+            ) : (
+              <>
+                <div className="divide-y divide-secondary-100 mb-6 max-h-[calc(100vh-350px)] overflow-y-auto">
+                  {cart?.map((item) => (
+                    <div key={item.menu_id} className="py-3 flex items-center">
+                      <div className="h-12 w-12 rounded-lg overflow-hidden flex-shrink-0 mr-3">
+                        <img
+                          src={String(item.image)!}
+                          alt={item.menu_name}
+                          className="h-full w-full object-cover"
+                        />
+                      </div>
+                      <div className="flex-grow">
+                        <h4 className="text-secondary-900 font-medium">
+                          {item?.menu_name}
+                        </h4>
+                        <div className="flex items-center justify-between mt-1">
+                          <span className="text-primary-600 font-medium">
+                            ${Number(item?.price)?.toLocaleString()}
+                          </span>
+                          <div className="flex items-center border border-secondary-200 rounded-lg">
+                            <button
+                              onClick={() => removeFromCart(item.menu_id)}
+                              className="px-2 py-1 text-secondary-500 hover:text-primary-600"
+                            >
+                              <FiMinus size={14} />
+                            </button>
+                            <span className="px-2 text-secondary-900">
+                              {item.quantity}
+                            </span>
+                            <button
+                              onClick={() => handleAddToCart(item)}
+                              className="px-2 py-1 text-secondary-500 hover:text-primary-600"
+                            >
+                              <FiPlus size={14} />
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="border-t border-secondary-200 pt-4">
+                  <div className="flex justify-between mb-2">
+                    <span className="text-secondary-600">Subtotal</span>
+                    <span className="text-secondary-900 font-medium">
+                      ${calculateTotal().toFixed(2)}
+                    </span>
+                  </div>
+                  <div className="flex justify-between mb-2">
+                    <span className="text-secondary-600">Delivery Fee</span>
+                    <span className="text-secondary-900 font-medium">
+                      {deliveryFee}
+                    </span>
+                  </div>
+                  <div className="flex justify-between font-bold text-lg mt-4">
+                    <span className="text-secondary-900">Total</span>
+                    <span className="text-primary-600">
+                      ₦{(calculateTotal() + deliveryFee).toLocaleString()}
+                    </span>
+                  </div>
+                  <Select onValueChange={(value) => setLocation(value)}>
+                    <SelectTrigger className="w-[180px] mt-3 sm:mt-0">
+                      <SelectValue placeholder="Select a location" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        {locationStatus === "pending" ? (
+                          <SelectLabel>getting locations...</SelectLabel>
+                        ) : (
+                          locations?.locations.map(
+                            (location: { id: number; name: string }) => (
+                              <SelectItem
+                                key={location.id}
+                                value={location.name}
+                              >
+                                {location.name}
+                              </SelectItem>
+                            )
+                          )
+                        )}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+
+                  <button
+                    className="w-full mt-6 inline-flex items-center justify-center px-6 py-3 rounded-xl text-white bg-primary-600 hover:bg-primary-700 shadow-md hover:shadow-lg transition-all font-medium text-base"
+                    onClick={handlePayment}
+                    disabled={initializeCheckoutStatus === "pending"}
+                  >
+                    <FiShoppingCart className="mr-2" /> Place Order
+                  </button>
+                </div>
+              </>
+            )}
+          </DialogContent>
+        </Dialog>
+      </div>
     </div>
   );
 };

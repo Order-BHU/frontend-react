@@ -97,7 +97,7 @@ export default function LoginPage() {
       {/* Header */}
 
       {/* Main Content */}
-      <main className="flex-1 flex items-center justify-center px-4 py-12">
+      <main className="flex-1 flex items-center justify-center px-4 py-12 mt-10">
         <div className="bg-white rounded-2xl shadow-lg w-full max-w-md p-6 sm:p-8 transition-all duration-300 hover:shadow-xl animate-fade-in">
           <div className="mb-6 sm:mb-8 text-center">
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">

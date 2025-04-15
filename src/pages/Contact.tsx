@@ -105,10 +105,10 @@ const ContactPage = () => {
                     </h3>
                     <p className="text-secondary-600">
                       <a
-                        href="mailto:bhuorder@gmail.com"
+                        href="mailto:support@bhuorder.com.ng"
                         className="hover:text-primary-600 transition-colors"
                       >
-                        bhuorder@gmail.com
+                        support@bhuorder.com.ng
                       </a>
                     </p>
                     <p className="text-secondary-500 text-sm mt-1">
@@ -173,11 +173,28 @@ const ContactPage = () => {
                 </h3>
                 <div className="flex space-x-4">
                   <a
-                    href="https://facebook.com"
+                    href="https://whatsapp.com/channel/0029VbAikJF84Om30J1VPC45" // Replace with your actual WhatsApp number
                     target="_blank"
                     rel="noopener noreferrer"
                     className="w-10 h-10 flex items-center justify-center rounded-full bg-secondary-100 text-secondary-600 hover:bg-primary-100 hover:text-primary-600 transition-colors"
-                    aria-label="Facebook"
+                    aria-label="WhatsApp"
+                  >
+                    <svg
+                      className="w-5 h-5"
+                      fill="currentColor"
+                      viewBox="0 0 32 32"
+                      aria-hidden="true"
+                    >
+                      <path d="M16.001 3C9.372 3 4 8.373 4 15.001c0 2.645.866 5.085 2.332 7.064L4 29l7.123-2.3a11.937 11.937 0 0 0 4.878 1.063c6.628 0 12.001-5.373 12.001-12.001S22.63 3 16.001 3zm0 21.798c-1.69 0-3.3-.44-4.701-1.205l-.338-.193-4.222 1.361 1.366-4.108-.221-.36a9.732 9.732 0 0 1-1.458-5.07c0-5.39 4.387-9.777 9.776-9.777 5.39 0 9.777 4.387 9.777 9.777s-4.387 9.775-9.777 9.775zm5.516-7.348c-.301-.15-1.774-.873-2.05-.973-.276-.1-.477-.15-.678.15-.2.301-.776.973-.951 1.173-.175.2-.351.225-.652.075-.301-.15-1.275-.469-2.43-1.495-.9-.802-1.507-1.79-1.683-2.09-.175-.3-.019-.462.131-.612.134-.134.3-.351.451-.526.15-.175.2-.301.3-.502.1-.2.05-.376-.025-.526-.075-.15-.701-1.69-.963-2.325-.253-.61-.51-.527-.701-.537l-.601-.013c-.2 0-.526.075-.802.376-.276.301-1.057 1.063-1.057 2.596s1.082 2.988 1.237 3.198c.15.2 2.145 3.286 5.181 4.602.725.313 1.288.501 1.738.65.727.239 1.385.213 1.913.138.587-.088 1.773-.726 2.013-1.416.239-.688.239-1.264.163-1.388-.075-.126-.276-.201-.577-.351z" />
+                    </svg>
+                  </a>
+
+                  <a
+                    href="mailto:support.bhuorder.com.ng" // Replace with your actual email
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-10 h-10 flex items-center justify-center rounded-full bg-secondary-100 text-secondary-600 hover:bg-primary-100 hover:text-primary-600 transition-colors"
+                    aria-label="Email"
                   >
                     <svg
                       className="w-5 h-5"
@@ -185,31 +202,12 @@ const ContactPage = () => {
                       viewBox="0 0 24 24"
                       aria-hidden="true"
                     >
-                      <path
-                        fillRule="evenodd"
-                        d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"
-                        clipRule="evenodd"
-                      />
+                      <path d="M2 4a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v1.8l-10 6.25L2 5.8V4zm0 4.383V20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8.383l-9.385 5.86a1 1 0 0 1-1.23 0L2 8.383z" />
                     </svg>
                   </a>
+
                   <a
-                    href="https://twitter.com"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-10 h-10 flex items-center justify-center rounded-full bg-secondary-100 text-secondary-600 hover:bg-primary-100 hover:text-primary-600 transition-colors"
-                    aria-label="Twitter"
-                  >
-                    <svg
-                      className="w-5 h-5"
-                      fill="currentColor"
-                      viewBox="0 0 24 24"
-                      aria-hidden="true"
-                    >
-                      <path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84" />
-                    </svg>
-                  </a>
-                  <a
-                    href="https://instagram.com"
+                    href="https://instagram.com/bhu_order"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="w-10 h-10 flex items-center justify-center rounded-full bg-secondary-100 text-secondary-600 hover:bg-primary-100 hover:text-primary-600 transition-colors"

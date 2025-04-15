@@ -1,5 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
-import { FiFacebook, FiTwitter, FiInstagram } from "react-icons/fi";
+import { FiInstagram, FiMail } from "react-icons/fi";
+import { FaWhatsapp } from "react-icons/fa";
 
 const Footer = () => {
   const navigate = useNavigate();
@@ -95,25 +96,25 @@ const Footer = () => {
             </ul>
             <div className="flex space-x-4">
               <a
-                href="https://facebook.com"
+                href="https://whatsapp.com/channel/0029VbAikJF84Om30J1VPC45"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-secondary-400 hover:text-primary-600 transition-colors"
-                aria-label="Facebook"
+                aria-label="WhatsApp"
               >
-                <FiFacebook size={20} />
+                <FaWhatsapp size={20} />
               </a>
               <a
-                href="https://twitter.com"
+                href="mailto:support.bhuorder.com.ng"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-secondary-400 hover:text-primary-600 transition-colors"
-                aria-label="Twitter"
+                aria-label="Mail"
               >
-                <FiTwitter size={20} />
+                <FiMail size={20} />
               </a>
               <a
-                href="https://instagram.com"
+                href="https://instagram.com/bhu_order"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-secondary-400 hover:text-primary-600 transition-colors"
