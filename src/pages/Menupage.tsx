@@ -449,51 +449,85 @@ const RestaurantMenuPage = () => {
                         menuItems.menu.map((item: menu) => (
                           <>
                             {item.id === category.id &&
-                              item.menus.map((menuitem: menuItem) => (
-                                <div
-                                  key={menuitem.id}
-                                  className="bg-white rounded-xl shadow-soft-md overflow-hidden flex flex-col md:flex-row transition-transform hover:shadow-soft-lg hover:-translate-y-1"
-                                >
-                                  <div className="h-40 md:h-auto md:w-1/3">
-                                    <img
-                                      src={String(menuitem.image!)}
-                                      alt={item.name}
-                                      className="h-full w-full object-cover"
-                                    />
-                                  </div>
-                                  <div className="p-4 flex flex-col flex-grow justify-between md:w-2/3">
-                                    <div>
-                                      <h3 className="text-lg font-semibold text-secondary-900 mb-1">
-                                        {menuitem.name}
-                                      </h3>
-                                      <p className="text-secondary-600 text-sm mb-2 line-clamp-2">
-                                        {menuitem.description}
-                                      </p>
+                              item.menus.map((menuitem: menuItem) => {
+                                const itemExists = cart.find(
+                                  (c) =>
+                                    String(c.menu_id) === String(menuitem.id)
+                                );
+                                return (
+                                  <div
+                                    key={menuitem.id}
+                                    className="bg-white rounded-xl shadow-soft-md overflow-hidden flex flex-col md:flex-row transition-transform hover:shadow-soft-lg hover:-translate-y-1"
+                                  >
+                                    <div className="h-40 md:h-auto md:w-1/3">
+                                      <img
+                                        src={String(menuitem.image!)}
+                                        alt={item.name}
+                                        className="h-full w-full object-cover"
+                                      />
                                     </div>
-                                    <div className="flex justify-between items-center mt-2">
-                                      <span className="text-primary-600 font-semibold">
-                                        ₦
-                                        {Number(
-                                          menuitem?.price
-                                        )?.toLocaleString()}
-                                      </span>
-                                      <button
-                                        disabled={menuitem.is_available === "0"}
-                                        onClick={() =>
-                                          handleAddToCart(menuitem)
-                                        }
-                                        className="inline-flex items-center justify-center p-2 rounded-full bg-primary-100 text-primary-600 hover:bg-primary-600 hover:text-white transition-colors"
-                                      >
-                                        {menuitem.is_available === "1" ? (
-                                          <FiPlus size={16} />
+                                    <div className="p-4 flex flex-col flex-grow justify-between md:w-2/3">
+                                      <div>
+                                        <h3 className="text-lg font-semibold text-secondary-900 mb-1">
+                                          {menuitem.name}
+                                        </h3>
+                                        <p className="text-secondary-600 text-sm mb-2 line-clamp-2">
+                                          {menuitem.description}
+                                        </p>
+                                      </div>
+                                      <div className="flex justify-between items-center mt-2">
+                                        <span className="text-primary-600 font-semibold">
+                                          ₦
+                                          {Number(
+                                            menuitem?.price
+                                          )?.toLocaleString()}
+                                        </span>
+                                        {itemExists ? (
+                                          <div className="flex items-center border border-secondary-200 rounded-lg">
+                                            <button
+                                              onClick={() =>
+                                                removeFromCart(
+                                                  String(menuitem.id)
+                                                )
+                                              }
+                                              className="px-2 py-1 text-secondary-500 hover:text-primary-600"
+                                            >
+                                              <FiMinus size={14} />
+                                            </button>
+                                            <span className="px-2 text-secondary-900">
+                                              {itemExists.quantity}
+                                            </span>
+                                            <button
+                                              onClick={() =>
+                                                handleAddToCart(menuitem)
+                                              }
+                                              className="px-2 py-1 text-secondary-500 hover:text-primary-600"
+                                            >
+                                              <FiPlus size={14} />
+                                            </button>
+                                          </div>
                                         ) : (
-                                          "Item Unavailable"
+                                          <button
+                                            disabled={
+                                              menuitem.is_available === "0"
+                                            }
+                                            onClick={() =>
+                                              handleAddToCart(menuitem)
+                                            }
+                                            className="inline-flex items-center justify-center p-2 rounded-full bg-primary-100 text-primary-600 hover:bg-primary-600 hover:text-white transition-colors"
+                                          >
+                                            {menuitem.is_available === "1" ? (
+                                              <FiPlus size={16} />
+                                            ) : (
+                                              "Item Unavailable"
+                                            )}
+                                          </button>
                                         )}
-                                      </button>
+                                      </div>
                                     </div>
                                   </div>
-                                </div>
-                              ))}
+                                );
+                              })}
                           </>
                         ))}
                     </div>
