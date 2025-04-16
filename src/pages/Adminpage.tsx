@@ -302,7 +302,7 @@ export default function AdminDashboardPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-cbg-dark">
-      <main className="flex-grow container mx-auto px-4 py-8 space-y-8">
+      <main className="flex-grow container mx-auto px-4 py-8 space-y-8 mt-20">
         <PageWrapper>
           <h1 className="text-2xl md:text-3xl font-bold mb-6 text-gray-800 dark:text-cfont-dark">
             Admin Dashboard
@@ -585,7 +585,7 @@ export default function AdminDashboardPage() {
                           </TableRow>
                         </TableHeader>
                         <TableBody>
-                          {userDetails?.restaurant_metrics.map(
+                          {userDetails?.restaurant_metrics?.map(
                             (restaurant: restaurantMetric) => (
                               <TableRow key={restaurant.id}>
                                 <TableCell className="whitespace-nowrap">

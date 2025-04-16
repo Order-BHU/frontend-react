@@ -244,7 +244,7 @@ export default function RiderDashboardPage() {
           <div className="mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
               <h1 className="text-3xl font-bold text-gray-900">
-                Rider Dashboard
+                {`Hello, ${userDetails?.user?.name.split(" ")[0]}`}
               </h1>
               <p className="text-gray-500 mt-1">
                 Welcome back! Manage your deliveries and account settings
@@ -464,6 +464,8 @@ export default function RiderDashboardPage() {
                                   customerName: item.user_name,
                                   items: item.items,
                                   address: item.location,
+                                  phone_number_type: item.phone_number_type,
+                                  date: "the date",
                                 }}
                                 onAccept={() => {
                                   setAllOrders((prev) =>
@@ -510,6 +512,7 @@ export default function RiderDashboardPage() {
                                   phone_number: item.user_phoneNumber,
                                   items: item.items,
                                   address: item.location,
+                                  phone_number_type: item.phone_number_type,
                                 }}
                                 onAccept={() => {
                                   allOrders.map((leorder) =>

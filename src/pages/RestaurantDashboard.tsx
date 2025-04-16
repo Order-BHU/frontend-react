@@ -342,7 +342,7 @@ const RestaurantDashboardPage = () => {
           custom={1}
         >
           <h1 className="text-3xl md:text-4xl font-bold text-secondary-900 mb-6">
-            Restaurant Dashboard
+            {`Hello ${userDetails?.user?.name.slice(" ")}`}
           </h1>
         </motion.div>
 

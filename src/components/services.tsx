@@ -1,9 +1,9 @@
 import { motion } from "framer-motion";
 import {
   FiCheckCircle,
-  FiPackage,
+  //FiPackage,
   FiClock,
-  FiMap,
+  //FiMap,
   FiStar,
   FiTruck,
 } from "react-icons/fi";
@@ -123,7 +123,7 @@ const Services = () => {
           </motion.div>
 
           {/* Parcel Delivery */}
-          <motion.div
+          {/* <motion.div
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-100px" }}
@@ -198,7 +198,7 @@ const Services = () => {
                 </div>
               </motion.div>
             </div>
-          </motion.div>
+          </motion.div> */}
         </div>
       </div>
     </section>

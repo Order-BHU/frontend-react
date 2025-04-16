@@ -24,6 +24,7 @@ export interface Order {
   phone_number: string;
   address: string;
   date?: string | null;
+  phone_number_type?: string;
   items:
     | {
         menu_id: number;
@@ -70,7 +71,8 @@ export function OrderCard({
     items,
     address,
     phone_number,
-    date,
+    date = "",
+    phone_number_type = "", //default values for the optional mandem
   } = order;
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [completionCode, setCompletionCode] = useState("");
@@ -167,15 +169,19 @@ export function OrderCard({
                 <span className="text-sm font-medium">Delivery Address:</span>
                 <p className="text-sm text-gray-500">
                   {address}
-                  {date ? `•${date}` : ""}
+                  {date && `•${date}`}
                 </p>
               </div>
             }
 
             <div className="border-t pt-3 flex justify-between items-center">
               <div className="text-sm">
-                <span className="font-medium">Customer:</span> {customerName} •{" "}
-                {phone_number}
+                <span className="font-medium">Customer:</span>{" "}
+                {`${customerName} •${" "}
+                ${phone_number} •`}
+                {phone_number_type && (
+                  <span className="italic">{phone_number_type}</span>
+                )}
               </div>
 
               <div className="flex gap-2 items-center">

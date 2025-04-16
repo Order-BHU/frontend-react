@@ -4,39 +4,33 @@ import { FaWhatsapp } from "react-icons/fa";
 
 const Footer = () => {
   const navigate = useNavigate();
+
   return (
-    <footer className="bg-white border-t border-gray-100 pt-16 pb-12">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
-          {/* Logo and Short Description */}
-          <div className="col-span-1 md:col-span-1">
-            <div className="flex items-center space-x-2 mb-5">
+    <footer className="bg-white border-t border-gray-100 py-4">
+      <div className="container mx-auto px-3">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {/* Logo */}
+          <div className="col-span-2 md:col-span-1">
+            <div className="flex items-center mb-2">
               <img
                 onClick={() => navigate("/")}
                 src="/orderLogo.JPG"
                 alt="Order Logo"
-                className="h-40 w-40 object-cover md:w-full md:h-full"
+                className="h-16 w-16 object-cover cursor-pointer"
               />
-              {/* <span className="text-xl font-display font-bold text-primary-600">
-                Order
-              </span> */}
             </div>
-            {/* <p className="text-secondary-600 mb-5 text-sm">
-              Your go-to platform for convenient, delicious meals delivered
-              straight to your door.
-            </p> */}
           </div>
 
           {/* Quick Links */}
-          <div>
-            <h3 className="text-base font-semibold text-secondary-900 mb-4">
+          <div className="text-sm">
+            <h3 className="font-semibold text-gray-800 mb-1 text-sm">
               Quick Links
             </h3>
-            <ul className="space-y-2">
+            <ul className="space-y-1">
               <li>
                 <Link
                   to="/"
-                  className="text-secondary-600 hover:text-primary-600 transition-colors text-sm"
+                  className="text-gray-600 hover:text-blue-600 transition-colors"
                 >
                   Home
                 </Link>
@@ -44,7 +38,7 @@ const Footer = () => {
               <li>
                 <Link
                   to="/restaurants"
-                  className="text-secondary-600 hover:text-primary-600 transition-colors text-sm"
+                  className="text-gray-600 hover:text-blue-600 transition-colors"
                 >
                   Restaurants
                 </Link>
@@ -52,7 +46,7 @@ const Footer = () => {
               <li>
                 <Link
                   to="/contact"
-                  className="text-secondary-600 hover:text-primary-600 transition-colors text-sm"
+                  className="text-gray-600 hover:text-blue-600 transition-colors"
                 >
                   Contact Us
                 </Link>
@@ -61,24 +55,23 @@ const Footer = () => {
           </div>
 
           {/* Services */}
-          <div>
-            <h3 className="text-base font-semibold text-secondary-900 mb-4">
+          <div className="text-sm">
+            <h3 className="font-semibold text-gray-800 mb-1 text-sm">
               Our Services
             </h3>
-            <ul className="space-y-2">
+            <ul className="space-y-1">
               <li>
                 <Link
                   to="/food-delivery"
-                  className="text-secondary-600 hover:text-primary-600 transition-colors text-sm"
+                  className="text-gray-600 hover:text-blue-600 transition-colors"
                 >
                   Food Delivery
                 </Link>
               </li>
-
               <li>
                 <a
                   href="/contact"
-                  className="text-secondary-600 hover:text-primary-600 transition-colors text-sm"
+                  className="text-gray-600 hover:text-blue-600 transition-colors"
                 >
                   Become a Driver
                 </a>
@@ -87,68 +80,66 @@ const Footer = () => {
           </div>
 
           {/* Contact */}
-          <div>
-            <h3 className="text-base font-semibold text-secondary-900 mb-4">
+          <div className="text-sm">
+            <h3 className="font-semibold text-gray-800 mb-1 text-sm">
               Contact Us
             </h3>
-            <ul className="space-y-2 text-sm text-secondary-600 mb-4">
-              <li>Email: bhuorder@gmail.com</li>
-            </ul>
-            <div className="flex space-x-4">
+            <p className="text-gray-600 mb-1">Email: bhuorder@gmail.com</p>
+            <div className="flex space-x-3">
               <a
                 href="https://whatsapp.com/channel/0029VbAikJF84Om30J1VPC45"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-secondary-400 hover:text-primary-600 transition-colors"
+                className="text-gray-500 hover:text-green-600 transition-colors"
                 aria-label="WhatsApp"
               >
-                <FaWhatsapp size={20} />
+                <FaWhatsapp size={16} />
               </a>
               <a
                 href="mailto:support.bhuorder.com.ng"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-secondary-400 hover:text-primary-600 transition-colors"
+                className="text-gray-500 hover:text-blue-600 transition-colors"
                 aria-label="Mail"
               >
-                <FiMail size={20} />
+                <FiMail size={16} />
               </a>
               <a
                 href="https://instagram.com/bhu_order"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-secondary-400 hover:text-primary-600 transition-colors"
+                className="text-gray-500 hover:text-pink-600 transition-colors"
                 aria-label="Instagram"
               >
-                <FiInstagram size={20} />
+                <FiInstagram size={16} />
               </a>
             </div>
           </div>
         </div>
 
-        <div className="mt-12 pt-8 border-t border-gray-100">
-          <div className="flex flex-col md:flex-row md:justify-between md:items-center space-y-4 md:space-y-0">
-            <p className="text-sm text-secondary-500">
+        <div className="mt-3 pt-2 border-t border-gray-100">
+          <div className="flex flex-wrap justify-between items-center">
+            <p className="text-xs text-gray-500">
               &copy; {new Date().getFullYear()} Order. All rights reserved.
             </p>
-            <div className="flex space-x-6">
+            <div className="flex space-x-4 mt-1 md:mt-0">
               <Link
                 to="/privacy"
-                className="text-xs text-secondary-500 hover:text-primary-600 transition-colors"
+                className="text-xs text-gray-500 hover:text-blue-600"
               >
-                Privacy Policy
+                Privacy
               </Link>
               <Link
                 to="/terms"
-                className="text-xs text-secondary-500 hover:text-primary-600 transition-colors"
+                className="text-xs text-gray-500 hover:text-blue-600"
               >
-                Terms of Service
+                Terms
               </Link>
               <Link
                 to="/cookies"
-                className="text-xs text-secondary-500 hover:text-primary-600 transition-colors"
+                className="text-xs text-gray-500 hover:text-blue-600"
               >
-                Cookie Policy
+                Cookies
               </Link>
             </div>
           </div>
