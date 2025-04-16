@@ -9,9 +9,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import {
-  FiClock,
-  FiMapPin,
-  FiStar,
   FiShoppingCart,
   FiPlus,
   FiMinus,
@@ -365,29 +362,6 @@ const RestaurantMenuPage = () => {
               <h1 className="text-3xl md:text-4xl font-bold mb-2">
                 {menuItems && menuItems.restaurant.name}
               </h1>
-              <p className="text-white/90 mb-4">
-                {/*restaurant.description*/ "it's description"}
-              </p>
-              <div className="flex flex-wrap items-center gap-4 text-sm">
-                <div className="flex items-center">
-                  <FiStar className="mr-1 text-yellow-400" />
-                  <span>{/*restaurant.rating*/ "rating"}</span>
-                </div>
-                <div className="flex items-center">
-                  <FiClock className="mr-1" />
-                  <span>{/*restaurant.deliveryTime*/ "delivery time"}</span>
-                </div>
-                <div className="flex items-center">
-                  <FiMapPin className="mr-1" />
-                  <span>{/*restaurant.location*/ "location"}</span>
-                </div>
-                <span className="px-2 py-1 bg-white/20 rounded-full">
-                  {/*restaurant.cuisine*/ "cuisine"}
-                </span>
-                <span className="px-2 py-1 bg-white/20 rounded-full">
-                  {/*restaurant.priceRange*/ "price range"}
-                </span>
-              </div>
             </motion.div>
           </div>
         </div>
