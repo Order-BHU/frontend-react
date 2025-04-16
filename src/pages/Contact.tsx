@@ -1,16 +1,10 @@
 import { motion } from "framer-motion";
 import { useState, FormEvent } from "react";
-import {
-  FiMail,
-  FiMapPin,
-  FiPhone,
-  FiSend,
-  FiUser,
-  FiCoffee,
-} from "react-icons/fi";
+import { FiMail, FiMapPin, FiPhone, FiSend, FiCoffee } from "react-icons/fi";
 import { contact } from "@/api/misc";
 import { useMutation } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
+import useAuthStore from "@/stores/useAuthStore";
 
 // Animation variants
 const fadeIn = {
@@ -23,6 +17,7 @@ const fadeIn = {
 };
 
 const ContactPage = () => {
+  const { isLoggedIn } = useAuthStore();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -274,54 +269,6 @@ const ContactPage = () => {
                 <form onSubmit={handleSubmit} className="space-y-6 text-black">
                   <div>
                     <label
-                      htmlFor="name"
-                      className="block text-sm font-medium text-secondary-700 mb-1"
-                    >
-                      Your Name
-                    </label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <FiUser className="h-5 w-5 text-secondary-400" />
-                      </div>
-                      <input
-                        id="name"
-                        name="name"
-                        type="text"
-                        required
-                        placeholder="John Doe"
-                        value={formData.name}
-                        onChange={handleChange}
-                        className="block w-full pl-10 pr-4 py-3 border border-secondary-200 rounded-xl bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label
-                      htmlFor="email"
-                      className="block text-sm font-medium text-secondary-700 mb-1"
-                    >
-                      Your Email
-                    </label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <FiMail className="h-5 w-5 text-secondary-400" />
-                      </div>
-                      <input
-                        id="email"
-                        name="email"
-                        type="email"
-                        required
-                        placeholder="john@example.com"
-                        value={formData.email}
-                        onChange={handleChange}
-                        className="block w-full pl-10 pr-4 py-3 border border-secondary-200 rounded-xl bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label
                       htmlFor="subject"
                       className="block text-sm font-medium text-secondary-700 mb-1"
                     >
@@ -334,7 +281,16 @@ const ContactPage = () => {
                       required
                       placeholder="How can we help you?"
                       value={formData.subject}
-                      onChange={handleChange}
+                      onChange={(e) => {
+                        if (isLoggedIn) {
+                          handleChange(e);
+                        } else {
+                          toast({
+                            description: "please login to continue",
+                            variant: "destructive",
+                          });
+                        }
+                      }}
                       className="block w-full px-4 py-3 border border-secondary-200 rounded-xl bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                     />
                   </div>
@@ -353,7 +309,16 @@ const ContactPage = () => {
                       required
                       placeholder="Please write your message here..."
                       value={formData.message}
-                      onChange={handleChange}
+                      onChange={(e) => {
+                        if (isLoggedIn) {
+                          handleChange(e);
+                        } else {
+                          toast({
+                            description: "please login to continue",
+                            variant: "destructive",
+                          });
+                        }
+                      }}
                       className="block w-full px-4 py-3 border border-secondary-200 rounded-xl bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
                     ></textarea>
                   </div>
