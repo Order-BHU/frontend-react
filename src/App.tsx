@@ -1,6 +1,7 @@
 import "./App.css";
 import "./index.css";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { useEffect } from "react";
 import LandingPage from "./pages/Landingpage";
 import RestaurantsPage from "./pages/restaurantsPage";
 import ContactPage from "./pages/Contact";
@@ -28,6 +29,17 @@ function App() {
   orbit.register();
   const queryClient = new QueryClient();
 
+  const ScrollToTop = () => {
+    //here to get rid of the scroll location so each page starts from the top when navigating
+    const { pathname } = useLocation();
+
+    useEffect(() => {
+      window.scrollTo(0, 0);
+    }, [pathname]);
+
+    return null;
+  };
+
   return (
     <div className="app">
       <ToastAutoDismiss />
@@ -36,6 +48,7 @@ function App() {
       {/* <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme"> */}
       <BrowserRouter future={{ v7_relativeSplatPath: true }}>
         <QueryClientProvider client={queryClient}>
+          <ScrollToTop />
           <Header />
           <Routes>
             <Route path="*" element={<NotFound />}></Route>

@@ -243,9 +243,12 @@ export default function RiderDashboardPage() {
           {/* Page Title */}
           <div className="mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">
-                {`Hello, ${userDetails?.user?.name.split(" ")[0]}`}
-              </h1>
+              {userDetails && (
+                <h1 className="text-3xl font-bold text-gray-900">
+                  {`Hello, ${userDetails?.user?.name.split(" ")[0] || ""}`}
+                </h1>
+              )}
+
               <p className="text-gray-500 mt-1">
                 Welcome back! Manage your deliveries and account settings
               </p>

@@ -341,9 +341,11 @@ const RestaurantDashboardPage = () => {
           variants={fadeIn}
           custom={1}
         >
-          <h1 className="text-3xl md:text-4xl font-bold text-secondary-900 mb-6">
-            {`Hello ${userDetails?.user?.name.slice(" ")}`}
-          </h1>
+          {userDetails && (
+            <h1 className="text-3xl font-bold text-gray-900">
+              {`Hello, ${userDetails?.user?.name.split(" ")[0] || ""}`}
+            </h1>
+          )}
         </motion.div>
 
         {/* Restaurant Profile */}

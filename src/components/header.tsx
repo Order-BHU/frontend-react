@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { FiMenu, FiX } from "react-icons/fi";
 import useAuthStore from "@/stores/useAuthStore";
-import { ModeToggle } from "./mode-toggle";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 // Define custom event type
 type DropdownStateChangeEvent = CustomEvent<{ isOpen: boolean }>;
@@ -23,10 +23,12 @@ export const notifyHeaderDropdownState = (isOpen: boolean): void => {
 };
 
 const Header = () => {
+  const username = localStorage.getItem("name")?.slice(0, 2).toUpperCase();
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [scrolled, setScrolled] = useState<boolean>(false);
   const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);
-  const { isLoggedIn } = useAuthStore();
+  const { isLoggedIn, role } = useAuthStore();
+  const navigate = useNavigate();
 
   // Calculate scrollbar width
   const getScrollbarWidth = (): number => {
@@ -139,7 +141,17 @@ const Header = () => {
               </button>
             </div>
 
-            {isLoggedIn && <ModeToggle />}
+            {isLoggedIn && (
+              <Avatar
+                className="w-10 h-10"
+                onClick={() => navigate(`/${role}-dashboard`)}
+              >
+                <AvatarImage src={localStorage.getItem("pfp") || ""} />
+                <AvatarFallback className="text-gray-900 dark:text-gray-300">
+                  {username}
+                </AvatarFallback>
+              </Avatar>
+            )}
           </div>
         </div>
       </div>
