@@ -76,6 +76,7 @@ const RestaurantMenuPage = () => {
   const { data: cartItems, refetch } = useQuery({
     queryFn: viewCart,
     queryKey: ["cartItems"],
+    enabled: isLoggedIn,
     refetchOnWindowFocus: false, //because removing items from cart gets annoying since it's stored in the frontend now till i checkout
   });
   const { data: locations, status: locationStatus } = useQuery({
@@ -264,10 +265,6 @@ const RestaurantMenuPage = () => {
       }
     }
   };
-  useEffect(() => {
-    console.log("offline cart: ", cart);
-    console.log("api Cart: ", cartItems);
-  }, [cart]);
 
   const handlePayment = () => {
     //this function will store the location in localStorage, so after payment and redirect, we can checkout with said info

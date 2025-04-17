@@ -137,6 +137,11 @@ export default function RiderDashboardPage() {
       setDriverState(userDetails.status || "");
     }
   }, [userDetails]);
+  useEffect(() => {
+    if (userDetails) {
+      localStorage.setItem("pfp", userDetails.user.profile_picture_url);
+    }
+  }, [userDetails]);
 
   const handleLogout = () => {
     const usertoken = localStorage.getItem("token");

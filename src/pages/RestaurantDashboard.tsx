@@ -274,6 +274,11 @@ const RestaurantDashboardPage = () => {
       setmenuItemArray(allMenus);
     }
   }, [menuItems]);
+  useEffect(() => {
+    if (userDetails) {
+      localStorage.setItem("pfp", userDetails.user.profile_picture_url);
+    }
+  }, [userDetails]);
 
   const handleOrderAccept = (orderId: number, newcategoryStatus: string) => {
     orderStatusMutate({
