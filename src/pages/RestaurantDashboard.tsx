@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { LogOut, ChevronRight } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -33,6 +34,7 @@ import {
   FiTrash,
 } from "react-icons/fi";
 import { dashboard } from "@/api/misc";
+import { logOut } from "@/api/auth";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import {
   getCategories,
@@ -53,6 +55,9 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { Textarea } from "@/components/ui/textarea";
 import EditProfileModal from "@/components/editProfileModal";
+import { useNavigate } from "react-router-dom";
+import UseAuthStore from "@/stores/useAuthStore";
+import Loader from "@/components/loaderAnimation";
 
 // Animation variants
 const fadeIn = {
@@ -87,6 +92,8 @@ const orderValueChange = 5; // percentage
 // Menu categories and items
 
 const RestaurantDashboardPage = () => {
+  const navigate = useNavigate();
+  const { logout } = UseAuthStore();
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState<TabType>("orders");
   const [acceptedOrderState, setAccepted] = useState<orderType[]>([]);
@@ -332,6 +339,46 @@ const RestaurantDashboardPage = () => {
 
     setmenuItemArray((prev) => prev.filter((item) => item.id !== id));
   };
+  const { status: logoutStatus, mutate: logoutMutate } = useMutation({
+    mutationFn: logOut,
+    onSuccess: (data) => {
+      logout();
+      navigate("/login/");
+      toast({
+        title: "success!",
+        description: data.message,
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+      return;
+    },
+  });
+  const handleLogout = () => {
+    const usertoken = localStorage.getItem("token");
+    if (!usertoken) {
+      toast({
+        title: "Error",
+        description: "Not authenticated",
+        variant: "destructive",
+      });
+      return;
+    }
+    logoutMutate(usertoken);
+  };
+
+  if (logoutStatus === "pending") {
+    return (
+      <div>
+        <Loader />
+        <p>Logging you Out</p>
+      </div>
+    );
+  }
   return (
     <div className="bg-secondary-50 min-h-screen pt-20 pb-20">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -383,11 +430,26 @@ const RestaurantDashboardPage = () => {
                   <p>Contact: {userDetails?.user?.email}</p>
                 </div>
               </div>
-              <div className="flex-shrink-0">
+              <div className="space-y-3">
                 <EditProfileModal
                   successFn={refetchDetails}
-                  userDetails={{ name: userDetails?.restaurant_details?.name }}
+                  userDetails={{
+                    restaurant_name: userDetails?.restaurant_details?.name,
+                    restaurant_logo: userDetails?.restaurant_details?.logo,
+                    cover_photo: userDetails?.user?.profile_picture_url,
+                  }}
                 />
+                <Button
+                  variant="outline"
+                  className="w-full justify-between rounded-xl border-gray-200 bg-white shadow-sm"
+                  onClick={handleLogout}
+                >
+                  <span className="flex items-center">
+                    <LogOut className="mr-2 h-4 w-4" />
+                    Log Out
+                  </span>
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
               </div>
             </div>
           </div>

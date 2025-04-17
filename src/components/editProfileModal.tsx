@@ -1,4 +1,4 @@
-import React, { useState, ChangeEvent } from "react";
+import React, { useState, ChangeEvent, useEffect } from "react";
 import { User, ChevronRight } from "lucide-react";
 import {
   Dialog,
@@ -24,6 +24,8 @@ interface UserDetails {
   restaurant_name?: string;
   name?: string;
   profile_picture?: File | null;
+  restaurant_logo?: File | null;
+  cover_photo?: File | null;
   phone_number_type?: "whatsapp" | "phone";
   // Add other user details properties as needed
 }
@@ -46,10 +48,22 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
   const [formData, setFormData] = useState<UserDetails>({
     name: userDetails.name || "",
     restaurant_name: userDetails.restaurant_name || "",
-    profile_picture: userDetails.profile_picture || null,
-    phone_number_type: userDetails.phone_number_type || undefined, // Default value
+    profile_picture: userDetails.profile_picture
+      ? userDetails.profile_picture
+      : userDetails.restaurant_logo || null,
+    phone_number_type: userDetails.phone_number_type || "phone", // Default valu
+    cover_photo: userDetails.cover_photo || null,
   });
 
+  useEffect(() => {
+    //this is here to set the form details whenever we get themfrom the api
+    setFormData((prevData) => ({
+      ...prevData,
+      name: userDetails.name || "",
+      restaurant_name: userDetails.restaurant_name || "",
+      phone_number_type: userDetails.phone_number_type || "phone",
+    }));
+  }, [userDetails]);
   const { toast } = useToast();
   const [showEditProfileModal, setShowEditProfileModal] =
     useState<boolean>(false);
@@ -78,10 +92,16 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
     Object.entries(formData).filter(([_, value]) => value)
   );
 
-  const handlePfpImageChange = (e: ChangeEvent<HTMLInputElement>): void => {
+  const handlePfpImageChange = (
+    e: ChangeEvent<HTMLInputElement>,
+    fn: keyof typeof formData
+  ): void => {
     // Handle image change logic
     if (e.target.files && e.target.files[0]) {
-      console.log("Image selected:", e.target.files[0]);
+      setFormData({
+        ...formData,
+        [fn]: e.target.files[0],
+      });
     }
   };
 
@@ -95,7 +115,7 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
   const handleEditProfile = (e: React.FormEvent) => {
     e.preventDefault();
     editProfileMutate(filteredData);
-    console.log(formData);
+    console.log("filtered: ", filteredData);
   };
   const { mutate: passwordMutate, status: passwordStatus } = useMutation({
     mutationFn: changePassword,
@@ -143,20 +163,48 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
       </DialogTrigger>
       <DialogContent className="dark:text-cfont-dark overflow-auto max-h-screen">
         <DialogHeader>
-          <DialogTitle>Edit Restaurant Profile</DialogTitle>
+          <DialogTitle>Edit Profile</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleEditProfile} className="space-y-4">
-          <div>
-            <Label htmlFor="restaurantPhoto" className="dark:text-cfont-dark">
-              Restaurant Photo
-            </Label>
-            <Input
-              id="photo"
-              type="file"
-              accept="image/*"
-              onChange={handlePfpImageChange}
-            />
-          </div>
+          {userDetails.cover_photo && (
+            <div>
+              <Label htmlFor="coverPhoto" className="dark:text-cfont-dark">
+                Cover Photo
+              </Label>
+              <Input
+                id="photo"
+                type="file"
+                accept="image/*"
+                onChange={(e) => handlePfpImageChange(e, "cover_photo")}
+              />
+            </div>
+          )}
+          {userDetails.restaurant_logo ? (
+            <div>
+              <Label htmlFor="restaurantLogo" className="dark:text-cfont-dark">
+                Restaurant Logo
+              </Label>
+              <Input
+                id="photo"
+                type="file"
+                accept="image/*"
+                onChange={(e) => handlePfpImageChange(e, "profile_picture")}
+              />
+            </div>
+          ) : (
+            <div>
+              <Label htmlFor="profilePhoto" className="dark:text-cfont-dark">
+                Profile Picture
+              </Label>
+              <Input
+                id="photo"
+                type="file"
+                accept="image/*"
+                onChange={(e) => handlePfpImageChange(e, "profile_picture")}
+              />
+            </div>
+          )}
+
           {userDetails.restaurant_name ? (
             <div>
               <Label htmlFor="restaurantName" className="dark:text-cfont-dark">
@@ -169,7 +217,7 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
                 onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   setFormData({
                     ...formData,
-                    name: e.target.value,
+                    restaurant_name: e.target.value,
                   })
                 }
               />
