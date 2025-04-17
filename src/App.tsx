@@ -12,6 +12,8 @@ import RestaurantDashboardPage from "./pages/RestaurantDashboard";
 import UserDashboardPage from "./pages/UserDashboard";
 import RestaurantMenuPage from "./pages/Menupage";
 import AdminDashboardPage from "./pages/Adminpage";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 //import { ThemeProvider } from "@/components/theme-provider";
 import VerifyOTPPage from "./pages/verifyOtpPage";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -53,6 +55,8 @@ function App() {
           <Routes>
             <Route path="*" element={<NotFound />}></Route>
             <Route path="/" element={<LandingPage />}></Route>
+            <Route path="/forgot-password" element={<ForgotPassword />}></Route>
+            <Route path="/reset-password" element={<ResetPassword />}></Route>
             <Route path="/restaurants" element={<RestaurantsPage />}></Route>
             <Route path="/contact" element={<ContactPage />}></Route>
             <Route path="/login" element={<LoginPage />}></Route>
