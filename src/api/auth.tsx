@@ -175,3 +175,23 @@ export async function forgotPassword(data: { email: string }) {
       throw error.response?.data;
     });
 }
+
+export async function resetPassword(data: {
+  token: string;
+  password: string;
+  password_confirmation: string;
+}) {
+  return api
+    .post("/reset-password", data)
+    .then((response: AxiosResponse<bankResolveResponse>) => {
+      console.log("password data: ", response.data);
+      return response.data;
+    })
+    .catch((error: AxiosError) => {
+      if (error.code === "ERR_NETWORK") {
+        throw new Error("Network error: Unable to reach the server.");
+      }
+      console.log(error);
+      throw error.response?.data;
+    });
+}

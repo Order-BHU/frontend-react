@@ -2,15 +2,35 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { Lock } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Lock, Eye, EyeOff } from "lucide-react";
+import { Link, useParams } from "react-router-dom";
+import { resetPassword } from "@/api/auth";
+import { useMutation } from "@tanstack/react-query";
 
 const ResetPassword = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const { token } = useParams<{ token: string }>();
   const { toast } = useToast();
-  const navigate = useNavigate();
+
+  const { mutate, status } = useMutation({
+    mutationFn: resetPassword,
+    onSuccess: (data) => {
+      toast({
+        title: "Success",
+        description: `${data.message}. Link will expire after 60 minutes`,
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,18 +43,11 @@ const ResetPassword = () => {
       return;
     }
 
-    setIsLoading(true);
-
-    // Simulate API call
-    setTimeout(() => {
-      toast({
-        title: "Password reset successful",
-        description:
-          "Your password has been reset. You can now log in with your new password.",
-      });
-      setIsLoading(false);
-      navigate("/login");
-    }, 1500);
+    mutate({
+      token: token!,
+      password: password,
+      password_confirmation: confirmPassword,
+    });
   };
 
   return (
@@ -53,26 +66,48 @@ const ResetPassword = () => {
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
               <Input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 required
-                className="pl-10 w-full"
+                className="pl-10 pr-10 w-full"
                 placeholder="New password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 minLength={8}
               />
+              <button
+                type="button"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-500"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? (
+                  <EyeOff className="h-5 w-5" />
+                ) : (
+                  <Eye className="h-5 w-5" />
+                )}
+              </button>
             </div>
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
               <Input
-                type="password"
+                type={showConfirmPassword ? "text" : "password"}
                 required
-                className="pl-10 w-full"
+                className="pl-10 pr-10 w-full"
                 placeholder="Confirm new password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 minLength={8}
               />
+              <button
+                type="button"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-500"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              >
+                {showConfirmPassword ? (
+                  <EyeOff className="h-5 w-5" />
+                ) : (
+                  <Eye className="h-5 w-5" />
+                )}
+              </button>
             </div>
           </div>
 
@@ -80,9 +115,9 @@ const ResetPassword = () => {
             <Button
               type="submit"
               className="w-full bg-blue-500 hover:bg-blue-600"
-              disabled={isLoading}
+              disabled={status === "pending"}
             >
-              {isLoading ? "Resetting..." : "Reset Password"}
+              {status === "pending" ? "Resetting..." : "Reset Password"}
             </Button>
           </div>
         </form>
