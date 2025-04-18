@@ -22,7 +22,7 @@ const ResetPassword = () => {
     onSuccess: (data) => {
       toast({
         title: "Success",
-        description: `${data.message}. Link will expire after 60 minutes`,
+        description: `${data.message}`,
       });
     },
     onError: (error) => {
