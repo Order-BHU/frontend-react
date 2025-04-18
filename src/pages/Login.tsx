@@ -84,9 +84,10 @@ export default function LoginPage() {
 
   useEffect(() => {
     function handleMessage(event: MessageEvent) {
-      if (event.origin !== "https://bhuorder.com.ng") console.log("nope");
+      if (event.origin !== "https://bhuorder.com.ng") return;
 
       const { token, user } = event.data;
+      console.log("received stuff: ", event);
 
       if (token) {
         console.log("token: ", token);
