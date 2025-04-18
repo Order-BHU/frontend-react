@@ -13,14 +13,10 @@ api.interceptors.response.use(
   (response) => response, // Return response if successful
   (error: AxiosError) => {
     if (error.response && error.response.status === 401) {
-      const data = error.response.data as { message?: string };
-
-      if (data.message?.includes("verified")) {
-        console.log("not ver ", error);
-      } else if (!error.message.includes("verified")) {
-        console.log(error);
-        const { logout } = useAuthStore.getState();
-        logout();
+      const { logout } = useAuthStore.getState(); // Get logout function
+      logout(); // Clear session
+      if (window.location.pathname !== "/login") {
+        // Redirect to login page only if we aren't already in the login page
         window.location.href = "/login";
       }
     }

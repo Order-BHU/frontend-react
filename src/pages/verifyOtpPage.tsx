@@ -21,7 +21,7 @@ export default function VerifyOTPPage() {
   const [isResendDisabled, setIsResendDisabled] = useState(false);
   const location = useLocation();
   const email = location.state?.formData.email;
-  const source = location.state.source;
+  const source = location.state?.source;
   const navigate = useNavigate();
   const [otp, setOtp] = useState("");
 
