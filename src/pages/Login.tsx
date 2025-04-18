@@ -92,11 +92,13 @@ export default function LoginPage() {
       if (token) {
         console.log("token: ", token);
         localStorage.setItem("token", token);
+        user?.account_type &&
+          localStorage.setItem("accountType", user?.account_type);
         logIn(user?.account_type);
         localStorage.setItem("user", JSON.stringify(user));
 
         // redirect or update UI
-        navigate(`/${user?.account_type}-dashboard/`);
+        user?.account_type && navigate(`/${user?.account_type}-dashboard/`);
       }
     }
 

@@ -375,15 +375,18 @@ export default function RiderDashboardPage() {
             <div className="bg-white rounded-2xl shadow-soft-md p-6">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-sm font-medium text-secondary-500">
-                  Total Deliveries
+                  Wallet Balance
                 </h3>
                 <div className="w-8 h-8 flex items-center justify-center rounded-full bg-primary-100 text-primary-600">
                   <FiCreditCard />
                 </div>
               </div>
               <div className="text-2xl font-bold text-secondary-900">
-                {userDetails?.total_deliveries}
+                {userDetails?.earnings?.wallet_balance}
               </div>
+              <p className="text-xs mt-1 text-secondary-900 italic">
+                Total Earnings: {userDetails?.earnings?.total}
+              </p>
             </div>
 
             {/* Completed Orders */}
@@ -503,7 +506,12 @@ export default function RiderDashboardPage() {
                       ) && (
                         <div>
                           <h1 className="text-xl text-black">
-                            Currently Delivering
+                            {`Currently Delivering${
+                              userDetails?.delivery_metrics
+                                ?.delivering_deliveries
+                                ? `(${userDetails?.delivery_metrics?.delivering_deliveries})`
+                                : ""
+                            }`}
                           </h1>
                           {allOrders
                             .filter((order) => order.status === "delivering")
