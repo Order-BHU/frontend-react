@@ -2,6 +2,9 @@ import { useState, useEffect, useCallback, useMemo } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { LogOut, ChevronRight } from "lucide-react";
+import { logOut } from "@/api/auth";
+import UseAuthStore from "@/stores/useAuthStore";
 import {
   Table,
   TableBody,
@@ -116,6 +119,7 @@ type TimeRange = "day" | "week" | "month" | "year";
 export default function AdminDashboardPage() {
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { logout } = UseAuthStore();
   //creating restaurant details
 
   const { status, mutate } = useMutation({
@@ -303,6 +307,38 @@ export default function AdminDashboardPage() {
     // You might want to add some feedback to the user here
   };
 
+  const { status: logoutStatus, mutate: logoutMutate } = useMutation({
+    mutationFn: logOut,
+    onSuccess: (data) => {
+      logout();
+      navigate("/login/");
+      toast({
+        title: "success!",
+        description: data.message,
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+      return;
+    },
+  });
+  const handleLogout = () => {
+    const usertoken = localStorage.getItem("token");
+    if (!usertoken) {
+      toast({
+        title: "Error",
+        description: "Not authenticated",
+        variant: "destructive",
+      });
+      return;
+    }
+    logoutMutate(usertoken);
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-cbg-dark">
       <main className="flex-grow container mx-auto px-4 py-8 space-y-8 mt-20">
@@ -310,6 +346,19 @@ export default function AdminDashboardPage() {
           <h1 className="text-2xl md:text-3xl font-bold mb-6 text-gray-800 dark:text-cfont-dark">
             Admin Dashboard
           </h1>
+
+          <Button
+            variant="outline"
+            className=" justify-between rounded-xl border-gray-200 bg-gray hover:bg-orange-600 shadow-sm"
+            disabled={logoutStatus === "pending"}
+            onClick={handleLogout}
+          >
+            <span className="flex items-center">
+              <LogOut className="mr-2 h-4 w-4" />
+              Log Out
+            </span>
+            <ChevronRight className="h-4 w-4" />
+          </Button>
         </PageWrapper>
 
         <PageWrapper className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">

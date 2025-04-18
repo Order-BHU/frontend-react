@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { loginUser, googleSignIn } from "@/api/auth";
+import { useMutation } from "@tanstack/react-query";
+import { loginUser } from "@/api/auth";
 import { useToast } from "@/hooks/use-toast";
 import UseAuthStore from "@/stores/useAuthStore";
 import driverStore from "@/stores/driverStore";
@@ -81,18 +81,26 @@ export default function LoginPage() {
       password: formData.password,
     });
   };
-  const [startGoogle, setStartGoogle] = useState(false);
-  const { data: googleResponse } = useQuery({
-    queryKey: ["userDetails"],
-    queryFn: googleSignIn,
-    refetchOnWindowFocus: false,
-    enabled: startGoogle!!,
-  });
-  const handleGoogleSignIn = () => {
-    console.log("starting google...", googleResponse); //google response is just here to prevent unused variable error
-    setStartGoogle(true);
-  };
 
+  useEffect(() => {
+    function handleMessage(event: MessageEvent) {
+      if (event.origin !== "https://bhuorder.com.ng") console.log("nope");
+
+      const { token, user } = event.data;
+
+      if (token) {
+        console.log("token: ", token);
+        localStorage.setItem("token", token);
+        localStorage.setItem("user", JSON.stringify(user));
+
+        // redirect or update UI
+        navigate(`${user?.account_type}/dashboard`);
+      }
+    }
+
+    window.addEventListener("message", handleMessage);
+    return () => window.removeEventListener("message", handleMessage);
+  }, [navigate]);
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Header */}
@@ -229,10 +237,18 @@ export default function LoginPage() {
 
             <div className="mt-6">
               <button
-                onClick={() =>
-                  (window.location.href =
-                    "https://bhuorder.com.ng/api/auth/google")
-                }
+                onClick={() => {
+                  const width = 500;
+                  const height = 600;
+                  const left = window.innerWidth / 2 - width / 2;
+                  const top = window.innerHeight / 2 - height / 2;
+
+                  window.open(
+                    "https://bhuorder.com.ng/api/auth/google",
+                    "GoogleLoginPopup",
+                    `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes`
+                  );
+                }}
                 type="button"
                 className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition-all hover:border-gray-400 shadow-sm hover:shadow transform hover:-translate-y-0.5 active:translate-y-0"
               >
