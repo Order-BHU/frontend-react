@@ -229,7 +229,10 @@ export default function LoginPage() {
 
             <div className="mt-6">
               <button
-                onClick={handleGoogleSignIn}
+                onClick={() =>
+                  (window.location.href =
+                    "https://bhuorder.com.ng/api/auth/google")
+                }
                 type="button"
                 className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition-all hover:border-gray-400 shadow-sm hover:shadow transform hover:-translate-y-0.5 active:translate-y-0"
               >

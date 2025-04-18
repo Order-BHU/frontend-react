@@ -194,8 +194,11 @@ export default function AdminDashboardPage() {
     bank_code: string;
     account_number: string;
   }) => {
-    console.log("bank sending:", bank);
-    resolveBankMutate(bank);
+    if (bank.account_number && bank.bank_code) {
+      console.log("bank sending:", bank);
+      resolveBankMutate(bank);
+    }
+    return;
   };
 
   useEffect(() => {
@@ -212,9 +215,9 @@ export default function AdminDashboardPage() {
     mutationFn: resolveBank,
     onSuccess: (data) => {
       //setFoundResolvedBank(data);
-      setResolvedBankName(data?.data.account_name);
+      setResolvedBankName(data?.data?.account_name);
       const matchingbank = allBanks.find(
-        (bank) => bank.id === data.data.bank_id
+        (bank) => bank.id === data?.data?.bank_id
       );
       setformData((prev) => ({
         ...prev,
@@ -736,6 +739,7 @@ export default function AdminDashboardPage() {
                                 value={formData.account_no}
                                 onChange={handleChange}
                                 required
+                                maxLength={12}
                               />
                             </div>
 

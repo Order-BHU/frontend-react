@@ -63,7 +63,7 @@ const ForgotPassword = () => {
           <div>
             <Button
               type="submit"
-              className="w-full bg-blue-500 hover:bg-blue-600"
+              className="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700"
               disabled={status === "pending"}
             >
               {status === "pending" ? "Sending..." : "Send Reset Link"}
@@ -74,7 +74,7 @@ const ForgotPassword = () => {
         <div className="text-center">
           <Link
             to="/login"
-            className="text-sm text-blue-500 hover:text-blue-600"
+            className="text-sm text-orange-500 hover:text-orange-600"
           >
             Back to Login
           </Link>

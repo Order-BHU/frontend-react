@@ -3,11 +3,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { Lock, Eye, EyeOff } from "lucide-react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { resetPassword } from "@/api/auth";
 import { useMutation } from "@tanstack/react-query";
 
 const ResetPassword = () => {
+  const navigate = useNavigate();
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -24,6 +25,9 @@ const ResetPassword = () => {
         title: "Success",
         description: `${data.message}`,
       });
+      setTimeout(() => {
+        navigate("/login");
+      }, 500);
     },
     onError: (error) => {
       toast({
@@ -117,7 +121,7 @@ const ResetPassword = () => {
           <div>
             <Button
               type="submit"
-              className="w-full bg-blue-500 hover:bg-blue-600"
+              className="w-full from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700"
               disabled={status === "pending"}
             >
               {status === "pending" ? "Resetting..." : "Reset Password"}
@@ -128,7 +132,7 @@ const ResetPassword = () => {
         <div className="text-center">
           <Link
             to="/login"
-            className="text-sm text-blue-500 hover:text-blue-600"
+            className="text-sm text-orange-500 hover:text-orange-600"
           >
             Back to Login
           </Link>
