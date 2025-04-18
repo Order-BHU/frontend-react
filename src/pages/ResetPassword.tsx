@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { Lock, Eye, EyeOff } from "lucide-react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { resetPassword } from "@/api/auth";
 import { useMutation } from "@tanstack/react-query";
 
@@ -12,8 +12,10 @@ const ResetPassword = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const { token } = useParams<{ token: string }>();
   const { toast } = useToast();
+  const location = useLocation();
+  const query = new URLSearchParams(location.search);
+  const token = query.get("token");
 
   const { mutate, status } = useMutation({
     mutationFn: resetPassword,
