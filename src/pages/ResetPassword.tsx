@@ -33,6 +33,7 @@ const ResetPassword = () => {
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
+    console.log("token: ", token);
     e.preventDefault();
     if (password !== confirmPassword) {
       toast({
