@@ -96,7 +96,7 @@ export default function LoginPage() {
         localStorage.setItem("user", JSON.stringify(user));
 
         // redirect or update UI
-        navigate(`${user?.account_type}-dashboard`);
+        navigate(`/${user?.account_type}-dashboard/`);
       }
     }
 
