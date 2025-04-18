@@ -67,6 +67,7 @@ export default function LoginPage() {
       });
       if (error.message.includes("verified")) {
         const source = "/login";
+
         navigate("/verify-otp/", { state: { formData, source } });
       }
       return;

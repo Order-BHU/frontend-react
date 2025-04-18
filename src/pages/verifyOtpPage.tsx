@@ -24,6 +24,12 @@ export default function VerifyOTPPage() {
   const source = location.state.source;
   const navigate = useNavigate();
   const [otp, setOtp] = useState("");
+
+  useEffect(() => {
+    resendMutation.mutate({
+      email: email,
+    });
+  }, []);
   useEffect(() => {
     if (countdown > 0) {
       const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
@@ -36,9 +42,9 @@ export default function VerifyOTPPage() {
     mutationFn: verifyAccount,
     onSuccess: (data) => {
       if (source === "/login") {
-        navigate("/");
-      } else {
         navigate("/login");
+      } else {
+        navigate("/");
       }
       toast({
         title: "OTP Submitted!",
@@ -68,7 +74,6 @@ export default function VerifyOTPPage() {
   const resendMutation = useMutation({
     mutationFn: getOtp,
     onSuccess: () => {
-      navigate("/user-dashboard/");
       console.log("request submitted:", otp);
       toast({
         title: "Sending an OTP",
@@ -95,7 +100,7 @@ export default function VerifyOTPPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-cbg-dark">
-      <main className="flex-grow container mx-auto px-4 py-8">
+      <main className="flex-grow container mx-auto px-4 py-8 mt-20">
         <Card className="max-w-md mx-auto">
           <CardHeader>
             <CardTitle className="text-2xl font-bold text-center">

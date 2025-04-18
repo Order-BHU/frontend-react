@@ -13,9 +13,16 @@ api.interceptors.response.use(
   (response) => response, // Return response if successful
   (error: AxiosError) => {
     if (error.response && error.response.status === 401) {
-      const { logout } = useAuthStore.getState(); // Get logout function
-      logout(); // Clear session
-      window.location.href = "/login"; // Redirect to login page
+      const data = error.response.data as { message?: string };
+
+      if (data.message?.includes("verified")) {
+        console.log("not ver ", error);
+      } else if (!error.message.includes("verified")) {
+        console.log(error);
+        const { logout } = useAuthStore.getState();
+        logout();
+        window.location.href = "/login";
+      }
     }
     return Promise.reject(error);
   }
