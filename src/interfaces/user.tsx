@@ -43,6 +43,18 @@ export type Owner = {
   bank_name: string;
 };
 
+export type Driver = {
+  email: string;
+  password: string;
+  phone_number: string;
+  phone_number_type: "whatsapp" | "sms" | "both";
+  account_type: "driver";
+  name: string;
+  account_no: string;
+  bank_code: string;
+  bank_name: string;
+};
+
 export type Otp = {
   email: string;
   otp: string;

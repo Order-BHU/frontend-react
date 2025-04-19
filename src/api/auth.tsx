@@ -6,6 +6,7 @@ import {
   User,
   existingUser,
   Owner,
+  Driver,
   Otp,
   bankResolveResponse,
 } from "@/interfaces/user";
@@ -40,6 +41,19 @@ export async function loginUser(user: existingUser) {
 export async function createRestaurant(restaurant: Owner) {
   return api
     .post("/register", restaurant)
+    .then((response: AxiosResponse<apiResponse>) => response.data)
+    .catch((error: AxiosError) => {
+      if (error.code === "ERR_NETWORK") {
+        throw new Error("Network error: Unable to reach the server.");
+      }
+      console.log(error);
+      throw error.response?.data;
+    });
+}
+
+export async function createDriver(driver: Driver) {
+  return api
+    .post("/register", driver)
     .then((response: AxiosResponse<apiResponse>) => response.data)
     .catch((error: AxiosError) => {
       if (error.code === "ERR_NETWORK") {
