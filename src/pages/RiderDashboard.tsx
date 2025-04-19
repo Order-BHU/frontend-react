@@ -21,7 +21,7 @@ import EditProfileModal from "@/components/editProfileModal";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import UseAuthStore from "@/stores/useAuthStore";
-import { FiCreditCard, FiDollarSign, FiShoppingBag } from "react-icons/fi";
+import { FiCreditCard, /*FiDollarSign,*/ FiShoppingBag } from "react-icons/fi";
 import { useState, useEffect } from "react";
 
 const fadeIn = {
@@ -389,29 +389,30 @@ export default function RiderDashboardPage() {
               </p>
             </div>
 
-            {/* Completed Orders */}
-            <div className="bg-white rounded-2xl shadow-soft-md p-6">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-sm font-medium text-secondary-500">
-                  In Progress
-                </h3>
-                <div className="w-8 h-8 flex items-center justify-center rounded-full bg-primary-100 text-primary-600">
-                  <FiShoppingBag />
+            {userDetails?.delivery_metrics?.delivering_deliveries > 0 && (
+              <div className="bg-white rounded-2xl shadow-soft-md p-6">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-sm font-medium text-secondary-500">
+                    In Progress
+                  </h3>
+                  <div className="w-8 h-8 flex items-center justify-center rounded-full bg-primary-100 text-primary-600">
+                    <FiShoppingBag />
+                  </div>
                 </div>
+                <div className="text-2xl font-bold text-secondary-900">
+                  {userDetails?.delivery_metrics?.delivering_deliveries}
+                </div>
+                {/* <p className="text-xs mt-1 text-secondary-900">
+              {userDetails?.statistics?.pending_orders} Pending
+            </p>
+            <p className="text-xs mt-1 text-secondary-900">
+              {userDetails?.statistics?.accepted_orders} Accepted
+            </p> */}
               </div>
-              <div className="text-2xl font-bold text-secondary-900">
-                {userDetails?.delivering_deliveries}
-              </div>
-              {/* <p className="text-xs mt-1 text-secondary-900">
-                {userDetails?.statistics?.pending_orders} Pending
-              </p>
-              <p className="text-xs mt-1 text-secondary-900">
-                {userDetails?.statistics?.accepted_orders} Accepted
-              </p> */}
-            </div>
+            )}
 
             {/* Total Earnings */}
-            <div className="bg-white rounded-2xl shadow-soft-md p-6">
+            {/* <div className="bg-white rounded-2xl shadow-soft-md p-6">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-sm font-medium text-secondary-500">
                   Total Earnings
@@ -422,7 +423,7 @@ export default function RiderDashboardPage() {
               </div>
               <div className="text-2xl font-bold text-secondary-900">...</div>
               <p className="text-xs text-green-600 mt-1">+50%</p>
-            </div>
+            </div> */}
           </motion.div>
 
           {/* Orders Section */}
