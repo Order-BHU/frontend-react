@@ -52,6 +52,7 @@ import { dashboard } from "@/api/misc";
 import { banksType } from "@/interfaces/paymentType";
 import debounce from "lodash/debounce";
 import { restaurantMetric, transactionType } from "@/interfaces/restaurantType";
+import CreateUserModal from "@/components/createUserModal";
 
 // Mock data - in a real app, this would come from an API
 const revenueData = [
@@ -992,69 +993,7 @@ export default function AdminDashboardPage() {
                         </TableBody>
                       </Table>
                     </div>
-                    <Dialog>
-                      <DialogTrigger asChild>
-                        <Button className="mt-4 w-full sm:w-auto">
-                          Create New Rider Account
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent className="sm:max-w-[425px] dark:text-cfont-dark">
-                        <DialogHeader>
-                          <DialogTitle>Create New Rider Account</DialogTitle>
-                        </DialogHeader>
-                        <form
-                          onSubmit={handleCreateRider}
-                          className="space-y-4"
-                        >
-                          <div>
-                            <Label htmlFor="riderName">Rider Name</Label>
-                            <Input
-                              id="riderName"
-                              value={newRider.name}
-                              onChange={(e) =>
-                                setNewRider({
-                                  ...newRider,
-                                  name: e.target.value,
-                                })
-                              }
-                              required
-                            />
-                          </div>
-                          <div>
-                            <Label htmlFor="riderEmail">Email</Label>
-                            <Input
-                              id="riderEmail"
-                              type="email"
-                              value={newRider.email}
-                              onChange={(e) =>
-                                setNewRider({
-                                  ...newRider,
-                                  email: e.target.value,
-                                })
-                              }
-                              required
-                            />
-                          </div>
-                          <div>
-                            <Label htmlFor="riderPhone">Phone</Label>
-                            <Input
-                              id="riderPhone"
-                              value={newRider.phone}
-                              onChange={(e) =>
-                                setNewRider({
-                                  ...newRider,
-                                  phone: e.target.value,
-                                })
-                              }
-                              required
-                            />
-                          </div>
-                          <Button type="submit" className="w-full">
-                            Create Rider Account
-                          </Button>
-                        </form>
-                      </DialogContent>
-                    </Dialog>
+                    <CreateUserModal isDriver={true} />
                   </CardContent>
                 </Card>
               </PageWrapper>

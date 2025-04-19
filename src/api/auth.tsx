@@ -38,9 +38,9 @@ export async function loginUser(user: existingUser) {
     });
 }
 
-export async function createRestaurant(restaurant: Owner) {
+export async function createNewAccount(account: Owner) {
   return api
-    .post("/register", restaurant)
+    .post("/register", account)
     .then((response: AxiosResponse<apiResponse>) => response.data)
     .catch((error: AxiosError) => {
       if (error.code === "ERR_NETWORK") {

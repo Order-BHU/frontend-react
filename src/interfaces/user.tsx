@@ -32,12 +32,13 @@ export type existingUser = {
 
 export type Owner = {
   email: string;
+  name?: string;
   password: string;
   phone_number: string;
   phone_number_type: "whatsapp" | "sms" | "both";
-  account_type: "restaurant";
-  owners_name: string;
-  restaurant_name: string;
+  account_type: "restaurant" | "driver";
+  owners_name?: string;
+  restaurant_name?: string;
   account_no: string;
   bank_code: string;
   bank_name: string;

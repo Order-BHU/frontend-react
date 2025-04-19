@@ -17,19 +17,33 @@ import {
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Eye, EyeOff } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { createRestaurant, createDriver } from "@/api/auth";
+import { createNewAccount } from "@/api/auth";
 import { banksType } from "@/interfaces/paymentType";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { getBanks, resolveBank } from "@/api/auth";
 
 interface createProps {
-  isRestaurant: false;
+  isDriver: boolean;
+}
+interface formDataType {
+  //just here so i can set the type for phoneNumberType
+  email: string;
+  password: string;
+  confirmPassword: string;
+  phone_number: string;
+  phone_number_type: "whatsapp" | "sms" | "both";
+  owners_name: string;
+  restaurant_name: string;
+  account_no: string;
+  bank_code: string;
+  bank_name: string;
+  name: string;
 }
 
-export default function CreateUserModal({ isRestaurant }: createProps) {
+export default function CreateUserModal({ isDriver }: createProps) {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [showRestaurantPassword, setShowRestaurantPassword] = useState(false);
@@ -45,17 +59,18 @@ export default function CreateUserModal({ isRestaurant }: createProps) {
     account_number: "",
   });
   const [allBanks, setAllBanks] = useState<banksType[]>([]);
-  const [formData, setformData] = useState({
+  const [formData, setformData] = useState<formDataType>({
     email: "",
     password: "",
     confirmPassword: "",
-    phone: "",
-    phoneType: "whatsapp",
+    phone_number: "",
+    phone_number_type: "whatsapp",
     owners_name: "",
     restaurant_name: "",
     account_no: "",
     bank_code: "",
     bank_name: "",
+    name: "", //for driver
   });
   const { data: bankList, status: bankListStatus } = useQuery({
     queryKey: ["bankList"],
@@ -63,10 +78,12 @@ export default function CreateUserModal({ isRestaurant }: createProps) {
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
   });
-  const handleRestaurantPhoneTypeChange = (type: "whatsapp" | "sms") => {
-    setformData((prev) => ({ ...prev, phoneType: type }));
+  const handleRestaurantphone_number_typeChange = (
+    type: "whatsapp" | "sms"
+  ) => {
+    setformData((prev) => ({ ...prev, phone_number_type: type }));
   };
-  const handleCreateRestaurant = (e: React.FormEvent) => {
+  const handleCreateAccount = (e: React.FormEvent) => {
     e.preventDefault();
     if (resolvedBankName === undefined || resolvedBankName === "") {
       toast({
@@ -76,22 +93,11 @@ export default function CreateUserModal({ isRestaurant }: createProps) {
       });
     }
     console.log("New restaurant:", formData);
-    mutate({
-      email: formData.email,
-      password: formData.password,
-      phone_number: formData.phone,
-      phone_number_type: formData.phoneType as "whatsapp" | "sms" | "both",
-      account_type: "restaurant",
-      owners_name: formData.owners_name,
-      restaurant_name: formData.restaurant_name,
-      account_no: formData.account_no,
-      bank_code: formData.bank_code,
-      bank_name: formData.bank_name,
-    });
+    mutate({ ...formData, account_type: isDriver ? "driver" : "restaurant" });
   };
 
   const { status, mutate } = useMutation({
-    mutationFn: createRestaurant,
+    mutationFn: createNewAccount,
     onSuccess: () => {
       toast({
         title: "Sign-up successful!",
@@ -113,7 +119,7 @@ export default function CreateUserModal({ isRestaurant }: createProps) {
     const { name, value } = e.target;
 
     // First update formData
-    if (name === "phone" || name === "account_number") {
+    if (name === "phone_number" || name === "account_number") {
       const numericValue = value.replace(/[^0-9]/g, "");
       setformData((prev) => ({ ...prev, [name]: numericValue }));
     } else {
@@ -126,50 +132,128 @@ export default function CreateUserModal({ isRestaurant }: createProps) {
       setResolveBankData((prev) => ({ ...prev, account_number: numericValue }));
     }
   };
+
+  const { mutate: resolveBankMutate } = useMutation({
+    mutationFn: resolveBank,
+    onSuccess: (data) => {
+      //setFoundResolvedBank(data);
+      setResolvedBankName(data?.data?.account_name);
+      const matchingbank = allBanks.find(
+        (bank) => bank.id === data?.data?.bank_id
+      );
+      setformData((prev) => ({
+        ...prev,
+        bank_name: matchingbank?.name || prev.bank_name,
+      }));
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+      return;
+    },
+  });
+  const handleResolveBankMutate = (bank: {
+    bank_code: string;
+    account_number: string;
+  }) => {
+    if (bank.account_number && bank.bank_code) {
+      console.log("bank sending:", bank);
+      resolveBankMutate(bank);
+    }
+    return;
+  };
+
+  useEffect(() => {
+    //this sets the allbanks array thingy
+    if (bankList?.data && Array.isArray(bankList.data)) {
+      const processed = bankList.data.map((bank: banksType) => ({
+        ...bank,
+      }));
+      setAllBanks(processed);
+    }
+  }, [bankList]);
+
+  useEffect(() => {
+    //this will handle the mutations. I'm not doing it directly because something something asynchronous programming
+    if (
+      resolveBankData.account_number.length >= 10 &&
+      resolveBankData.bank_code
+    ) {
+      handleResolveBankMutate(resolveBankData);
+    }
+  }, [resolveBankData]);
   return (
     <Dialog>
       <DialogTrigger asChild>
         <Button className="mt-4 w-full sm:w-auto">
-          Create New Restaurant Account
+          {isDriver ? "Add New Driver" : "Add New Restaurant"}
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px] dark:text-cfont-dark">
         <DialogHeader>
-          <DialogTitle>Create New Restaurant Account</DialogTitle>
+          <DialogTitle>
+            {isDriver
+              ? "Create a New Driver Account"
+              : "Create a New Restaurant Account"}
+          </DialogTitle>
         </DialogHeader>
         <ScrollArea className="h-[80vh] px-8">
           <form
-            onSubmit={handleCreateRestaurant}
+            onSubmit={handleCreateAccount}
             className="space-y-4 w-[90%] pl-3"
           >
-            <div>
-              <Label htmlFor="restaurantName">Restaurant Name</Label>
-              <Input
-                id="restaurantName"
-                value={formData.restaurant_name}
-                onChange={(e) =>
-                  setformData({
-                    ...formData,
-                    restaurant_name: e.target.value,
-                  })
-                }
-                required
-              />
-            </div>
-            <div>
-              <Label htmlFor="ownerName">Owner's Name</Label>
-              <Input
-                id="ownerName"
-                value={formData.owners_name}
-                onChange={(e) =>
-                  setformData({
-                    ...formData,
-                    owners_name: e.target.value,
-                  })
-                }
-                required
-              />
-            </div>
+            {!isDriver ? (
+              <>
+                <div>
+                  <Label htmlFor="restaurantName">Restaurant Name</Label>
+                  <Input
+                    id="restaurantName"
+                    value={formData.restaurant_name}
+                    onChange={(e) =>
+                      setformData({
+                        ...formData,
+                        restaurant_name: e.target.value,
+                      })
+                    }
+                    required
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="ownerName">Owner's Name</Label>
+                  <Input
+                    id="ownerName"
+                    value={formData.owners_name}
+                    onChange={(e) =>
+                      setformData({
+                        ...formData,
+                        owners_name: e.target.value,
+                      })
+                    }
+                    required
+                  />
+                </div>
+              </>
+            ) : (
+              <div>
+                <Label htmlFor="name">Name</Label>
+                <Input
+                  id="name"
+                  value={formData.name}
+                  onChange={(e) =>
+                    setformData({
+                      ...formData,
+                      name: e.target.value,
+                    })
+                  }
+                  required
+                />
+              </div>
+            )}
+
             <div>
               <Label htmlFor="restaurantEmail">Email</Label>
               <Input
@@ -187,15 +271,15 @@ export default function CreateUserModal({ isRestaurant }: createProps) {
             </div>
 
             <div>
-              <Label htmlFor="phone" className="dark:text-cfont-dark">
+              <Label htmlFor="phone_number" className="dark:text-cfont-dark">
                 Phone Number
               </Label>
               <Input
                 type="tel"
-                id="phone"
-                name="phone"
+                id="phone_number"
+                name="phone_number"
                 className="dark:text-cfont-dark"
-                value={formData.phone}
+                value={formData.phone_number}
                 onChange={handleChange}
                 required
               />
@@ -204,17 +288,23 @@ export default function CreateUserModal({ isRestaurant }: createProps) {
                   type="button"
                   size="sm"
                   variant={
-                    formData.phoneType === "whatsapp" ? "default" : "outline"
+                    formData.phone_number_type === "whatsapp"
+                      ? "default"
+                      : "outline"
                   }
-                  onClick={() => handleRestaurantPhoneTypeChange("whatsapp")}
+                  onClick={() =>
+                    handleRestaurantphone_number_typeChange("whatsapp")
+                  }
                 >
                   WhatsApp
                 </Button>
                 <Button
                   type="button"
                   size="sm"
-                  variant={formData.phoneType === "sms" ? "default" : "outline"}
-                  onClick={() => handleRestaurantPhoneTypeChange("sms")}
+                  variant={
+                    formData.phone_number_type === "sms" ? "default" : "outline"
+                  }
+                  onClick={() => handleRestaurantphone_number_typeChange("sms")}
                 >
                   SMS
                 </Button>
@@ -269,7 +359,16 @@ export default function CreateUserModal({ isRestaurant }: createProps) {
                       Error loading Banks
                     </SelectItem>
                   ) : (
-                    bankOptions
+                    <>
+                      {allBanks.map((bank) => (
+                        <SelectItem
+                          key={`${bank.id}-${bank.code}-${bank.name}`}
+                          value={String(bank.code)}
+                        >
+                          {bank.name}
+                        </SelectItem>
+                      ))}
+                    </>
                   )}
                 </SelectContent>
               </Select>
@@ -349,16 +448,27 @@ export default function CreateUserModal({ isRestaurant }: createProps) {
                 </span>
               </Button>
             </div>
+            {!isDriver && (
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={status === "pending"}
+              >
+                {status === "pending"
+                  ? "Creating account..."
+                  : "Create Restaurant"}
+              </Button>
+            )}
 
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={status === "pending"}
-            >
-              {status === "pending"
-                ? "Creating account..."
-                : "Create Restaurant Account"}
-            </Button>
+            {isDriver && (
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={status === "pending"}
+              >
+                {status === "pending" ? "Creating account..." : "Create Driver"}
+              </Button>
+            )}
           </form>
         </ScrollArea>
       </DialogContent>
