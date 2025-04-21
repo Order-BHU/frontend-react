@@ -145,7 +145,7 @@ const RestaurantDashboardPage = () => {
     refetch: refetchMenuItems,
   } = useQuery({
     queryKey: ["menuItems", localStorage.getItem("restaurant_id")],
-    queryFn: () => getMenuItems(localStorage.getItem("restaurant_id")!),
+    queryFn: () => getMenuItems(userDetails?.restaurant_details?.id),
     staleTime: 30000,
   });
 
