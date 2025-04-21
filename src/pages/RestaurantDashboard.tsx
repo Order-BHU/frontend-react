@@ -632,7 +632,7 @@ const RestaurantDashboardPage = () => {
                                 </div>
                                 <div className="mt-2 md:mt-0">
                                   <span className="text-primary-600 font-semibold">
-                                    ₦{order.total.toFixed(2)}
+                                    ₦{Number(order.total).toFixed(2)}
                                   </span>
                                 </div>
                               </div>
