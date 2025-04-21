@@ -27,8 +27,8 @@ const useAuthStore = create<AuthState>((set) => {
   }
 
   return {
-    isLoggedIn: savedAuth?.isLoggedIn || true, // Load saved isLoggedIn state
-    role: savedAuth?.role || "restaurant", // Load saved role state
+    isLoggedIn: savedAuth?.isLoggedIn || false, // Load saved isLoggedIn state
+    role: savedAuth?.role || null, // Load saved role state
 
     logIn: (role) => {
       const newState = { isLoggedIn: true, role };
