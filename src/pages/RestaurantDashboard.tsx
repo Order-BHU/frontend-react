@@ -28,10 +28,11 @@ import {
   FiPieChart,
   FiCalendar,
   FiPlus,
-  FiX,
+  // FiX,
   FiMapPin,
   FiClock,
   FiTrash,
+  FiCheck,
 } from "react-icons/fi";
 import { dashboard } from "@/api/misc";
 import { logOut } from "@/api/auth";
@@ -139,6 +140,9 @@ const RestaurantDashboardPage = () => {
     },
   });
 
+  useEffect(() => {
+    console.log("pending: ", pendingOrderState);
+  }, [pendingOrderState]);
   const {
     status: menuStatus,
     data: menuItems,
@@ -215,6 +219,10 @@ const RestaurantDashboardPage = () => {
         restaurant_id: restId,
       });
   };
+  useEffect(() => {
+    console.log("accepted: ", acceptedOrderState);
+    console.log("accepted online: ", acceptedOrders);
+  }, [acceptedOrderState]);
   const handleImageChange = (
     e: React.ChangeEvent<HTMLInputElement>,
     itemId: number
@@ -653,17 +661,20 @@ const RestaurantDashboardPage = () => {
                                 </div>
                               </div>
                               <div className="flex justify-end mt-4 space-x-3">
-                                <button
+                                {/* <button
                                   className="inline-flex items-center justify-center px-4 py-2 rounded-lg text-white bg-red-500 hover:bg-red-600 transition-colors text-sm"
+                                  
+                                >
+                                  <FiX className="mr-1" /> Reject
+                                </button> */}
+                                <button
+                                  className="inline-flex items-center justify-center px-4 py-2 rounded-lg text-white bg-primary-600 hover:bg-primary-700 shadow-sm transition-colors text-sm"
                                   onClick={() =>
                                     handleOrderAccept(order.id, "accepted")
                                   }
                                 >
-                                  <FiX className="mr-1" /> Reject
+                                  <FiCheck className="mr-1" /> Accept
                                 </button>
-                                {/* <button className="inline-flex items-center justify-center px-4 py-2 rounded-lg text-white bg-primary-600 hover:bg-primary-700 shadow-sm transition-colors text-sm">
-                                <FiCheck className="mr-1" /> Accept
-                              </button> */}
                               </div>
                             </div>
                           ))}
@@ -716,7 +727,7 @@ const RestaurantDashboardPage = () => {
                                 </div>
                                 <div className="mt-2 md:mt-0">
                                   <span className="text-primary-600 font-semibold">
-                                    ${order.total.toFixed(2)}
+                                    ₦{Number(order.total).toFixed(2)}
                                   </span>
                                 </div>
                               </div>
@@ -728,7 +739,7 @@ const RestaurantDashboardPage = () => {
                                   {order.items.map((item, index) => (
                                     <li
                                       key={index}
-                                    >{`${item.item_name} X${item.quantity}`}</li>
+                                    >{`${item.menu_name} X${item.quantity}`}</li>
                                   ))}
                                 </ul>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
