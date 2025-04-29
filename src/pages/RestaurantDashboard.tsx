@@ -123,13 +123,13 @@ const RestaurantDashboardPage = () => {
     queryFn: () => myOrders("pending"),
     staleTime: 30000,
   });
-  const { data: acceptedOrders } = useQuery({
+  const { data: acceptedOrders, refetch: refetchAccepted } = useQuery({
     queryKey: ["acceptedOrders"],
     queryFn: () => myOrders("accepted"),
     staleTime: 30000,
   });
 
-  const { mutate: orderStatusMutate } = useMutation({
+  const { mutate: orderStatusMutate, status: orderStatusStatus } = useMutation({
     mutationFn: updateOrderStatus,
     onError: (error) => {
       toast({
@@ -294,6 +294,7 @@ const RestaurantDashboardPage = () => {
       status: newcategoryStatus,
     });
     refetchOrders();
+    refetchAccepted();
     // Here you would typically update the order categoryStatus in your backend
   };
 
@@ -652,7 +653,7 @@ const RestaurantDashboardPage = () => {
                                   {order.items.map((item, index) => (
                                     <li
                                       key={index}
-                                    >{`${item.item_name} X${item.quantity}`}</li>
+                                    >{`${item.menu_name} X${item.quantity}`}</li>
                                   ))}
                                 </ul>
                                 <div className="flex items-center text-sm text-secondary-600">
@@ -669,6 +670,7 @@ const RestaurantDashboardPage = () => {
                                 </button> */}
                                 <button
                                   className="inline-flex items-center justify-center px-4 py-2 rounded-lg text-white bg-primary-600 hover:bg-primary-700 shadow-sm transition-colors text-sm"
+                                  disabled={orderStatusStatus === "pending"}
                                   onClick={() =>
                                     handleOrderAccept(order.id, "accepted")
                                   }
@@ -758,8 +760,9 @@ const RestaurantDashboardPage = () => {
                               <div className="flex justify-end mt-4">
                                 <button
                                   className="inline-flex items-center justify-center px-4 py-2 rounded-lg text-white bg-green-600 hover:bg-green-700 shadow-sm transition-colors text-sm"
+                                  disabled={orderStatusStatus === "pending"}
                                   onClick={() =>
-                                    handleOrderAccept(order.id, "ready")
+                                    handleOrderAccept(order.order_id, "ready")
                                   }
                                 >
                                   <FiTruck className="mr-1" /> Mark as Ready

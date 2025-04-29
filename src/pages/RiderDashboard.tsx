@@ -477,7 +477,7 @@ export default function RiderDashboardPage() {
                                   items: item.items,
                                   address: item.location,
                                   phone_number_type: item.phone_number_type,
-                                  date: "the date",
+                                  //date: "the date",
                                 }}
                                 onAccept={() => {
                                   setAllOrders((prev) =>
