@@ -52,6 +52,7 @@ export interface orderType {
   //this is for the order route in user dashboard. It's the type the userOrders state is set to
   id: number;
   items: {
+    image: string;
     menu_id: number;
     quantity: number;
     menu_name: string;
@@ -81,11 +82,13 @@ export interface orderHistoryType {
   location: string;
   items: {
     menu_id: number;
+    image: string;
     quantity: number;
     menu_name: string;
     menu_price: number;
     is_available: string; // If this should be a boolean, convert it to `boolean` in your code.
     menu_picture: string;
+    item_name: string;
   }[];
   total: string;
   order_date: string | null;

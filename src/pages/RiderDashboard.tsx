@@ -1,7 +1,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-import { OrderCard } from "@/components/DriverOrderCard";
 import {
   Card,
   CardContent,
@@ -23,6 +22,7 @@ import { useToast } from "@/hooks/use-toast";
 import UseAuthStore from "@/stores/useAuthStore";
 import { FiCreditCard, /*FiDollarSign,*/ FiShoppingBag } from "react-icons/fi";
 import { useState, useEffect } from "react";
+import OrderCard from "@/components/newOrderCard";
 
 const fadeIn = {
   hidden: { opacity: 0, y: 20 },
