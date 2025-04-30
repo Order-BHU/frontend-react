@@ -303,7 +303,7 @@ export default function UserDashboardPage() {
                                     <span className="text-sm font-medium text-gray-500">
                                       Order BHUO-{trackedOrder.order_id}{" "}
                                       <span className="italic text-sm font-medium text-black">
-                                        {trackedOrder.order_code}
+                                        Code: {trackedOrder.order_code}
                                       </span>
                                     </span>
                                     <span className="ml-3 rounded-full bg-orange-200 px-2.5 py-0.5 text-xs font-medium text-orange-700">
