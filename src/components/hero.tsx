@@ -27,8 +27,8 @@ const Hero = () => {
               transition={{ duration: 0.5, delay: 0.2 }}
               className="text-4xl md:text-5xl lg:text-6xl font-bold text-secondary-900 leading-tight"
             >
-              <span className="text-primary-600">Delicious Food,</span>{" "}
-              Delivered Fast
+              <span className="text-primary-600">Order,</span> is here to serve
+              you
             </motion.h1>
 
             <motion.p
@@ -38,7 +38,7 @@ const Hero = () => {
               className="mt-6 text-lg md:text-xl text-secondary-700 max-w-lg mx-auto lg:mx-0"
             >
               <Typewriter
-                text=" Where Restaurants meet students, One Delicious Order at a time"
+                text=" Where Restaurants meet students, One Order at a time"
                 delay={45}
               />
             </motion.p>

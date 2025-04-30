@@ -355,7 +355,7 @@ export default function UserDashboardPage() {
                                 </div>
                                 <Progress
                                   value={setTrackedProgress().progress}
-                                  className="h-2"
+                                  className=" [&>div]:bg-orange-500 h-2" //this sets progress bar color, my dude. just how the shadcn component works
                                 />
 
                                 <div className="flex w-full justify-between text-xs text-gray-600 mt-2">
