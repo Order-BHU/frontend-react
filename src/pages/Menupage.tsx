@@ -44,6 +44,7 @@ import {
 } from "@/interfaces/restaurantType";
 import useAuthStore from "@/stores/useAuthStore";
 import { useToast } from "@/hooks/use-toast";
+import ClosedPage from "./closedPage";
 
 // Animation variants
 const fadeIn = {
@@ -336,6 +337,24 @@ const RestaurantMenuPage = () => {
   //       </div>
   //     );
   //   }
+
+  //all this shit down here handles rendering a different thing if active hours not active
+  const [isAllowedTime, setIsAllowedTime] = useState(false);
+
+  useEffect(() => {
+    const now = new Date();
+    const hour = now.getHours();
+
+    if (hour >= 12 && hour < 20) {
+      setIsAllowedTime(true);
+    } else {
+      setIsAllowedTime(false);
+    }
+  }, []);
+
+  if (!isAllowedTime) {
+    return <ClosedPage />;
+  }
 
   return (
     <div className="bg-secondary-50 min-h-screen pt-16 pb-20">
