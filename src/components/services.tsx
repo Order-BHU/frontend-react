@@ -43,7 +43,7 @@ const Services = () => {
           </motion.p>
         </motion.div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
+        <div className="grid grid-cols-1 gap-12 lg:gap-16">
           {/* Food Delivery */}
           <motion.div
             initial="hidden"
@@ -69,7 +69,7 @@ const Services = () => {
               <motion.div
                 variants={fadeInUp}
                 custom={5}
-                className="flex items-start"
+                className="flex items-center"
               >
                 <div className="flex-shrink-0 mt-1">
                   <FiCheckCircle className="w-5 h-5 text-primary-600" />

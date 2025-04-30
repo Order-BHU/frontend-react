@@ -51,17 +51,28 @@ const Hero = () => {
             >
               <Link
                 to="/restaurants"
-                className="inline-flex items-center justify-center px-6 py-3 rounded-full text-white bg-primary-600 hover:bg-primary-700 shadow-md hover:shadow-lg transition-all font-medium text-base"
+                className="inline-flex items-center justify-center px-2 py-1 rounded-lg text-white bg-primary-600 hover:bg-primary-700 shadow-md hover:shadow-lg transition-all font-medium text-base"
               >
                 Order Food
               </Link>
-              <Link
+              <div className="relative inline-block">
+                <div
+                  className="w-full inline-flex items-center flex-col justify-center px-2 py-1 rounded-lg text-gray-400 bg-gray-100 shadow-sm cursor-not-allowed border border-gray-200 text-base font-medium"
+                  title="Coming Soon"
+                >
+                  Deliver Parcel
+                </div>
+                <span className="absolute top-0 right-0 -mt-2 -mr-2 bg-yellow-300 text-xs text-gray-800 font-semibold px-1.5 py-0.5 rounded shadow">
+                  Coming Soon
+                </span>
+              </div>
+
+              {/* <Link
                 to="/"
-                className="inline-flex items-center flex-col justify-center px-6 py-3 rounded-full text-primary-700 bg-white hover:bg-gray-50 shadow-md hover:shadow-lg transition-all font-medium text-base border border-gray-200"
+                className="inline-flex items-center flex-col justify-center px-2 py-1 rounded-lg text-primary-700 bg-white hover:bg-gray-50 shadow-md hover:shadow-lg transition-all font-medium text-base border border-gray-200"
               >
                 Deliver Parcel
-                <p>(Coming Soon)</p>
-              </Link>
+              </Link> */}
             </motion.div>
           </motion.div>
 
