@@ -51,13 +51,13 @@ const Hero = () => {
             >
               <Link
                 to="/restaurants"
-                className="inline-flex items-center justify-center px-2 py-1 rounded-lg text-white bg-primary-600 hover:bg-primary-700 shadow-md hover:shadow-lg transition-all font-medium text-base"
+                className="inline-flex items-center justify-center px-2 py-3 rounded-3xl text-white bg-primary-600 hover:bg-primary-700 shadow-md hover:shadow-lg transition-all font-medium text-base"
               >
                 Order Food
               </Link>
               <div className="relative inline-block">
                 <div
-                  className="w-full inline-flex items-center flex-col justify-center px-2 py-1 rounded-lg text-gray-400 bg-gray-100 shadow-sm cursor-not-allowed border border-gray-200 text-base font-medium"
+                  className="w-full inline-flex items-center flex-col justify-center px-2 py-3 rounded-3xl text-gray-400 bg-gray-100 shadow-sm cursor-not-allowed border border-gray-200 text-base font-medium"
                   title="Coming Soon"
                 >
                   Deliver Parcel
