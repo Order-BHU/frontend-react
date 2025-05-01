@@ -26,7 +26,6 @@ import {
   FiTruck,
   FiList,
   FiPieChart,
-  FiCalendar,
   FiPlus,
   // FiX,
   FiMapPin,
