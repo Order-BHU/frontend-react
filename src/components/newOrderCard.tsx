@@ -14,7 +14,6 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
-import { useEffect } from "react";
 
 // Order type definition
 export interface Order {
@@ -89,10 +88,6 @@ export default function OrderCard({
     setIsDialogOpen(false);
     setCompletionCode(""); // Reset code after submission
   };
-
-  useEffect(() => {
-    console.log("driver: ", isdriver);
-  }, []);
 
   // Get the first item's picture if available
   const firstItemWithPicture = items.find(

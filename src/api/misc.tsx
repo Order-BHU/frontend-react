@@ -32,7 +32,7 @@ export async function updatePfp(pfp: { profile_picture: File | null }) {
 export async function editProfile(data: {
   profile_picture?: File | null;
   name?: string;
-  phone_number_type?: "whatsapp" | "phone";
+  phone_number_type?: "whatsapp" | "sms";
   cover_photo?: File | null;
 }) {
   const token = localStorage.getItem("token");

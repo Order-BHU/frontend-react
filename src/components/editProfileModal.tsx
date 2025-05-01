@@ -26,7 +26,7 @@ interface UserDetails {
   profile_picture?: File | null;
   restaurant_logo?: File | null;
   cover_photo?: File | null;
-  phone_number_type?: "whatsapp" | "phone";
+  phone_number_type?: "whatsapp" | "sms";
   // Add other user details properties as needed
 }
 
@@ -51,7 +51,7 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
     profile_picture: userDetails.profile_picture
       ? userDetails.profile_picture
       : userDetails.restaurant_logo || null,
-    phone_number_type: userDetails.phone_number_type || "phone", // Default valu
+    phone_number_type: userDetails.phone_number_type || "sms", // Default valu
     cover_photo: userDetails.cover_photo || null,
   });
 
@@ -61,7 +61,7 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
       ...prevData,
       name: userDetails.name || "",
       restaurant_name: userDetails.restaurant_name || "",
-      phone_number_type: userDetails.phone_number_type || "phone",
+      phone_number_type: userDetails.phone_number_type || "sms",
     }));
   }, [userDetails]);
   const { toast } = useToast();
@@ -105,7 +105,7 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
     }
   };
 
-  const handlePhoneTypeChange = (type: "whatsapp" | "phone"): void => {
+  const handlePhoneTypeChange = (type: "whatsapp" | "sms"): void => {
     setFormData({
       ...formData,
       phone_number_type: type,
@@ -262,11 +262,11 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
                 type="button"
                 size="sm"
                 variant={
-                  formData.phone_number_type === "phone" ? "default" : "outline"
+                  formData.phone_number_type === "sms" ? "default" : "outline"
                 }
-                onClick={() => handlePhoneTypeChange("phone")}
+                onClick={() => handlePhoneTypeChange("sms")}
               >
-                Phone
+                SMS
               </Button>
             </div>
           </div>

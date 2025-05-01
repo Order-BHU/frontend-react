@@ -45,82 +45,84 @@ const Services = () => {
 
         <div className="grid grid-cols-1 gap-12 lg:gap-16">
           {/* Food Delivery */}
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
-            className="bg-secondary-50 rounded-2xl p-8 lg:p-10 shadow-soft-md"
-          >
+          <div className="flex justify-center">
             <motion.div
-              variants={fadeInUp}
-              custom={3}
-              className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-primary-500/10 text-primary-600 mb-6"
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-100px" }}
+              className="bg-secondary-50 rounded-2xl p-8 lg:p-10 shadow-soft-md w-full lg:w-auto lg:max-w-xl" // Added width constraints
             >
-              <FiTruck size={24} />
+              <motion.div
+                variants={fadeInUp}
+                custom={3}
+                className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-primary-500/10 text-primary-600 mb-6"
+              >
+                <FiTruck size={24} />
+              </motion.div>
+              <motion.h3
+                variants={fadeInUp}
+                custom={4}
+                className="text-2xl font-bold text-secondary-900 mb-4"
+              >
+                Food Delivery
+              </motion.h3>
+              <div className="space-y-6">
+                <motion.div
+                  variants={fadeInUp}
+                  custom={5}
+                  className="flex items-center"
+                >
+                  <div className="flex-shrink-0 mt-1">
+                    <FiCheckCircle className="w-5 h-5 text-primary-600" />
+                  </div>
+                  <div className="ml-4">
+                    <h4 className="text-lg font-medium text-secondary-900 mb-1">
+                      Choose a restaurant
+                    </h4>
+                    <p className="text-secondary-600">
+                      Browse our wide selection of restaurants
+                    </p>
+                  </div>
+                </motion.div>
+
+                <motion.div
+                  variants={fadeInUp}
+                  custom={6}
+                  className="flex items-start"
+                >
+                  <div className="flex-shrink-0 mt-1">
+                    <FiStar className="w-5 h-5 text-primary-600" />
+                  </div>
+                  <div className="ml-4">
+                    <h4 className="text-lg font-medium text-secondary-900 mb-1">
+                      Select your meal
+                    </h4>
+                    <p className="text-secondary-600">
+                      Pick your favorite dishes from the menu
+                    </p>
+                  </div>
+                </motion.div>
+
+                <motion.div
+                  variants={fadeInUp}
+                  custom={7}
+                  className="flex items-start"
+                >
+                  <div className="flex-shrink-0 mt-1">
+                    <FiClock className="w-5 h-5 text-primary-600" />
+                  </div>
+                  <div className="ml-4">
+                    <h4 className="text-lg font-medium text-secondary-900 mb-1">
+                      Enjoy your delivery
+                    </h4>
+                    <p className="text-secondary-600">
+                      We'll bring the food right to your door
+                    </p>
+                  </div>
+                </motion.div>
+              </div>
             </motion.div>
-            <motion.h3
-              variants={fadeInUp}
-              custom={4}
-              className="text-2xl font-bold text-secondary-900 mb-4"
-            >
-              Food Delivery
-            </motion.h3>
-            <div className="space-y-6">
-              <motion.div
-                variants={fadeInUp}
-                custom={5}
-                className="flex items-center"
-              >
-                <div className="flex-shrink-0 mt-1">
-                  <FiCheckCircle className="w-5 h-5 text-primary-600" />
-                </div>
-                <div className="ml-4">
-                  <h4 className="text-lg font-medium text-secondary-900 mb-1">
-                    Choose a restaurant
-                  </h4>
-                  <p className="text-secondary-600">
-                    Browse our wide selection of restaurants
-                  </p>
-                </div>
-              </motion.div>
-
-              <motion.div
-                variants={fadeInUp}
-                custom={6}
-                className="flex items-start"
-              >
-                <div className="flex-shrink-0 mt-1">
-                  <FiStar className="w-5 h-5 text-primary-600" />
-                </div>
-                <div className="ml-4">
-                  <h4 className="text-lg font-medium text-secondary-900 mb-1">
-                    Select your meal
-                  </h4>
-                  <p className="text-secondary-600">
-                    Pick your favorite dishes from the menu
-                  </p>
-                </div>
-              </motion.div>
-
-              <motion.div
-                variants={fadeInUp}
-                custom={7}
-                className="flex items-start"
-              >
-                <div className="flex-shrink-0 mt-1">
-                  <FiClock className="w-5 h-5 text-primary-600" />
-                </div>
-                <div className="ml-4">
-                  <h4 className="text-lg font-medium text-secondary-900 mb-1">
-                    Enjoy your delivery
-                  </h4>
-                  <p className="text-secondary-600">
-                    We'll bring the food right to your door
-                  </p>
-                </div>
-              </motion.div>
-            </div>
-          </motion.div>
+          </div>
 
           {/* Parcel Delivery */}
           {/* <motion.div
