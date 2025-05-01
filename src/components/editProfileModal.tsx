@@ -25,7 +25,7 @@ interface UserDetails {
   name?: string;
   profile_picture?: File | null;
   restaurant_logo?: File | null;
-  cover_photo?: File | null;
+  cover_picture?: File | null;
   phone_number_type?: "whatsapp" | "sms";
   // Add other user details properties as needed
 }
@@ -50,7 +50,7 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
     restaurant_name: userDetails.restaurant_name || "",
     profile_picture: null,
     phone_number_type: userDetails.phone_number_type || "sms", // Default valu
-    cover_photo: null,
+    cover_picture: null,
   });
 
   useEffect(() => {
@@ -163,7 +163,7 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
           <DialogTitle>Edit Profile</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleEditProfile} className="space-y-4">
-          {userDetails.cover_photo && (
+          {userDetails.cover_picture && (
             <div>
               <Label htmlFor="coverPhoto" className="dark:text-cfont-dark">
                 Cover Photo
@@ -172,7 +172,7 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
                 id="photo"
                 type="file"
                 accept="image/*"
-                onChange={(e) => handlePfpImageChange(e, "cover_photo")}
+                onChange={(e) => handlePfpImageChange(e, "cover_picture")}
               />
             </div>
           )}

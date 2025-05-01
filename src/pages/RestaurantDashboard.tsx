@@ -59,7 +59,9 @@ import EditProfileModal from "@/components/editProfileModal";
 import { useNavigate } from "react-router-dom";
 import UseAuthStore from "@/stores/useAuthStore";
 import Loader from "@/components/loaderAnimation";
-
+import TransactionCard, {
+  Transaction,
+} from "@/components/restaurantTransactionCard";
 // Animation variants
 const fadeIn = {
   hidden: { opacity: 0, y: 20 },
@@ -120,7 +122,7 @@ const RestaurantDashboardPage = () => {
     queryFn: () => transactions(),
     refetchOnWindowFocus: false,
   });
-  useEffect(() => {}, [transactionList]);
+
   const {
     status: orderStatus,
     data: pendingOrders,
@@ -457,7 +459,7 @@ const RestaurantDashboardPage = () => {
                   userDetails={{
                     restaurant_name: userDetails?.restaurant_details?.name,
                     restaurant_logo: userDetails?.restaurant_details?.logo,
-                    cover_photo: userDetails?.user?.profile_picture_url,
+                    cover_picture: userDetails?.user?.profile_picture_url,
                   }}
                 />
                 <Button
@@ -1169,64 +1171,18 @@ const RestaurantDashboardPage = () => {
                 </h2>
               </div>
               <div className="p-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                  <div className="bg-secondary-50 rounded-xl p-6">
-                    <h3 className="text-lg font-semibold text-secondary-900 mb-4">
-                      Recent Earnings
-                    </h3>
-                    <div className="space-y-4">
-                      <div className="flex justify-between items-center">
-                        <span className="text-secondary-600">Today</span>
-                        <span className="font-medium text-secondary-900">
-                          ₦ 12,450
-                        </span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-secondary-600">This Week</span>
-                        <span className="font-medium text-secondary-900">
-                          ₦ 78,320
-                        </span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-secondary-600">This Month</span>
-                        <span className="font-medium text-secondary-900">
-                          ₦ 205,750
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="bg-secondary-50 rounded-xl p-6">
-                    <h3 className="text-lg font-semibold text-secondary-900 mb-4">
-                      Payment Methods
-                    </h3>
-                    <div className="space-y-4">
-                      <div className="flex justify-between items-center">
-                        <span className="text-secondary-600">Cash</span>
-                        <span className="font-medium text-secondary-900">
-                          48%
-                        </span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-secondary-600">Card</span>
-                        <span className="font-medium text-secondary-900">
-                          37%
-                        </span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-secondary-600">
-                          Digital Wallet
-                        </span>
-                        <span className="font-medium text-secondary-900">
-                          15%
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="mt-6 flex justify-center">
-                  <button className="inline-flex items-center justify-center px-6 py-3 rounded-xl text-white bg-primary-600 hover:bg-primary-700 shadow-md hover:shadow-lg transition-all font-medium text-base">
-                    <FiCalendar className="mr-2" /> View Full Financial Report
-                  </button>
+                <div className="space-y-4 mb-8">
+                  {transactionList?.map((item: Transaction) => (
+                    <TransactionCard
+                      transaction={{
+                        amount: item.amount,
+                        created_at: item.created_at,
+                        reference: item.reference,
+                        status: item.status,
+                        type: item.type,
+                      }}
+                    />
+                  ))}
                 </div>
               </div>
             </div>

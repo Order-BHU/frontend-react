@@ -33,7 +33,7 @@ export async function editProfile(data: {
   profile_picture?: File | null;
   name?: string;
   phone_number_type?: "whatsapp" | "sms";
-  cover_photo?: File | null;
+  cover_picture?: File | null;
 }) {
   const token = localStorage.getItem("token");
   console.log(token);
@@ -164,8 +164,8 @@ export async function transactions() {
       }
     )
     .then(function (response: AxiosResponse) {
-      console.log("list of trans people:", response.data);
-      return response.data;
+      console.log("list of trans people:", response.data.transactions);
+      return response.data.transactions;
     })
     .catch(function (error: AxiosError) {
       if (error.code === "ERR_NETWORK") {
