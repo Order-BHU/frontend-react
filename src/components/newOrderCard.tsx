@@ -104,15 +104,15 @@ export default function OrderCard({
     },
     delivering: {
       label: "In Progress",
-      color: "bg-blue-100 text-blue-800 border-blue-200",
+      color: "bg-blue-500 text-blue-800 border-blue-200",
     },
     completed: {
       label: "Completed",
-      color: "bg-emerald-100 text-emerald-800 border-emerald-200",
+      color: "bg-emerald-500 text-emerald-800 border-emerald-200",
     },
     cancelled: {
       label: "Cancelled",
-      color: "bg-rose-100 text-rose-800 border-rose-200",
+      color: "bg-rose-500 text-rose-800 border-rose-200",
     },
   };
 
@@ -179,8 +179,12 @@ export default function OrderCard({
               <div className="flex-1 space-y-3">
                 <div className="flex justify-between">
                   <div className="flex items-center gap-1.5 text-slate-600">
-                    <Clock size={14} className="text-slate-400" />
-                    <span className="text-sm">{time}</span>
+                    {isdriver && (
+                      <>
+                        <Clock size={14} className="text-slate-400" />
+                        <span className="text-sm">{time}</span>
+                      </>
+                    )}
                     {date && (
                       <span className="text-sm text-slate-400">• {date}</span>
                     )}
@@ -254,7 +258,7 @@ export default function OrderCard({
               {status === "ready" && (
                 <Button
                   size="sm"
-                  className={`bg-blue-600 hover:bg-blue-700 text-white ${
+                  className={`bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white ${
                     isdriver === false ? " hidden" : ""
                   }`}
                   onClick={() => onAccept && onAccept(String(id))}

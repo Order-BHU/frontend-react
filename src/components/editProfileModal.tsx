@@ -63,7 +63,7 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
       restaurant_name: userDetails.restaurant_name || "",
       phone_number_type: userDetails.phone_number_type || "sms",
     }));
-  }, [userDetails]);
+  }, []);
   const { toast } = useToast();
   const [showEditProfileModal, setShowEditProfileModal] =
     useState<boolean>(false);
