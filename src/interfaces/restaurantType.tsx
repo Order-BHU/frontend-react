@@ -80,6 +80,7 @@ export interface orderHistoryType {
   user_name: string;
   user_phoneNumber: string;
   location: string;
+  status: string;
   items: {
     menu_id: number;
     image: string;

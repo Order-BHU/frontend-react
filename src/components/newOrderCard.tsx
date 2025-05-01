@@ -14,6 +14,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
+import { useEffect } from "react";
 
 // Order type definition
 export interface Order {
@@ -53,6 +54,7 @@ interface OrderCardProps {
   onAccept?: (id: string) => void;
   onReject?: (id: string) => void;
   onComplete?: (code: string) => void;
+  isdriver?: boolean;
 }
 
 export default function OrderCard({
@@ -60,6 +62,7 @@ export default function OrderCard({
   className,
   onAccept,
   onComplete,
+  isdriver,
 }: OrderCardProps) {
   const {
     id,
@@ -87,6 +90,10 @@ export default function OrderCard({
     setCompletionCode(""); // Reset code after submission
   };
 
+  useEffect(() => {
+    console.log("driver: ", isdriver);
+  }, []);
+
   // Get the first item's picture if available
   const firstItemWithPicture = items.find(
     (item) => "image" in item && item.image
@@ -98,7 +105,7 @@ export default function OrderCard({
   const statusConfig = {
     ready: {
       label: "Ready for Pickup",
-      color: "bg-amber-100 text-amber-800 border-amber-200",
+      color: "bg-amber-500 text-black border-amber-200",
     },
     delivering: {
       label: "In Progress",
@@ -252,7 +259,9 @@ export default function OrderCard({
               {status === "ready" && (
                 <Button
                   size="sm"
-                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                  className={`bg-blue-600 hover:bg-blue-700 text-white ${
+                    isdriver === false ? " hidden" : ""
+                  }`}
                   onClick={() => onAccept && onAccept(String(id))}
                 >
                   Start Order
@@ -262,7 +271,9 @@ export default function OrderCard({
               {status === "delivering" && (
                 <Button
                   size="sm"
-                  className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white"
+                  className={`${
+                    isdriver === false ? " hidden" : ""
+                  }bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white`}
                   onClick={handleCompleteClick}
                 >
                   Complete Delivery

@@ -77,6 +77,12 @@ export default function UserDashboardPage() {
     }
     logoutMutate(usertoken);
   };
+
+  useEffect(() => {
+    if (orderHistory) {
+      console.log("history: ", orderHistory);
+    }
+  }, [orderHistory]);
   useEffect(() => {
     if (userDetails) {
       localStorage.setItem("pfp", userDetails.user.profile_picture_url);
@@ -302,7 +308,7 @@ export default function UserDashboardPage() {
                                 <div>
                                   <div className="flex items-center">
                                     <span className="text-sm font-medium text-gray-500">
-                                      Order BHUO-{trackedOrder.order_id}{" "}
+                                      Order {trackedOrder.order_id}{" "}
                                       <span className="italic text-sm font-medium text-black">
                                         Code: {trackedOrder.order_code}
                                       </span>
@@ -395,6 +401,9 @@ export default function UserDashboardPage() {
                                         2
                                       </span>
                                     )}
+                                    <span className="mt-1">
+                                      Ready for pickup
+                                    </span>
                                   </span>
                                   <span className="flex flex-col items-center">
                                     {setTrackedProgress().progress > 79 ? (
@@ -413,6 +422,7 @@ export default function UserDashboardPage() {
                                         3
                                       </span>
                                     )}
+                                    <span className="mt-1">Delivering</span>
                                   </span>
                                   <span className="flex flex-col items-center">
                                     {setTrackedProgress().progress > 99 ? (
@@ -431,6 +441,7 @@ export default function UserDashboardPage() {
                                         4
                                       </span>
                                     )}
+                                    <span className="mt-1">Delivered</span>
                                   </span>
                                 </div>
                               </div>
@@ -515,10 +526,11 @@ export default function UserDashboardPage() {
                           // </div>
                           <OrderCard
                             key={order.order_id}
+                            isdriver={false}
                             order={{
                               id: order.order_id,
                               restaurant: order.restaurant_name,
-                              status: "completed",
+                              status: order.status,
                               time: "30 min",
                               amount: Number(order.total),
                               phone_number: order.user_phoneNumber,
