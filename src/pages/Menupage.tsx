@@ -357,13 +357,13 @@ const RestaurantMenuPage = () => {
   }
 
   return (
-    <div className="bg-secondary-50 min-h-screen pt-16 pb-20">
+    <div className="bg-secondary-50 min-h-screen pb-20">
       {/* Restaurant Header */}
       <div className="relative h-64 md:h-80 w-full">
         <div className="absolute inset-0">
           <img
-            src={(menuItems && menuItems.restaurant.cover_picture) || ""}
-            alt={/*restaurant.name*/ "nothing"}
+            src={(menuItems && menuItems.cover_picture) || "/placeholder.svg"}
+            alt={""}
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
@@ -592,7 +592,7 @@ const RestaurantMenuPage = () => {
                               </h4>
                               <div className="flex items-center justify-between mt-1">
                                 <span className="text-primary-600 font-medium">
-                                  ${Number(item?.price)?.toLocaleString()}
+                                  ₦{Number(item?.price)?.toLocaleString()}
                                 </span>
                                 <div className="flex items-center border border-secondary-200 rounded-lg">
                                   <button
@@ -621,7 +621,7 @@ const RestaurantMenuPage = () => {
                         <div className="flex justify-between mb-2">
                           <span className="text-secondary-600">Subtotal</span>
                           <span className="text-secondary-900 font-medium">
-                            ${calculateTotal().toFixed(2)}
+                            ₦{calculateTotal().toFixed(2)}
                           </span>
                         </div>
                         <div className="flex justify-between mb-2">
@@ -717,7 +717,7 @@ const RestaurantMenuPage = () => {
                         </h4>
                         <div className="flex items-center justify-between mt-1">
                           <span className="text-primary-600 font-medium">
-                            ${Number(item?.price)?.toLocaleString()}
+                            ₦{Number(item?.price)?.toLocaleString()}
                           </span>
                           <div className="flex items-center border border-secondary-200 rounded-lg">
                             <button
@@ -746,7 +746,7 @@ const RestaurantMenuPage = () => {
                   <div className="flex justify-between mb-2">
                     <span className="text-secondary-600">Subtotal</span>
                     <span className="text-secondary-900 font-medium">
-                      ${calculateTotal().toFixed(2)}
+                      ₦{calculateTotal().toFixed(2)}
                     </span>
                   </div>
                   <div className="flex justify-between mb-2">

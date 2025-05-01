@@ -34,7 +34,7 @@ import {
   FiTrash,
   FiCheck,
 } from "react-icons/fi";
-import { dashboard } from "@/api/misc";
+import { dashboard, transactions } from "@/api/misc";
 import { logOut } from "@/api/auth";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import {
@@ -114,6 +114,13 @@ const RestaurantDashboardPage = () => {
     queryFn: () => dashboard(),
     refetchOnWindowFocus: false,
   });
+
+  const { data: transactionList } = useQuery({
+    queryKey: ["trans"],
+    queryFn: () => transactions(),
+    refetchOnWindowFocus: false,
+  });
+  useEffect(() => {}, [transactionList]);
   const {
     status: orderStatus,
     data: pendingOrders,

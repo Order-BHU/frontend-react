@@ -48,11 +48,9 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
   const [formData, setFormData] = useState<UserDetails>({
     name: userDetails.name || "",
     restaurant_name: userDetails.restaurant_name || "",
-    profile_picture: userDetails.profile_picture
-      ? userDetails.profile_picture
-      : userDetails.restaurant_logo || null,
+    profile_picture: null,
     phone_number_type: userDetails.phone_number_type || "sms", // Default valu
-    cover_photo: userDetails.cover_photo || null,
+    cover_photo: null,
   });
 
   useEffect(() => {

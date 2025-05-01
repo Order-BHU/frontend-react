@@ -111,9 +111,9 @@ const Hero = () => {
                 </div>
                 <div>
                   <p className="text-secondary-900 font-medium">
-                    Fast Delivery
+                    Satisfied Students
                   </p>
-                  <p className="text-secondary-500 text-sm">30 min or less</p>
+                  <p className="text-secondary-500 text-sm">Anywhere you are</p>
                 </div>
               </div>
 

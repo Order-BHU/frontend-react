@@ -147,3 +147,31 @@ export async function contact(data: { subject: string; message: string }) {
       throw error.response?.data;
     });
 }
+
+export async function transactions() {
+  //this function gets the user's data
+  const token = localStorage.getItem("token");
+  console.log(token);
+  return axios
+    .get(
+      `${apiUrl}/transaction-list`,
+
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        timeout: 90000,
+      }
+    )
+    .then(function (response: AxiosResponse) {
+      console.log("list of trans people:", response.data);
+      return response.data;
+    })
+    .catch(function (error: AxiosError) {
+      if (error.code === "ERR_NETWORK") {
+        throw new Error("Network error: Unable to reach the server.");
+      }
+      console.log(error);
+      throw error.response?.data;
+    });
+}

@@ -35,12 +35,14 @@ const AboutUs = () => {
             <div className="absolute -bottom-6 -right-6 bg-white rounded-xl p-6 shadow-soft-md">
               <div className="flex space-x-10">
                 <div className="text-center">
-                  <p className="text-3xl font-bold text-primary-600">2023</p>
+                  <p className="text-3xl font-bold text-primary-600">2025</p>
                   <p className="text-secondary-600 text-sm">Founded</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-3xl font-bold text-primary-600">5k+</p>
-                  <p className="text-secondary-600 text-sm">Happy Customers</p>
+                  <p className="text-3xl font-bold text-primary-600">1k+</p>
+                  <p className="text-secondary-600 text-sm">
+                    Growing Community
+                  </p>
                 </div>
               </div>
             </div>
