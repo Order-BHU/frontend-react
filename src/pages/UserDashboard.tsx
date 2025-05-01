@@ -23,6 +23,7 @@ import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import UseAuthStore from "@/stores/useAuthStore";
 import { useEffect } from "react";
+import OrderCard from "@/components/newOrderCard";
 
 export default function UserDashboardPage() {
   const navigate = useNavigate();
@@ -462,56 +463,71 @@ export default function UserDashboardPage() {
                       ) : (
                         orderHistory &&
                         orderHistory.orders.map((order: orderHistoryType) => (
-                          <div
-                            key={order.order_id}
-                            className="rounded-lg border border-gray-200 p-4 transition-all hover:bg-gray-50 hover:border-orange-200"
-                          >
-                            <div className="flex flex-col sm:flex-row justify-between">
-                              <div>
-                                <div className="flex items-center">
-                                  <span className="text-sm font-medium text-gray-500">
-                                    Order #BHUO-{order.order_id}
-                                  </span>
-                                  <span className="ml-3 rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-700">
-                                    Delivered
-                                  </span>
-                                </div>
-                                <h3 className="mt-1 text-lg font-medium text-gray-900">
-                                  {order.restaurant_name}
-                                </h3>
-                                <p className="text-sm text-gray-600">
-                                  {order.order_date}
-                                </p>
-                                <ul>
-                                  {order.items.map(
-                                    (item: {
-                                      menu_id: number;
-                                      quantity: number;
-                                      menu_name: string;
-                                      menu_price: number;
-                                      is_available: string;
-                                      menu_picture: string;
-                                    }) => (
-                                      <li className="text-sm font-medium text-gray-500">{`${item.menu_name} x${item.quantity} `}</li>
-                                    )
-                                  )}
-                                </ul>
-                              </div>
-                              <div className="flex flex-col sm:items-end mt-3 sm:mt-0">
-                                <span className="font-medium text-gray-900">
-                                  ₦{order.total}
-                                </span>
+                          // <div
+                          //   key={order.order_id}
+                          //   className="rounded-lg border border-gray-200 p-4 transition-all hover:bg-gray-50 hover:border-orange-200"
+                          // >
+                          //   <div className="flex flex-col sm:flex-row justify-between">
+                          //     <div>
+                          //       <div className="flex items-center">
+                          //         <span className="text-sm font-medium text-gray-500">
+                          //           Order #BHUO-{order.order_id}
+                          //         </span>
+                          //         <span className="ml-3 rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-700">
+                          //           Delivered
+                          //         </span>
+                          //       </div>
+                          //       <h3 className="mt-1 text-lg font-medium text-gray-900">
+                          //         {order.restaurant_name}
+                          //       </h3>
+                          //       <p className="text-sm text-gray-600">
+                          //         {order.order_date}
+                          //       </p>
+                          //       <ul>
+                          //         {order.items.map(
+                          //           (item: {
+                          //             menu_id: number;
+                          //             quantity: number;
+                          //             menu_name: string;
+                          //             menu_price: number;
+                          //             is_available: string;
+                          //             menu_picture: string;
+                          //           }) => (
+                          //             <li className="text-sm font-medium text-gray-500">{`${item.menu_name} x${item.quantity} `}</li>
+                          //           )
+                          //         )}
+                          //       </ul>
+                          //     </div>
+                          //     <div className="flex flex-col sm:items-end mt-3 sm:mt-0">
+                          //       <span className="font-medium text-gray-900">
+                          //         ₦{order.total}
+                          //       </span>
 
-                                {/* <Button
-                            variant="outline"
-                            size="sm"
-                            className="mt-2 rounded-xl text-orange-600 border-orange-200"
-                          >
-                            Reorder
-                          </Button> */}
-                              </div>
-                            </div>
-                          </div>
+                          //       {/* <Button
+                          //   variant="outline"
+                          //   size="sm"
+                          //   className="mt-2 rounded-xl text-orange-600 border-orange-200"
+                          // >
+                          //   Reorder
+                          // </Button> */}
+                          //     </div>
+                          //   </div>
+                          // </div>
+                          <OrderCard
+                            key={order.order_id}
+                            order={{
+                              id: order.order_id,
+                              restaurant: order.restaurant_name,
+                              status: "completed",
+                              time: "30 min",
+                              amount: Number(order.total),
+                              phone_number: order.user_phoneNumber,
+                              customerName: order.user_name,
+                              items: order.items,
+                              address: order.location,
+                              date: order.order_date,
+                            }}
+                          />
                         ))
                       )}
 

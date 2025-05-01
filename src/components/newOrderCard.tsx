@@ -226,24 +226,26 @@ export default function OrderCard({
                 </div>
               </div>
 
-              <div className="flex items-start gap-2">
-                <User size={16} className="text-slate-400 mt-0.5" />
-                <div>
-                  <div className="text-sm font-medium text-slate-900">
-                    Customer
-                  </div>
-                  <p className="text-sm text-slate-600">{customerName}</p>
-                  <div className="flex items-center gap-1 text-sm text-slate-500">
-                    <Phone size={12} />
-                    <span>{phone_number}</span>
-                    {phone_number_type && (
-                      <span className="text-xs italic">
-                        ({phone_number_type})
-                      </span>
-                    )}
+              {onAccept && (
+                <div className="flex items-start gap-2">
+                  <User size={16} className="text-slate-400 mt-0.5" />
+                  <div>
+                    <div className="text-sm font-medium text-slate-900">
+                      Customer
+                    </div>
+                    <p className="text-sm text-slate-600">{customerName}</p>
+                    <div className="flex items-center gap-1 text-sm text-slate-500">
+                      <Phone size={12} />
+                      <span>{phone_number}</span>
+                      {phone_number_type && (
+                        <span className="text-xs italic">
+                          ({phone_number_type})
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
             </div>
 
             <div className="pt-2 flex justify-end items-center gap-3">
