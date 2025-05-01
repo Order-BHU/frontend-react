@@ -104,7 +104,7 @@ export default function OrderCard({
     },
     delivering: {
       label: "In Progress",
-      color: "bg-blue-500 text-blue-800 border-blue-200",
+      color: "bg-red-500 text-blue-800 border-blue-200",
     },
     completed: {
       label: "Completed",
@@ -271,7 +271,7 @@ export default function OrderCard({
                 <Button
                   size="sm"
                   className={`${
-                    isdriver === false ? " hidden" : ""
+                    isdriver === false ? "hidden " : ""
                   }bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white`}
                   onClick={handleCompleteClick}
                 >
