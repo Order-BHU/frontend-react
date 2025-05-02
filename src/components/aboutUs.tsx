@@ -109,7 +109,7 @@ const AboutUs = () => {
             </div>
 
             <a
-              href="https://instagram.com/bhuorder"
+              href="https://instagram.com/bhu_order"
               className="inline-flex items-center text-primary-600 font-medium hover:text-primary-700 transition-colors"
               target="_blank"
               rel="noopener noreferrer"
