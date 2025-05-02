@@ -402,7 +402,7 @@ const RestaurantDashboardPage = () => {
     );
   }
   return (
-    <div className="bg-secondary-50 min-h-screen pt-20 pb-20">
+    <div className="bg-secondary-50 min-h-screen pt-32 pb-20">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial="hidden"

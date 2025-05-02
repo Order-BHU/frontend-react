@@ -113,7 +113,9 @@ const Hero = () => {
                   <p className="text-secondary-900 font-medium">
                     Satisfied Students
                   </p>
-                  <p className="text-secondary-500 text-sm">Anywhere you are</p>
+                  <p className="text-secondary-500 text-sm">
+                    Wherever you are on campus
+                  </p>
                 </div>
               </div>
 

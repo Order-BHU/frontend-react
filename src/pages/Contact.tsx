@@ -1,10 +1,12 @@
 import { motion } from "framer-motion";
 import { useState, FormEvent } from "react";
-import { FiMail, FiMapPin, FiPhone, FiSend, FiCoffee } from "react-icons/fi";
+import { FiMail, FiPhone, FiSend, FiCoffee } from "react-icons/fi";
+import { FaWhatsapp } from "react-icons/fa";
 import { contact } from "@/api/misc";
 import { useMutation } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import useAuthStore from "@/stores/useAuthStore";
+import { Link } from "react-router-dom";
 
 // Animation variants
 const fadeIn = {
@@ -120,7 +122,12 @@ const ContactPage = () => {
                     <h3 className="text-lg font-semibold text-secondary-900 mb-1">
                       Call Us
                     </h3>
-                    <p className="text-secondary-600">+234 809 180 3206</p>
+                    <Link
+                      to="tel:+2349032497799"
+                      className="text-secondary-600"
+                    >
+                      +234 903 249 7799
+                    </Link>
                     <p className="text-secondary-500 text-sm mt-1">
                       Mon-Fri from 12pm to 6pm
                     </p>
@@ -129,19 +136,20 @@ const ContactPage = () => {
 
                 <div className="flex items-start">
                   <div className="flex-shrink-0 w-12 h-12 flex items-center justify-center rounded-full bg-primary-100 text-primary-600">
-                    <FiMapPin size={20} />
+                    <FaWhatsapp size={20} />
                   </div>
-                  {/* <div className="ml-4">
-                    <h3 className="text-lg font-semibold text-secondary-900 mb-1">
-                      Visit Us
+                  <div className="ml-4">
+                    <h3 className="text-lg font-semibold text-secondary-900 mb-3">
+                      Message on Whatsapp
                     </h3>
-                    <p className="text-secondary-600">
-                      123 University Ave, Campus Area
-                    </p>
-                    <p className="text-secondary-500 text-sm mt-1">
-                      Bhubaneswar, Odisha
-                    </p>
-                  </div> */}
+                    <Link
+                      to="https://wa.me/2348091803206"
+                      className="text-secondary-600 underline"
+                      target="_blank"
+                    >
+                      Click to send us a message
+                    </Link>
+                  </div>
                 </div>
 
                 <div className="flex items-start">

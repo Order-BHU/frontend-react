@@ -59,17 +59,45 @@ const AboutUs = () => {
               About Us
             </h2>
             <p className="text-lg text-secondary-700 mb-8">
-              Order is your go-to platform for convenient, delicious meals
-              delivered straight to your door. Founded in 2023, we've quickly
-              become a favorite among food lovers and busy professionals alike.
+              Founded in 2025, Order is more than just a food delivery service;
+              we are a platform dedicated to strengthening campus community. Our
+              mission focuses on driving positive impact by connecting students
+              to restaurants, particularly those serving the BHU community,
+              while simultaneously fostering economic growth and opportunity.
             </p>
-            <p className="text-lg text-secondary-700 mb-8">
-              Our mission is to connect you with the best local restaurants,
-              ensuring that you have access to a wide variety of cuisines
-              without ever leaving your home or office. We partner with
-              top-rated establishments to bring you quality food, on time, every
-              time.
-            </p>
+            {/* <p className="text-lg text-secondary-700 mb-8"> */}
+            <ul className="list-disc pl-5 text-secondary-700 text-lg mb-8 space-y-4">
+              <li>
+                <strong>Empowering Students:</strong> We are committed to
+                creating valuable opportunities within the campus. Our platform
+                provides flexible employment options, particularly suited for
+                students seeking work that fits around their academic schedules,
+                offering them income and real-world experience.
+              </li>
+              <li>
+                <strong>Driving Campus Growth:</strong> By facilitating
+                connections between local businesses and residents (including
+                the campus population), we help build a stronger, more
+                interconnected community. We take pride in supporting the local
+                food scene and contributing to a thriving neighbourhood
+                environment for everyone.
+              </li>
+              <li>
+                <strong>Fueling Local Economies:</strong> We partner directly
+                with neighbourhood restaurants, providing them with expanded
+                reach and increased revenue streams. This support is vital for
+                the growth and sustainability of local businesses, contributing
+                to the overall economic vitality of the campus.
+              </li>
+              <li>
+                <strong>Enhancing Campus Life:</strong> We aim to become an
+                integral part of the daily life for students and staff on
+                campus. By bridging the gap between campus and local eateries,
+                we contribute to a vibrant and well-supported campus
+                environment.
+              </li>
+            </ul>
+            {/* </p> */}
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4 mb-8">
               {features.map((feature) => (

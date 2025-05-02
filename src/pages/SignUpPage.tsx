@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { createUser } from "@/api/auth";
 import { useMutation } from "@tanstack/react-query";
+import UseAuthStore from "@/stores/useAuthStore";
 
 export default function SignUpPage() {
   const { toast } = useToast();
@@ -76,6 +77,31 @@ export default function SignUpPage() {
       account_type: "customer",
     });
   };
+  const { logIn } = UseAuthStore();
+
+  useEffect(() => {
+    function handleMessage(event: MessageEvent) {
+      if (event.origin !== "https://bhuorder.com.ng") return;
+
+      const { token, user } = event.data;
+      console.log("received stuff: ", event);
+
+      if (token) {
+        console.log("token: ", token);
+        localStorage.setItem("token", token);
+        user?.account_type &&
+          localStorage.setItem("accountType", user?.account_type);
+        logIn(user?.account_type);
+        localStorage.setItem("user", JSON.stringify(user));
+
+        // redirect or update UI
+        user?.account_type && navigate(`/${user?.account_type}-dashboard/`);
+      }
+    }
+
+    window.addEventListener("message", handleMessage);
+    return () => window.removeEventListener("message", handleMessage);
+  }, [navigate]);
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -334,6 +360,18 @@ export default function SignUpPage() {
 
             <div className="mt-6">
               <button
+                onClick={() => {
+                  const width = 500;
+                  const height = 600;
+                  const left = window.innerWidth / 2 - width / 2;
+                  const top = window.innerHeight / 2 - height / 2;
+
+                  window.open(
+                    "https://bhuorder.com.ng/api/auth/google",
+                    "GoogleLoginPopup",
+                    `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes`
+                  );
+                }}
                 type="button"
                 className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition-all hover:border-gray-400 shadow-sm hover:shadow transform hover:-translate-y-0.5 active:translate-y-0"
               >

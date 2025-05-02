@@ -79,10 +79,16 @@ export default function UserDashboardPage() {
   };
 
   useEffect(() => {
-    if (orderHistory) {
-      console.log("history: ", orderHistory);
+    //this handles the toast so user's can add their numbers if it's null
+    if (userDetails && !userDetails.user.phone_number) {
+      setTimeout(() => {
+        toast({
+          title: "Phone Number not set",
+          description: "please update your phone number in 'Edit Profile'",
+        });
+      }, 500);
     }
-  }, [orderHistory]);
+  }, [userDetails]);
   useEffect(() => {
     if (userDetails) {
       localStorage.setItem("pfp", userDetails.user.profile_picture_url);
