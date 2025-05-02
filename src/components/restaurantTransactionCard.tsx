@@ -66,7 +66,9 @@ const TransactionCard: React.FC<TransactionCardProps> = ({ transaction }) => {
           {getTypeIcon(transaction.type)}
         </div>
         <div>
-          <p className="font-medium text-sm">{transaction.reference}</p>
+          <p className="font-medium text-sm">
+            Reference Code: {transaction.reference}
+          </p>
           <p className="text-xs text-gray-500">
             {formattedDate} • {formattedTime}
           </p>
@@ -94,7 +96,7 @@ const TransactionCard: React.FC<TransactionCardProps> = ({ transaction }) => {
             transaction.type === "credit" ? "text-green-600" : "text-red-600"
           )}
         >
-          {transaction.type === "credit" ? "+" : "-"}${transaction.amount}
+          {transaction.type === "credit" ? "+" : "-"}₦{transaction.amount}
         </p>
       </div>
     </div>

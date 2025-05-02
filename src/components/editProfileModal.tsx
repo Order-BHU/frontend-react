@@ -27,6 +27,7 @@ interface UserDetails {
   restaurant_logo?: File | null;
   cover_picture?: File | null;
   phone_number_type?: "whatsapp" | "sms";
+  phone_number?: string;
   // Add other user details properties as needed
 }
 
@@ -51,6 +52,7 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
     profile_picture: null,
     phone_number_type: userDetails.phone_number_type || "sms", // Default valu
     cover_picture: null,
+    phone_number: userDetails.phone_number,
   });
 
   useEffect(() => {
@@ -237,6 +239,23 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
               />
             </div>
           )}
+          <div>
+            <Label htmlFor="phoneNo" className="dark:text-cfont-dark">
+              Phone Number
+            </Label>
+            <Input
+              id="phoneNo"
+              type="number"
+              value={formData.phone_number}
+              className="dark:text-cfont-dark no-spinner"
+              onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                setFormData({
+                  ...formData,
+                  phone_number: e.target.value,
+                })
+              }
+            />
+          </div>
 
           <div>
             <Label htmlFor="phoneNumberType" className="dark:text-cfont-dark">

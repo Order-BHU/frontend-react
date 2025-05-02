@@ -583,7 +583,7 @@ const RestaurantDashboardPage = () => {
                 }`}
               >
                 <span className="flex items-center justify-center">
-                  <FiPieChart className="mr-2" /> Financial Management
+                  <FiPieChart className="mr-2" /> Transactions
                 </span>
               </button>
             </div>
@@ -1166,7 +1166,7 @@ const RestaurantDashboardPage = () => {
             <div className="bg-white rounded-2xl shadow-soft-md overflow-hidden">
               <div className="p-6 border-b border-gray-100">
                 <h2 className="text-2xl font-bold text-secondary-900">
-                  Financial Summary
+                  Transaction List
                 </h2>
               </div>
               <div className="p-6">

@@ -120,9 +120,9 @@ const ContactPage = () => {
                     <h3 className="text-lg font-semibold text-secondary-900 mb-1">
                       Call Us
                     </h3>
-                    <p className="text-secondary-600">(+91) 123-456-7890</p>
+                    <p className="text-secondary-600">+234 809 180 3206</p>
                     <p className="text-secondary-500 text-sm mt-1">
-                      Mon-Fri from 9am to 6pm
+                      Mon-Fri from 12pm to 6pm
                     </p>
                   </div>
                 </div>
@@ -131,7 +131,7 @@ const ContactPage = () => {
                   <div className="flex-shrink-0 w-12 h-12 flex items-center justify-center rounded-full bg-primary-100 text-primary-600">
                     <FiMapPin size={20} />
                   </div>
-                  <div className="ml-4">
+                  {/* <div className="ml-4">
                     <h3 className="text-lg font-semibold text-secondary-900 mb-1">
                       Visit Us
                     </h3>
@@ -141,7 +141,7 @@ const ContactPage = () => {
                     <p className="text-secondary-500 text-sm mt-1">
                       Bhubaneswar, Odisha
                     </p>
-                  </div>
+                  </div> */}
                 </div>
 
                 <div className="flex items-start">
@@ -153,9 +153,9 @@ const ContactPage = () => {
                       Business Hours
                     </h3>
                     <p className="text-secondary-600">
-                      Monday - Friday: 9:00 AM - 10:00 PM
+                      Monday - Friday: 12:00 PM - 8:00 PM
                       <br />
-                      Saturday - Sunday: 10:00 AM - 11:00 PM
+                      Saturday - Sunday: 12:00 AM - 8:00 PM
                     </p>
                   </div>
                 </div>

@@ -34,6 +34,7 @@ export async function editProfile(data: {
   name?: string;
   phone_number_type?: "whatsapp" | "sms";
   cover_picture?: File | null;
+  phone_number?: string;
 }) {
   const token = localStorage.getItem("token");
   console.log(token);
