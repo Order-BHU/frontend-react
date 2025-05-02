@@ -68,33 +68,20 @@ const AboutUs = () => {
             {/* <p className="text-lg text-secondary-700 mb-8"> */}
             <ul className="list-disc pl-5 text-secondary-700 text-lg mb-8 space-y-4">
               <li>
-                <strong>Empowering Students:</strong> We are committed to
-                creating valuable opportunities within the campus. Our platform
-                provides flexible employment options, particularly suited for
-                students seeking work that fits around their academic schedules,
-                offering them income and real-world experience.
+                <strong>Empowering Students:</strong> We offer flexible job
+                opportunities that fit around students’ academic schedules,
+                helping them earn income and gain real-world experience.
               </li>
               <li>
-                <strong>Driving Campus Growth:</strong> By facilitating
-                connections between local businesses and residents (including
-                the campus population), we help build a stronger, more
-                interconnected community. We take pride in supporting the local
-                food scene and contributing to a thriving neighbourhood
-                environment for everyone.
+                <strong>Driving Campus Growth:</strong> We give back into the
+                community, supporting events and students to ensure our role in
+                the growth of the school.
               </li>
+
               <li>
-                <strong>Fueling Local Economies:</strong> We partner directly
-                with neighbourhood restaurants, providing them with expanded
-                reach and increased revenue streams. This support is vital for
-                the growth and sustainability of local businesses, contributing
-                to the overall economic vitality of the campus.
-              </li>
-              <li>
-                <strong>Enhancing Campus Life:</strong> We aim to become an
-                integral part of the daily life for students and staff on
-                campus. By bridging the gap between campus and local eateries,
-                we contribute to a vibrant and well-supported campus
-                environment.
+                <strong>Enhancing Campus Life:</strong> By linking students to
+                restaurants, we aim to ensure to optimal use of time and effort
+                into more productive activities
               </li>
             </ul>
             {/* </p> */}
