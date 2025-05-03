@@ -173,7 +173,6 @@ const RestaurantMenuPage = () => {
         );
       } else {
         // Add new item to cart
-        console.log(`Adding new item to cart: ${itemName} (${itemId})`);
         return [
           ...prevCart,
           {
@@ -193,14 +192,14 @@ const RestaurantMenuPage = () => {
       try {
         // Convert itemId to number for the API call
         await mutate(Number(itemId));
-        await refetch(); // Refetch cart data to ensure sync with server
-      } catch (error) {
+        await refetch();
+      } catch (error: any) {
         // Handle error case
         console.error(`Failed to add item ${itemName} to cart:`, error);
         toast({
           variant: "destructive",
           title: "Error",
-          description: "Failed to add item to cart. Please try again.",
+          description: error.message,
         });
         refetch(); // Refetch to ensure UI shows correct state
       }
