@@ -61,6 +61,7 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
       ...prevData,
       name: userDetails.name || "",
       restaurant_name: userDetails.restaurant_name || "",
+      phone_number: userDetails.phone_number,
     }));
   }, [userDetails]);
   const { toast } = useToast();

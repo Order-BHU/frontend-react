@@ -243,6 +243,7 @@ export default function UserDashboardPage() {
                   userDetails={{
                     name: userDetails?.user?.name,
                     phone_number_type: userDetails?.user?.phone_number_type,
+                    phone_number: userDetails?.user?.phone_number,
                   }}
                 />
                 {/* <Button

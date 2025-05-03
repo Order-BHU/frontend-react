@@ -43,14 +43,14 @@ const Services = () => {
           </motion.p>
         </motion.div>
 
-        <div className="grid grid-cols-1 gap-12 lg:gap-16">
+        <div className="grid gap-12 lg:gap-16">
           {/* Food Delivery */}
           <div className="flex justify-center">
             <motion.div
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true, margin: "-100px" }}
-              className="bg-secondary-50 rounded-2xl p-8 lg:p-10 shadow-soft-md w-full lg:w-auto lg:max-w-xl" // Added width constraints
+              className="bg-secondary-50 rounded-2xl p-8 lg:p-10 shadow-soft-md w-full "
             >
               <motion.div
                 variants={fadeInUp}
@@ -66,11 +66,17 @@ const Services = () => {
               >
                 Food Delivery
               </motion.h3>
-              <div className="space-y-6">
+
+              <div
+                className="grid justify-between gap-11"
+                style={{
+                  gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+                }}
+              >
                 <motion.div
                   variants={fadeInUp}
                   custom={5}
-                  className="flex items-center"
+                  className="flex items-start bg-secondary-50 rounded-2xl p-8 shadow-soft-md w-full "
                 >
                   <div className="flex-shrink-0 mt-1">
                     <FiCheckCircle className="w-5 h-5 text-primary-600" />
@@ -88,7 +94,7 @@ const Services = () => {
                 <motion.div
                   variants={fadeInUp}
                   custom={6}
-                  className="flex items-start"
+                  className="flex items-start bg-secondary-50 rounded-2xl p-8 shadow-soft-md w-full"
                 >
                   <div className="flex-shrink-0 mt-1">
                     <FiStar className="w-5 h-5 text-primary-600" />
@@ -106,7 +112,7 @@ const Services = () => {
                 <motion.div
                   variants={fadeInUp}
                   custom={7}
-                  className="flex items-start"
+                  className="flex items-start bg-secondary-50 rounded-2xl p-8 shadow-soft-md w-full"
                 >
                   <div className="flex-shrink-0 mt-1">
                     <FiClock className="w-5 h-5 text-primary-600" />
