@@ -61,6 +61,9 @@ export default {
         "soft-xl": "0 20px 27px 0 rgba(0, 0, 0, 0.05)",
         "soft-md": "0 4px 7px rgba(0, 0, 0, 0.07)",
       },
+      screens: {
+        fold: { raw: "(min-width: 280px) and (max-width: 319px)" }, // Custom screen size for Galaxy Fold
+      },
     },
   },
   plugins: [require("tailwindcss-animate")],

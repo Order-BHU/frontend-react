@@ -390,7 +390,9 @@ export default function UserDashboardPage() {
                                       </span>
                                     )}
 
-                                    <span className="mt-1">Preparing</span>
+                                    <span className="mt-1 fold:hidden">
+                                      Preparing
+                                    </span>
                                   </span>
                                   <span className="flex flex-col items-center">
                                     {setTrackedProgress().progress > 49 ? (
@@ -408,8 +410,8 @@ export default function UserDashboardPage() {
                                         2
                                       </span>
                                     )}
-                                    <span className="mt-1">
-                                      Ready for pickup
+                                    <span className="mt-1 fold:hidden">
+                                      Ready
                                     </span>
                                   </span>
                                   <span className="flex flex-col items-center">
@@ -429,7 +431,9 @@ export default function UserDashboardPage() {
                                         3
                                       </span>
                                     )}
-                                    <span className="mt-1">Delivering</span>
+                                    <span className="mt-1 fold:hidden">
+                                      Delivering
+                                    </span>
                                   </span>
                                   <span className="flex flex-col items-center">
                                     {setTrackedProgress().progress > 99 ? (
@@ -448,10 +452,18 @@ export default function UserDashboardPage() {
                                         4
                                       </span>
                                     )}
-                                    <span className="mt-1">Delivered</span>
+                                    <span className="mt-1 fold:hidden">
+                                      Delivered
+                                    </span>
                                   </span>
                                 </div>
                               </div>
+                              <p className="hidden fold:block mt-6 text-[12px] font-bold text-gray-700">
+                                Status:{" "}
+                                {/**this only looks complicated cause I'm trying to make the first letter uppercase */}
+                                {trackedOrder?.status?.charAt(0).toUpperCase() +
+                                  trackedOrder?.status?.slice(1)}
+                              </p>
                               <span className="italic h-4 flex items-center justify-left text-gray-500 text-[12px] mt-3">
                                 {setTrackedProgress().message}
                               </span>
