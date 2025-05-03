@@ -50,19 +50,22 @@ const Services = () => {
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true, margin: "-100px" }}
-              className="bg-secondary-50 rounded-2xl p-8 lg:p-10 shadow-soft-md w-full "
+              className="bg-secondary-50 rounded-2xl p-8 lg:p-10 w-full"
             >
-              <motion.div
-                variants={fadeInUp}
-                custom={3}
-                className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-primary-500/10 text-primary-600 mb-6"
-              >
-                <FiTruck size={24} />
-              </motion.div>
+              <div className="flex justify-center">
+                <motion.div
+                  variants={fadeInUp}
+                  custom={3}
+                  className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-primary-500/10 text-primary-600 mb-6"
+                >
+                  <FiTruck size={24} />
+                </motion.div>
+              </div>
+
               <motion.h3
                 variants={fadeInUp}
                 custom={4}
-                className="text-2xl font-bold text-secondary-900 mb-4"
+                className="text-2xl font-bold text-secondary-900 mb-4 text-center"
               >
                 Food Delivery
               </motion.h3>
