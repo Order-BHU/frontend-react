@@ -458,7 +458,7 @@ export default function UserDashboardPage() {
                                   </span>
                                 </div>
                               </div>
-                              <p className="hidden fold:block mt-6 text-[12px] font-bold text-gray-700">
+                              <p className="hidden fold:block mt-2 text-[12px] font-bold text-gray-700">
                                 Status:{" "}
                                 {/**this only looks complicated cause I'm trying to make the first letter uppercase */}
                                 {trackedOrder?.status?.charAt(0).toUpperCase() +
