@@ -87,7 +87,7 @@ const Hero = () => {
               <div className="absolute -inset-0.5 rounded-2xl bg-gradient-to-r from-primary-500 to-primary-600 opacity-30 blur" />
               <div className="relative bg-white rounded-2xl shadow-soft-xl overflow-hidden">
                 <img
-                  src="https://images.unsplash.com/photo-1565299507177-b0ac66763828?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1664&q=80"
+                  src="/borger.jpg"
                   alt="Food Delivery"
                   className="w-full h-auto"
                 />
