@@ -185,16 +185,23 @@ const RestaurantMenuPage = () => {
         ];
       }
     });
+    console.log("refetching...");
 
     // Only call API to add item if it's a new item
     // (quantity increments are handled client-side only)
     if (!existingItem) {
       try {
         // Convert itemId to number for the API call
-        await mutate(Number(itemId));
-        await refetch();
+        await mutate(Number(itemId)).then(() => {
+          refetch();
+        });
+        // await refetch();
       } catch (error: any) {
         // Handle error case
+        setCart((prevCart) => {
+          //instead of refetching, I just manually remove from local state if there's an error since I'm treating api state and local state differently
+          return prevCart.filter((item) => item.menu_id !== itemId);
+        });
         console.error(`Failed to add item ${itemName} to cart:`, error);
         toast({
           variant: "destructive",
