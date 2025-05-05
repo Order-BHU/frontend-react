@@ -354,7 +354,7 @@ const RestaurantMenuPage = () => {
     if (hour >= 12 && hour < 20) {
       setIsAllowedTime(true);
     } else {
-      setIsAllowedTime(true);
+      setIsAllowedTime(false);
     }
   }, []);
 
