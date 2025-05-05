@@ -25,22 +25,28 @@ const AboutUs = () => {
           >
             <div className="rounded-2xl overflow-hidden shadow-soft-xl">
               <img
-                src="https://images.unsplash.com/photo-1557744813-846c28d0d0db?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1740&q=80"
+                src="/aboutus.jpg"
                 alt="Our team"
                 className="w-full h-auto"
               />
             </div>
 
             {/* Stats Overlay */}
-            <div className="absolute -bottom-6 -right-6 bg-white rounded-xl p-6 shadow-soft-md">
-              <div className="flex space-x-10">
+            <div className="absolute -bottom-6 -right-6 bg-white rounded-xl p-2 sm:p-4 shadow-soft-md">
+              <div className="flex space-x-5 sm:space-x-10">
                 <div className="text-center">
-                  <p className="text-3xl font-bold text-primary-600">2025</p>
-                  <p className="text-secondary-600 text-sm">Founded</p>
+                  <p className="sm:text-3xl text-2xl font-bold text-primary-600">
+                    2025
+                  </p>
+                  <p className="text-secondary-600 text-xs sm:text-sm">
+                    Founded
+                  </p>
                 </div>
                 <div className="text-center">
-                  <p className="text-3xl font-bold text-primary-600">1k+</p>
-                  <p className="text-secondary-600 text-sm">
+                  <p className="sm:text-3xl text-2xl font-bold text-primary-600">
+                    1k+
+                  </p>
+                  <p className="text-secondary-600 text-xs sm:text-sm">
                     Growing Community
                   </p>
                 </div>
