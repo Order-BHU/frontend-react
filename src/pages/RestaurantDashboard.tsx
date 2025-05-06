@@ -140,11 +140,22 @@ const RestaurantDashboardPage = () => {
   const { mutate: orderStatusMutate, status: orderStatusStatus } = useMutation({
     mutationFn: updateOrderStatus,
     onError: (error) => {
+      console.log("set state error: ", error.message);
       toast({
         title: "Error",
         description: error.message,
         variant: "destructive",
       });
+    },
+    onSuccess: (data) => {
+      if (data.message.includes("available driver")) {
+        toast({
+          title: data.message,
+          description:
+            "Please wait a few minutes, all delivery persons are busy",
+          variant: "destructive",
+        });
+      }
     },
   });
 

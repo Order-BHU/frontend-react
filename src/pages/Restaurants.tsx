@@ -3,6 +3,7 @@ import { PageWrapper } from "@/components/pagewrapper";
 import { useQuery } from "@tanstack/react-query";
 import { getRestaurants } from "@/api/restaurant";
 import { useToast } from "@/hooks/use-toast";
+import { useEffect } from "react";
 
 // Default values shown
 
@@ -22,12 +23,14 @@ export default function RestaurantsPage() {
     queryKey: ["restaurants"],
     queryFn: getRestaurants,
   });
-  if (status === "error") {
-    toast({
-      title: "Error",
-      description: error.message,
-    });
-  }
+  useEffect(() => {
+    if (status === "error") {
+      toast({
+        title: "Error",
+        description: error.message,
+      });
+    }
+  }, [status, error, toast]);
   return (
     <div className="min-h-screen flex flex-col ">
       <main className="flex-grow bg-gray-50 py-12 dark:bg-cbg-dark">
