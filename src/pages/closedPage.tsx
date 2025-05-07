@@ -1,13 +1,12 @@
-import type React from "react";
 import { useState, useEffect } from "react";
 import { Clock, AlertCircle, ChevronRight } from "lucide-react";
 
-const ClosedPage: React.FC = () => {
+const ClosedPage = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
-    // Update time every minute
+    // Update time every second to show real-time seconds
     const timer = setInterval(() => {
       const now = new Date();
       setCurrentTime(now);
@@ -15,7 +14,7 @@ const ClosedPage: React.FC = () => {
       // Check if current time is between 12pm and 8pm
       const hours = now.getHours();
       setIsOpen(hours >= 12 && hours < 20);
-    }, 60000);
+    }, 1000); // Update every second instead of every minute
 
     // Initial check
     const hours = currentTime.getHours();
@@ -24,29 +23,61 @@ const ClosedPage: React.FC = () => {
     return () => clearInterval(timer);
   }, []);
 
-  // Calculate time until opening or closing
+  // Calculate time until opening or closing with seconds
   const getTimeMessage = () => {
     const hours = currentTime.getHours();
     const minutes = currentTime.getMinutes();
+    const seconds = currentTime.getSeconds();
 
     if (isOpen) {
       // Calculate time until closing (8pm)
       const hoursUntilClose = 19 - hours;
-      const minutesUntilClose = 60 - minutes;
-      return `Closing in ${hoursUntilClose}h ${minutesUntilClose}m`;
+      const minutesUntilClose = 59 - minutes;
+      const secondsUntilClose = 59 - seconds;
+
+      // Handle edge cases for prettier display
+      if (minutes === 59 && seconds === 59) {
+        return `Closing in ${hoursUntilClose + 1}h 0m 0s`;
+      }
+
+      return `Closing in ${hoursUntilClose}h ${minutesUntilClose}m ${secondsUntilClose}s`;
     } else {
       // Calculate time until opening (12pm)
       if (hours < 12) {
         const hoursUntilOpen = 11 - hours;
-        const minutesUntilOpen = 60 - minutes;
-        return `Opening in ${hoursUntilOpen}h ${minutesUntilOpen}m`;
+        const minutesUntilOpen = 59 - minutes;
+        const secondsUntilOpen = 59 - seconds;
+
+        // Handle edge cases
+        if (minutes === 59 && seconds === 59) {
+          return `Opening in ${hoursUntilOpen + 1}h 0m 0s`;
+        }
+
+        return `Opening in ${hoursUntilOpen}h ${minutesUntilOpen}m ${secondsUntilOpen}s`;
       } else {
         // After 8pm, show time until opening tomorrow
         const hoursUntilOpen = 35 - hours; // 24 + 11 = 35 (11am next day)
-        const minutesUntilOpen = 60 - minutes;
-        return `Opening in ${hoursUntilOpen}h ${minutesUntilOpen}m`;
+        const minutesUntilOpen = 59 - minutes;
+        const secondsUntilOpen = 59 - seconds;
+
+        // Handle edge cases
+        if (minutes === 59 && seconds === 59) {
+          return `Opening in ${hoursUntilOpen + 1}h 0m 0s`;
+        }
+
+        return `Opening in ${hoursUntilOpen}h ${minutesUntilOpen}m ${secondsUntilOpen}s`;
       }
     }
+  };
+
+  // Format current time for display
+  const formatCurrentTime = () => {
+    return currentTime.toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: true,
+    });
   };
 
   return (
@@ -67,6 +98,11 @@ const ClosedPage: React.FC = () => {
               <Clock className="text-orange-600" size={24} />
               <span className="font-medium text-xl">Operating Hours</span>
             </div>
+
+            <div className="text-2xl font-semibold text-gray-800 mb-4">
+              {formatCurrentTime()}
+            </div>
+
             <p className="text-gray-600 text-xl mb-6">
               We're active daily from{" "}
               <span className="font-semibold">12:00 PM to 8:00 PM</span>

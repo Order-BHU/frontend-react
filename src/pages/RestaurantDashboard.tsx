@@ -1087,6 +1087,7 @@ const RestaurantDashboardPage = () => {
                                               Category
                                             </Label>
                                             <Select
+                                              value={String(item.category_id)}
                                               onValueChange={(value) => {
                                                 setmenuItemArray((prev) =>
                                                   prev.map((p) =>
