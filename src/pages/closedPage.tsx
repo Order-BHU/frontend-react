@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
-import { Clock, AlertCircle } from "lucide-react";
+import { Clock } from "lucide-react";
 
 const ClosedPage = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
-  const [isOpen, setIsOpen] = useState(false);
+  //const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     // Update time every second to show real-time seconds
@@ -12,13 +12,11 @@ const ClosedPage = () => {
       setCurrentTime(now);
 
       // Check if current time is between 12pm and 8pm
-      const hours = now.getHours();
-      setIsOpen(hours >= 12 && hours < 20);
+      //const hours = now.getHours();
     }, 1000); // Update every second instead of every minute
 
     // Initial check
-    const hours = currentTime.getHours();
-    setIsOpen(hours >= 12 && hours < 20);
+    //const hours = currentTime.getHours();
 
     return () => clearInterval(timer);
   }, []);
@@ -29,44 +27,30 @@ const ClosedPage = () => {
     const minutes = currentTime.getMinutes();
     const seconds = currentTime.getSeconds();
 
-    if (isOpen) {
-      // Calculate time until closing (8pm)
-      const hoursUntilClose = 19 - hours;
-      const minutesUntilClose = 59 - minutes;
-      const secondsUntilClose = 59 - seconds;
+    // Calculate time until opening (12pm)
+    if (hours < 12) {
+      const hoursUntilOpen = 11 - hours;
+      const minutesUntilOpen = 59 - minutes;
+      const secondsUntilOpen = 59 - seconds;
 
-      // Handle edge cases for prettier display
+      // Handle edge cases
       if (minutes === 59 && seconds === 59) {
-        return `${hoursUntilClose + 1}h 0m 0s`;
+        return `${hoursUntilOpen + 1}h 0m 0s`;
       }
 
-      return `${hoursUntilClose}h ${minutesUntilClose}m ${secondsUntilClose}s`;
+      return `${hoursUntilOpen}h ${minutesUntilOpen}m ${secondsUntilOpen}s`;
     } else {
-      // Calculate time until opening (12pm)
-      if (hours < 12) {
-        const hoursUntilOpen = 11 - hours;
-        const minutesUntilOpen = 59 - minutes;
-        const secondsUntilOpen = 59 - seconds;
+      // After 8pm, show time until opening tomorrow
+      const hoursUntilOpen = 35 - hours; // 24 + 11 = 35 (11am next day)
+      const minutesUntilOpen = 59 - minutes;
+      const secondsUntilOpen = 59 - seconds;
 
-        // Handle edge cases
-        if (minutes === 59 && seconds === 59) {
-          return `${hoursUntilOpen + 1}h 0m 0s`;
-        }
-
-        return `${hoursUntilOpen}h ${minutesUntilOpen}m ${secondsUntilOpen}s`;
-      } else {
-        // After 8pm, show time until opening tomorrow
-        const hoursUntilOpen = 35 - hours; // 24 + 11 = 35 (11am next day)
-        const minutesUntilOpen = 59 - minutes;
-        const secondsUntilOpen = 59 - seconds;
-
-        // Handle edge cases
-        if (minutes === 59 && seconds === 59) {
-          return `Opening in ${hoursUntilOpen + 1}h 0m 0s`;
-        }
-
-        return `Opening in ${hoursUntilOpen}h ${minutesUntilOpen}m ${secondsUntilOpen}s`;
+      // Handle edge cases
+      if (minutes === 59 && seconds === 59) {
+        return `Opening in ${hoursUntilOpen + 1}h 0m 0s`;
       }
+
+      return `Opening in ${hoursUntilOpen}h ${minutesUntilOpen}m ${secondsUntilOpen}s`;
     }
   };
 
@@ -88,18 +72,17 @@ const ClosedPage = () => {
           <h2 className="text-4xl md:text-5xl font-bold">
             <span className="text-orange-600">We're Currently</span>
             <br />
-            <span className="text-gray-700">
-              {isOpen ? "Open for Orders" : "Closed"}
-            </span>
+            <span className="text-gray-700">{"Closed"}</span>
           </h2>
 
           <div className="bg-white p-8 rounded-xl shadow-md">
-            <div className="flex items-center justify-center gap-3 text-gray-700 mb-4">
+            {/* <div className="flex items-center justify-center gap-3 text-gray-700 mb-4">
               <Clock className="text-orange-600" size={24} />
-              <span className="font-medium text-xl">Opening In</span>
-            </div>
+              <span className="font-medium text-xl">{getTimeMessage()}</span>
+            </div> */}
 
-            <div className="text-2xl font-semibold text-orange-600 mb-4">
+            <div className="flex items-center justify-center gap-3 text-2xl font-semibold text-orange-600 mb-4">
+              <Clock className="text-orange-600" size={24} />
               {getTimeMessage()}
             </div>
 
@@ -108,19 +91,12 @@ const ClosedPage = () => {
               <span className="font-semibold">12:00 PM to 8:00 PM</span>
             </p>
 
-            <div className="flex items-center justify-center gap-2 mt-2">
-              <AlertCircle
-                className={isOpen ? "text-green-600" : "text-orange-600"}
-                size={22}
-              />
-              <span
-                className={`font-medium text-lg ${
-                  isOpen ? "text-green-600" : "text-orange-600"
-                }`}
-              >
-                {isOpen ? "We're currently accepting orders" : getTimeMessage()}
+            {/* <div className="flex items-center justify-center gap-2 mt-2">
+              <AlertCircle className={"text-orange-600"} size={22} />
+              <span className={`font-medium text-lg ${"text-orange-600"}`}>
+                {getTimeMessage()}
               </span>
-            </div>
+            </div> */}
           </div>
 
           {/* {isOpen && (
