@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Clock, AlertCircle, ChevronRight } from "lucide-react";
+import { Clock, AlertCircle } from "lucide-react";
 
 const ClosedPage = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -37,10 +37,10 @@ const ClosedPage = () => {
 
       // Handle edge cases for prettier display
       if (minutes === 59 && seconds === 59) {
-        return `Closing in ${hoursUntilClose + 1}h 0m 0s`;
+        return `${hoursUntilClose + 1}h 0m 0s`;
       }
 
-      return `Closing in ${hoursUntilClose}h ${minutesUntilClose}m ${secondsUntilClose}s`;
+      return `${hoursUntilClose}h ${minutesUntilClose}m ${secondsUntilClose}s`;
     } else {
       // Calculate time until opening (12pm)
       if (hours < 12) {
@@ -50,10 +50,10 @@ const ClosedPage = () => {
 
         // Handle edge cases
         if (minutes === 59 && seconds === 59) {
-          return `Opening in ${hoursUntilOpen + 1}h 0m 0s`;
+          return `${hoursUntilOpen + 1}h 0m 0s`;
         }
 
-        return `Opening in ${hoursUntilOpen}h ${minutesUntilOpen}m ${secondsUntilOpen}s`;
+        return `${hoursUntilOpen}h ${minutesUntilOpen}m ${secondsUntilOpen}s`;
       } else {
         // After 8pm, show time until opening tomorrow
         const hoursUntilOpen = 35 - hours; // 24 + 11 = 35 (11am next day)
@@ -71,14 +71,14 @@ const ClosedPage = () => {
   };
 
   // Format current time for display
-  const formatCurrentTime = () => {
-    return currentTime.toLocaleTimeString("en-US", {
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-      hour12: true,
-    });
-  };
+  // const formatCurrentTime = () => {
+  //   return currentTime.toLocaleTimeString("en-US", {
+  //     hour: "2-digit",
+  //     minute: "2-digit",
+  //     second: "2-digit",
+  //     hour12: true,
+  //   });
+  // };
 
   return (
     <div className="min-h-screen bg-peach-100 flex flex-col">
@@ -96,11 +96,11 @@ const ClosedPage = () => {
           <div className="bg-white p-8 rounded-xl shadow-md">
             <div className="flex items-center justify-center gap-3 text-gray-700 mb-4">
               <Clock className="text-orange-600" size={24} />
-              <span className="font-medium text-xl">Operating Hours</span>
+              <span className="font-medium text-xl">Opening In</span>
             </div>
 
-            <div className="text-2xl font-semibold text-gray-800 mb-4">
-              {formatCurrentTime()}
+            <div className="text-2xl font-semibold text-orange-600 mb-4">
+              {getTimeMessage()}
             </div>
 
             <p className="text-gray-600 text-xl mb-6">
@@ -123,29 +123,13 @@ const ClosedPage = () => {
             </div>
           </div>
 
-          {isOpen && (
+          {/* {isOpen && (
             <button className="bg-orange-600 text-white px-8 py-4 rounded-full hover:bg-orange-700 transition-colors flex items-center gap-2 mx-auto text-lg">
               Order Now <ChevronRight size={20} />
             </button>
-          )}
+          )} */}
         </div>
       </main>
-
-      {/* Footer */}
-      <footer className="p-6 text-center text-gray-600 border-t border-orange-200 mt-auto">
-        <div className="flex justify-center gap-6 mb-4">
-          <a href="#" className="hover:text-orange-600 transition-colors">
-            Home
-          </a>
-          <a href="#" className="hover:text-orange-600 transition-colors">
-            Restaurants
-          </a>
-          <a href="#" className="hover:text-orange-600 transition-colors">
-            Contact Us
-          </a>
-        </div>
-        <p>© {new Date().getFullYear()} BHU Order. All rights reserved.</p>
-      </footer>
     </div>
   );
 };
