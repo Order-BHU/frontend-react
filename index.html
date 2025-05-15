@@ -1,41 +1,103 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-NG">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/jpeg" href="/orderLogo.JPG" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Order: Food Delivery for Bingham University Students</title>
+    <title>
+      Order: Fast Food Delivery for Bingham University Students | Nasarawa,
+      Nigeria
+    </title>
     <meta
       name="description"
-      content="Order your favorite meals quickly and easily! Food delivery app specifically for students at Bingham University, Nigeria. Browse local restaurants and get food delivered right to your dorm."
+      content="Order your favorite meals with fast delivery to Bingham University campus. Browse local restaurants in Nasarawa, get food delivered to your dorm within minutes. Student discounts available!"
     />
     <meta
       name="keywords"
-      content="food delivery, Bingham University, student food, Nigeria, order food online, campus food, restaurant delivery"
+      content="food delivery, Bingham University, student food, Nasarawa, Nigeria, order food online, campus food, restaurant delivery, fast delivery, Bingham food, Karu food delivery"
     />
     <meta name="author" content="The Order App Team" />
+    <meta name="robots" content="index, follow" />
+    <meta name="googlebot" content="index, follow" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <link rel="canonical" href="https://bhuorder.com/" />
+
+    <meta property="og:locale" content="en_NG" />
     <meta
       property="og:title"
-      content="Order: Food Delivery for Bingham University Students"
+      content="Order: Fast Food Delivery for Bingham University Students | Nasarawa"
     />
     <meta
       property="og:description"
-      content="Order your favorite meals quickly and easily! Food delivery app specifically for students at Bingham University, Nigeria. Browse local restaurants and get food delivered right to your dorm."
+      content="Order your favorite meals with fast delivery to Bingham University campus. Browse local restaurants in Nasarawa, get food delivered to your dorm within minutes. Student discounts available!"
     />
-    <meta property="og:image" content="/orderLogo.JPG" />
+    <meta
+      property="og:image"
+      content="https://bhuorder.com/optimized-orderLogo.JPG"
+    />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
     <meta property="og:url" content="https://bhuorder.com/" />
     <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Order App" />
 
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@OrderApp" />
     <meta
       name="twitter:title"
-      content="Order: Food Delivery for Bingham University Students"
+      content="Order: Fast Food Delivery for Bingham University Students"
     />
     <meta
       name="twitter:description"
-      content="Order your favorite meals quickly and easily! Food delivery app specifically for students at Bingham University, Nigeria. Browse local restaurants and get food delivered right to your dorm."
+      content="Order your favorite meals with fast delivery to Bingham University campus. Browse local restaurants in Nasarawa, get food delivered to your dorm within minutes."
     />
-    <meta name="twitter:image" content="/orderLogo.JPG" />
+    <meta
+      name="twitter:image"
+      content="https://bhuorder.com/optimized-orderLogo.JPG"
+    />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "FoodService",
+        "name": "Order App",
+        "description": "Food delivery service for Bingham University students",
+        "url": "https://bhuorder.com/",
+        "logo": "https://bhuorder.com/orderLogo.JPG", // Ensure this logo is accessible and optimized
+        "image": "https://bhuorder.com/optimized-orderLogo.JPG", // Can be the same as og:image
+        "telephone": "+2340000000000", // "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "Bingham University, KM 26 Abuja-Keffi Expressway", // Add street address if possible
+          "addressLocality": "Karu",
+          "addressRegion": "Nasarawa",
+          "postalCode": "961105", // Add postal code if applicable for Karu/Bingham
+          "addressCountry": "NG" // Use NG for Nigeria
+        },
+        "areaServed": {
+          "@type": "Place",
+          "name": "Bingham University Campus"
+        },
+        "potentialAction": {
+          "@type": "OrderAction",
+          "target": {
+            "@type": "EntryPoint",
+            "urlTemplate": "https://bhuorder.com/menu" // Ensure this is the correct ordering link
+          },
+          "deliveryMethod": "http://schema.org/DeliveryModeParcelService" // Or other relevant delivery method
+        },
+        "servesCuisine": ["Fast Food", "Nigerian"], // "priceRange": "$$" // // Optional: Add openingHoursSpecification
+      }
+    </script>
+
+    <meta name="apple-itunes-app" content="app-id=yourAppID" />
+    <meta name="google-play-app" content="app-id=com.bhuorder.app" />
+    <meta name="geo.region" content="NG-NA" />
+    <meta name="geo.placename" content="Karu, Nasarawa" />
+    <meta name="geo.position" content="8.8089;7.6748" />
+    <meta name="ICBM" content="8.8089, 7.6748" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preload" as="image" href="/orderLogo.JPG" />
   </head>
   <body>
     <div id="root"></div>
