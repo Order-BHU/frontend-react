@@ -408,6 +408,7 @@ const RestaurantDashboardPage = () => {
     logoutMutate(usertoken);
   };
 
+  const [selectedCategory, setSelectedCategory] = useState<Number | null>(null); //this state is here so that we can send the category id when editing menu item. Read Docs
   if (logoutStatus === "pending") {
     return (
       <div>
@@ -416,7 +417,6 @@ const RestaurantDashboardPage = () => {
       </div>
     );
   }
-  const [selectedCategory, setSelectedCategory] = useState<Number | null>(null); //this state is here so that we can send the category id when editing menu item. Read Docs
   return (
     <div className="bg-secondary-50 min-h-screen pt-32 pb-20">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
