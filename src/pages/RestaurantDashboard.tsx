@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { LogOut, ChevronRight } from "lucide-react";
+import ButtonLoader from "@/components/buttonLoader";
 import {
   Dialog,
   DialogContent,
@@ -923,7 +924,11 @@ const RestaurantDashboardPage = () => {
                         type="submit"
                         disabled={mutateStatus === "pending"}
                       >
-                        Add Menu Item
+                        {mutateStatus === "pending" ? (
+                          <ButtonLoader size="h-5 w-5" />
+                        ) : (
+                          "Add Menu Item"
+                        )}
                       </Button>
                     </form>
                   </DialogContent>
@@ -974,7 +979,7 @@ const RestaurantDashboardPage = () => {
                                   </div>
                                   <div className="flex space-x-2">
                                     <button
-                                      className="inline-flex items-center justify-center p-2 rounded-lg border border-secondary-200 text-secondary-700 hover:bg-secondary-50 transition-colors"
+                                      className="h-9 inline-flex items-center justify-center p-2 rounded-lg border border-secondary-200 text-secondary-700 hover:bg-red-500 transition-colors duration-200"
                                       onClick={() =>
                                         handleDeleteMenuItem(item.id)
                                       }
@@ -983,7 +988,7 @@ const RestaurantDashboardPage = () => {
                                     </button>
                                     <Dialog>
                                       <DialogTrigger asChild>
-                                        <button className="inline-flex items-center justify-center p-2 rounded-lg border border-secondary-200 text-secondary-700 hover:bg-secondary-50 transition-colors">
+                                        <button className="h-9 inline-flex items-center justify-center p-2 rounded-lg border border-secondary-200 text-secondary-700 hover:bg-secondary-50 transition-colors">
                                           <FiEdit2 size={16} />
                                         </button>
                                       </DialogTrigger>
