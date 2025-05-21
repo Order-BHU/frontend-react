@@ -45,6 +45,7 @@ import {
 import useAuthStore from "@/stores/useAuthStore";
 import { useToast } from "@/hooks/use-toast";
 import ClosedPage from "./closedPage";
+import ButtonLoader from "@/components/buttonLoader";
 
 // Animation variants
 const fadeIn = {
@@ -206,7 +207,7 @@ const RestaurantMenuPage = () => {
         toast({
           variant: "destructive",
           title: "Error",
-          description: error.message,
+          description: error.error,
         });
         refetch(); // Refetch to ensure UI shows correct state
       }
@@ -410,7 +411,7 @@ const RestaurantMenuPage = () => {
                 <div className="flex space-x-2 pb-2">
                   {categories?.map((category: category) => (
                     <button
-                      key={category.id}
+                      key={`category-${category.id}`}
                       onClick={() => scrollToCategory(String(category.id))}
                       className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
                         activeCategory === String(category.id)
@@ -428,7 +429,7 @@ const RestaurantMenuPage = () => {
               <div className="space-y-10">
                 {categories?.map((category: category, index: number) => (
                   <motion.div
-                    key={category.id}
+                    key={`menu-${category.id}`}
                     id={`category-${category.id}`}
                     initial="hidden"
                     animate="visible"
@@ -582,7 +583,7 @@ const RestaurantMenuPage = () => {
                       <div className="divide-y divide-secondary-100 mb-6 max-h-[calc(100vh-350px)] overflow-y-auto">
                         {cart?.map((item) => (
                           <div
-                            key={item.menu_id}
+                            key={`cart-${item.menu_id}`}
                             className="py-3 flex items-center"
                           >
                             <div className="h-12 w-12 rounded-lg overflow-hidden flex-shrink-0 mr-3">
@@ -656,7 +657,7 @@ const RestaurantMenuPage = () => {
                                 locations?.locations.map(
                                   (location: { id: number; name: string }) => (
                                     <SelectItem
-                                      key={location.id}
+                                      key={`location-${location.id}`}
                                       value={location.name}
                                     >
                                       {location.name}
@@ -673,7 +674,13 @@ const RestaurantMenuPage = () => {
                           onClick={handlePayment}
                           disabled={initializeCheckoutStatus === "pending"}
                         >
-                          <FiShoppingCart className="mr-2" /> Place Order
+                          {initializeCheckoutStatus === "pending" ? (
+                            <ButtonLoader color="border-white" size="h-8 w-8" />
+                          ) : (
+                            <div className="flex items-center">
+                              <FiShoppingCart className="mr-2" /> Place Order
+                            </div>
+                          )}
                         </button>
                       </div>
                     </>

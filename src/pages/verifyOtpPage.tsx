@@ -48,7 +48,7 @@ export default function VerifyOTPPage() {
       }
       toast({
         title: "OTP Submitted!",
-        description: data.message + "/n You can now log in",
+        description: data.message,
       });
     },
     onError: (error) => {

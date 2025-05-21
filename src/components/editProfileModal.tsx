@@ -19,6 +19,7 @@ import {
 import { editProfile, changePassword } from "@/api/misc";
 import { useMutation } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
+import ButtonLoader from "@/components/buttonLoader";
 
 interface UserDetails {
   restaurant_name?: string;
@@ -292,9 +293,11 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
             type="submit"
             disabled={editProfileMutateStatus === "pending"}
           >
-            {editProfileMutateStatus === "pending"
-              ? "Updating..."
-              : "Update Profile"}
+            {editProfileMutateStatus === "pending" ? (
+              <ButtonLoader color="border-white" size="h-5 w-5" />
+            ) : (
+              "Update Profile"
+            )}
           </Button>
 
           <Accordion type="single" collapsible>
@@ -361,9 +364,11 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
                   onClick={handleUpdatePassword}
                   disabled={passwordStatus === "pending"}
                 >
-                  {passwordStatus === "pending"
-                    ? "Updating..."
-                    : "Update Password"}
+                  {passwordStatus === "pending" ? (
+                    <ButtonLoader color="border-white" size="h-5 w-5" />
+                  ) : (
+                    "Update Password"
+                  )}
                 </Button>
               </AccordionContent>
             </AccordionItem>

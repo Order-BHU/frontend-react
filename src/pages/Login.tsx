@@ -5,6 +5,7 @@ import { loginUser } from "@/api/auth";
 import { useToast } from "@/hooks/use-toast";
 import UseAuthStore from "@/stores/useAuthStore";
 import driverStore from "@/stores/driverStore";
+import ButtonLoader from "@/components/buttonLoader";
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -223,7 +224,11 @@ export default function LoginPage() {
               className="w-full px-4 py-3 rounded-lg bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold hover:from-orange-600 hover:to-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-colors shadow-md hover:shadow-lg transform hover:-translate-y-0.5 active:translate-y-0"
               disabled={status === "pending"}
             >
-              Sign In
+              {status === "pending" ? (
+                <ButtonLoader color="border-white" size="h-8 w-8" />
+              ) : (
+                "Sign In"
+              )}
             </button>
           </form>
 
