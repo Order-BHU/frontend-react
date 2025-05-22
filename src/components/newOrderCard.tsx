@@ -14,6 +14,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
+import ButtonLoader from "@/components/buttonLoader";
 
 // Order type definition
 export interface Order {
@@ -49,6 +50,7 @@ export interface Order {
 // Props for the OrderCard component
 interface OrderCardProps {
   order: Order;
+  isPendingForThisItem: boolean;
   className?: string;
   onAccept?: (id: string) => void;
   onReject?: (id: string) => void;
@@ -58,6 +60,7 @@ interface OrderCardProps {
 
 export default function OrderCard({
   order,
+  isPendingForThisItem,
   className,
   onAccept,
   onComplete,
@@ -275,7 +278,11 @@ export default function OrderCard({
                   }bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white`}
                   onClick={handleCompleteClick}
                 >
-                  Complete Delivery
+                  {isPendingForThisItem ? (
+                    <ButtonLoader size="w-8 h-8" />
+                  ) : (
+                    "Complete Delivery"
+                  )}
                 </Button>
               )}
             </div>

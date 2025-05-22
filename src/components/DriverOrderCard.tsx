@@ -12,7 +12,6 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
-//import ButtonLoader from "@/components/buttonLoader";
 
 // Order type definition
 export interface Order {
@@ -47,6 +46,7 @@ export interface Order {
 // Props for the OrderCard component
 interface OrderCardProps {
   order: Order;
+
   className?: string;
   onViewDetails?: (id: string) => void;
   onAccept?: (id: string) => void;
@@ -56,6 +56,7 @@ interface OrderCardProps {
 
 export function OrderCard({
   order,
+
   className,
   //onViewDetails,
   onAccept,

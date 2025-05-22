@@ -38,6 +38,7 @@ export default function RiderDashboardPage() {
   const navigate = useNavigate();
   const { logout } = UseAuthStore();
   const { toast } = useToast();
+  const [pendingId, setPendingId] = useState<number | null>(null); //here so we know which button to set to loading
   const [driverState, setDriverState] = useState("");
   const { data: userDetails, refetch: refetchDetails } = useQuery({
     queryKey: ["userDetails"],
@@ -158,7 +159,11 @@ export default function RiderDashboardPage() {
 
   const { mutate: orderStatusMutate } = useMutation({
     mutationFn: updateOrderStatus,
+    onMutate: ({ orderId }) => {
+      setPendingId(orderId);
+    },
     onSuccess: (data) => {
+      setPendingId(null);
       toast({
         title: "Success",
         description: data.message,
@@ -168,6 +173,7 @@ export default function RiderDashboardPage() {
       // refetchHistory();
     },
     onError: (error) => {
+      setPendingId(null);
       toast({
         title: "Error",
         description: error.message,
@@ -477,8 +483,12 @@ export default function RiderDashboardPage() {
                                   items: item.items,
                                   address: item.location,
                                   phone_number_type: item.phone_number_type,
+
                                   //date: "the date",
                                 }}
+                                isPendingForThisItem={
+                                  item.order_id === pendingId
+                                }
                                 onAccept={() => {
                                   setAllOrders((prev) =>
                                     prev.map((order) =>
@@ -531,6 +541,9 @@ export default function RiderDashboardPage() {
                                   address: item.location,
                                   phone_number_type: item.phone_number_type,
                                 }}
+                                isPendingForThisItem={
+                                  item.order_id === pendingId
+                                }
                                 onAccept={() => {
                                   allOrders.map((leorder) =>
                                     leorder.order_id === item.order_id
@@ -578,6 +591,7 @@ export default function RiderDashboardPage() {
                                 address: item.location,
                                 date: item.order_date,
                               }}
+                              isPendingForThisItem={item.order_id === pendingId}
                               onAccept={() => {
                                 setAllOrders((prev) =>
                                   prev.map((order) =>
