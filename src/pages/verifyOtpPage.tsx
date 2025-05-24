@@ -25,11 +25,16 @@ export default function VerifyOTPPage() {
   const navigate = useNavigate();
   const [otp, setOtp] = useState("");
 
-  useEffect(() => {
-    resendMutation.mutate({
-      email: email,
-    });
-  }, []);
+  // useEffect(() => {
+  //   setTimeout(
+  //     () =>
+  //       toast({
+  //         title: "",
+  //         description: "Check your email for an OTP",
+  //       }),
+  //     1500
+  //   );
+  // }, []);
   useEffect(() => {
     if (countdown > 0) {
       const timer = setTimeout(() => setCountdown(countdown - 1), 1000);

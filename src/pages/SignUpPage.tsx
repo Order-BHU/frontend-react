@@ -345,7 +345,7 @@ export default function SignUpPage() {
               {status === "pending" ? (
                 <ButtonLoader color="border-white" size="h-8 w-8" />
               ) : (
-                "Sign In"
+                "Submit"
               )}
             </button>
           </form>
