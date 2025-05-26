@@ -74,7 +74,7 @@ const RestaurantMenuPage = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const { toast } = useToast();
-  const deliveryFee = 300; //this is the delivery fee variable
+  const deliveryFee = 200; //this is the delivery fee variable
   const { data: cartItems, refetch } = useQuery({
     queryFn: viewCart,
     queryKey: ["cartItems"],
