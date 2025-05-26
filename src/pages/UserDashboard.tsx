@@ -492,7 +492,7 @@ export default function UserDashboardPage() {
                         <Loader />
                       ) : (
                         orderHistory &&
-                        orderHistory.orders.map((order: orderHistoryType) => (
+                        orderHistory?.orders?.map((order: orderHistoryType) => (
                           // <div
                           //   key={order.order_id}
                           //   className="rounded-lg border border-gray-200 p-4 transition-all hover:bg-gray-50 hover:border-orange-200"
@@ -558,6 +558,7 @@ export default function UserDashboardPage() {
                               address: order.location,
                               date: order.order_date,
                             }}
+                            isPendingForThisItem={false}
                           />
                         ))
                       )}

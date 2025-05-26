@@ -176,3 +176,31 @@ export async function transactions() {
       throw error.response?.data;
     });
 }
+
+export async function allOrders() {
+  //this function gets all orders for the admin page to manipulate
+  const token = localStorage.getItem("token");
+  console.log(token);
+  return axios
+    .get(
+      `${apiUrl}/all-orders`,
+
+      {
+        headers: {
+          Authorization: `Bearer 593|UibBWG2hsIbhAwnaUISkld42HY86b0FGFL5dBIUa289f35cd`, //set this to token variable later
+        },
+        timeout: 90000,
+      }
+    )
+    .then(function (response: AxiosResponse) {
+      console.log("all orders route:", response.data.orders);
+      return response.data.transactions;
+    })
+    .catch(function (error: AxiosError) {
+      if (error.code === "ERR_NETWORK") {
+        throw new Error("Network error: Unable to reach the server.");
+      }
+      console.log(error);
+      throw error.response?.data;
+    });
+}

@@ -91,11 +91,7 @@ const Header = () => {
           <Link to="/" className="flex items-center space-x-2">
             <div className="w-20 h-16 overflow-hidden">
               <img
-                src={
-                  window.matchMedia("(prefers-color-scheme: dark)").matches
-                    ? "/DarkerOrderLogo.PNG"
-                    : "/DarkOrderLogo.JPG"
-                }
+                src="/orderLogo.JPG"
                 className="h-full w-full object-cover"
                 alt="Logo"
               />
