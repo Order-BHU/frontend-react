@@ -388,7 +388,8 @@ export default function RiderDashboardPage() {
                 </div>
               </div>
               <div className="text-2xl font-bold text-secondary-900">
-                {userDetails?.earnings?.wallet_balance}
+                {userDetails?.earnings?.total}{" "}
+                {/*userDetails?.earnings?.wallet_balance*/}
               </div>
               <p className="text-xs mt-1 text-secondary-900 italic">
                 Total Earnings: {userDetails?.earnings?.total}
