@@ -91,7 +91,7 @@ const Header = () => {
           <Link to="/" className="flex items-center space-x-2">
             <div className="w-20 h-16 overflow-hidden">
               <img
-                src="/orderLogo.JPG"
+                src={"/DarkerOrderLogo.PNG"}
                 className="h-full w-full object-cover"
                 alt="Logo"
               />
