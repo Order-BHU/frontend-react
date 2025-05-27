@@ -180,21 +180,84 @@ export async function transactions() {
 export async function allOrders() {
   //this function gets all orders for the admin page to manipulate
   const token = localStorage.getItem("token");
-  console.log(token);
   return axios
     .get(
       `${apiUrl}/all-orders`,
 
       {
         headers: {
-          Authorization: `Bearer 593|UibBWG2hsIbhAwnaUISkld42HY86b0FGFL5dBIUa289f35cd`, //set this to token variable later
+          Authorization: `Bearer ${token}`, //set this to token variable later
         },
         timeout: 90000,
       }
     )
     .then(function (response: AxiosResponse) {
       console.log("all orders route:", response.data.orders);
-      return response.data.transactions;
+      return response.data.orders;
+    })
+    .catch(function (error: AxiosError) {
+      if (error.code === "ERR_NETWORK") {
+        throw new Error("Network error: Unable to reach the server.");
+      }
+      console.log(error);
+      throw error.response?.data;
+    });
+}
+
+export async function driverList(status: string) {
+  //this function gets all orders for the admin page to manipulate
+  const token = localStorage.getItem("token");
+  return axios
+    .get(
+      `${apiUrl}/${status}/driver-list`,
+
+      {
+        headers: {
+          Authorization: `Bearer ${token}`, //set this to token variable later
+        },
+        timeout: 90000,
+      }
+    )
+    .then(function (response: AxiosResponse) {
+      console.log(
+        "all drivers based on args:",
+        status === "online"
+          ? response.data.onlinedrivers
+          : response.data.offlinedrivers
+      );
+      return status === "online"
+        ? response.data.onlinedrivers
+        : response.data.offlinedrivers;
+    })
+    .catch(function (error: AxiosError) {
+      if (error.code === "ERR_NETWORK") {
+        throw new Error("Network error: Unable to reach the server.");
+      }
+      console.log(error);
+      throw error.response?.data;
+    });
+}
+
+export async function updateOrder(data: {
+  driver_id: string;
+  status: string;
+  orderId: string;
+}) {
+  const token = localStorage.getItem("token");
+  return axios
+    .post(
+      `${apiUrl}/update-order/${data.orderId}`,
+      { driver_id: data.driver_id, status: data.status },
+
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        timeout: 90000,
+      }
+    )
+    .then(function (response: AxiosResponse) {
+      return response.data;
     })
     .catch(function (error: AxiosError) {
       if (error.code === "ERR_NETWORK") {
