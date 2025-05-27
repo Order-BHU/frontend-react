@@ -1,4 +1,4 @@
-import React, { useState, ChangeEvent, useEffect } from "react";
+import React, { useState, ChangeEvent } from "react";
 import { User, ChevronRight } from "lucide-react";
 import {
   Dialog,
@@ -53,18 +53,18 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
     profile_picture: null,
     phone_number_type: userDetails.phone_number_type || "sms", // Default valu
     cover_picture: null,
-    phone_number: userDetails.phone_number,
+    phone_number: userDetails.phone_number || "",
   });
 
-  useEffect(() => {
-    //this is here to set the form details whenever we get themfrom the api
-    setFormData((prevData) => ({
-      ...prevData,
-      name: userDetails.name || "",
-      restaurant_name: userDetails.restaurant_name || "",
-      phone_number: userDetails.phone_number,
-    }));
-  }, [userDetails]);
+  // useEffect(() => {
+  //   //this is here to set the form details whenever we get themfrom the api
+  //   setFormData((prevData) => ({
+  //     ...prevData,
+  //     name: userDetails.name || "",
+  //     restaurant_name: userDetails.restaurant_name || "",
+  //     phone_number: userDetails.phone_number,
+  //   }));
+  // }, [userDetails]);
   const { toast } = useToast();
   const [showEditProfileModal, setShowEditProfileModal] =
     useState<boolean>(false);
