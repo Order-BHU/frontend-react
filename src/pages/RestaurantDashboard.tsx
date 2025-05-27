@@ -138,9 +138,14 @@ const RestaurantDashboardPage = () => {
     staleTime: 30000,
   });
 
+  const [loadingOrderMutate, setLoadingOrder] = useState<number | null>();
   const { mutate: orderStatusMutate, status: orderStatusStatus } = useMutation({
+    onMutate: ({ orderId }) => {
+      setLoadingOrder(orderId);
+    },
     mutationFn: updateOrderStatus,
     onError: (error) => {
+      setLoadingOrder(null);
       console.log("set state error: ", error.message);
       toast({
         title: "Error",
@@ -149,6 +154,7 @@ const RestaurantDashboardPage = () => {
       });
     },
     onSuccess: (data) => {
+      setLoadingOrder(null);
       if (data.message.includes("available driver")) {
         toast({
           title: data.message,
@@ -785,12 +791,20 @@ const RestaurantDashboardPage = () => {
                               <div className="flex justify-end mt-4">
                                 <button
                                   className="inline-flex items-center justify-center px-4 py-2 rounded-lg text-white bg-green-600 hover:bg-green-700 shadow-sm transition-colors text-sm"
-                                  disabled={orderStatusStatus === "pending"}
+                                  disabled={
+                                    loadingOrderMutate === order.order_id
+                                  }
                                   onClick={() =>
                                     handleOrderAccept(order.order_id, "ready")
                                   }
                                 >
-                                  <FiTruck className="mr-1" /> Mark as Ready
+                                  {loadingOrderMutate === order.order_id ? (
+                                    <ButtonLoader size="h-5 w-5" />
+                                  ) : (
+                                    <>
+                                      <FiTruck className="mr-1" /> Mark as Ready
+                                    </>
+                                  )}
                                 </button>
                               </div>
                             </div>
