@@ -7,7 +7,7 @@ export interface Order {
   total: string;
   status: string;
   code: string;
-  order_date: string | null;
+  created_at: string | null;
   customer_location: string;
   user: User;
   driver: User | null;

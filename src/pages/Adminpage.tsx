@@ -413,9 +413,9 @@ export default function AdminDashboardPage() {
                               >
                                 {order.status}
                               </Badge>
-                              {order.order_date !== null && (
+                              {order.created_at !== null && (
                                 <span className="text-sm italic">
-                                  {format(order.order_date, "PPpp")}
+                                  {format(order.created_at, "PPpp")}
                                 </span>
                               )}
                             </div>
