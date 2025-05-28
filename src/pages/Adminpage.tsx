@@ -50,6 +50,7 @@ import { restaurantMetric, transactionType } from "@/interfaces/restaurantType";
 import { Driver, Order } from "@/interfaces/adminPageAllOrders";
 import CreateUserModal from "@/components/createUserModal";
 import ButtonLoader from "@/components/buttonLoader";
+import { format } from "date-fns";
 
 // Mock data - in a real app, this would come from an API
 const revenueData = [
@@ -412,6 +413,11 @@ export default function AdminDashboardPage() {
                               >
                                 {order.status}
                               </Badge>
+                              {order.order_date !== null && (
+                                <span className="text-sm italic">
+                                  {format(order.order_date, "PPpp")}
+                                </span>
+                              )}
                             </div>
                           </div>
                         </div>
@@ -440,7 +446,7 @@ export default function AdminDashboardPage() {
                             <span className="font-semibold text-green-600">
                               ₦
                               {Number.parseFloat(
-                                order.total.toString()
+                                order.total.toLocaleString()
                               ).toFixed(2)}
                             </span>
                           </div>

@@ -349,14 +349,14 @@ const RestaurantMenuPage = () => {
   const [isAllowedTime, setIsAllowedTime] = useState(false);
 
   useEffect(() => {
-    const now = new Date();
-    const hour = now.getHours();
+    //const now = new Date();
+    //const hour = now.getHours();
 
-    if (hour >= 12 && hour < 20) {
-      setIsAllowedTime(true);
-    } else {
-      setIsAllowedTime(false);
-    }
+    //if (hour >= 12 && hour < 20) {
+    setIsAllowedTime(false);
+    //} else {
+    //setIsAllowedTime(false);
+    // }
   }, []);
 
   if (!isAllowedTime) {

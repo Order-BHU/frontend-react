@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Clock, DollarSign, MapPin, Phone, User } from "lucide-react";
+import { Clock, MapPin, Phone, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 import ButtonLoader from "@/components/buttonLoader";
+import { format } from "date-fns";
 
 // Order type definition
 export interface Order {
@@ -194,9 +195,8 @@ export default function OrderCard({
                   </div>
 
                   <div className="flex items-center gap-1.5 font-medium">
-                    <DollarSign size={16} className="text-emerald-600" />
                     <span className="text-slate-900">
-                      ${amount.toLocaleString()}
+                      ₦{amount.toLocaleString()}
                     </span>
                   </div>
                 </div>
@@ -233,6 +233,19 @@ export default function OrderCard({
                   </div>
                   <p className="text-sm text-slate-600">{address}</p>
                 </div>
+              </div>
+
+              <div className="flex items-start gap-2">
+                {date !== null && (
+                  <>
+                    <Clock size={16} className="text-slate-400 mt-0.5" />
+                    <div>
+                      <div className="text-sm font-medium text-slate-900">
+                        {format(date, "PPpp")}
+                      </div>
+                    </div>
+                  </>
+                )}
               </div>
 
               {onAccept && (
