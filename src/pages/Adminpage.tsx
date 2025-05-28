@@ -569,7 +569,7 @@ export default function AdminDashboardPage() {
                   <Package className="h-12 w-12 text-gray-300 mb-4" />
                   <p className="text-gray-500 text-lg">No orders found</p>
                   <p className="text-gray-400 text-sm">
-                    Orders will appear here when customers place them
+                    Orders will appear here when customers place them.
                   </p>
                 </div>
               )}
