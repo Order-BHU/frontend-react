@@ -51,6 +51,7 @@ import { Driver, Order } from "@/interfaces/adminPageAllOrders";
 import CreateUserModal from "@/components/createUserModal";
 import ButtonLoader from "@/components/buttonLoader";
 import { format } from "date-fns";
+import Loader from "@/components/loaderAnimation";
 
 // Mock data - in a real app, this would come from an API
 const revenueData = [
@@ -233,8 +234,6 @@ export default function AdminDashboardPage() {
     }));
   };
 
-  if (ordersLoading || driversLoading) return <div>Loading...</div>;
-  if (ordersError || driversError) return <div>Error loading data</div>;
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
       case "pending":
@@ -392,7 +391,15 @@ export default function AdminDashboardPage() {
           </CardHeader>
           <CardContent className="p-0">
             <div className="overflow-auto max-h-[25rem] pb-16">
-              {orders && orders.length > 0 ? (
+              {ordersLoading || driversLoading ? (
+                <div className="flex items-center justify-center">
+                  <Loader />
+                </div>
+              ) : ordersError || driversError ? (
+                <div className="flex items-center justify-center">
+                  <p>Error getting data</p>
+                </div>
+              ) : orders && orders.length > 0 ? (
                 <div className="divide-y divide-gray-100">
                   {orders.map((order) => (
                     <div
