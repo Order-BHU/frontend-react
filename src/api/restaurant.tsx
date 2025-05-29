@@ -169,6 +169,21 @@ export async function setDriverStatus(status: "offline" | "online") {
     .catch(handleError);
 }
 
+export async function adminSetDriverStatus(data: {
+  driverID: number;
+  status: "offline" | "online";
+}) {
+  const token = localStorage.getItem("token");
+  return api
+    .post(
+      `/${data.status}/${data.driverID}/driver-status-update`,
+      {},
+      { headers: { Authorization: `Bearer ${token}` } }
+    )
+    .then((response: AxiosResponse) => response.data)
+    .catch(handleError);
+}
+
 export async function deleteMenuItem(menuid: number) {
   const token = localStorage.getItem("token");
   return api

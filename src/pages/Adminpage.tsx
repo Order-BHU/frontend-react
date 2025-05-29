@@ -52,6 +52,7 @@ import CreateUserModal from "@/components/createUserModal";
 import ButtonLoader from "@/components/buttonLoader";
 import { format } from "date-fns";
 import Loader from "@/components/loaderAnimation";
+import { adminSetDriverStatus } from "@/api/restaurant";
 
 // Mock data - in a real app, this would come from an API
 const revenueData = [
@@ -62,30 +63,6 @@ const revenueData = [
   { name: "Fri", value: 1890 },
   { name: "Sat", value: 2390 },
   { name: "Sun", value: 3490 },
-];
-
-const drivers = [
-  {
-    id: "1",
-    name: "John Doe",
-    totalOrders: 50,
-    completedOrders: 48,
-    totalEarnings: "₦75,000",
-  },
-  {
-    id: "2",
-    name: "Jane Smith",
-    totalOrders: 45,
-    completedOrders: 44,
-    totalEarnings: "₦68,000",
-  },
-  {
-    id: "3",
-    name: "Mike Johnson",
-    totalOrders: 40,
-    completedOrders: 39,
-    totalEarnings: "₦62,000",
-  },
 ];
 
 const recentOrders = [
@@ -173,10 +150,20 @@ export default function AdminDashboardPage() {
     data: onlineDrivers,
     isLoading: driversLoading,
     error: driversError,
-    refetch: alldriversRefetch,
+    refetch: onlinedriversRefetch,
   } = useQuery<Driver[], Error>({
     queryKey: ["alldrivers", "online"],
     queryFn: () => driverList("online"),
+  });
+
+  const {
+    data: offlineDrivers,
+    isLoading: offlinedriversLoading,
+    error: offlinedriversError,
+    refetch: offlineDriversRefetch,
+  } = useQuery<Driver[], Error>({
+    queryKey: ["alldrivers", "offline"],
+    queryFn: () => driverList("offline"),
   });
 
   // Mutation for updating an order
@@ -186,7 +173,7 @@ export default function AdminDashboardPage() {
       setLoadingOrder(orderId);
     },
     onSuccess: (data) => {
-      alldriversRefetch();
+      onlinedriversRefetch();
       queryClient.invalidateQueries({ queryKey: ["orders"] });
       setLoadingOrder(null);
       toast({
@@ -210,6 +197,7 @@ export default function AdminDashboardPage() {
   }>({});
 
   const handleUpdate = (orderId: number) => {
+    //this function updates the details of an order. Status and driver assigned
     const updateData = orderUpdates[orderId] || {};
     if (!updateData.status && !updateData.driver_id) return;
     console.log("le driver id: ", updateData.driver_id);
@@ -263,6 +251,30 @@ export default function AdminDashboardPage() {
   };
   //end of things regarding managing and updating orders
 
+  //everything with driver management goes here
+  const { mutate: driverStatusMutate } = useMutation({
+    mutationFn: adminSetDriverStatus,
+    onSuccess: () => {
+      offlineDriversRefetch();
+      onlinedriversRefetch();
+      toast({
+        title: "Status updated",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+  const handleDriverStatusChange = (id: number, status: string) => {
+    (status === "offline" || status === "online") &&
+      driverStatusMutate({ driverID: id, status: status });
+    return;
+  };
+  //end of things with driver management
   const handleLogout = () => {
     const usertoken = localStorage.getItem("token");
     if (!usertoken) {
@@ -807,7 +819,7 @@ export default function AdminDashboardPage() {
             </TabsContent>
             <TabsContent value="drivers">
               <PageWrapper>
-                <Card>
+                <Card className="max-h-96 overflow-auto">
                   <CardHeader>
                     <CardTitle className="text-lg md:text-xl">
                       Driver Performance
@@ -828,32 +840,87 @@ export default function AdminDashboardPage() {
                               Completed Orders
                             </TableHead>
                             <TableHead className="whitespace-nowrap">
-                              Completion Rate
-                            </TableHead>
-                            <TableHead className="whitespace-nowrap">
-                              Total Earnings
+                              Status
                             </TableHead>
                           </TableRow>
                         </TableHeader>
                         <TableBody>
-                          {drivers.map((driver) => (
-                            <TableRow key={driver.id}>
-                              <TableCell className="whitespace-nowrap">
-                                {driver.name}
-                              </TableCell>
-                              <TableCell>{driver.totalOrders}</TableCell>
-                              <TableCell>{driver.completedOrders}</TableCell>
-                              <TableCell>
-                                {(
-                                  (driver.completedOrders /
-                                    driver.totalOrders) *
-                                  100
-                                ).toFixed(2)}
-                                %
-                              </TableCell>
-                              <TableCell>{driver.totalEarnings}</TableCell>
-                            </TableRow>
-                          ))}
+                          {onlineDrivers && onlineDrivers.length > 0 ? (
+                            onlineDrivers.map((driver) => (
+                              <TableRow key={driver.id}>
+                                <TableCell className="whitespace-nowrap">
+                                  {driver.name}
+                                </TableCell>
+                                <TableCell>null rn</TableCell>
+                                <TableCell>null run</TableCell>
+
+                                <TableCell>
+                                  <Select
+                                    value={driver.status}
+                                    onValueChange={(value) =>
+                                      handleDriverStatusChange(driver.id, value)
+                                    }
+                                  >
+                                    <SelectTrigger className="max-w-full mt-3 sm:mt-0">
+                                      <SelectValue>{driver.status}</SelectValue>
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value="online">
+                                        Online
+                                      </SelectItem>
+                                      <SelectItem value="offline">
+                                        Offline
+                                      </SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                </TableCell>
+                              </TableRow>
+                            ))
+                          ) : (
+                            <></>
+                          )}
+                          {offlineDrivers && offlineDrivers.length > 0 ? (
+                            offlineDrivers.map((driver) => (
+                              <TableRow key={driver.id}>
+                                <TableCell className="whitespace-nowrap">
+                                  {driver.name}
+                                </TableCell>
+                                <TableCell>null rn</TableCell>
+                                <TableCell>null rn</TableCell>
+
+                                <TableCell>
+                                  <Select
+                                    value={driver.status}
+                                    onValueChange={(value) =>
+                                      handleDriverStatusChange(driver.id, value)
+                                    }
+                                  >
+                                    <SelectTrigger className="max-w-full mt-3 sm:mt-0">
+                                      <SelectValue>{driver.status}</SelectValue>
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value="online">
+                                        Online
+                                      </SelectItem>
+                                      <SelectItem value="offline">
+                                        Offline
+                                      </SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                </TableCell>
+                              </TableRow>
+                            ))
+                          ) : offlinedriversLoading ? (
+                            <div>
+                              <Loader />
+                            </div>
+                          ) : offlinedriversError ? (
+                            <div>
+                              <p>Something Went Wrong</p>
+                            </div>
+                          ) : (
+                            <></>
+                          )}
                         </TableBody>
                       </Table>
                     </div>
