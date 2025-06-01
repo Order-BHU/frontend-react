@@ -13,7 +13,7 @@ interface TimeLeft {
 }
 
 const CountdownRedirect = ({ children }: CountdownRedirectProps) => {
-  const allowedPaths = ["/signup", "dashboard"];
+  const allowedPaths = ["/signup", "dashboard", "verify"];
   const location = useLocation();
 
   // Calculate initial timeLeft synchronously
