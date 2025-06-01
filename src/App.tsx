@@ -25,6 +25,7 @@ import ToastAutoDismiss from "./components/dismisstoast"; //handles dismissing t
 import { waveform, orbit } from "ldrs";
 import Header from "./components/header";
 import Footer from "./components/footer";
+import CountDownRedirect from "@/components/countdownRedirect";
 
 function App() {
   waveform.register();
@@ -52,50 +53,55 @@ function App() {
         <QueryClientProvider client={queryClient}>
           <ScrollToTop />
           <Header />
-          <Routes>
-            <Route path="*" element={<NotFound />}></Route>
-            <Route path="/" element={<LandingPage />}></Route>
-            <Route path="/forgot-password" element={<ForgotPassword />}></Route>
-            <Route path="/reset-password" element={<ResetPassword />}></Route>
-            <Route path="/restaurants" element={<RestaurantsPage />}></Route>
-            <Route path="/contact" element={<ContactPage />}></Route>
-            <Route path="/login" element={<LoginPage />}></Route>
-            <Route path="/signup" element={<SignUpPage />}></Route>
-            <Route path="/menu/:id" element={<RestaurantMenuPage />}></Route>
-            <Route path="/verify-otp" element={<VerifyOTPPage />}></Route>
-            <Route
-              path="/driver-dashboard"
-              element={
-                <ProtectedRoute allowedRoles={["driver"]}>
-                  <RiderDashboardPage />
-                </ProtectedRoute>
-              }
-            ></Route>
-            <Route
-              path="/restaurant-dashboard"
-              element={
-                <ProtectedRoute allowedRoles={["restaurant"]}>
-                  <RestaurantDashboardPage />
-                </ProtectedRoute>
-              }
-            ></Route>
-            <Route
-              path="/customer-dashboard"
-              element={
-                <ProtectedRoute allowedRoles={["customer"]}>
-                  <UserDashboardPage />
-                </ProtectedRoute>
-              }
-            ></Route>
-            <Route
-              path="/admin-dashboard"
-              element={
-                <ProtectedRoute allowedRoles={["admin"]}>
-                  <AdminDashboardPage />
-                </ProtectedRoute>
-              }
-            ></Route>
-          </Routes>
+          <CountDownRedirect>
+            <Routes>
+              <Route path="*" element={<NotFound />}></Route>
+              <Route path="/" element={<LandingPage />}></Route>
+              <Route
+                path="/forgot-password"
+                element={<ForgotPassword />}
+              ></Route>
+              <Route path="/reset-password" element={<ResetPassword />}></Route>
+              <Route path="/restaurants" element={<RestaurantsPage />}></Route>
+              <Route path="/contact" element={<ContactPage />}></Route>
+              <Route path="/login" element={<LoginPage />}></Route>
+              <Route path="/signup" element={<SignUpPage />}></Route>
+              <Route path="/menu/:id" element={<RestaurantMenuPage />}></Route>
+              <Route path="/verify-otp" element={<VerifyOTPPage />}></Route>
+              <Route
+                path="/driver-dashboard"
+                element={
+                  <ProtectedRoute allowedRoles={["driver"]}>
+                    <RiderDashboardPage />
+                  </ProtectedRoute>
+                }
+              ></Route>
+              <Route
+                path="/restaurant-dashboard"
+                element={
+                  <ProtectedRoute allowedRoles={["restaurant"]}>
+                    <RestaurantDashboardPage />
+                  </ProtectedRoute>
+                }
+              ></Route>
+              <Route
+                path="/customer-dashboard"
+                element={
+                  <ProtectedRoute allowedRoles={["customer"]}>
+                    <UserDashboardPage />
+                  </ProtectedRoute>
+                }
+              ></Route>
+              <Route
+                path="/admin-dashboard"
+                element={
+                  <ProtectedRoute allowedRoles={["admin"]}>
+                    <AdminDashboardPage />
+                  </ProtectedRoute>
+                }
+              ></Route>
+            </Routes>
+          </CountDownRedirect>
           <ReactQueryDevtools />
         </QueryClientProvider>
         <Footer />
