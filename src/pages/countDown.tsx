@@ -1,7 +1,6 @@
 import CountdownTimer from "@/components/countdownComponent/countDownTimer";
 import SignupForm from "@/components/countdownComponent/signupform";
 import FloatingParticles from "@/components/countdownComponent/floatingParticles";
-import { Bike } from "lucide-react";
 
 const CountDown = () => {
   return (
@@ -16,8 +15,8 @@ const CountDown = () => {
       <div className="relative z-10 container mx-auto px-4 py-8 md:py-12">
         {/* Header */}
         <div className="text-center mb-8 md:mb-12">
-          <div className="inline-flex items-center justify-center w-20 h-20 md:w-24 md:h-24 bg-white/20 rounded-full mb-6 backdrop-blur-sm">
-            <Bike className="text-white" size={40} />
+          <div className="overflow-hidden inline-flex items-center justify-center w-20 h-20 md:w-24 md:h-24 bg-white/20 rounded-full mb-6 backdrop-blur-sm">
+            <img src="/orderLogo.JPG" alt="" />
           </div>
 
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-4 tracking-tight">

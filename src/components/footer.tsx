@@ -5,6 +5,18 @@ import { FaWhatsapp } from "react-icons/fa";
 const Footer = () => {
   const navigate = useNavigate();
 
+  //to make footer hidden if we haven't launched order yet. Can be deleted after launch
+  function isAfterTargetDate(): boolean {
+    const targetDate = new Date("2025-06-07T12:00:00");
+    const currentDate = new Date();
+    return currentDate > targetDate;
+  }
+  //end
+
+  if (!isAfterTargetDate()) {
+    return <></>;
+  }
+
   return (
     <footer className="bg-white border-t border-gray-100 py-4">
       <div className="container mx-auto px-3">

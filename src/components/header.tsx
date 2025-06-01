@@ -76,6 +76,17 @@ const Header = () => {
     ? { paddingRight: `${getScrollbarWidth()}px` }
     : {};
 
+  //to make header hidden if we haven't launched order yet. Can be deleted after launch
+  function isAfterTargetDate(): boolean {
+    const targetDate = new Date("2025-06-07T12:00:00");
+    const currentDate = new Date();
+    return currentDate > targetDate;
+  }
+  //end
+
+  if (!isAfterTargetDate()) {
+    return <></>;
+  }
   return (
     <header
       className={`fixed w-full z-50 transition-all duration-300 ${
