@@ -43,9 +43,23 @@ export default function VerifyOTPPage() {
       setIsResendDisabled(false);
     }
   }, [countdown, isResendDisabled]);
+
+  //here for before launch logic
+  function isAfterTargetDate(): boolean {
+    const targetDate = new Date("2025-06-07T12:00:00");
+    const currentDate = new Date();
+    return currentDate > targetDate;
+  }
+  //end
+
   const verifyMutation = useMutation({
     mutationFn: verifyAccount,
     onSuccess: (data) => {
+      if (!isAfterTargetDate()) {
+        localStorage.setItem("registeredBeforeLaunch", "true");
+        navigate("/");
+        return;
+      }
       if (source === "/login") {
         navigate("/login");
       } else {

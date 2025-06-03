@@ -20,10 +20,21 @@ const CountDown = () => {
           </div>
 
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-4 tracking-tight">
-            <span className="block">BHUORDER</span>
-            <span className="block text-2xl md:text-4xl lg:text-5xl text-orange-200 font-normal">
-              Coming Soon
-            </span>
+            {localStorage.getItem("registeredBeforeLaunch") === "true" ? (
+              <>
+                <span className="block">REGISTRATION SUCCESSFUL</span>
+                <span className="block text-2xl md:text-4xl lg:text-5xl text-orange-200 font-normal">
+                  {"Welcome aboard :)"}
+                </span>
+              </>
+            ) : (
+              <>
+                <span className="block">BHUORDER</span>
+                <span className="block text-2xl md:text-4xl lg:text-5xl text-orange-200 font-normal">
+                  Coming Soon
+                </span>
+              </>
+            )}
           </h1>
 
           <p className="text-lg md:text-xl text-orange-100 max-w-2xl mx-auto leading-relaxed">
