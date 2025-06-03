@@ -30,7 +30,6 @@ export async function makePayment(data: {
       headers: { Authorization: `Bearer ${secretKey}` },
     })
     .then((response: AxiosResponse) => {
-      console.log(response.data);
       return response.data;
     })
     .catch(handleError);
@@ -42,7 +41,6 @@ export async function verifyPayment(reference: string | null) {
       headers: { Authorization: `Bearer ${secretKey}` },
     })
     .then((response: AxiosResponse) => {
-      console.log(response.data);
       return response.data;
     })
     .catch(handleError);

@@ -9,7 +9,7 @@ export function OrderForm() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Here you would typically send the order to your backend
-    console.log("'Order submitted with address:'", address);
+
     alert("'Order submitted successfully!'");
     setAddress("''");
   };

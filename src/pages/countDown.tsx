@@ -62,10 +62,10 @@ const CountDown = () => {
           <div className="text-center p-6 bg-white/10 backdrop-blur-sm rounded-2xl border border-white/20 hover:bg-white/20 transition-all duration-300">
             <div className="text-3xl md:text-4xl mb-3">⚡</div>
             <h3 className="text-white font-semibold text-lg mb-2">
-              Lightning Fast
+              In less than 20 minutes
             </h3>
             <p className="text-orange-200 text-sm">
-              30-minute delivery guarantee
+              20-minute delivery guarantee
             </p>
           </div>
 

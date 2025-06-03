@@ -97,20 +97,22 @@ const RestaurantMenuPage = () => {
   });
   const { mutateAsync: mutate } = useMutation({
     mutationFn: addToCart,
-    onSuccess: (data) => {
-      console.log(data.message);
-    },
+
     onError: (error) => {
-      console.log(error.message);
+      toast({
+        title: "Error",
+        description: error.message,
+      });
     },
   });
   const { mutateAsync: removeItemMutate } = useMutation({
     mutationFn: removeCartItem,
-    onSuccess: (data) => {
-      console.log(data.message);
-    },
+
     onError: (error) => {
-      console.log(error.message);
+      toast({
+        title: "Error",
+        description: error.message,
+      });
     },
   });
 
@@ -165,7 +167,6 @@ const RestaurantMenuPage = () => {
     // Update the cart state
     setCart((prevCart) => {
       if (existingItem) {
-        console.log(`Increasing quantity for item ${itemName} (${itemId})`);
         // Update quantity if item already exists
         return prevCart.map((cartItem) =>
           cartItem.menu_id === itemId
@@ -186,7 +187,6 @@ const RestaurantMenuPage = () => {
         ];
       }
     });
-    console.log("refetching...");
 
     // Only call API to add item if it's a new item
     // (quantity increments are handled client-side only)

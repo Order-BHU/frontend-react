@@ -200,7 +200,6 @@ export default function AdminDashboardPage() {
     //this function updates the details of an order. Status and driver assigned
     const updateData = orderUpdates[orderId] || {};
     if (!updateData.status && !updateData.driver_id) return;
-    console.log("le driver id: ", updateData.driver_id);
     updateOrderMutation.mutate({
       driver_id: updateData.driver_id || "",
       status: updateData.status || "",

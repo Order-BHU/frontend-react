@@ -13,8 +13,8 @@ const SignupForm = () => {
     <div className="max-w-md w-full mx-auto">
       <div className="bg-white/10 backdrop-blur-md rounded-3xl p-6 md:p-8 shadow-2xl border border-white/20">
         <div className="text-center mb-6">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-orange-500 rounded-full mb-4 animate-bounce">
-            <Truck className="text-white" size={24} />
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-white rounded-full mb-4 animate-bounce">
+            <Truck className="text-orange-500" size={24} />
           </div>
           <h3 className="text-xl md:text-2xl font-bold text-white mb-2">
             Be the First to Know!

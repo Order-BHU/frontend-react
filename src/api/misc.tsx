@@ -4,7 +4,7 @@ const apiUrl = "https://bhuorder.com.ng/api";
 
 export async function updatePfp(pfp: { profile_picture: File | null }) {
   const token = localStorage.getItem("token");
-  console.log(token);
+
   return axios
     .post(
       `${apiUrl}/update-profile-picture`,
@@ -37,7 +37,7 @@ export async function editProfile(data: {
   phone_number?: string;
 }) {
   const token = localStorage.getItem("token");
-  console.log(token);
+
   return axios
     .post(
       `${apiUrl}/edit-profile`,
@@ -66,7 +66,7 @@ export async function editProfile(data: {
 export async function dashboard() {
   //this function gets the user's data
   const token = localStorage.getItem("token");
-  console.log(token);
+
   return axios
     .get(
       `${apiUrl}/dashboard`,
@@ -79,7 +79,6 @@ export async function dashboard() {
       }
     )
     .then(function (response: AxiosResponse) {
-      console.log("db data:", response.data);
       return response.data;
     })
     .catch(function (error: AxiosError) {
@@ -97,7 +96,7 @@ export async function changePassword(data: {
   confirm_password: string;
 }) {
   const token = localStorage.getItem("token");
-  console.log(token);
+
   return axios
     .post(
       `${apiUrl}/change-password`,
@@ -152,7 +151,7 @@ export async function contact(data: { subject: string; message: string }) {
 export async function transactions() {
   //this function gets the user's data
   const token = localStorage.getItem("token");
-  console.log(token);
+
   return axios
     .get(
       `${apiUrl}/transaction-list`,
@@ -165,7 +164,6 @@ export async function transactions() {
       }
     )
     .then(function (response: AxiosResponse) {
-      console.log("list of trans people:", response.data.transactions);
       return response.data.transactions;
     })
     .catch(function (error: AxiosError) {
@@ -192,7 +190,6 @@ export async function allOrders() {
       }
     )
     .then(function (response: AxiosResponse) {
-      console.log("all orders route:", response.data.orders);
       return response.data.orders;
     })
     .catch(function (error: AxiosError) {
@@ -219,12 +216,6 @@ export async function driverList(status: string) {
       }
     )
     .then(function (response: AxiosResponse) {
-      console.log(
-        "all drivers based on args:",
-        status === "online"
-          ? response.data.onlinedrivers
-          : response.data.offlinedrivers
-      );
       return status === "online"
         ? response.data.onlinedrivers
         : response.data.offlinedrivers;

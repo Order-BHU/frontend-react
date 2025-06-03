@@ -116,7 +116,6 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
   const handleEditProfile = (e: React.FormEvent) => {
     e.preventDefault();
     editProfileMutate(filteredData);
-    console.log("filtered: ", filteredData);
   };
   const { mutate: passwordMutate, status: passwordStatus } = useMutation({
     mutationFn: changePassword,

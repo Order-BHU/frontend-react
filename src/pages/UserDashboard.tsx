@@ -141,11 +141,7 @@ export default function UserDashboardPage() {
     }
     //this passes the progress to the progress element
   };
-  useEffect(() => {
-    if (trackedOrder) {
-      console.log("tracked: ", trackedOrder);
-    }
-  }, [trackedOrder]);
+
   if (logoutStatus === "pending") {
     return (
       <div>

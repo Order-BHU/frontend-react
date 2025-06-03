@@ -26,7 +26,6 @@ export async function loginUser(user: existingUser) {
   return api
     .post("/login", user)
     .then((response: AxiosResponse<loginResponse>) => {
-      console.log("login data:", response?.data);
       return response.data;
     })
     .catch((error: AxiosError) => {
@@ -118,7 +117,6 @@ export async function getBanks() {
       headers: { Authorization: `Bearer ${token}` },
     })
     .then((response: AxiosResponse) => {
-      console.log("list of banks: ", response.data, token);
       return response.data;
     })
     .catch((error: AxiosError) => {
@@ -146,7 +144,6 @@ export async function resolveBank(data: {
       }
     )
     .then((response: AxiosResponse<bankResolveResponse>) => {
-      console.log("resolved bank data: ", response.data);
       return response.data;
     })
     .catch((error: AxiosError) => {
@@ -162,7 +159,6 @@ export async function googleSignIn() {
   return api
     .get(`/auth/google`)
     .then((response: AxiosResponse) => {
-      console.log("google Response: ", response.data);
       return response.data;
     })
     .catch((error: AxiosError) => {
@@ -178,7 +174,6 @@ export async function forgotPassword(data: { email: string }) {
   return api
     .post("/forgot-password", data)
     .then((response: AxiosResponse<bankResolveResponse>) => {
-      console.log("password data: ", response.data);
       return response.data;
     })
     .catch((error: AxiosError) => {
@@ -198,7 +193,6 @@ export async function resetPassword(data: {
   return api
     .post("/reset-password", data)
     .then((response: AxiosResponse<bankResolveResponse>) => {
-      console.log("password data: ", response.data);
       return response.data;
     })
     .catch((error: AxiosError) => {

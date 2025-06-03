@@ -88,10 +88,8 @@ export default function LoginPage() {
       if (event.origin !== "https://bhuorder.com.ng") return;
 
       const { token, user } = event.data;
-      console.log("received stuff: ", event);
 
       if (token) {
-        console.log("token: ", token);
         localStorage.setItem("token", token);
         user?.account_type &&
           localStorage.setItem("accountType", user?.account_type);

@@ -146,7 +146,7 @@ const RestaurantDashboardPage = () => {
     mutationFn: updateOrderStatus,
     onError: (error) => {
       setLoadingOrder(null);
-      console.log("set state error: ", error.message);
+
       toast({
         title: "Error",
         description: error.message,
@@ -166,9 +166,7 @@ const RestaurantDashboardPage = () => {
     },
   });
 
-  useEffect(() => {
-    console.log("pending: ", pendingOrderState);
-  }, [pendingOrderState]);
+  useEffect(() => {}, [pendingOrderState]);
   const {
     status: menuStatus,
     data: menuItems,
@@ -201,7 +199,6 @@ const RestaurantDashboardPage = () => {
   const { status: mutateStatus, mutate: addMenuMutate } = useMutation({
     mutationFn: addMenu,
     onSuccess: (data) => {
-      console.log("add menu response: ", data);
       toast({
         title: "Success",
         description: data.message,
@@ -249,10 +246,7 @@ const RestaurantDashboardPage = () => {
         restaurant_id: restId,
       });
   };
-  useEffect(() => {
-    console.log("accepted: ", acceptedOrderState);
-    console.log("accepted online: ", acceptedOrders);
-  }, [acceptedOrderState]);
+
   const handleImageChange = (
     e: React.ChangeEvent<HTMLInputElement>,
     itemId: number
@@ -291,7 +285,7 @@ const RestaurantDashboardPage = () => {
 
   useEffect(() => {
     //this sets the pending orders state to the pending orders response
-    console.log(localStorage.getItem("token"));
+
     if (pendingOrders) {
       setPendingOrders(pendingOrders.orders);
     }
@@ -299,7 +293,6 @@ const RestaurantDashboardPage = () => {
   useEffect(() => {
     if (acceptedOrders) {
       setAccepted(acceptedOrders.orders);
-      console.log("my orders: ", acceptedOrders);
     }
   }, [acceptedOrders]);
 
@@ -378,7 +371,6 @@ const RestaurantDashboardPage = () => {
     },
   });
   const handleDeleteMenuItem = (id: number) => {
-    console.log("deleting");
     deleteMenuItemMutate(id);
 
     setmenuItemArray((prev) => prev.filter((item) => item.id !== id));
@@ -1123,11 +1115,6 @@ const RestaurantDashboardPage = () => {
                                                 onValueChange={(value) => {
                                                   setSelectedCategory(
                                                     Number(value)
-                                                  );
-
-                                                  console.log(
-                                                    "selected cat: ",
-                                                    selectedCategory
                                                   );
                                                 }}
                                               >

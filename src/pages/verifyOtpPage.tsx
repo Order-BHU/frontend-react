@@ -79,7 +79,6 @@ export default function VerifyOTPPage() {
   const resendMutation = useMutation({
     mutationFn: getOtp,
     onSuccess: () => {
-      console.log("request submitted:", otp);
       toast({
         title: "Sending an OTP",
         description: "Check your email for an OTP",

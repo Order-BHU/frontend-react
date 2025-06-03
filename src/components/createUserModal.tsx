@@ -92,7 +92,7 @@ export default function CreateUserModal({ isDriver }: createProps) {
         variant: "destructive",
       });
     }
-    console.log("New restaurant:", formData);
+
     mutate({ ...formData, account_type: isDriver ? "driver" : "restaurant" });
   };
 
@@ -160,7 +160,6 @@ export default function CreateUserModal({ isDriver }: createProps) {
     account_number: string;
   }) => {
     if (bank.account_number && bank.bank_code) {
-      console.log("bank sending:", bank);
       resolveBankMutate(bank);
     }
     return;

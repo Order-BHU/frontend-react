@@ -80,9 +80,7 @@ export default function RiderDashboardPage() {
       });
     }
   }, [pendingOrders]);
-  useEffect(() => {
-    console.log("all orders: ", allOrders);
-  }, [allOrders]);
+
   useEffect(() => {
     if (deliveringOrders) {
       //since I'm adding them one by one, I'll have to make sure the items I'm adding don't exist so we dont' have duplicates
@@ -127,10 +125,6 @@ export default function RiderDashboardPage() {
       return;
     },
   });
-
-  useEffect(() => {
-    console.log("history: ", orderHistory);
-  }, [orderHistory]);
 
   useEffect(() => {
     //this is here so the driver's state gets stored somewhere for the button
@@ -187,8 +181,6 @@ export default function RiderDashboardPage() {
     newcategoryStatus: string,
     code?: string
   ) => {
-    console.log("order id: ", orderId);
-    console.log("verification code: ", code);
     orderStatusMutate({
       orderId: Number(orderId),
       status: newcategoryStatus,
@@ -209,7 +201,6 @@ export default function RiderDashboardPage() {
     },
   });
   const handleDriverStatusChange = () => {
-    console.log("running");
     if (!userDetails) {
       return;
     }

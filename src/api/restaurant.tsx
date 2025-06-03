@@ -28,7 +28,6 @@ export async function getMenuItems(id: string) {
   return api
     .get(`/${id}/menu-list`)
     .then((response: AxiosResponse) => {
-      console.log("menuItems: ", response.data);
       return response.data;
     })
     .catch(handleError);
@@ -89,7 +88,6 @@ export async function viewCart() {
   return api
     .get("/view-cart", { headers: { Authorization: `Bearer ${token}` } })
     .then((response: AxiosResponse) => {
-      console.log("cart data: ", response.data);
       return response.data.cart_items;
     })
     .catch(handleError);
@@ -114,7 +112,6 @@ export async function myOrders(
       headers: { Authorization: `Bearer ${token}` },
     })
     .then((response: AxiosResponse) => {
-      console.log("myorders: ", response.data);
       return response.data;
     })
     .catch(handleError);
@@ -225,7 +222,6 @@ export async function initializeCheckout(data: {
       { headers: { Authorization: `Bearer ${token}` } }
     )
     .then((response: AxiosResponse) => {
-      console.log("checkout stuff: ", response.data);
       return response.data;
     })
     .catch(handleError);
