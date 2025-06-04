@@ -44,7 +44,13 @@ const CountDown = () => {
         </div>
 
         {/* Main content grid */}
-        <div className="grid lg:grid-cols-2 gap-8 md:gap-12 items-center max-w-6xl mx-auto">
+        <div
+          className={`flex flex-col lg:flex-row gap-8 md:gap-12 items-center max-w-6xl mx-auto ${
+            localStorage.getItem("registeredBeforeLaunch") === "true"
+              ? " flex-col-reverse"
+              : ""
+          }`}
+        >
           {/* Countdown Timer */}
           <div className="lg:col-span-1">
             <CountdownTimer />

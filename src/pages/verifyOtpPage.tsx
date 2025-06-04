@@ -36,6 +36,11 @@ export default function VerifyOTPPage() {
   //   );
   // }, []);
   useEffect(() => {
+    //rewriting the logic to make the timer start when the page loads initially
+    setCountdown(59);
+    setIsResendDisabled(true);
+  }, []);
+  useEffect(() => {
     if (countdown > 0) {
       const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
       return () => clearTimeout(timer);
@@ -109,11 +114,21 @@ export default function VerifyOTPPage() {
   });
 
   const handleClick = () => {
-    setIsResendDisabled(true);
-    setCountdown(59);
-    resendMutation.mutate({
-      email: email,
-    });
+    resendMutation
+      .mutateAsync({
+        email: email,
+      })
+      .then(() => {
+        setIsResendDisabled(true);
+        setCountdown(59);
+      })
+      .catch((error) => {
+        toast({
+          variant: "destructive",
+          title: "something went wrong",
+          description: error.message,
+        });
+      });
   };
 
   return (
