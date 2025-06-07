@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 import ButtonLoader from "@/components/buttonLoader";
-import { format } from "date-fns";
+//import { format } from "date-fns";
 
 // Order type definition
 export interface Order {
@@ -235,7 +235,7 @@ export default function OrderCard({
                 </div>
               </div>
 
-              <div className="flex items-start gap-2">
+              {/* <div className="flex items-start gap-2">
                 {date !== null && (
                   <>
                     <Clock size={16} className="text-slate-400 mt-0.5" />
@@ -246,7 +246,7 @@ export default function OrderCard({
                     </div>
                   </>
                 )}
-              </div>
+              </div> */}
 
               {onAccept && (
                 <div className="flex items-start gap-2">
