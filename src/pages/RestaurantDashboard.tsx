@@ -511,7 +511,7 @@ const RestaurantDashboardPage = () => {
               </div>
             </div>
             <div className="text-2xl font-bold text-secondary-900">
-              ₦{Number(userDetails?.earnings?.total).toLocaleString()}
+              ₦{Number(userDetails?.wallet_balance).toLocaleString()}
             </div>
           </div>
 
