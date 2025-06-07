@@ -206,17 +206,12 @@ export default function OrderCard({
                     Items:
                   </div>
                   <ul className="text-sm text-slate-600 space-y-1">
-                    {items.slice(0, 2).map((item) => (
+                    {items.map((item) => (
                       <li key={item.menu_id} className="flex justify-between">
                         <span>{item.menu_name}</span>
                         <span className="text-slate-500">x{item.quantity}</span>
                       </li>
                     ))}
-                    {items.length > 2 && (
-                      <li className="text-xs text-slate-500">
-                        +{items.length - 2} more items
-                      </li>
-                    )}
                   </ul>
                 </div>
               </div>
