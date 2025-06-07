@@ -497,12 +497,19 @@ export default function RiderDashboardPage() {
                                     "delivering"
                                   );
                                 }}
-                                onComplete={() =>
+                                onComplete={() => {
+                                  setAllOrders((prev) =>
+                                    prev.map((order) =>
+                                      item.order_id === order.order_id
+                                        ? { ...order, status: "completed" }
+                                        : order
+                                    )
+                                  );
                                   handlecategoryStatusChange(
                                     item.order_id,
                                     "completed"
-                                  )
-                                }
+                                  );
+                                }}
                               />
                             ))}
                         </div>
