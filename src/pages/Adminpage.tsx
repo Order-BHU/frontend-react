@@ -53,6 +53,7 @@ import ButtonLoader from "@/components/buttonLoader";
 import { format } from "date-fns";
 import Loader from "@/components/loaderAnimation";
 import { adminSetDriverStatus } from "@/api/restaurant";
+import ProfileCard from "@/components/adminPage/profileCard";
 
 // Mock data - in a real app, this would come from an API
 const revenueData = [
@@ -290,24 +291,7 @@ export default function AdminDashboardPage() {
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-cbg-dark">
       <main className="flex-grow container mx-auto px-4 py-8 space-y-8 mt-20">
-        <PageWrapper>
-          <h1 className="text-2xl md:text-3xl font-bold mb-6 text-gray-800 dark:text-cfont-dark">
-            Admin Dashboard
-          </h1>
-
-          <Button
-            variant="outline"
-            className=" justify-between rounded-xl border-gray-200 bg-gray hover:bg-orange-600 shadow-sm"
-            disabled={logoutStatus === "pending"}
-            onClick={handleLogout}
-          >
-            <span className="flex items-center">
-              <LogOut className="mr-2 h-4 w-4" />
-              Log Out
-            </span>
-            <ChevronRight className="h-4 w-4" />
-          </Button>
-        </PageWrapper>
+        <ProfileCard logoutStatus={logoutStatus} handleLogout={handleLogout} />
 
         <PageWrapper className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           <Card>
