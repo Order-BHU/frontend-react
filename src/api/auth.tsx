@@ -17,7 +17,6 @@ export async function createUser(user: User) {
     .post("/register", user)
     .then((response: AxiosResponse<apiResponse>) => response.data)
     .catch((error: AxiosError) => {
-      console.log(error);
       throw error.response?.data;
     });
 }
@@ -32,7 +31,7 @@ export async function loginUser(user: existingUser) {
       if (error.code === "ERR_NETWORK") {
         throw new Error("Network error: Unable to reach the server.");
       }
-      console.log(error);
+
       throw error.response?.data;
     });
 }
@@ -45,7 +44,7 @@ export async function createNewAccount(account: Owner) {
       if (error.code === "ERR_NETWORK") {
         throw new Error("Network error: Unable to reach the server.");
       }
-      console.log(error);
+
       throw error.response?.data;
     });
 }
@@ -58,7 +57,7 @@ export async function createDriver(driver: Driver) {
       if (error.code === "ERR_NETWORK") {
         throw new Error("Network error: Unable to reach the server.");
       }
-      console.log(error);
+
       throw error.response?.data;
     });
 }
@@ -71,7 +70,7 @@ export async function verifyAccount(code: Otp) {
       if (error.code === "ERR_NETWORK") {
         throw new Error("Network error: Unable to reach the server.");
       }
-      console.log(error);
+
       throw error.response?.data;
     });
 }
@@ -84,7 +83,7 @@ export async function getOtp(email: email) {
       if (error.code === "ERR_NETWORK") {
         throw new Error("Network error: Unable to reach the server.");
       }
-      console.log(error);
+
       throw error.response?.data;
     });
 }
@@ -105,7 +104,7 @@ export async function logOut(token: string | null) {
       if (error.code === "ERR_NETWORK") {
         throw new Error("Network error: Unable to reach the server.");
       }
-      console.log(error);
+
       throw error.response?.data;
     });
 }
@@ -123,7 +122,7 @@ export async function getBanks() {
       if (error.code === "ERR_NETWORK") {
         throw new Error("Network error: Unable to reach the server.");
       }
-      console.log(error);
+
       throw error.response?.data;
     });
 }
@@ -150,7 +149,7 @@ export async function resolveBank(data: {
       if (error.code === "ERR_NETWORK") {
         throw new Error("Network error: Unable to reach the server.");
       }
-      console.log(error);
+
       throw error.response?.data;
     });
 }
@@ -165,7 +164,7 @@ export async function googleSignIn() {
       if (error.code === "ERR_NETWORK") {
         throw new Error("Network error: Unable to reach the server.");
       }
-      console.log(error);
+
       throw error.response?.data;
     });
 }
@@ -180,7 +179,7 @@ export async function forgotPassword(data: { email: string }) {
       if (error.code === "ERR_NETWORK") {
         throw new Error("Network error: Unable to reach the server.");
       }
-      console.log(error);
+
       throw error.response?.data;
     });
 }
@@ -199,7 +198,7 @@ export async function resetPassword(data: {
       if (error.code === "ERR_NETWORK") {
         throw new Error("Network error: Unable to reach the server.");
       }
-      console.log(error);
+
       throw error.response?.data;
     });
 }

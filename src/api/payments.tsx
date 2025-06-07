@@ -7,7 +7,7 @@ function handleError(error: AxiosError) {
   if (error.code === "ERR_NETWORK") {
     throw new Error("Network error: Unable to reach the server.");
   }
-  console.error(error);
+
   throw error.response?.data;
 }
 

@@ -321,13 +321,16 @@ export default function RiderDashboardPage() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  <EditProfileModal
-                    successFn={refetchDetails}
-                    userDetails={{
-                      name: userDetails?.user?.name,
-                      phone_number_type: userDetails?.user?.phone_number_type,
-                    }}
-                  />
+                  {userDetails && (
+                    <EditProfileModal
+                      successFn={refetchDetails}
+                      userDetails={{
+                        name: userDetails?.user?.name,
+                        phone_number_type: userDetails?.user?.phone_number_type,
+                        phone_number: userDetails?.user?.phone_number,
+                      }}
+                    />
+                  )}
                   <Button
                     onClick={handleDriverStatusChange}
                     variant={driverState === "online" ? "green" : "outline"}

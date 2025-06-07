@@ -469,14 +469,17 @@ const RestaurantDashboardPage = () => {
                 </div>
               </div>
               <div className="space-y-3">
-                <EditProfileModal
-                  successFn={refetchDetails}
-                  userDetails={{
-                    restaurant_name: userDetails?.restaurant_details?.name,
-                    restaurant_logo: userDetails?.restaurant_details?.logo,
-                    cover_picture: userDetails?.user?.profile_picture_url,
-                  }}
-                />
+                {userDetails && ( //here because the modal loads and doesn't show the user's details sometimes
+                  <EditProfileModal
+                    successFn={refetchDetails}
+                    userDetails={{
+                      restaurant_name: userDetails?.restaurant_details?.name,
+                      restaurant_logo: userDetails?.restaurant_details?.logo,
+                      cover_picture: userDetails?.user?.profile_picture_url,
+                      phone_number: userDetails?.user?.phone_number,
+                    }}
+                  />
+                )}
                 <Button
                   variant="outline"
                   className="w-full justify-between rounded-xl border-gray-200 bg-white shadow-sm"

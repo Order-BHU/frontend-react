@@ -203,7 +203,7 @@ const RestaurantMenuPage = () => {
           //instead of refetching, I just manually remove from local state if there's an error since I'm treating api state and local state differently
           return prevCart.filter((item) => item.menu_id !== itemId);
         });
-        console.error(`Failed to add item ${itemName} to cart:`, error);
+
         toast({
           variant: "destructive",
           title: "Error",
@@ -268,7 +268,7 @@ const RestaurantMenuPage = () => {
         await refetch(); // Refetch cart data to ensure sync with server
       } catch (error) {
         // Handle error case
-        console.error("Failed to update cart:", error);
+
         refetch(); // Refetch to ensure UI shows correct state
       }
     }

@@ -24,7 +24,7 @@ export async function updatePfp(pfp: { profile_picture: File | null }) {
       if (error.code === "ERR_NETWORK") {
         throw new Error("Network error: Unable to reach the server.");
       }
-      console.log(error);
+
       throw error.response?.data;
     });
 }
@@ -58,7 +58,7 @@ export async function editProfile(data: {
       if (error.code === "ERR_NETWORK") {
         throw new Error("Network error: Unable to reach the server.");
       }
-      console.log(error);
+
       throw error.response?.data;
     });
 }
@@ -85,7 +85,7 @@ export async function dashboard() {
       if (error.code === "ERR_NETWORK") {
         throw new Error("Network error: Unable to reach the server.");
       }
-      console.log(error);
+
       throw error.response?.data;
     });
 }
@@ -117,7 +117,7 @@ export async function changePassword(data: {
       if (error.code === "ERR_NETWORK") {
         throw new Error("Network error: Unable to reach the server.");
       }
-      console.log(error);
+
       throw error.response?.data;
     });
 }
@@ -143,7 +143,7 @@ export async function contact(data: { subject: string; message: string }) {
       if (error.code === "ERR_NETWORK") {
         throw new Error("Network error: Unable to reach the server.");
       }
-      console.log(error);
+
       throw error.response?.data;
     });
 }
@@ -170,7 +170,7 @@ export async function transactions() {
       if (error.code === "ERR_NETWORK") {
         throw new Error("Network error: Unable to reach the server.");
       }
-      console.log(error);
+
       throw error.response?.data;
     });
 }
@@ -196,7 +196,7 @@ export async function allOrders() {
       if (error.code === "ERR_NETWORK") {
         throw new Error("Network error: Unable to reach the server.");
       }
-      console.log(error);
+
       throw error.response?.data;
     });
 }
@@ -224,7 +224,7 @@ export async function driverList(status: string) {
       if (error.code === "ERR_NETWORK") {
         throw new Error("Network error: Unable to reach the server.");
       }
-      console.log(error);
+
       throw error.response?.data;
     });
 }
@@ -254,7 +254,7 @@ export async function updateOrder(data: {
       if (error.code === "ERR_NETWORK") {
         throw new Error("Network error: Unable to reach the server.");
       }
-      console.log(error);
+
       throw error.response?.data;
     });
 }

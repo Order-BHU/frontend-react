@@ -234,14 +234,16 @@ export default function UserDashboardPage() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
-                <EditProfileModal
-                  successFn={refetchDetails}
-                  userDetails={{
-                    name: userDetails?.user?.name,
-                    phone_number_type: userDetails?.user?.phone_number_type,
-                    phone_number: userDetails?.user?.phone_number,
-                  }}
-                />
+                {userDetails && (
+                  <EditProfileModal
+                    successFn={refetchDetails}
+                    userDetails={{
+                      name: userDetails?.user?.name,
+                      phone_number_type: userDetails?.user?.phone_number_type,
+                      phone_number: userDetails?.user?.phone_number,
+                    }}
+                  />
+                )}
                 {/* <Button
                   variant="outline"
                   className="w-full justify-between rounded-xl border-gray-200 bg-white shadow-sm"

@@ -147,6 +147,7 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
   const handleUpdatePassword = () => {
     passwordMutate(passwordDetails);
   };
+
   return (
     <Dialog open={showEditProfileModal} onOpenChange={setShowEditProfileModal}>
       <DialogTrigger asChild>
