@@ -172,9 +172,10 @@ const RestaurantDashboardPage = () => {
     data: menuItems,
     refetch: refetchMenuItems,
   } = useQuery({
-    queryKey: ["menuItems", localStorage.getItem("restaurant_id")],
+    queryKey: ["menuItems", userDetails?.restaurant_details?.id],
     queryFn: () => getMenuItems(userDetails?.restaurant_details?.id),
     staleTime: 30000,
+    enabled: !!userDetails,
   });
 
   const { status: editStatus, mutate: editMutate } = useMutation({
