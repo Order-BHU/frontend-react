@@ -280,7 +280,7 @@ export default function RiderDashboardPage() {
                   </div>
                 </CardHeader>
                 <CardContent className="relative z-10">
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                  <div className="flex sm:flex-row fold:flex-col items-start sm:items-center gap-4  ">
                     <Avatar className="h-20 w-20 border-4 border-white shadow-md">
                       <AvatarImage
                         src={userDetails?.user?.profile_picture_url}
@@ -295,10 +295,10 @@ export default function RiderDashboardPage() {
                       <h2 className="text-xl font-semibold text-gray-900">
                         {userDetails?.user?.name}
                       </h2>
-                      <p className="text-sm text-gray-500">
+                      <p className="text-sm  text-gray-500">
                         {userDetails?.user?.email}
                       </p>
-                      <p className="text-sm text-gray-500">
+                      <p className="text-sm  text-gray-500">
                         {userDetails?.user?.phone_number}
                       </p>
                       <div className="flex items-center mt-2"></div>
