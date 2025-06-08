@@ -153,7 +153,10 @@ const Header = () => {
                 className="w-10 h-10"
                 onClick={() => navigate(`/${role}-dashboard`)}
               >
-                <AvatarImage src={localStorage.getItem("pfp") || ""} />
+                <AvatarImage
+                  src={localStorage.getItem("pfp") || ""}
+                  className="object-cover object-center"
+                />
                 <AvatarFallback className="text-gray-900 dark:text-gray-300">
                   {username}
                 </AvatarFallback>

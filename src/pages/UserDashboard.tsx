@@ -198,6 +198,7 @@ export default function UserDashboardPage() {
                       alt={
                         localStorage.getItem("name") || userDetails?.user?.name
                       }
+                      className="object-cover object-center"
                     />
                     <AvatarFallback className="bg-orange-100 text-orange-600">
                       <User className="h-10 w-10" />

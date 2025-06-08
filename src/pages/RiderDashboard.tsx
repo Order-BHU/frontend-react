@@ -285,6 +285,7 @@ export default function RiderDashboardPage() {
                       <AvatarImage
                         src={userDetails?.user?.profile_picture_url}
                         alt={userDetails?.user?.name}
+                        className="object-cover object-center filter blur-[0.2px] brightness-105"
                       />
                       <AvatarFallback className="bg-orange-100 text-orange-600">
                         <User className="h-10 w-10" />
