@@ -420,17 +420,19 @@ export default function AdminDashboardPage() {
                       <div className="space-y-4">
                         {/* Order Header */}
                         <div className="flex items-start justify-between">
+                          <div className="flex flex-col">
+                            <h3 className="font-semibold text-lg">
+                              Order #{order.id}
+                            </h3>
+                            <Badge
+                              variant="outline"
+                              className={getStatusColor(order.status)}
+                            >
+                              {order.status}
+                            </Badge>
+                          </div>
                           <div className="space-y-1">
                             <div className="flex items-center gap-2">
-                              <h3 className="font-semibold text-lg">
-                                Order #{order.id}
-                              </h3>
-                              <Badge
-                                variant="outline"
-                                className={getStatusColor(order.status)}
-                              >
-                                {order.status}
-                              </Badge>
                               {order.created_at !== null && (
                                 <span className="text-sm italic">
                                   {format(order.created_at, "PPpp")}
