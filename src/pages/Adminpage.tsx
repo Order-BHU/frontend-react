@@ -444,13 +444,17 @@ export default function AdminDashboardPage() {
 
                         {/* Order Details Grid */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                          <div className="flex items-center gap-2">
-                            <User className="h-4 w-4 text-gray-500" />
-                            <span className="text-gray-600">Customer:</span>
-                            <div className="flex items-center gap-1">
-                              <span className="font-medium">
-                                {order.user.name}
-                              </span>
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <User className="h-4 w-4 text-gray-500" />
+                              <span className="text-gray-600">Customer:</span>
+                              <div className="flex items-center gap-1">
+                                <span className="font-medium">
+                                  {order.user.name}
+                                </span>
+                              </div>
+                            </div>
+                            <div className="flex gap-1">
                               <Phone className="h-3 w-3 text-gray-400" />
                               <span className="text-xs text-gray-500">
                                 {order.user.phone_number}
