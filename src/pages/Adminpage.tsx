@@ -445,9 +445,15 @@ export default function AdminDashboardPage() {
                           <div className="flex items-center gap-2">
                             <User className="h-4 w-4 text-gray-500" />
                             <span className="text-gray-600">Customer:</span>
-                            <span className="font-medium">
-                              {order.user.name}
-                            </span>
+                            <div className="flex items-center gap-1">
+                              <span className="font-medium">
+                                {order.user.name}
+                              </span>
+                              <Phone className="h-3 w-3 text-gray-400" />
+                              <span className="text-xs text-gray-500">
+                                {order.user.phone_number}
+                              </span>
+                            </div>
                           </div>
 
                           <div className="flex items-center gap-2">
@@ -493,77 +499,85 @@ export default function AdminDashboardPage() {
                         <Separator />
 
                         {/* Update Controls */}
-                        <div className="flex flex-col sm:flex-row gap-3 items-end">
-                          <div className="flex-1 space-y-2">
-                            <label className="text-sm font-medium text-gray-700">
-                              Update Status
-                            </label>
-                            <Select
-                              value={
-                                orderUpdates[order.id]?.status || order.status
-                              }
-                              onValueChange={(value) =>
-                                handleInputChange(order.id, "status", value)
-                              }
-                            >
-                              <SelectTrigger className="w-full">
-                                <SelectValue>
-                                  {getStatusDisplay(
-                                    orderUpdates[order.id]?.status ||
-                                      order.status
-                                  )}
-                                </SelectValue>
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="pending">Pending</SelectItem>
-                                <SelectItem value="accepted">
-                                  Accepted
-                                </SelectItem>
-                                <SelectItem value="ready">Ready</SelectItem>
-                                <SelectItem value="delivering">
-                                  Delivering
-                                </SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-
-                          <div className="flex-1 space-y-2">
-                            <label className="text-sm font-medium text-gray-700">
-                              Assign Driver
-                            </label>
-                            <Select
-                              value={
-                                orderUpdates[order.id]?.driver_id ||
-                                order.driver_id ||
-                                ""
-                              }
-                              onValueChange={(value) =>
-                                handleInputChange(order.id, "driver_id", value)
-                              }
-                            >
-                              <SelectTrigger className="w-full">
-                                <SelectValue>
-                                  {getDriverName(
-                                    orderUpdates[order.id]?.driver_id ||
-                                      order.driver_id,
-                                    onlineDrivers
-                                  )}
-                                </SelectValue>
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="no_driver">
-                                  No Driver
-                                </SelectItem>
-                                {onlineDrivers?.map((driver) => (
-                                  <SelectItem
-                                    key={driver.id}
-                                    value={String(driver.id)}
-                                  >
-                                    {driver.name} ({driver.phone_number})
+                        <div className="flex flex-col sm:flex-row gap-3">
+                          <div className="flex gap-2">
+                            <div className="flex-1 space-y-2">
+                              <label className="text-sm font-medium text-gray-700">
+                                Update Status
+                              </label>
+                              <Select
+                                value={
+                                  orderUpdates[order.id]?.status || order.status
+                                }
+                                onValueChange={(value) =>
+                                  handleInputChange(order.id, "status", value)
+                                }
+                              >
+                                <SelectTrigger className="w-full">
+                                  <SelectValue>
+                                    {getStatusDisplay(
+                                      orderUpdates[order.id]?.status ||
+                                        order.status
+                                    )}
+                                  </SelectValue>
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="pending">
+                                    Pending
                                   </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
+                                  <SelectItem value="accepted">
+                                    Accepted
+                                  </SelectItem>
+                                  <SelectItem value="ready">Ready</SelectItem>
+                                  <SelectItem value="delivering">
+                                    Delivering
+                                  </SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+
+                            <div className="flex-1 space-y-2">
+                              <label className="text-sm font-medium text-gray-700">
+                                Assign Driver
+                              </label>
+                              <Select
+                                value={
+                                  orderUpdates[order.id]?.driver_id ||
+                                  order.driver_id ||
+                                  ""
+                                }
+                                onValueChange={(value) =>
+                                  handleInputChange(
+                                    order.id,
+                                    "driver_id",
+                                    value
+                                  )
+                                }
+                              >
+                                <SelectTrigger className="w-full">
+                                  <SelectValue>
+                                    {getDriverName(
+                                      orderUpdates[order.id]?.driver_id ||
+                                        order.driver_id,
+                                      onlineDrivers
+                                    )}
+                                  </SelectValue>
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="no_driver">
+                                    No Driver
+                                  </SelectItem>
+                                  {onlineDrivers?.map((driver) => (
+                                    <SelectItem
+                                      key={driver.id}
+                                      value={String(driver.id)}
+                                    >
+                                      {driver.name} ({driver.phone_number})
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </div>
                           </div>
 
                           <Button
