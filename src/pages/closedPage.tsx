@@ -88,7 +88,7 @@ const ClosedPage = () => {
 
             <p className="text-gray-600 text-xl mb-6">
               We're active daily from{" "}
-              <span className="font-semibold">12:00 PM to 8:00 PM</span>
+              <span className="font-semibold">12:00 PM</span>
             </p>
 
             {/* <div className="flex items-center justify-center gap-2 mt-2">
