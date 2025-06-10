@@ -62,7 +62,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
                 : "Payment Failed"}
             </h2>
             <p className="text-muted-foreground">
-              Order {reference} • {amount}
+              Order {reference} • ₦{amount}
             </p>
           </div>
 
