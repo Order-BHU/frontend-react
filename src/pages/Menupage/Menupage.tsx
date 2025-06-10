@@ -235,8 +235,21 @@ const RestaurantMenuPage = () => {
         });
       },
     });
+  // Calculate total price
+  const calculateTotal = () => {
+    return cart.reduce((total, item) => total + item.price * item.quantity, 0);
+  };
 
+  const { isOpen, paymentDetails, openModal, closeModal } = usePaymentModal({
+    amount: calculateTotal(),
+    reference: queryParams.get("reference") ? queryParams.get("reference") : "",
+  });
   const handleCheckout = (reference: string) => {
+    openModal({
+      reference: queryParams.get("reference")
+        ? queryParams.get("reference")
+        : "",
+    });
     paymentVerifyMutate({
       restaurant_id: Number(id),
       reference: reference,
@@ -322,11 +335,6 @@ const RestaurantMenuPage = () => {
     },
   });
 
-  // Calculate total price
-  const calculateTotal = () => {
-    return cart.reduce((total, item) => total + item.price * item.quantity, 0);
-  };
-
   // Scroll to category section
   const scrollToCategory = (categoryId: string) => {
     setActiveCategory(categoryId);
@@ -351,16 +359,12 @@ const RestaurantMenuPage = () => {
     const now = new Date();
     const hour = now.getHours();
 
-    if (hour >= 12 && hour < 20) {
+    if (hour >= 9 && hour < 20) {
       setIsAllowedTime(true);
     } else {
       setIsAllowedTime(false);
     }
   }, []);
-  const { isOpen, paymentDetails, closeModal } = usePaymentModal({
-    amount: calculateTotal(),
-    reference: queryParams.get("reference") ? queryParams.get("reference") : "",
-  });
 
   if (!isAllowedTime) {
     return <ClosedPage />;
@@ -368,6 +372,13 @@ const RestaurantMenuPage = () => {
 
   return (
     <div className="bg-secondary-50 min-h-screen pb-20">
+      <PaymentModal
+        isOpen={isOpen}
+        onClose={closeModal}
+        amount={String(paymentDetails.amount)}
+        reference={paymentDetails.reference}
+        paymentStatus={paymentVerifyStatus}
+      />
       {/* Restaurant Header */}
       <div className="relative h-64 md:h-80 w-full">
         <div className="absolute inset-0">
@@ -813,13 +824,6 @@ const RestaurantMenuPage = () => {
             )}
           </DialogContent>
         </Dialog>
-        <PaymentModal
-          isOpen={isOpen}
-          onClose={closeModal}
-          amount={String(paymentDetails.amount)}
-          reference={paymentDetails.reference}
-          paymentStatus={paymentVerifyStatus}
-        />
       </div>
     </div>
   );

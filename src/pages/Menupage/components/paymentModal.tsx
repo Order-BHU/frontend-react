@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Check, CreditCard, Loader2 } from "lucide-react";
+import { AlertCircle, Check, CreditCard, Loader2, X } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 interface PaymentModalProps {
   isOpen: boolean;
@@ -20,30 +21,23 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
 }) => {
   const [status, setStatus] = useState<string>(paymentStatus);
   const [progress, setProgress] = useState(0);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (isOpen) {
-      setStatus("pending");
+      setStatus(paymentStatus);
       setProgress(0);
 
       // Simulate payment pending with progress
-      const progressInterval = setInterval(() => {
-        setProgress((prev) => {
-          if (prev >= 100) {
-            clearInterval(progressInterval);
-            setTimeout(() => setStatus("success"), 300);
-            return 100;
-          }
-          return prev + 2;
-        });
-      }, 50);
-
-      return () => clearInterval(progressInterval);
     } else {
       setStatus("idle");
       setProgress(0);
     }
-  }, [isOpen]);
+  }, [isOpen, status]);
+
+  useEffect(() => {
+    setStatus(paymentStatus);
+  }, [paymentStatus]);
 
   if (!isOpen) return null;
 
@@ -56,12 +50,16 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
       />
 
       {/* Modal */}
-      <div className="relative bg-card border shadow-2xl rounded-2xl p-8 mx-4 w-full max-w-md animate-scale-in">
+      <div className="relative bg-white border shadow-2xl rounded-2xl p-8 mx-4 w-full max-w-md animate-scale-in">
         <div className="text-center space-y-6">
           {/* Header */}
           <div className="space-y-2">
             <h2 className="text-2xl font-bold text-foreground">
-              {status === "pending" ? "pending Payment" : "Payment Successful"}
+              {status === "pending"
+                ? "Processing Payment"
+                : status === "success"
+                ? "Payment Successful"
+                : "Payment Failed"}
             </h2>
             <p className="text-muted-foreground">
               Order {reference} • {amount}
@@ -120,6 +118,21 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
                 <div className="absolute inset-0 rounded-full border-4 border-green-500 animate-ping opacity-20" />
               </div>
             )}
+
+            {status === "error" && (
+              <div className="relative animate-scale-in">
+                {/* Error ring */}
+                <div className="w-24 h-24 rounded-full bg-red-100 dark:bg-red-900/20 border-4 border-red-500 flex items-center justify-center">
+                  <X
+                    className="w-12 h-12 text-red-500 animate-scale-in"
+                    strokeWidth={3}
+                  />
+                </div>
+
+                {/* Error pulse effect */}
+                <div className="absolute inset-0 rounded-full border-4 border-red-500 animate-pulse opacity-30" />
+              </div>
+            )}
           </div>
 
           {/* Status Message */}
@@ -143,34 +156,40 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
                 <p className="text-sm text-green-600 dark:text-green-400 font-medium">
                   Your payment has been processed successfully!
                 </p>
-                <div className="bg-muted rounded-lg p-4 space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">
-                      Transaction ID
-                    </span>
-                    <span className="font-mono">
-                      TXN{Math.random().toString(36).substr(2, 9).toUpperCase()}
-                    </span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">
-                      Payment Method
-                    </span>
-                    <span>UPI</span>
-                  </div>
+              </div>
+            )}
+
+            {status === "error" && (
+              <div className="space-y-4">
+                <div className="flex items-center justify-center space-x-2 text-red-600 dark:text-red-400">
+                  <AlertCircle className="w-5 h-5" />
+                  <p className="text-sm font-medium">
+                    Payment could not be processed
+                  </p>
                 </div>
               </div>
             )}
           </div>
 
-          {/* Action Button */}
+          {/* Action Buttons */}
           {status === "success" && (
             <button
-              onClick={onClose}
-              className="w-full bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg py-3 px-4 font-medium transition-colors animate-fade-in"
+              onClick={() => navigate("/customer-dashboard")}
+              className="w-full bg-primary-600 text-primary-foreground hover:bg-primary-600/90 rounded-lg py-3 px-4 font-medium transition-colors animate-fade-in"
             >
-              Continue Shopping
+              View Order
             </button>
+          )}
+
+          {status === "error" && (
+            <div className="space-y-3 animate-fade-in">
+              <button
+                onClick={onClose}
+                className="w-full bg-primary-900 text-muted-foreground hover:bg-primary-900/80 rounded-lg py-3 px-4 font-medium transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
           )}
         </div>
       </div>
