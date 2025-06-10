@@ -25,7 +25,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
 
   useEffect(() => {
     if (isOpen) {
-      setStatus(paymentStatus);
+      setStatus("success");
       setProgress(0);
 
       // Simulate payment pending with progress
@@ -109,13 +109,13 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
                 {/* Success ring */}
                 <div className="w-24 h-24 rounded-full bg-green-100 dark:bg-green-900/20 border-4 border-green-500 flex items-center justify-center">
                   <Check
-                    className="w-12 h-12 text-primary-500 animate-scale-in"
+                    className="w-12 h-12 text-green-500 animate-scale-in"
                     strokeWidth={3}
                   />
                 </div>
 
                 {/* Success ripple effect */}
-                <div className="absolute inset-0 rounded-full border-4 border-primary-500 animate-ping opacity-20" />
+                <div className="absolute inset-0 rounded-full border-4 border-green-500 animate-ping opacity-20" />
               </div>
             )}
 
@@ -175,7 +175,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
           {status === "success" && (
             <button
               onClick={() => navigate("/customer-dashboard")}
-              className="w-full bg-primary-600 text-primary-foreground hover:bg-primary-600/90 rounded-lg py-3 px-4 font-medium transition-colors animate-fade-in"
+              className="w-full bg-primary-500 text-primary-foreground hover:bg-primary-500/90 rounded-lg py-3 px-4 font-medium transition-colors animate-fade-in"
             >
               View Order
             </button>
