@@ -293,7 +293,7 @@ const RestaurantMenuPage = () => {
         variant: "destructive",
       });
     } else {
-      initializepaymentVerifyMutate({
+      initializeCheckoutMutate({
         restaurantId: id!,
         total: calculateTotal(),
         callback_id: id!,
@@ -303,7 +303,7 @@ const RestaurantMenuPage = () => {
     }
   };
   const {
-    mutateAsync: initializepaymentVerifyMutate,
+    mutateAsync: initializeCheckoutMutate,
     status: initializeCheckoutStatus,
   } = useMutation({
     mutationFn: initializeCheckout,
