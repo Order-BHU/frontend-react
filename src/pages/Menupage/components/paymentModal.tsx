@@ -109,13 +109,13 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
                 {/* Success ring */}
                 <div className="w-24 h-24 rounded-full bg-green-100 dark:bg-green-900/20 border-4 border-green-500 flex items-center justify-center">
                   <Check
-                    className="w-12 h-12 text-green-500 animate-scale-in"
+                    className="w-12 h-12 text-primary-500 animate-scale-in"
                     strokeWidth={3}
                   />
                 </div>
 
                 {/* Success ripple effect */}
-                <div className="absolute inset-0 rounded-full border-4 border-green-500 animate-ping opacity-20" />
+                <div className="absolute inset-0 rounded-full border-4 border-primary-500 animate-ping opacity-20" />
               </div>
             )}
 
