@@ -241,7 +241,7 @@ const RestaurantMenuPage = () => {
   };
 
   const { isOpen, paymentDetails, openModal, closeModal } = usePaymentModal({
-    amount: calculateTotal(),
+    amount: Number(localStorage.getItem("totalPrice")),
     reference: queryParams.get("reference") ? queryParams.get("reference") : "",
   });
   const handleCheckout = (reference: string) => {
@@ -306,6 +306,7 @@ const RestaurantMenuPage = () => {
         variant: "destructive",
       });
     } else {
+      localStorage.setItem("totalPrice", String(calculateTotal()));
       initializeCheckoutMutate({
         restaurantId: id!,
         total: calculateTotal(),
