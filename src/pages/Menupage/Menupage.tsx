@@ -219,6 +219,7 @@ const RestaurantMenuPage = () => {
     useMutation({
       mutationFn: paymentVerify,
       onSuccess: (data) => {
+        localStorage.removeItem("totalPrice"); //the payment verification modal needs this so i can't remove it in the checkout function
         localStorage.setItem("orderCode", data.code);
         localStorage.setItem("orderId", data.order?.id); //I didn't really finish this, feel free to change stuff.
         toast({
@@ -254,9 +255,6 @@ const RestaurantMenuPage = () => {
       restaurant_id: Number(id),
       reference: reference,
     });
-    localStorage.removeItem("orderLocation");
-    localStorage.removeItem("totalPrice");
-    localStorage.removeItem("cart");
   };
   // Handle removing item from cart
   const removeFromCart = async (itemId: string) => {
