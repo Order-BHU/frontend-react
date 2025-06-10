@@ -25,7 +25,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
 
   useEffect(() => {
     if (isOpen) {
-      setStatus("success");
+      setStatus(paymentStatus);
       setProgress(0);
 
       // Simulate payment pending with progress
