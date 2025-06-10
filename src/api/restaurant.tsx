@@ -228,7 +228,12 @@ export async function initializeCheckout(data: {
   return api
     .post(
       `/${data.restaurantId}/initialize-checkout`,
-      { total: data.total, callback_id: data.callback_id },
+      {
+        total: data.total,
+        callback_id: data.callback_id,
+        location: data.location,
+        items: data.items,
+      },
       { headers: { Authorization: `Bearer ${token}` } }
     )
     .then((response: AxiosResponse) => {
