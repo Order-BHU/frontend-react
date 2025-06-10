@@ -40,11 +40,9 @@ export interface cartItem {
   total: number;
 }
 
-export interface checkoutType {
-  items: { menu_id: number; quantity: number; menu_name: string }[];
+export interface paymentVerifyType {
   restaurant_id: number;
-  total: number;
-  location: string | null;
+
   reference: string;
 }
 

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useParams, useNavigate } from "react-router-dom";
+import PaymentModal from "./components/paymentModal";
 import {
   Dialog,
   DialogContent,
@@ -28,7 +29,7 @@ import {
   getMenuItems,
   getCategories,
   addToCart,
-  checkout,
+  paymentVerify,
   removeCartItem,
   viewCart,
   getLocation,
@@ -44,8 +45,9 @@ import {
 } from "@/interfaces/restaurantType";
 import useAuthStore from "@/stores/useAuthStore";
 import { useToast } from "@/hooks/use-toast";
-import ClosedPage from "./closedPage";
+import ClosedPage from "../closedPage";
 import ButtonLoader from "@/components/buttonLoader";
+import { usePaymentModal } from "./hooks/usePaymentModal";
 
 // Animation variants
 const fadeIn = {
@@ -60,7 +62,7 @@ const fadeIn = {
 // Fake restaurant data (in a real app, this would come from an API)
 
 // Cart item type
-interface CartItem {
+export interface CartItem {
   menu_id: string;
   menu_name: string;
   price: number;
@@ -213,32 +215,30 @@ const RestaurantMenuPage = () => {
       }
     }
   };
-  const { mutate: checkoutMutate /*status: checkoutStatus*/ } = useMutation({
-    mutationFn: checkout,
-    onSuccess: (data) => {
-      localStorage.setItem("orderCode", data.code);
-      localStorage.setItem("orderId", data.order?.id); //I didn't really finish this, feel free to change stuff.
-      toast({
-        title: "Success",
-        description: data.message,
-      });
-      navigate(`/${localStorage.getItem("accountType")}-dashboard/`);
-    },
-    onError: (error) => {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
-    },
-  });
+  const { mutate: paymentVerifyMutate, status: paymentVerifyStatus } =
+    useMutation({
+      mutationFn: paymentVerify,
+      onSuccess: (data) => {
+        localStorage.setItem("orderCode", data.code);
+        localStorage.setItem("orderId", data.order?.id); //I didn't really finish this, feel free to change stuff.
+        toast({
+          title: "Success",
+          description: data.message,
+        });
+        navigate(`/${localStorage.getItem("accountType")}-dashboard/`);
+      },
+      onError: (error) => {
+        toast({
+          title: "Error",
+          description: error.message,
+          variant: "destructive",
+        });
+      },
+    });
 
   const handleCheckout = (reference: string) => {
-    checkoutMutate({
-      items: JSON.parse(localStorage.getItem("cart")!),
+    paymentVerifyMutate({
       restaurant_id: Number(id),
-      total: Number(localStorage.getItem("totalPrice")! + deliveryFee),
-      location: localStorage.getItem("orderLocation"),
       reference: reference,
     });
     localStorage.removeItem("orderLocation");
@@ -293,18 +293,17 @@ const RestaurantMenuPage = () => {
         variant: "destructive",
       });
     } else {
-      localStorage.setItem("orderLocation", selectedLocation);
-      localStorage.setItem("cart", JSON.stringify(cart));
-      localStorage.setItem("totalPrice", String(calculateTotal()));
-      initializeCheckoutMutate({
+      initializepaymentVerifyMutate({
         restaurantId: id!,
         total: calculateTotal(),
         callback_id: id!,
+        items: cart,
+        location: selectedLocation,
       });
     }
   };
   const {
-    mutateAsync: initializeCheckoutMutate,
+    mutateAsync: initializepaymentVerifyMutate,
     status: initializeCheckoutStatus,
   } = useMutation({
     mutationFn: initializeCheckout,
@@ -358,6 +357,10 @@ const RestaurantMenuPage = () => {
       setIsAllowedTime(false);
     }
   }, []);
+  const { isOpen, paymentDetails, closeModal } = usePaymentModal({
+    amount: calculateTotal(),
+    reference: queryParams.get("reference") ? queryParams.get("reference") : "",
+  });
 
   if (!isAllowedTime) {
     return <ClosedPage />;
@@ -810,6 +813,13 @@ const RestaurantMenuPage = () => {
             )}
           </DialogContent>
         </Dialog>
+        <PaymentModal
+          isOpen={isOpen}
+          onClose={closeModal}
+          amount={String(paymentDetails.amount)}
+          reference={paymentDetails.reference}
+          paymentStatus={paymentVerifyStatus}
+        />
       </div>
     </div>
   );

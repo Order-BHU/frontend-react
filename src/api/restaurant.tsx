@@ -1,6 +1,7 @@
 import { AxiosResponse, AxiosError } from "axios";
-import { menuItem, checkoutType } from "@/interfaces/restaurantType";
+import { menuItem, paymentVerifyType } from "@/interfaces/restaurantType";
 import api from "./apiClient";
+import { CartItem } from "@/pages/Menupage/Menupage";
 
 function handleError(error: AxiosError) {
   if (error.code === "ERR_NETWORK") {
@@ -93,13 +94,20 @@ export async function viewCart() {
     .catch(handleError);
 }
 
-export async function checkout(checkoutItems: checkoutType) {
+export async function paymentVerify(verifyItems: paymentVerifyType) {
   const token = localStorage.getItem("token");
   return api
-    .post(`/${checkoutItems.restaurant_id}/checkout`, checkoutItems, {
-      headers: { Authorization: `Bearer ${token}` },
+    .post(
+      `/${verifyItems.restaurant_id}/checkout`,
+      { reference: verifyItems.reference },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    )
+    .then((response: AxiosResponse) => {
+      console.log(response.data);
+      return response.data;
     })
-    .then((response: AxiosResponse) => response.data)
     .catch(handleError);
 }
 
@@ -213,6 +221,8 @@ export async function initializeCheckout(data: {
   restaurantId: string;
   total: number;
   callback_id: string;
+  location: string;
+  items: CartItem[];
 }) {
   const token = localStorage.getItem("token");
   return api
@@ -222,6 +232,7 @@ export async function initializeCheckout(data: {
       { headers: { Authorization: `Bearer ${token}` } }
     )
     .then((response: AxiosResponse) => {
+      console.log(response.data);
       return response.data;
     })
     .catch(handleError);

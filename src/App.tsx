@@ -10,7 +10,7 @@ import SignUpPage from "./pages/SignUpPage";
 import RiderDashboardPage from "./pages/RiderDashboard";
 import RestaurantDashboardPage from "./pages/RestaurantDashboard";
 import UserDashboardPage from "./pages/UserDashboard";
-import RestaurantMenuPage from "./pages/Menupage";
+import RestaurantMenuPage from "./pages/Menupage/Menupage";
 import AdminDashboardPage from "./pages/Adminpage";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
