@@ -225,7 +225,7 @@ const RestaurantMenuPage = () => {
           title: "Success",
           description: data.message,
         });
-        navigate(`/${localStorage.getItem("accountType")}-dashboard/`);
+        //navigate(`/${localStorage.getItem("accountType")}-dashboard/`);
       },
       onError: (error) => {
         toast({
