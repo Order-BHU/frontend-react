@@ -293,6 +293,7 @@ const RestaurantMenuPage = () => {
         variant: "destructive",
       });
     } else {
+      console.log("location: ", selectedLocation, "items: ", cart);
       initializeCheckoutMutate({
         restaurantId: id!,
         total: calculateTotal(),
