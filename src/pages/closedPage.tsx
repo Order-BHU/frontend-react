@@ -76,13 +76,13 @@ const ClosedPage = () => {
           </h2>
 
           <div className="bg-white p-8 rounded-xl shadow-md">
-            {
+            {/*
               <div className="flex items-center justify-center gap-3 text-gray-700 mb-4">
                 <span className="font-medium text-xl">
                   Deliveries are clogged at the moment
                 </span>
               </div>
-            }
+            */}
 
             <div className="flex items-center justify-center gap-3 text-2xl font-semibold text-orange-600 mb-4">
               <Clock className="text-orange-600" size={24} />
