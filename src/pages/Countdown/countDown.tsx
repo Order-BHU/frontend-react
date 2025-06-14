@@ -1,6 +1,6 @@
-import CountdownTimer from "@/components/countdownComponent/countDownTimer";
-import SignupForm from "@/components/countdownComponent/signupform";
-import FloatingParticles from "@/components/countdownComponent/floatingParticles";
+import CountdownTimer from "@/pages/Countdown/components/countDownTimer";
+import SignupForm from "@/pages/Countdown/components/signupform";
+import FloatingParticles from "@/pages/Countdown/components/floatingParticles";
 
 const CountDown = () => {
   return (

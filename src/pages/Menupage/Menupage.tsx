@@ -45,7 +45,7 @@ import {
 } from "@/interfaces/restaurantType";
 import useAuthStore from "@/stores/useAuthStore";
 import { useToast } from "@/hooks/use-toast";
-import ClosedPage from "../closedPage";
+import ClosedPage from "../ClosedPage/closedPage";
 import ButtonLoader from "@/components/buttonLoader";
 import { usePaymentModal } from "./hooks/usePaymentModal";
 
@@ -358,7 +358,7 @@ const RestaurantMenuPage = () => {
     const now = new Date();
     const hour = now.getHours();
 
-    if (hour >= 12 && hour < 12) {
+    if (hour >= 12 && hour < 19) {
       setIsAllowedTime(true);
     } else {
       setIsAllowedTime(false);

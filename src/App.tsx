@@ -25,7 +25,7 @@ import ToastAutoDismiss from "./components/dismisstoast"; //handles dismissing t
 import { waveform, orbit } from "ldrs";
 import Header from "./components/header";
 import Footer from "./components/footer";
-import CountDownRedirect from "@/components/countdownRedirect";
+import CountDownRedirect from "@/pages/ClosedPage/components/countdownRedirect";
 
 function App() {
   waveform.register();

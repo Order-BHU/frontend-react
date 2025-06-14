@@ -1,0 +1,66 @@
+import FloatingParticles from "@/pages/Countdown/components/floatingParticles";
+
+const DownTime = () => {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-orange-600 via-orange-500 to-orange-400 relative overflow-hidden">
+      <FloatingParticles />
+
+      {/* Background pattern */}
+      <div className="absolute inset-0 opacity-10">
+        <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.1)_1px,transparent_1px)] bg-[length:50px_50px]"></div>
+      </div>
+
+      <div className="relative z-10 container mx-auto px-4 py-8 md:py-12">
+        {/* Header */}
+        <div className="text-center mb-8 md:mb-12">
+          <div className="overflow-hidden inline-flex items-center justify-center w-20 h-20 md:w-24 md:h-24 bg-white/20 rounded-full mb-6 backdrop-blur-sm">
+            <img src="/orderLogo.JPG" alt="" />
+          </div>
+
+          <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-4 tracking-tight">
+            <span className="block">BHUORDER</span>
+            <span className="block text-2xl md:text-4xl lg:text-5xl text-orange-200 font-normal">
+              We're Closed For Now
+            </span>
+          </h1>
+
+          <p className="text-lg md:text-xl text-orange-100 max-w-2xl mx-auto leading-relaxed"></p>
+        </div>
+
+        {/* Main content grid */}
+        <div
+          className={`flex flex-col lg:flex-row gap-8 md:gap-12 items-center max-w-6xl mx-auto ${
+            localStorage.getItem("registeredBeforeLaunch") === "true"
+              ? " flex-col-reverse"
+              : ""
+          }`}
+        >
+          {/* Countdown Timer */}
+          {/* Signup Form */}
+          {/* <div className="lg:col-span-1">
+            <SignupForm />
+          </div> */}
+        </div>
+
+        {/* Launch date highlight */}
+        <div className="text-center mt-12 md:mt-16">
+          <div className="inline-block bg-white/20 backdrop-blur-sm rounded-2xl px-6 py-4 border border-white/30">
+            <p className="text-orange-200 text-sm md:text-base font-medium mb-1"></p>
+            <p className="text-white text-xl md:text-2xl font-bold">
+              Orders will be back in a while...
+            </p>
+          </div>
+        </div>
+
+        {/* Features preview */}
+
+        {/* Footer */}
+        <div className="text-center mt-16 md:mt-20 text-orange-200">
+          <p>&copy; 2025 Bhuorder.</p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default DownTime;
