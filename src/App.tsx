@@ -26,6 +26,7 @@ import { waveform, orbit } from "ldrs";
 import Header from "./components/header";
 import Footer from "./components/footer";
 import CountDownRedirect from "@/pages/ClosedPage/components/countdownRedirect";
+import ContactList from "./pages/ContactList/ContactList";
 
 function App() {
   waveform.register();
@@ -97,6 +98,14 @@ function App() {
                 element={
                   <ProtectedRoute allowedRoles={["admin"]}>
                     <AdminDashboardPage />
+                  </ProtectedRoute>
+                }
+              ></Route>
+              <Route
+                path="/admin/contact"
+                element={
+                  <ProtectedRoute allowedRoles={["admin"]}>
+                    <ContactList />
                   </ProtectedRoute>
                 }
               ></Route>

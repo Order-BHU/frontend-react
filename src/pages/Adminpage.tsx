@@ -294,19 +294,30 @@ export default function AdminDashboardPage() {
           <h1 className="text-2xl md:text-3xl font-bold mb-6 text-gray-800 dark:text-cfont-dark">
             Admin Dashboard
           </h1>
+          <div className="flex gap-5 fold:gap-2">
+            <Button
+              variant="outline"
+              className=" justify-between rounded-xl border-gray-200 bg-gray hover:bg-orange-600 shadow-sm"
+              disabled={logoutStatus === "pending"}
+              onClick={handleLogout}
+            >
+              <span className="flex items-center">
+                <LogOut className="mr-2 h-4 w-4" />
+                Log Out
+              </span>
+              <ChevronRight className="h-4 w-4" />
+            </Button>
 
-          <Button
-            variant="outline"
-            className=" justify-between rounded-xl border-gray-200 bg-gray hover:bg-orange-600 shadow-sm"
-            disabled={logoutStatus === "pending"}
-            onClick={handleLogout}
-          >
-            <span className="flex items-center">
-              <LogOut className="mr-2 h-4 w-4" />
-              Log Out
-            </span>
-            <ChevronRight className="h-4 w-4" />
-          </Button>
+            <Button
+              variant="outline"
+              className=" justify-between rounded-xl border-gray-200 bg-orange-600 hover:opacity-45 shadow-sm"
+              disabled={logoutStatus === "pending"}
+              onClick={() => navigate("/admin/contact")}
+            >
+              <span className="flex items-center">Contacts</span>
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
         </PageWrapper>
 
         <PageWrapper className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
