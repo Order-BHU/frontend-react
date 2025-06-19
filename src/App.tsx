@@ -11,7 +11,7 @@ import RiderDashboardPage from "./pages/RiderDashboard";
 import RestaurantDashboardPage from "./pages/RestaurantDashboard";
 import UserDashboardPage from "./pages/UserDashboard";
 import RestaurantMenuPage from "./pages/Menupage/Menupage";
-import AdminDashboardPage from "./pages/Adminpage";
+import AdminDashboardPage from "./pages/Admin/Adminpage";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 //import { ThemeProvider } from "@/components/theme-provider";

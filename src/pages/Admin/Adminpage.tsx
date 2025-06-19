@@ -516,7 +516,7 @@ export default function AdminDashboardPage() {
                         <Separator />
 
                         {/* Update Controls */}
-                        <div className="flex flex-col sm:flex-row gap-3">
+                        <div className="flex flex-col sm:flex-row gap-3 justify-between">
                           <div className="flex gap-2">
                             <div className="flex-1 space-y-2">
                               <label className="text-sm font-medium text-gray-700 fold:hidden">
