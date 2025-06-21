@@ -1,15 +1,8 @@
-import { AxiosResponse, AxiosError } from "axios";
+import { AxiosResponse } from "axios";
 import { menuItem, paymentVerifyType } from "@/interfaces/restaurantType";
 import api from "./apiClient";
 import { CartItem } from "@/pages/Menupage/Menupage";
-
-function handleError(error: AxiosError) {
-  if (error.code === "ERR_NETWORK") {
-    throw new Error("Network error: Unable to reach the server.");
-  }
-
-  throw error.response?.data;
-}
+import { handleError } from "./apiClient";
 
 export async function getRestaurants() {
   return api
@@ -167,21 +160,6 @@ export async function setDriverStatus(status: "offline" | "online") {
   return api
     .post(
       `/${status}/driver-status-update`,
-      {},
-      { headers: { Authorization: `Bearer ${token}` } }
-    )
-    .then((response: AxiosResponse) => response.data)
-    .catch(handleError);
-}
-
-export async function adminSetDriverStatus(data: {
-  driverID: number;
-  status: "offline" | "online";
-}) {
-  const token = localStorage.getItem("token");
-  return api
-    .post(
-      `/${data.status}/${data.driverID}/driver-status-update`,
       {},
       { headers: { Authorization: `Bearer ${token}` } }
     )

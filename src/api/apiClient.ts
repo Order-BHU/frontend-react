@@ -24,4 +24,12 @@ api.interceptors.response.use(
   }
 );
 
+export function handleError(error: AxiosError) {
+  if (error.code === "ERR_NETWORK") {
+    throw new Error("Network error: Unable to reach the server.");
+  }
+
+  throw error.response?.data;
+}
+
 export default api;

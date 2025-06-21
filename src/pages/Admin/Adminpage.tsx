@@ -45,14 +45,19 @@ import { Utensils, Bike, DollarSign } from "lucide-react";
 import { PageWrapper } from "@/components/pagewrapper";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
-import { dashboard, updateOrder, driverList, allOrders } from "@/api/misc";
+import { dashboard } from "@/api/misc";
 import { restaurantMetric, transactionType } from "@/interfaces/restaurantType";
 import { Driver, Order } from "@/interfaces/adminPageAllOrders";
 import CreateUserModal from "@/components/createUserModal";
 import ButtonLoader from "@/components/buttonLoader";
 import { format } from "date-fns";
 import Loader from "@/components/loaderAnimation";
-import { adminSetDriverStatus } from "@/api/restaurant";
+import {
+  updateOrder,
+  driverList,
+  allOrders,
+  adminSetDriverStatus,
+} from "@/api/adminRoutes";
 
 // Mock data - in a real app, this would come from an API
 const revenueData = [
