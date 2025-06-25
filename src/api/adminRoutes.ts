@@ -114,7 +114,7 @@ export async function driverList(status: string) {
   const token = localStorage.getItem("token");
   return api
     .get(
-      `$/${status}/driver-list`,
+      `/${status}/driver-list`,
 
       {
         headers: {
