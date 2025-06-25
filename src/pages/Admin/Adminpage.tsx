@@ -46,18 +46,12 @@ import { PageWrapper } from "@/components/pagewrapper";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { dashboard } from "@/api/misc";
-import { restaurantMetric, transactionType } from "@/interfaces/restaurantType";
+import { transactionType } from "@/interfaces/restaurantType";
 import { Driver, Order } from "@/pages/Admin/adminPageAllOrders";
-import CreateUserModal from "@/components/createUserModal";
 import ButtonLoader from "@/components/buttonLoader";
 import { format } from "date-fns";
 import Loader from "@/components/loaderAnimation";
-import {
-  updateOrder,
-  driverList,
-  allOrders,
-  adminSetDriverStatus,
-} from "@/api/adminRoutes";
+import { updateOrder, driverList, allOrders } from "@/api/adminRoutes";
 import RestaurantDriverTab from "./components/restaurantTab";
 
 // Mock data - in a real app, this would come from an API
@@ -71,42 +65,12 @@ const revenueData = [
   { name: "Sun", value: 3490 },
 ];
 
-const recentOrders = [
-  {
-    id: "1",
-    customer: "Alice Brown",
-    restaurant: "Burger Palace",
-    driver: "John Doe",
-    total: "₦3,500",
-    status: "Delivered",
-  },
-  {
-    id: "2",
-    customer: "Bob Wilson",
-    restaurant: "Pizza Heaven",
-    driver: "Jane Smith",
-    total: "₦4,200",
-    status: "In Transit",
-  },
-  {
-    id: "3",
-    customer: "Charlie Davis",
-    restaurant: "Sushi Sensation",
-    driver: "Mike Johnson",
-    total: "₦5,500",
-    status: "Preparing",
-  },
-];
-
 type TimeRange = "day" | "week" | "month" | "year";
 export default function AdminDashboardPage() {
   const { toast } = useToast();
   const navigate = useNavigate();
   const { logout } = UseAuthStore();
   //creating restaurant details
-
-  const [restaurantTimeRange, setRestaurantTimeRange] =
-    useState<TimeRange>("month");
 
   const { data: userDetails } = useQuery({
     queryKey: ["userDetails"],
@@ -160,16 +124,6 @@ export default function AdminDashboardPage() {
   } = useQuery<Driver[], Error>({
     queryKey: ["alldrivers", "online"],
     queryFn: () => driverList("online"),
-  });
-
-  const {
-    data: offlineDrivers,
-    isLoading: offlinedriversLoading,
-    error: offlinedriversError,
-    refetch: offlineDriversRefetch,
-  } = useQuery<Driver[], Error>({
-    queryKey: ["alldrivers", "offline"],
-    queryFn: () => driverList("offline"),
   });
 
   // Mutation for updating an order
@@ -256,30 +210,6 @@ export default function AdminDashboardPage() {
   };
   //end of things regarding managing and updating orders
 
-  //everything with driver management goes here
-  const { mutate: driverStatusMutate } = useMutation({
-    mutationFn: adminSetDriverStatus,
-    onSuccess: () => {
-      offlineDriversRefetch();
-      onlinedriversRefetch();
-      toast({
-        title: "Status updated",
-      });
-    },
-    onError: (error) => {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
-    },
-  });
-  const handleDriverStatusChange = (id: number, status: string) => {
-    (status === "offline" || status === "online") &&
-      driverStatusMutate({ driverID: id, status: status });
-    return;
-  };
-  //end of things with driver management
   const handleLogout = () => {
     const usertoken = localStorage.getItem("token");
     if (!usertoken) {

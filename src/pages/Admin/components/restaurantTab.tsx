@@ -180,8 +180,10 @@ export default function RestaurantDriverTab({
                   </TableBody>
                 </Table>
               </div>
-              <CreateUserModal isDriver={false} />
             </CardContent>
+            <div className="bottom-0 sticky ml-6 bg-white">
+              <CreateUserModal isDriver={false} className="pb-4" />
+            </div>
           </Card>
         </PageWrapper>
       </TabsContent>
@@ -287,8 +289,10 @@ export default function RestaurantDriverTab({
                     </TableBody>
                   </Table>
                 </div>
-                <CreateUserModal isDriver={true} />
               </CardContent>
+              <div className="bottom-0 sticky ml-6 bg-white">
+                <CreateUserModal isDriver={true} className="pb-4" />
+              </div>
             </Card>
           )}
         </PageWrapper>

@@ -27,6 +27,7 @@ import { getBanks, resolveBank } from "@/api/auth";
 
 interface createProps {
   isDriver: boolean;
+  className?: string;
 }
 interface formDataType {
   //just here so i can set the type for phoneNumberType
@@ -43,7 +44,7 @@ interface formDataType {
   name: string;
 }
 
-export default function CreateUserModal({ isDriver }: createProps) {
+export default function CreateUserModal({ isDriver, className }: createProps) {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [showRestaurantPassword, setShowRestaurantPassword] = useState(false);
@@ -185,292 +186,305 @@ export default function CreateUserModal({ isDriver }: createProps) {
     }
   }, [resolveBankData]);
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button className="mt-4 w-full sm:w-auto">
-          {isDriver ? "Add New Driver" : "Add New Restaurant"}
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px] dark:text-cfont-dark">
-        <DialogHeader>
-          <DialogTitle>
-            {isDriver
-              ? "Create a New Driver Account"
-              : "Create a New Restaurant Account"}
-          </DialogTitle>
-        </DialogHeader>
-        <ScrollArea className="h-[80vh] px-8">
-          <form
-            onSubmit={handleCreateAccount}
-            className="space-y-4 w-[90%] pl-3"
-          >
-            {!isDriver ? (
-              <>
-                <div>
-                  <Label htmlFor="restaurantName">Restaurant Name</Label>
-                  <Input
-                    id="restaurantName"
-                    value={formData.restaurant_name}
-                    onChange={(e) =>
-                      setformData({
-                        ...formData,
-                        restaurant_name: e.target.value,
-                      })
-                    }
-                    required
-                  />
-                </div>
+    <div className={className}>
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button className="mt-4 w-full sm:w-auto">
+            {isDriver ? "Add New Driver" : "Add New Restaurant"}
+          </Button>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-[425px] dark:text-cfont-dark">
+          <DialogHeader>
+            <DialogTitle>
+              {isDriver
+                ? "Create a New Driver Account"
+                : "Create a New Restaurant Account"}
+            </DialogTitle>
+          </DialogHeader>
+          <ScrollArea className="h-[80vh] px-8">
+            <form
+              onSubmit={handleCreateAccount}
+              className="space-y-4 w-[90%] pl-3"
+            >
+              {!isDriver ? (
+                <>
+                  <div>
+                    <Label htmlFor="restaurantName">Restaurant Name</Label>
+                    <Input
+                      id="restaurantName"
+                      value={formData.restaurant_name}
+                      onChange={(e) =>
+                        setformData({
+                          ...formData,
+                          restaurant_name: e.target.value,
+                        })
+                      }
+                      required
+                    />
+                  </div>
 
+                  <div>
+                    <Label htmlFor="ownerName">Owner's Name</Label>
+                    <Input
+                      id="ownerName"
+                      value={formData.owners_name}
+                      onChange={(e) =>
+                        setformData({
+                          ...formData,
+                          owners_name: e.target.value,
+                        })
+                      }
+                      required
+                    />
+                  </div>
+                </>
+              ) : (
                 <div>
-                  <Label htmlFor="ownerName">Owner's Name</Label>
+                  <Label htmlFor="name">Name</Label>
                   <Input
-                    id="ownerName"
-                    value={formData.owners_name}
+                    id="name"
+                    value={formData.name}
                     onChange={(e) =>
                       setformData({
                         ...formData,
-                        owners_name: e.target.value,
+                        name: e.target.value,
                       })
                     }
                     required
                   />
                 </div>
-              </>
-            ) : (
+              )}
+
               <div>
-                <Label htmlFor="name">Name</Label>
+                <Label htmlFor="restaurantEmail">Email</Label>
                 <Input
-                  id="name"
-                  value={formData.name}
+                  id="restaurantEmail"
+                  type="email"
+                  value={formData.email}
                   onChange={(e) =>
                     setformData({
                       ...formData,
-                      name: e.target.value,
+                      email: e.target.value,
                     })
                   }
                   required
                 />
               </div>
-            )}
 
-            <div>
-              <Label htmlFor="restaurantEmail">Email</Label>
-              <Input
-                id="restaurantEmail"
-                type="email"
-                value={formData.email}
-                onChange={(e) =>
-                  setformData({
-                    ...formData,
-                    email: e.target.value,
-                  })
-                }
-                required
-              />
-            </div>
+              <div>
+                <Label htmlFor="phone_number" className="dark:text-cfont-dark">
+                  Phone Number
+                </Label>
+                <Input
+                  type="tel"
+                  id="phone_number"
+                  name="phone_number"
+                  className="dark:text-cfont-dark"
+                  value={formData.phone_number}
+                  onChange={handleChange}
+                  required
+                />
+                <div className="flex space-x-2 mt-2">
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant={
+                      formData.phone_number_type === "whatsapp"
+                        ? "default"
+                        : "outline"
+                    }
+                    onClick={() =>
+                      handleRestaurantphone_number_typeChange("whatsapp")
+                    }
+                  >
+                    WhatsApp
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant={
+                      formData.phone_number_type === "sms"
+                        ? "default"
+                        : "outline"
+                    }
+                    onClick={() =>
+                      handleRestaurantphone_number_typeChange("sms")
+                    }
+                  >
+                    SMS
+                  </Button>
+                </div>
+              </div>
 
-            <div>
-              <Label htmlFor="phone_number" className="dark:text-cfont-dark">
-                Phone Number
-              </Label>
-              <Input
-                type="tel"
-                id="phone_number"
-                name="phone_number"
-                className="dark:text-cfont-dark"
-                value={formData.phone_number}
-                onChange={handleChange}
-                required
-              />
-              <div className="flex space-x-2 mt-2">
+              <div>
+                <Label htmlFor="accountnum" className="dark:text-cfont-dark">
+                  Bank Account Number
+                </Label>
+                <Input
+                  type="tel"
+                  id="accountnum"
+                  name="account_no"
+                  className="dark:text-cfont-dark"
+                  value={formData.account_no}
+                  onChange={handleChange}
+                  required
+                  maxLength={12}
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="bank">Bank</Label>
+                <Select
+                  onValueChange={(value) => {
+                    const selectedBank = allBanks?.find(
+                      (bank) => String(bank.code) === value
+                    );
+                    if (selectedBank) {
+                      setformData((prev) => ({
+                        ...prev,
+                        bank_code: selectedBank.code,
+                      }));
+                      setResolveBankData((prev) => ({
+                        ...prev,
+                        bank_code: selectedBank.code,
+                      }));
+                    }
+                  }}
+                >
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Choose Bank" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {bankListStatus === "pending" ? (
+                      <SelectItem value="" disabled>
+                        Loading Banks...
+                      </SelectItem>
+                    ) : bankListStatus === "error" ? (
+                      <SelectItem value="" disabled>
+                        Error loading Banks
+                      </SelectItem>
+                    ) : (
+                      <>
+                        {allBanks.map((bank) => (
+                          <SelectItem
+                            key={`${bank.id}-${bank.code}-${bank.name}`}
+                            value={String(bank.code)}
+                          >
+                            {bank.name}
+                          </SelectItem>
+                        ))}
+                      </>
+                    )}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div
+                className={`relative ${
+                  resolvedBankName === "" ? "hidden" : ""
+                }`}
+              >
+                <p>Matching account: </p>
+                <h3>{resolvedBankName?.toLocaleUpperCase()}</h3>
+              </div>
+
+              <div className="relative">
+                <Label htmlFor="password" className="dark:text-cfont-dark">
+                  Password
+                </Label>
+                <Input
+                  type={showRestaurantPassword ? "text" : "password"}
+                  id="password"
+                  name="password"
+                  className="dark:text-cfont-dark"
+                  value={formData.password}
+                  onChange={handleChange}
+                  required
+                />
                 <Button
                   type="button"
-                  size="sm"
-                  variant={
-                    formData.phone_number_type === "whatsapp"
-                      ? "default"
-                      : "outline"
-                  }
+                  variant="ghost"
+                  size="icon"
+                  className="absolute right-0 top-2 h-full px-3 py-2 hover:bg-transparent"
                   onClick={() =>
-                    handleRestaurantphone_number_typeChange("whatsapp")
+                    setShowRestaurantPassword(!showRestaurantPassword)
                   }
                 >
-                  WhatsApp
-                </Button>
-                <Button
-                  type="button"
-                  size="sm"
-                  variant={
-                    formData.phone_number_type === "sms" ? "default" : "outline"
-                  }
-                  onClick={() => handleRestaurantphone_number_typeChange("sms")}
-                >
-                  SMS
+                  {showRestaurantPassword ? (
+                    <EyeOff className="h-4 w-4 text-gray-500" />
+                  ) : (
+                    <Eye className="h-4 w-4 text-gray-500" />
+                  )}
+                  <span className="sr-only">
+                    {showRestaurantPassword ? "Hide password" : "Show password"}
+                  </span>
                 </Button>
               </div>
-            </div>
-
-            <div>
-              <Label htmlFor="accountnum" className="dark:text-cfont-dark">
-                Bank Account Number
-              </Label>
-              <Input
-                type="tel"
-                id="accountnum"
-                name="account_no"
-                className="dark:text-cfont-dark"
-                value={formData.account_no}
-                onChange={handleChange}
-                required
-                maxLength={12}
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="bank">Bank</Label>
-              <Select
-                onValueChange={(value) => {
-                  const selectedBank = allBanks?.find(
-                    (bank) => String(bank.code) === value
-                  );
-                  if (selectedBank) {
-                    setformData((prev) => ({
-                      ...prev,
-                      bank_code: selectedBank.code,
-                    }));
-                    setResolveBankData((prev) => ({
-                      ...prev,
-                      bank_code: selectedBank.code,
-                    }));
+              <div className="relative">
+                <Label
+                  htmlFor="confirmPassword"
+                  className="dark:text-cfont-dark"
+                >
+                  Confirm Password
+                </Label>
+                <Input
+                  type={showRestaurantConfirmPassword ? "text" : "password"}
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  className="dark:text-cfont-dark"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  required
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="absolute right-0 top-2 h-full px-3 py-2 hover:bg-transparent"
+                  onClick={() =>
+                    setShowRestaurantConfirmPassword(
+                      !showRestaurantConfirmPassword
+                    )
                   }
-                }}
-              >
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Choose Bank" />
-                </SelectTrigger>
-                <SelectContent>
-                  {bankListStatus === "pending" ? (
-                    <SelectItem value="" disabled>
-                      Loading Banks...
-                    </SelectItem>
-                  ) : bankListStatus === "error" ? (
-                    <SelectItem value="" disabled>
-                      Error loading Banks
-                    </SelectItem>
+                >
+                  {showRestaurantConfirmPassword ? (
+                    <EyeOff className="h-4 w-4 text-gray-500" />
                   ) : (
-                    <>
-                      {allBanks.map((bank) => (
-                        <SelectItem
-                          key={`${bank.id}-${bank.code}-${bank.name}`}
-                          value={String(bank.code)}
-                        >
-                          {bank.name}
-                        </SelectItem>
-                      ))}
-                    </>
+                    <Eye className="h-4 w-4 text-gray-500" />
                   )}
-                </SelectContent>
-              </Select>
-            </div>
-            <div
-              className={`relative ${resolvedBankName === "" ? "hidden" : ""}`}
-            >
-              <p>Matching account: </p>
-              <h3>{resolvedBankName?.toLocaleUpperCase()}</h3>
-            </div>
+                  <span className="sr-only">
+                    {showRestaurantConfirmPassword
+                      ? "Hide confirm password"
+                      : "Show confirm password"}
+                  </span>
+                </Button>
+              </div>
+              {!isDriver && (
+                <Button
+                  type="submit"
+                  className="w-full"
+                  disabled={status === "pending"}
+                >
+                  {status === "pending"
+                    ? "Creating account..."
+                    : "Create Restaurant"}
+                </Button>
+              )}
 
-            <div className="relative">
-              <Label htmlFor="password" className="dark:text-cfont-dark">
-                Password
-              </Label>
-              <Input
-                type={showRestaurantPassword ? "text" : "password"}
-                id="password"
-                name="password"
-                className="dark:text-cfont-dark"
-                value={formData.password}
-                onChange={handleChange}
-                required
-              />
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                className="absolute right-0 top-2 h-full px-3 py-2 hover:bg-transparent"
-                onClick={() =>
-                  setShowRestaurantPassword(!showRestaurantPassword)
-                }
-              >
-                {showRestaurantPassword ? (
-                  <EyeOff className="h-4 w-4 text-gray-500" />
-                ) : (
-                  <Eye className="h-4 w-4 text-gray-500" />
-                )}
-                <span className="sr-only">
-                  {showRestaurantPassword ? "Hide password" : "Show password"}
-                </span>
-              </Button>
-            </div>
-            <div className="relative">
-              <Label htmlFor="confirmPassword" className="dark:text-cfont-dark">
-                Confirm Password
-              </Label>
-              <Input
-                type={showRestaurantConfirmPassword ? "text" : "password"}
-                id="confirmPassword"
-                name="confirmPassword"
-                className="dark:text-cfont-dark"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                required
-              />
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                className="absolute right-0 top-2 h-full px-3 py-2 hover:bg-transparent"
-                onClick={() =>
-                  setShowRestaurantConfirmPassword(
-                    !showRestaurantConfirmPassword
-                  )
-                }
-              >
-                {showRestaurantConfirmPassword ? (
-                  <EyeOff className="h-4 w-4 text-gray-500" />
-                ) : (
-                  <Eye className="h-4 w-4 text-gray-500" />
-                )}
-                <span className="sr-only">
-                  {showRestaurantConfirmPassword
-                    ? "Hide confirm password"
-                    : "Show confirm password"}
-                </span>
-              </Button>
-            </div>
-            {!isDriver && (
-              <Button
-                type="submit"
-                className="w-full"
-                disabled={status === "pending"}
-              >
-                {status === "pending"
-                  ? "Creating account..."
-                  : "Create Restaurant"}
-              </Button>
-            )}
-
-            {isDriver && (
-              <Button
-                type="submit"
-                className="w-full"
-                disabled={status === "pending"}
-              >
-                {status === "pending" ? "Creating account..." : "Create Driver"}
-              </Button>
-            )}
-          </form>
-        </ScrollArea>
-      </DialogContent>
-    </Dialog>
+              {isDriver && (
+                <Button
+                  type="submit"
+                  className="w-full"
+                  disabled={status === "pending"}
+                >
+                  {status === "pending"
+                    ? "Creating account..."
+                    : "Create Driver"}
+                </Button>
+              )}
+            </form>
+          </ScrollArea>
+        </DialogContent>
+      </Dialog>
+    </div>
   );
 }
