@@ -66,7 +66,7 @@ export async function editProfile(data: {
 export async function dashboard() {
   //this function gets the user's data
   const token = localStorage.getItem("token");
-
+console.log(token);
   return axios
     .get(
       `${apiUrl}/dashboard`,
