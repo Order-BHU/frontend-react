@@ -47,7 +47,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { dashboard } from "@/api/misc";
 import { restaurantMetric, transactionType } from "@/interfaces/restaurantType";
-import { Driver, Order } from "@/interfaces/adminPageAllOrders";
+import { Driver, Order } from "@/pages/Admin/adminPageAllOrders";
 import CreateUserModal from "@/components/createUserModal";
 import ButtonLoader from "@/components/buttonLoader";
 import { format } from "date-fns";
@@ -291,7 +291,6 @@ export default function AdminDashboardPage() {
     }
     logoutMutate(usertoken);
   };
-
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-cbg-dark">
       <main className="flex-grow container mx-auto px-4 py-8 space-y-8 mt-20">
