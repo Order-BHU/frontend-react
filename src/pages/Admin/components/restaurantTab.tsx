@@ -18,7 +18,7 @@ import {
 import { PageWrapper } from "@/components/pagewrapper";
 import { Badge } from "@/components/ui/badge";
 import CreateUserModal from "@/components/createUserModal";
-import Loader from "@/components/loaderAnimation";
+import ButtonLoader from "@/components/buttonLoader";
 import { useState } from "react";
 import { restaurantMetric } from "@/interfaces/restaurantType";
 import { useToast } from "@/hooks/use-toast";
@@ -187,104 +187,110 @@ export default function RestaurantDriverTab({
       </TabsContent>
       <TabsContent value="drivers">
         <PageWrapper>
-          <Card className="max-h-96 overflow-auto">
-            <CardHeader>
-              <CardTitle className="text-lg md:text-xl">
-                Driver Performance
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="whitespace-nowrap">Name</TableHead>
-                      <TableHead className="whitespace-nowrap">
-                        Total Orders
-                      </TableHead>
-                      <TableHead className="whitespace-nowrap">
-                        Completed Orders
-                      </TableHead>
-                      <TableHead className="whitespace-nowrap">
-                        Status
-                      </TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {onlineDrivers && onlineDrivers.length > 0 ? (
-                      onlineDrivers.map((driver: Driver) => (
-                        <TableRow key={driver.id}>
-                          <TableCell className="whitespace-nowrap">
-                            {driver.name}
-                          </TableCell>
-                          <TableCell>null rn</TableCell>
-                          <TableCell>null run</TableCell>
+          {offlinedriversLoading ? (
+            <ButtonLoader color="border-primary-600" className="py-7" />
+          ) : offlinedriversError ? (
+            <div className="text-center">
+              <p>Error Loading Drivers</p>
+            </div>
+          ) : (
+            <Card className="max-h-96 overflow-auto">
+              <CardHeader>
+                <CardTitle className="text-lg md:text-xl">
+                  Driver Performance
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="whitespace-nowrap">
+                          Name
+                        </TableHead>
+                        <TableHead className="whitespace-nowrap">
+                          Total Orders
+                        </TableHead>
+                        <TableHead className="whitespace-nowrap">
+                          Completed Orders
+                        </TableHead>
+                        <TableHead className="whitespace-nowrap">
+                          Status
+                        </TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {onlineDrivers && onlineDrivers.length > 0 ? (
+                        onlineDrivers.map((driver: Driver) => (
+                          <TableRow key={driver.id}>
+                            <TableCell className="whitespace-nowrap">
+                              {driver.name}
+                            </TableCell>
+                            <TableCell>null rn</TableCell>
+                            <TableCell>null run</TableCell>
 
-                          <TableCell>
-                            <Select
-                              value={driver.status}
-                              onValueChange={(value) =>
-                                handleDriverStatusChange(driver.id, value)
-                              }
-                            >
-                              <SelectTrigger className="max-w-full mt-3 sm:mt-0">
-                                <SelectValue>{driver.status}</SelectValue>
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="online">Online</SelectItem>
-                                <SelectItem value="offline">Offline</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </TableCell>
-                        </TableRow>
-                      ))
-                    ) : (
-                      <></>
-                    )}
-                    {offlineDrivers && offlineDrivers.length > 0 ? (
-                      offlineDrivers.map((driver) => (
-                        <TableRow key={driver.id}>
-                          <TableCell className="whitespace-nowrap">
-                            {driver.name}
-                          </TableCell>
-                          <TableCell>null rn</TableCell>
-                          <TableCell>null rn</TableCell>
+                            <TableCell>
+                              <Select
+                                value={driver.status}
+                                onValueChange={(value) =>
+                                  handleDriverStatusChange(driver.id, value)
+                                }
+                              >
+                                <SelectTrigger className="max-w-full mt-3 sm:mt-0">
+                                  <SelectValue>{driver.status}</SelectValue>
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="online">Online</SelectItem>
+                                  <SelectItem value="offline">
+                                    Offline
+                                  </SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      ) : (
+                        <></>
+                      )}
+                      {offlineDrivers && offlineDrivers.length > 0 ? (
+                        offlineDrivers.map((driver) => (
+                          <TableRow key={driver.id}>
+                            <TableCell className="whitespace-nowrap">
+                              {driver.name}
+                            </TableCell>
+                            <TableCell>null rn</TableCell>
+                            <TableCell>null rn</TableCell>
 
-                          <TableCell>
-                            <Select
-                              value={driver.status}
-                              onValueChange={(value) =>
-                                handleDriverStatusChange(driver.id, value)
-                              }
-                            >
-                              <SelectTrigger className="max-w-full mt-3 sm:mt-0">
-                                <SelectValue>{driver.status}</SelectValue>
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="online">Online</SelectItem>
-                                <SelectItem value="offline">Offline</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </TableCell>
-                        </TableRow>
-                      ))
-                    ) : offlinedriversLoading ? (
-                      <div>
-                        <Loader />
-                      </div>
-                    ) : offlinedriversError ? (
-                      <div>
-                        <p>Something Went Wrong</p>
-                      </div>
-                    ) : (
-                      <></>
-                    )}
-                  </TableBody>
-                </Table>
-              </div>
-              <CreateUserModal isDriver={true} />
-            </CardContent>
-          </Card>
+                            <TableCell>
+                              <Select
+                                value={driver.status}
+                                onValueChange={(value) =>
+                                  handleDriverStatusChange(driver.id, value)
+                                }
+                              >
+                                <SelectTrigger className="max-w-full mt-3 sm:mt-0">
+                                  <SelectValue>{driver.status}</SelectValue>
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="online">Online</SelectItem>
+                                  <SelectItem value="offline">
+                                    Offline
+                                  </SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      ) : (
+                        <></>
+                      )}
+                    </TableBody>
+                  </Table>
+                </div>
+                <CreateUserModal isDriver={true} />
+              </CardContent>
+            </Card>
+          )}
         </PageWrapper>
       </TabsContent>
       <TabsContent value="orders">
