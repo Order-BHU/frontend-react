@@ -19,10 +19,9 @@ import { format } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
 
 interface managementProps {
-  userDetails: any;
   driversLoading: boolean;
   driversError: Error | null;
-  onlinedriversRefetch: () => VoidFunction;
+  onlinedriversRefetch: () => void;
   onlineDrivers: Driver[] | undefined;
 }
 export default function OrderManagement({
