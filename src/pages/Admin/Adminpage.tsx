@@ -2,16 +2,7 @@ import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  LogOut,
-  ChevronRight,
-  Package,
-  User,
-  MapPin,
-  Truck,
-  Phone,
-} from "lucide-react";
-import { Separator } from "@/components/ui/separator";
+import { LogOut, ChevronRight } from "lucide-react";
 import { logOut } from "@/api/auth";
 import UseAuthStore from "@/stores/useAuthStore";
 import {
@@ -43,17 +34,14 @@ import {
 } from "recharts";
 import { Utensils, Bike, DollarSign } from "lucide-react";
 import { PageWrapper } from "@/components/pagewrapper";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { dashboard } from "@/api/misc";
 import { transactionType } from "@/interfaces/restaurantType";
-import { Driver, Order } from "@/pages/Admin/adminPageAllOrders";
-import ButtonLoader from "@/components/buttonLoader";
-import { format } from "date-fns";
-import Loader from "@/components/loaderAnimation";
-import { updateOrder, driverList, allOrders } from "@/api/adminRoutes";
+import { Driver } from "@/pages/Admin/adminPageAllOrders";
 import RestaurantDriverTab from "./components/restaurantTab";
 import OrderManagement from "./components/orderManagement";
+import { driverList } from "@/api/adminRoutes";
 
 // Mock data - in a real app, this would come from an API
 const revenueData = [
@@ -103,19 +91,6 @@ export default function AdminDashboardPage() {
 
   //everything down here handles managing and updating orders
 
-  const [loadingOrder, setLoadingOrder] = useState<string | null>(); //state here to show that
-  const queryClient = useQueryClient();
-
-  // Fetch all orders
-  const {
-    data: orders,
-    isLoading: ordersLoading,
-    error: ordersError,
-  } = useQuery<Order[], Error>({
-    queryKey: ["allorders"],
-    queryFn: allOrders,
-  });
-
   // Fetch online drivers
   const {
     data: onlineDrivers,
@@ -126,90 +101,6 @@ export default function AdminDashboardPage() {
     queryKey: ["alldrivers", "online"],
     queryFn: () => driverList("online"),
   });
-
-  // Mutation for updating an order
-  const updateOrderMutation = useMutation({
-    mutationFn: updateOrder,
-    onMutate: ({ orderId }) => {
-      setLoadingOrder(orderId);
-    },
-    onSuccess: (data) => {
-      onlinedriversRefetch();
-      queryClient.invalidateQueries({ queryKey: ["orders"] });
-      setLoadingOrder(null);
-      toast({
-        title: "Success",
-        description: data.message,
-      });
-    },
-    onError: (error) => {
-      setLoadingOrder(null);
-      toast({
-        title: "something went wrong",
-        description: error.message,
-        variant: "destructive",
-      });
-    },
-  });
-
-  // State to manage form inputs for each order
-  const [orderUpdates, setOrderUpdates] = useState<{
-    [key: number]: { status: string; driver_id: string };
-  }>({});
-
-  const handleUpdate = (orderId: number) => {
-    //this function updates the details of an order. Status and driver assigned
-    const updateData = orderUpdates[orderId] || {};
-    if (!updateData.status && !updateData.driver_id) return;
-    updateOrderMutation.mutate({
-      driver_id: updateData.driver_id || "",
-      status: updateData.status || "",
-      orderId: String(orderId),
-    });
-  };
-
-  const handleInputChange = (
-    orderId: number,
-    field: "status" | "driver_id",
-    value: string
-  ) => {
-    setOrderUpdates((prev) => ({
-      ...prev,
-      [orderId]: {
-        ...prev[orderId],
-        [field]: value,
-      },
-    }));
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status.toLowerCase()) {
-      case "pending":
-        return "bg-yellow-100 text-yellow-800 border-yellow-200";
-      case "accepted":
-        return "bg-blue-100 text-blue-800 border-blue-200";
-      case "ready":
-        return "bg-green-100 text-green-800 border-green-200";
-      case "delivering":
-        return "bg-purple-100 text-purple-800 border-purple-200";
-      default:
-        return "bg-emerald-500 text-emerald-800 border-emerald-200";
-    }
-  };
-
-  const getDriverName = (
-    driverId: string | undefined,
-    drivers: Driver[] | undefined
-  ) => {
-    if (!driverId) return "Select driver";
-    const driver = drivers?.find((d) => String(d.id) === driverId);
-    return driver ? `${driver.name} (${driver.phone_number})` : "Select driver";
-  };
-
-  const getStatusDisplay = (status: string) => {
-    return status.charAt(0).toUpperCase() + status.slice(1);
-  };
-  //end of things regarding managing and updating orders
 
   const handleLogout = () => {
     const usertoken = localStorage.getItem("token");
@@ -294,9 +185,11 @@ export default function AdminDashboardPage() {
             <CardContent>
               <div className="text-xl md:text-2xl font-bold">
                 ₦
-                {Number(
-                  userDetails?.transactions?.total_revenue
-                ).toLocaleString() || ""}
+                {(userDetails &&
+                  Number(
+                    userDetails?.transactions?.total_revenue
+                  ).toLocaleString()) ||
+                  0}
               </div>
               <p className="text-xs text-muted-foreground"></p>
             </CardContent>
