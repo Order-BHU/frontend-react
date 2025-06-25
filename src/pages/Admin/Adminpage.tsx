@@ -211,7 +211,7 @@ export default function AdminDashboardPage() {
   //end of things regarding managing and updating orders
 
   const handleLogout = () => {
-    const usertoken = localStorage.getItem("token");
+    const usertoken = localStorage.getItem("BHUO-token");
     if (!usertoken) {
       toast({
         title: "Error",

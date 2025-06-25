@@ -139,7 +139,7 @@ export default function RiderDashboardPage() {
   }, [userDetails]);
 
   const handleLogout = () => {
-    const usertoken = localStorage.getItem("token");
+    const usertoken = localStorage.getItem("BHUO-token");
     if (!usertoken) {
       toast({
         title: "Error",

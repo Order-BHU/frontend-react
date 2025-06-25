@@ -87,7 +87,7 @@ export default function SignUpPage() {
       const { token, user } = event.data;
 
       if (token) {
-        localStorage.setItem("token", token);
+        localStorage.setItem("BHUO-token", token);
         user?.account_type &&
           localStorage.setItem("accountType", user?.account_type);
         logIn(user?.account_type);

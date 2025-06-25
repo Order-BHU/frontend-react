@@ -110,7 +110,7 @@ export async function logOut(token: string | null) {
 }
 
 export async function getBanks() {
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("BHUO-token");
   return api
     .get(`/bank-list`, {
       headers: { Authorization: `Bearer ${token}` },
@@ -131,7 +131,7 @@ export async function resolveBank(data: {
   account_number: string;
   bank_code: string;
 }) {
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("BHUO-token");
   return api
     .post(
       "/resolve-bank",

@@ -35,7 +35,7 @@ export default function LoginPage() {
       if (data?.account_type != "restaurant") {
         localStorage.setItem("name", data?.name);
       }
-      localStorage.setItem("token", data?.token ?? "undefined");
+      localStorage.setItem("BHUO-token", data?.token ?? "undefined");
       localStorage.setItem("accountType", data?.account_type ?? "undefined");
 
       if (localStorage.getItem("itemId")) {
@@ -47,7 +47,7 @@ export default function LoginPage() {
       }
       if (
         localStorage.getItem("accountType") !== "undefined" &&
-        localStorage.getItem("token") !== "undefined"
+        localStorage.getItem("BHUO-token") !== "undefined"
       ) {
         //I want it to check to see if the accountType actually exists before using the login function. doing this because the driver account thing is weird and it messes with the logic. When drivers get "logged in" they aren't assigned a token or an account type, so they get logged in to the frontend and can't really do anything
         logIn(`${localStorage.getItem("accountType")}`);
@@ -90,7 +90,7 @@ export default function LoginPage() {
       const { token, user } = event.data;
 
       if (token) {
-        localStorage.setItem("token", token);
+        localStorage.setItem("BHUO-token", token);
         user?.account_type &&
           localStorage.setItem("accountType", user?.account_type);
         logIn(user?.account_type);

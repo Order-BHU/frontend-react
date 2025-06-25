@@ -28,7 +28,7 @@ export async function getMenuItems(id: string) {
 }
 
 export async function addMenu(menu: menuItem) {
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("BHUO-token");
   return api
     .post(`/${menu.id}/add-menu`, menu, {
       headers: {
@@ -41,7 +41,7 @@ export async function addMenu(menu: menuItem) {
 }
 
 export async function editMenu(menu: menuItem) {
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("BHUO-token");
   return api
     .post(`/${menu.id}/edit-menu`, menu, {
       headers: {
@@ -54,7 +54,7 @@ export async function editMenu(menu: menuItem) {
 }
 
 export async function addToCart(menuid: number) {
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("BHUO-token");
   return api
     .post(
       `/${menuid}/add-to-cart`,
@@ -66,7 +66,7 @@ export async function addToCart(menuid: number) {
 }
 
 export async function removeCartItem(menuid: number) {
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("BHUO-token");
   return api
     .post(
       `/${menuid}/remove-cart-item`,
@@ -78,7 +78,7 @@ export async function removeCartItem(menuid: number) {
 }
 
 export async function viewCart() {
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("BHUO-token");
   return api
     .get("/view-cart", { headers: { Authorization: `Bearer ${token}` } })
     .then((response: AxiosResponse) => {
@@ -88,7 +88,7 @@ export async function viewCart() {
 }
 
 export async function paymentVerify(verifyItems: paymentVerifyType) {
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("BHUO-token");
   return api
     .post(
       `/${verifyItems.restaurant_id}/checkout`,
@@ -107,7 +107,7 @@ export async function paymentVerify(verifyItems: paymentVerifyType) {
 export async function myOrders(
   ordertype: "pending" | "delivering" | "accepted" | "ready" | "history"
 ) {
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("BHUO-token");
   return api
     .get(`/${ordertype}/my-orders`, {
       headers: { Authorization: `Bearer ${token}` },
@@ -119,7 +119,7 @@ export async function myOrders(
 }
 
 export async function trackOrder() {
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("BHUO-token");
   return api
     .get(`/track-order`, {
       headers: { Authorization: `Bearer ${token}` },
@@ -142,7 +142,7 @@ export async function updateOrderStatus(content: {
   status: string;
   code?: string;
 }) {
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("BHUO-token");
   return api
     .post(
       `/${content.orderId}/${content.status}/update-order-status`,
@@ -156,7 +156,7 @@ export async function updateOrderStatus(content: {
 }
 
 export async function setDriverStatus(status: "offline" | "online") {
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("BHUO-token");
   return api
     .post(
       `/${status}/driver-status-update`,
@@ -168,7 +168,7 @@ export async function setDriverStatus(status: "offline" | "online") {
 }
 
 export async function deleteMenuItem(menuid: number) {
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("BHUO-token");
   return api
     .post(
       `/${menuid}/delete-menu`,
@@ -183,7 +183,7 @@ export async function updateItemAvailability(data: {
   menuid: number;
   value: "1" | "0";
 }) {
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("BHUO-token");
   return api
     .post(
       `/${data.menuid}/update-availability`,
@@ -202,7 +202,7 @@ export async function initializeCheckout(data: {
   location: string;
   items: CartItem[];
 }) {
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("BHUO-token");
   return api
     .post(
       `/${data.restaurantId}/initialize-checkout`,

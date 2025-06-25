@@ -66,7 +66,7 @@ export default function UserDashboardPage() {
   });
 
   const handleLogout = () => {
-    const usertoken = localStorage.getItem("token");
+    const usertoken = localStorage.getItem("BHUO-token");
     if (!usertoken) {
       toast({
         title: "Error",

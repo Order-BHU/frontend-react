@@ -3,7 +3,7 @@ import { AxiosResponse, AxiosError } from "axios";
 import { handleError } from "./apiClient";
 
 export async function getContacts(page?: string) {
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("BHUO-token");
   return api
     .get(`/contacts?page=${page || "1"}`, {
       headers: {
@@ -28,7 +28,7 @@ export async function setContactStatus(payload: {
   contactId: string;
   status: string;
 }) {
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("BHUO-token");
   return api
     .post(
       `/${payload.contactId}/update-contact-status`,
@@ -58,7 +58,7 @@ export async function updateOrder(data: {
   status: string;
   orderId: string;
 }) {
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("BHUO-token");
   return api
     .post(
       `/update-order/${data.orderId}`,
@@ -85,7 +85,7 @@ export async function updateOrder(data: {
 
 export async function allOrders() {
   //this function gets all orders for the admin page to manipulate
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("BHUO-token");
   return api
     .get(
       `/all-orders`,
@@ -111,7 +111,7 @@ export async function allOrders() {
 
 export async function driverList(status: string) {
   //this function gets all orders for the admin page to manipulate
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("BHUO-token");
   return api
     .get(
       `/${status}/driver-list`,
@@ -141,7 +141,7 @@ export async function adminSetDriverStatus(data: {
   driverID: number;
   status: "offline" | "online";
 }) {
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("BHUO-token");
   return api
     .post(
       `/${data.status}/${data.driverID}/driver-status-update`,

@@ -18,7 +18,7 @@ const useAuthStore = create<AuthState>((set) => {
 
   // Check localStorage for saved state
   const savedAuth = JSON.parse(localStorage.getItem("authState") || "{}");
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("BHUO-token");
 
   // Logout if the token is invalid
   if (token === "undefined" || token === "null" || token === "") {
