@@ -3,7 +3,7 @@ import axios from "axios";
 const apiUrl = "https://bhuorder.com.ng/api";
 
 export async function updatePfp(pfp: { profile_picture: File | null }) {
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("BHUO-token");
 
   return axios
     .post(
@@ -36,7 +36,7 @@ export async function editProfile(data: {
   cover_picture?: File | null;
   phone_number?: string;
 }) {
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("BHUO-token");
 
   return axios
     .post(
@@ -65,7 +65,8 @@ export async function editProfile(data: {
 
 export async function dashboard() {
   //this function gets the user's data
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("BHUO-token");
+  console.log(token);
 
   return axios
     .get(
@@ -95,7 +96,7 @@ export async function changePassword(data: {
   new_password: string;
   confirm_password: string;
 }) {
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("BHUO-token");
 
   return axios
     .post(
@@ -123,7 +124,7 @@ export async function changePassword(data: {
 }
 
 export async function contact(data: { subject: string; message: string }) {
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("BHUO-token");
   return axios
     .post(
       `${apiUrl}/contact`,
@@ -150,7 +151,7 @@ export async function contact(data: { subject: string; message: string }) {
 
 export async function transactions() {
   //this function gets the user's data
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("BHUO-token");
 
   return axios
     .get(
