@@ -34,6 +34,7 @@ interface cardProps {
   userDetails: any;
   onlineDrivers: any;
   onlinedriversRefetch: () => void;
+  detailStatus: string;
 }
 const recentOrders = [
   {
@@ -66,6 +67,7 @@ export default function RestaurantDriverTab({
   userDetails,
   onlineDrivers,
   onlinedriversRefetch,
+  detailStatus,
 }: cardProps) {
   type TimeRange = "day" | "week" | "month" | "year";
   const { toast } = useToast();
@@ -158,99 +160,105 @@ export default function RestaurantDriverTab({
       </TabsList>
       <TabsContent value="restaurants">
         <PageWrapper>
-          <Card className="max-h-96 overflow-auto">
-            <CardHeader>
-              <CardTitle className="text-lg md:text-xl">
-                Restaurant Data
-              </CardTitle>
-              <Select
-                value={restaurantTimeRange}
-                onValueChange={(value: TimeRange) =>
-                  setRestaurantTimeRange(value)
-                }
-              >
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Select time range" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="day">Today</SelectItem>
-                  <SelectItem value="week">This Week</SelectItem>
-                  <SelectItem value="month">This Month</SelectItem>
-                  <SelectItem value="year">This Year</SelectItem>
-                </SelectContent>
-              </Select>
-            </CardHeader>
-            <CardContent>
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="whitespace-nowrap">Name</TableHead>
-                      <TableHead className="whitespace-nowrap">
-                        Total Orders
-                      </TableHead>
+          {detailStatus === "pending" ? (
+            <ButtonLoader color="bg-primary-600" />
+          ) : (
+            <Card className="max-h-96 overflow-auto">
+              <CardHeader>
+                <CardTitle className="text-lg md:text-xl">
+                  Restaurant Data
+                </CardTitle>
+                <Select
+                  value={restaurantTimeRange}
+                  onValueChange={(value: TimeRange) =>
+                    setRestaurantTimeRange(value)
+                  }
+                >
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Select time range" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="day">Today</SelectItem>
+                    <SelectItem value="week">This Week</SelectItem>
+                    <SelectItem value="month">This Month</SelectItem>
+                    <SelectItem value="year">This Year</SelectItem>
+                  </SelectContent>
+                </Select>
+              </CardHeader>
+              <CardContent>
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="whitespace-nowrap">
+                          Name
+                        </TableHead>
+                        <TableHead className="whitespace-nowrap">
+                          Total Orders
+                        </TableHead>
 
-                      <TableHead className="whitespace-nowrap">
-                        Total Revenue
-                      </TableHead>
+                        <TableHead className="whitespace-nowrap">
+                          Total Revenue
+                        </TableHead>
 
-                      <TableHead className="whitespace-nowrap">
-                        Status
-                      </TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {userDetails?.restaurant_metrics?.map(
-                      (restaurant: restaurantMetric) => (
-                        <TableRow key={restaurant.id}>
-                          <TableCell className="whitespace-nowrap">
-                            {restaurant.name}
-                          </TableCell>
-                          <TableCell>{restaurant.total_orders}</TableCell>
+                        <TableHead className="whitespace-nowrap">
+                          Status
+                        </TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {userDetails?.restaurant_metrics?.map(
+                        (restaurant: restaurantMetric) => (
+                          <TableRow key={restaurant.id}>
+                            <TableCell className="whitespace-nowrap">
+                              {restaurant.name}
+                            </TableCell>
+                            <TableCell>{restaurant.total_orders}</TableCell>
 
-                          <TableCell>{restaurant.total_revenue}</TableCell>
+                            <TableCell>{restaurant.total_revenue}</TableCell>
 
-                          <TableCell>
-                            <Select
-                              value={
-                                restStatusUpdates[restaurant.id]?.status ||
-                                restaurant.status ||
-                                ""
-                              }
-                              onValueChange={(value) =>
-                                handleRestaurantStatusChange(
-                                  restaurant.id,
-                                  value,
-                                  restaurant.status
-                                )
-                              }
-                            >
-                              <SelectTrigger className="w-full">
-                                <SelectValue>
-                                  {restStatusUpdates[restaurant.id]?.status ||
-                                    restaurant.status ||
-                                    ""}
-                                </SelectValue>
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="active">Active</SelectItem>
-                                <SelectItem value="inactive">
-                                  Inactive
-                                </SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </TableCell>
-                        </TableRow>
-                      )
-                    )}
-                  </TableBody>
-                </Table>
+                            <TableCell>
+                              <Select
+                                value={
+                                  restStatusUpdates[restaurant.id]?.status ||
+                                  restaurant.status ||
+                                  ""
+                                }
+                                onValueChange={(value) =>
+                                  handleRestaurantStatusChange(
+                                    restaurant.id,
+                                    value,
+                                    restaurant.status
+                                  )
+                                }
+                              >
+                                <SelectTrigger className="w-full">
+                                  <SelectValue>
+                                    {restStatusUpdates[restaurant.id]?.status ||
+                                      restaurant.status ||
+                                      ""}
+                                  </SelectValue>
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="active">Active</SelectItem>
+                                  <SelectItem value="inactive">
+                                    Inactive
+                                  </SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </TableCell>
+                          </TableRow>
+                        )
+                      )}
+                    </TableBody>
+                  </Table>
+                </div>
+              </CardContent>
+              <div className="bottom-0 sticky ml-6 bg-white">
+                <CreateUserModal isDriver={false} className="pb-4" />
               </div>
-            </CardContent>
-            <div className="bottom-0 sticky ml-6 bg-white">
-              <CreateUserModal isDriver={false} className="pb-4" />
-            </div>
-          </Card>
+            </Card>
+          )}
         </PageWrapper>
       </TabsContent>
       <TabsContent value="drivers">

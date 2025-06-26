@@ -61,7 +61,7 @@ export default function AdminDashboardPage() {
   const { logout } = UseAuthStore();
   //creating restaurant details
 
-  const { data: userDetails } = useQuery({
+  const { data: userDetails, status: detailStatus } = useQuery({
     queryKey: ["userDetails"],
     queryFn: () => dashboard(),
     refetchOnWindowFocus: false,
@@ -375,6 +375,7 @@ export default function AdminDashboardPage() {
             userDetails={userDetails && userDetails}
             onlineDrivers={onlineDrivers}
             onlinedriversRefetch={onlinedriversRefetch}
+            detailStatus={detailStatus}
           />
         </PageWrapper>
       </main>
