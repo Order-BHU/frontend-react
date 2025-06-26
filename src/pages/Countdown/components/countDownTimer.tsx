@@ -16,7 +16,7 @@ const CountdownTimer = () => {
     seconds: 0,
   });
 
-  const targetDate = new Date("2025-06-07T12:00:00").getTime();
+  const targetDate = new Date("2025-06-28T12:00:00").getTime();
 
   useEffect(() => {
     const timer = setInterval(() => {

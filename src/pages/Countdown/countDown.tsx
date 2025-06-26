@@ -63,7 +63,7 @@ const CountDown = () => {
         </div>
 
         {/* Launch date highlight */}
-        <div className="text-center mt-12 md:mt-16">
+        {/* <div className="text-center mt-12 md:mt-16">
           <div className="inline-block bg-white/20 backdrop-blur-sm rounded-2xl px-6 py-4 border border-white/30">
             <p className="text-orange-200 text-sm md:text-base font-medium mb-1">
               Official Launch Date
@@ -72,7 +72,7 @@ const CountDown = () => {
               June 7, 2025 at 12:00 PM
             </p>
           </div>
-        </div>
+        </div> */}
 
         {/* Features preview */}
         <div className="grid md:grid-cols-3 gap-6 mt-16 md:mt-20 max-w-4xl mx-auto">

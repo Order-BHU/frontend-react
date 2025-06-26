@@ -1,7 +1,7 @@
-//import CountDown from "@/pages/Countdown/countDown";
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import DownTime from "../downtime";
+//import DownTime from "../downtime";
+import CountDown from "@/pages/Countdown/countDown";
 interface CountdownRedirectProps {
   children: React.ReactNode;
 }
@@ -17,7 +17,7 @@ const CountdownRedirect = ({ children }: CountdownRedirectProps) => {
   const location = useLocation();
 
   // Calculate initial timeLeft synchronously
-  const targetDate = new Date("2026-06-07T12:00:00").getTime();
+  const targetDate = new Date("2025-06-28T12:00:00").getTime();
   const now = new Date().getTime();
   const difference = targetDate - now;
   const initialTimeLeft =
@@ -73,7 +73,7 @@ const CountdownRedirect = ({ children }: CountdownRedirectProps) => {
     return <>{children}</>;
   }
 
-  return <DownTime />;
+  return <CountDown />;
 };
 
 export default CountdownRedirect;

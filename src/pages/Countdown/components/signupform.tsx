@@ -45,9 +45,9 @@ const SignupForm = () => {
               <div className="inline-flex items-center justify-center w-16 h-16 bg-white rounded-full mb-4 animate-bounce">
                 <Truck className="text-orange-500" size={24} />
               </div>
-              <h3 className="text-xl md:text-2xl font-bold text-white mb-2">
+              {/* <h3 className="text-xl md:text-2xl font-bold text-white mb-2">
                 Be the First to Know!
-              </h3>
+              </h3> */}
               <p className="text-orange-200">
                 Register and be part of the community
               </p>
