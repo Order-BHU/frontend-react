@@ -12,7 +12,6 @@ export async function getContacts(page?: string) {
       timeout: 90000,
     })
     .then(function (response) {
-      console.log(response);
       return response;
     })
     .catch(function (error) {
@@ -41,7 +40,6 @@ export async function setContactStatus(payload: {
       }
     )
     .then(function (response) {
-      console.log(response);
       return response;
     })
     .catch(function (error) {
@@ -150,4 +148,32 @@ export async function adminSetDriverStatus(data: {
     )
     .then((response: AxiosResponse) => response.data)
     .catch(handleError);
+}
+
+export async function setRestaurantStatus(payload: {
+  restaurantId: string;
+  status: "inactive" | "active";
+}) {
+  const token = localStorage.getItem("BHUO-token");
+  return api
+    .post(
+      `/${payload.restaurantId}/update-restaurant-status`,
+      { status: payload.status },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        timeout: 90000,
+      }
+    )
+    .then(function (response) {
+      return response;
+    })
+    .catch(function (error) {
+      if (error.code === "ERR_NETWORK") {
+        throw new Error("Network error: Unable to reach the server.");
+      }
+
+      throw error.response?.data;
+    });
 }

@@ -22,7 +22,11 @@ import ButtonLoader from "@/components/buttonLoader";
 import { useState } from "react";
 import { restaurantMetric } from "@/interfaces/restaurantType";
 import { useToast } from "@/hooks/use-toast";
-import { adminSetDriverStatus, driverList } from "@/api/adminRoutes";
+import {
+  adminSetDriverStatus,
+  driverList,
+  setRestaurantStatus,
+} from "@/api/adminRoutes";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Driver } from "@/pages/Admin/adminPageAllOrders";
 
@@ -93,10 +97,50 @@ export default function RestaurantDriverTab({
       });
     },
   });
+
+  const { mutateAsync: restaurantStatusMutate } = useMutation({
+    mutationFn: setRestaurantStatus,
+    onSuccess: () => {
+      toast({
+        title: "Status updated",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
   const handleDriverStatusChange = (id: number, status: string) => {
     (status === "offline" || status === "online") &&
       driverStatusMutate({ driverID: id, status: status });
     return;
+  };
+
+  const [restStatusUpdates, setResStatusUpdates] = useState<{
+    [key: number]: { status: string | null };
+  }>({});
+  const handleRestaurantStatusChange = async (
+    id: number,
+    newStatus: string,
+    oldStatus: string | null
+  ) => {
+    if (newStatus !== "active" && newStatus !== "inactive") {
+      //type checks for safety
+      return;
+    }
+    setResStatusUpdates((prev) => ({ ...prev, [id]: { status: newStatus } }));
+    try {
+      await restaurantStatusMutate({
+        restaurantId: String(id),
+        status: newStatus,
+      });
+    } catch (err) {
+      setResStatusUpdates((prev) => ({ ...prev, [id]: { status: oldStatus } }));
+    }
   };
 
   return (
@@ -114,7 +158,7 @@ export default function RestaurantDriverTab({
       </TabsList>
       <TabsContent value="restaurants">
         <PageWrapper>
-          <Card>
+          <Card className="max-h-96 overflow-auto">
             <CardHeader>
               <CardTitle className="text-lg md:text-xl">
                 Restaurant Data
@@ -145,18 +189,13 @@ export default function RestaurantDriverTab({
                       <TableHead className="whitespace-nowrap">
                         Total Orders
                       </TableHead>
-                      <TableHead className="whitespace-nowrap">
-                        Pending Orders
-                      </TableHead>
 
                       <TableHead className="whitespace-nowrap">
                         Total Revenue
                       </TableHead>
+
                       <TableHead className="whitespace-nowrap">
-                        Average Value
-                      </TableHead>
-                      <TableHead className="whitespace-nowrap">
-                        Wallet Balance
+                        Status
                       </TableHead>
                     </TableRow>
                   </TableHeader>
@@ -168,12 +207,39 @@ export default function RestaurantDriverTab({
                             {restaurant.name}
                           </TableCell>
                           <TableCell>{restaurant.total_orders}</TableCell>
-                          <TableCell>{restaurant.pending_orders}</TableCell>
+
                           <TableCell>{restaurant.total_revenue}</TableCell>
+
                           <TableCell>
-                            {restaurant.average_order_value}
+                            <Select
+                              value={
+                                restStatusUpdates[restaurant.id]?.status ||
+                                restaurant.status ||
+                                ""
+                              }
+                              onValueChange={(value) =>
+                                handleRestaurantStatusChange(
+                                  restaurant.id,
+                                  value,
+                                  restaurant.status
+                                )
+                              }
+                            >
+                              <SelectTrigger className="w-full">
+                                <SelectValue>
+                                  {restStatusUpdates[restaurant.id]?.status ||
+                                    restaurant.status ||
+                                    ""}
+                                </SelectValue>
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="active">Active</SelectItem>
+                                <SelectItem value="inactive">
+                                  Inactive
+                                </SelectItem>
+                              </SelectContent>
+                            </Select>
                           </TableCell>
-                          <TableCell>{restaurant.wallet_balance}</TableCell>
                         </TableRow>
                       )
                     )}

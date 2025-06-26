@@ -95,13 +95,12 @@ export interface orderHistoryType {
 }
 
 export interface restaurantMetric {
-  average_order_value: number;
   id: number;
   name: string;
-  pending_orders: string;
   total_orders: string;
   total_revenue: number;
-  wallet_balance: string;
+
+  status: "active" | "inactive" | null;
 }
 
 export interface transactionType {
