@@ -162,6 +162,10 @@ export default function RestaurantDriverTab({
         <PageWrapper>
           {detailStatus === "pending" ? (
             <ButtonLoader color="bg-primary-600" />
+          ) : detailStatus === "error" ? (
+            <div>
+              <p>Something Went Wrong</p>
+            </div>
           ) : (
             <Card className="max-h-96 overflow-auto">
               <CardHeader>
@@ -254,7 +258,7 @@ export default function RestaurantDriverTab({
                   </Table>
                 </div>
               </CardContent>
-              <div className="bottom-0 sticky ml-6 bg-white">
+              <div className="bottom-0 sticky ml-6 bg-white p-4">
                 <CreateUserModal isDriver={false} className="pb-4" />
               </div>
             </Card>
