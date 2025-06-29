@@ -17,18 +17,19 @@ import { Order, Driver } from "@/pages/Admin/adminPageAllOrders";
 import { updateOrder, allOrders } from "@/api/adminRoutes";
 import { format } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
+import { FixedSizeList } from "react-window";
 
 interface managementProps {
-  driversLoading: boolean;
   driversError: Error | null;
-  onlinedriversRefetch: () => void;
+  driversLoading: boolean;
   onlineDrivers: Driver[] | undefined;
+  onlinedriversRefetch: () => void;
 }
 export default function OrderManagement({
-  driversLoading,
   driversError,
-  onlinedriversRefetch,
+  driversLoading,
   onlineDrivers,
+  onlinedriversRefetch,
 }: managementProps) {
   const { toast } = useToast();
   const [loadingOrder, setLoadingOrder] = useState<string | null>(); //state here to show that
@@ -56,6 +57,7 @@ export default function OrderManagement({
       });
     },
   });
+
   const {
     data: orders,
     isLoading: ordersLoading,
@@ -150,11 +152,14 @@ export default function OrderManagement({
                     <div className="flex items-start justify-between">
                       <div className="flex flex-col">
                         <h3 className="font-semibold text-lg">
-                          Order #{order.id}
+                          Order #{order.id}-{order.restaurant.name}
                         </h3>
+
                         <Badge
                           variant="outline"
-                          className={getStatusColor(order.status)}
+                          className={`${getStatusColor(
+                            order.status
+                          )} self-start`}
                         >
                           {order.status}
                         </Badge>
