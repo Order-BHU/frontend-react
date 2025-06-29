@@ -44,6 +44,10 @@ const Row = ({ index, style, data }: RowProps) => {
       setLoadingOrder(orderId);
     },
     onSuccess: (data) => {
+      toast({
+        title: "Success",
+        description: data.message,
+      });
       onlinedriversRefetch();
       queryClient.invalidateQueries({ queryKey: ["orders"] });
       setLoadingOrder(null);
@@ -303,7 +307,7 @@ const OrderList = ({
   <FixedSizeList
     height={400} // Adjust to max-h-[25rem]
     itemCount={orders.length}
-    itemSize={150} // Adjust based on card height
+    itemSize={400} // Adjust based on card height
     width="100%"
     itemData={{ orders, onlineDrivers, onlinedriversRefetch }}
   >
