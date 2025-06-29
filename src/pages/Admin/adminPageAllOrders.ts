@@ -11,6 +11,7 @@ export interface Order {
   customer_location: string;
   user: User;
   driver: User | null;
+  restaurant: { name: string };
 }
 
 export interface Item {
