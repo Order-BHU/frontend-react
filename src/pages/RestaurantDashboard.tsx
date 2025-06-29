@@ -87,13 +87,6 @@ const restaurantProfile = {
   address: "Campus Center, Block A",
 };
 
-const averageOrderValue = 3450;
-const orderValueChange = 5; // percentage
-
-// Order data
-
-// Menu categories and items
-
 const RestaurantDashboardPage = () => {
   const navigate = useNavigate();
   const { logout } = UseAuthStore();
@@ -550,12 +543,8 @@ const RestaurantDashboardPage = () => {
                 <FiDollarSign />
               </div>
             </div>
-            <div className="text-2xl font-bold text-secondary-900">
-              ₦{averageOrderValue.toLocaleString()}
-            </div>
-            <p className="text-xs text-green-600 mt-1">
-              +{orderValueChange}% from last month
-            </p>
+            <div className="text-2xl font-bold text-secondary-900">₦{0}</div>
+            <p className="text-xs text-green-600 mt-1">{""}</p>
           </div>
         </motion.div>
 
