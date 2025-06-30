@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { LogOut, ChevronRight } from "lucide-react";
+import { LogOut, ChevronRight, User } from "lucide-react";
 import ButtonLoader from "@/components/buttonLoader";
 import {
   Dialog,
@@ -30,9 +30,11 @@ import {
   FiPlus,
   // FiX,
   FiMapPin,
+  FiUser,
   FiClock,
   FiTrash,
   FiCheck,
+  FiPhone,
 } from "react-icons/fi";
 import { dashboard, transactions } from "@/api/misc";
 import { logOut } from "@/api/auth";
@@ -651,9 +653,6 @@ const RestaurantDashboardPage = () => {
                                       {order.status}
                                     </span>
                                   </div>
-                                  <p className="text-secondary-600 text-sm mt-1">
-                                    {order.user.name}{" "}{order.user.phone_number}
-                                  </p>
                                 </div>
                                 <div className="mt-2 md:mt-0">
                                   <span className="text-primary-600 font-semibold">
@@ -674,7 +673,23 @@ const RestaurantDashboardPage = () => {
                                 </ul>
                                 <div className="flex items-center text-sm text-secondary-600">
                                   <FiMapPin className="mr-1" />
-                                  <span>Delivery to: {order.location}</span>
+                                  <span>
+                                    Delivery to: {order.customer_location}
+                                  </span>
+                                </div>
+                              </div>
+                              <div className="border-t border-secondary-200 pt-3 pb-2">
+                                <h4 className="text-sm font-medium text-secondary-600 mb-2">
+                                  Customer Details
+                                </h4>
+
+                                <div className="flex items-center text-sm text-secondary-600">
+                                  <FiUser className="mr-1" />
+                                  <span>{order.user.name}</span>
+                                </div>
+                                <div className="flex items-center text-sm text-secondary-600">
+                                  <FiPhone className="mr-1" />
+                                  <span>{order.user.phone_number}</span>
                                 </div>
                               </div>
                               <div className="flex justify-end mt-4 space-x-3">
@@ -763,13 +778,15 @@ const RestaurantDashboardPage = () => {
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
                                   <div className="flex items-center text-secondary-600">
                                     <FiMapPin className="mr-1" />
-                                    <span>Delivery to: {order.location}</span>
+                                    <span>
+                                      Delivery to: {order.customer_location}
+                                    </span>
                                   </div>
                                   <div className="flex items-center text-secondary-600">
                                     <FiClock className="mr-1" />
-                                    <span>
+                                    {/* <span>
                                       Estimated delivery: soon enough {":)"}
-                                    </span>
+                                    </span> */}
                                   </div>
                                 </div>
                               </div>

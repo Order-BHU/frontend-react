@@ -61,15 +61,16 @@ export interface orderType {
   total: number;
   order_code: string;
   restaurant_name: string;
-  location: string;
+  customer_location: string;
   user_phoneNumber: string;
   phone_number_type: string;
   user_name: string;
   order_id: number; //honestly, man, idek why this is here. It's to complete the checkout order for the drivers, but idk we couldn't just use the id. DO NOT FUCKING REMOVE ANYTHING, it's from the backend and it's very important istg.
   order_date: string | null;
-user: {
-name: string;
-phone_number: string;};
+  user: {
+    name: string;
+    phone_number: string;
+  };
   driver_name: string;
   driver_profile_photo: string;
   driver_number: string;
