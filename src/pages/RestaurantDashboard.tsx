@@ -652,7 +652,7 @@ const RestaurantDashboardPage = () => {
                                     </span>
                                   </div>
                                   <p className="text-secondary-600 text-sm mt-1">
-                                    {order.user_phoneNumber}
+                                    {order.user.name}{" "}{order.user.phone_number}
                                   </p>
                                 </div>
                                 <div className="mt-2 md:mt-0">
