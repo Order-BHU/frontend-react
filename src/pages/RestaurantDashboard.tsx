@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { LogOut, ChevronRight, User } from "lucide-react";
+import { LogOut, ChevronRight } from "lucide-react";
 import ButtonLoader from "@/components/buttonLoader";
 import {
   Dialog,
@@ -788,6 +788,20 @@ const RestaurantDashboardPage = () => {
                                       Estimated delivery: soon enough {":)"}
                                     </span> */}
                                   </div>
+                                </div>
+                              </div>
+                              <div className="border-t border-secondary-200 pt-3 pb-2">
+                                <h4 className="text-sm font-medium text-secondary-600 mb-2">
+                                  Customer Details
+                                </h4>
+
+                                <div className="flex items-center text-sm text-secondary-600">
+                                  <FiUser className="mr-1" />
+                                  <span>{order.user.name}</span>
+                                </div>
+                                <div className="flex items-center text-sm text-secondary-600">
+                                  <FiPhone className="mr-1" />
+                                  <span>{order.user.phone_number}</span>
                                 </div>
                               </div>
                               <div className="flex justify-end mt-4">
