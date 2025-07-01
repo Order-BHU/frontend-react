@@ -106,6 +106,10 @@ export default function OrderCard({
       label: "Ready for Pickup",
       color: "bg-amber-500 text-black border-amber-200",
     },
+    pending: {
+      label: "Waiting to be accepted",
+      color: "bg-red-500 text-blue-800 border-blue-200",
+    },
     delivering: {
       label: "In Progress",
       color: "bg-red-500 text-blue-800 border-blue-200",
@@ -147,13 +151,23 @@ export default function OrderCard({
               className={cn(
                 "font-medium",
                 statusConfig[
-                  status as "ready" | "delivering" | "completed" | "cancelled"
+                  status as
+                    | "ready"
+                    | "delivering"
+                    | "completed"
+                    | "cancelled"
+                    | "pending"
                 ].color
               )}
             >
               {
                 statusConfig[
-                  status as "ready" | "delivering" | "completed" | "cancelled"
+                  status as
+                    | "ready"
+                    | "delivering"
+                    | "completed"
+                    | "cancelled"
+                    | "pending"
                 ].label
               }
             </Badge>
