@@ -477,7 +477,7 @@ export default function RiderDashboardPage() {
                                   amount: item.total,
                                   customerName: item.user_name,
                                   items: item.items,
-                                  address: item.location,
+                                  address: item.customer_location,
                                   phone_number_type: item.phone_number_type,
 
                                   //date: "the date",
@@ -541,7 +541,7 @@ export default function RiderDashboardPage() {
                                   customerName: item.user_name,
                                   phone_number: item.user_phoneNumber,
                                   items: item.items,
-                                  address: item.location,
+                                  address: item.customer_location,
                                   phone_number_type: item.phone_number_type,
                                 }}
                                 isPendingForThisItem={
