@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/table";
 import { PageWrapper } from "@/components/pagewrapper";
 import { Badge } from "@/components/ui/badge";
-import CreateUserModal from "@/components/createUserModal";
+import CreateUserModal from "@/pages/Admin/components/modals/createUserModal/createUserModal";
 import ButtonLoader from "@/components/buttonLoader";
 import { useState } from "react";
 import { restaurantMetric } from "@/interfaces/restaurantType";
