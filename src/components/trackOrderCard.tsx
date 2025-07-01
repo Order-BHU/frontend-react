@@ -56,7 +56,6 @@ export default function OrderTrackingCard({
   trackedOrder,
 }: OrderTrackingCardProps) {
   const progressData = getProgressData(trackedOrder.status);
-  const isDelivering = trackedOrder.status === "delivering";
 
   return (
     <Card className="w-full max-w-2xl mx-auto shadow-lg border-0 bg-gradient-to-br from-white to-gray-50">
@@ -123,57 +122,37 @@ export default function OrderTrackingCard({
         </div>
 
         {/* Delivery Code Section - Prominent when delivering */}
-        {isDelivering && (
-          <div className="bg-gradient-to-r from-orange-50 to-amber-50 rounded-xl p-6 border-2 border-orange-200 shadow-sm">
-            <div className="text-center">
-              <div className="flex items-center justify-center gap-2 mb-2">
-                <User className="w-5 h-5 text-orange-600" />
-                <span className="text-sm font-medium text-orange-700 uppercase tracking-wide">
-                  Delivery Confirmation Code
-                </span>
-              </div>
-              <h3 className="text-lg font-bold text-gray-900 mb-4">
-                Share this code with your rider
-              </h3>
-              <div className="flex justify-center items-center gap-3">
-                {trackedOrder.order_code.split("").map((digit, index) => (
-                  <div
-                    key={index}
-                    className="w-14 h-14 bg-white rounded-lg border-2 border-orange-300 flex items-center justify-center shadow-sm"
-                  >
-                    <span className="text-2xl font-bold text-gray-900">
-                      {digit}
-                    </span>
-                  </div>
-                ))}
-              </div>
-              <p className="text-xs text-orange-600 mt-3 font-medium">
-                Show this code to confirm delivery
-              </p>
-            </div>
-          </div>
-        )}
 
-        {/* Regular Code Display for other statuses */}
-        {!isDelivering && (
-          <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-gray-600">
-                Order Code:
+        <div className="bg-gradient-to-r from-orange-50 to-amber-50 rounded-xl p-6 border-2 border-orange-200 shadow-sm">
+          <div className="text-center">
+            <div className="flex items-center justify-center gap-2 mb-2">
+              <User className="w-5 h-5 text-orange-600" />
+              <span className="text-sm font-medium text-orange-700 uppercase tracking-wide">
+                Delivery Confirmation Code
               </span>
-              <div className="flex gap-1">
-                {trackedOrder.order_code.split("").map((digit, index) => (
-                  <span
-                    key={index}
-                    className="w-8 h-8 bg-white rounded border flex items-center justify-center text-sm font-bold text-gray-900"
-                  >
+            </div>
+            <h3 className="text-lg font-bold text-gray-900 mb-4">
+              Share this code with your rider
+            </h3>
+            <div className="flex justify-center items-center gap-3">
+              {trackedOrder.order_code.split("").map((digit, index) => (
+                <div
+                  key={index}
+                  className="w-14 h-14 bg-white rounded-lg border-2 border-orange-300 flex items-center justify-center shadow-sm"
+                >
+                  <span className="text-2xl font-bold text-gray-900">
                     {digit}
                   </span>
-                ))}
-              </div>
+                </div>
+              ))}
             </div>
+            <p className="text-xs text-orange-600 mt-3 font-medium">
+              Show this code to confirm delivery
+            </p>
           </div>
-        )}
+        </div>
+
+        {/* Regular Code Display for other statuses */}
 
         {/* Progress Section */}
         <div className="space-y-4">

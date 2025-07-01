@@ -1,11 +1,10 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Clock, MapPin, Phone, User } from "lucide-react";
+import { Clock, MapPin, Phone, User, Package } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
-import { Img } from "react-image";
 import {
   Dialog,
   DialogContent,
@@ -15,7 +14,6 @@ import {
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 import ButtonLoader from "@/components/buttonLoader";
-//import { format } from "date-fns";
 
 // Order type definition
 export interface Order {
@@ -35,14 +33,14 @@ export interface Order {
         menu_id: number;
         quantity: number;
         menu_name: string;
-        menu_price: number;
+        price: number;
         item_name: string;
       }[]
     | {
         menu_id: number;
         quantity: number;
         menu_name: string;
-        menu_price: number;
+        price: number;
         is_available: string;
         image: string;
       }[];
@@ -80,6 +78,7 @@ export default function OrderCard({
     date = "",
     phone_number_type = "",
   } = order;
+
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [completionCode, setCompletionCode] = useState("");
 
@@ -90,224 +89,227 @@ export default function OrderCard({
   const handleSubmitCode = () => {
     onComplete && onComplete(completionCode);
     setIsDialogOpen(false);
-    setCompletionCode(""); // Reset code after submission
+    setCompletionCode("");
   };
-
-  // Get the first item's picture if available
-  const firstItemWithPicture = items.find(
-    (item) => "image" in item && item.image
-  ) as { image: string } | undefined;
-
-  const defaultImage = "/placeholder.svg?height=80&width=80";
-  const imageSrc = firstItemWithPicture?.image || defaultImage;
 
   const statusConfig = {
     ready: {
       label: "Ready for Pickup",
-      color: "bg-amber-500 text-black border-amber-200",
+      color: "bg-amber-100 text-amber-800 border-amber-200",
+      bgGradient: "from-amber-50 to-orange-50",
     },
     pending: {
       label: "Waiting to be accepted",
-      color: "bg-red-500 text-blue-800 border-blue-200",
+      color: "bg-blue-100 text-blue-800 border-blue-200",
+      bgGradient: "from-blue-50 to-indigo-50",
     },
     delivering: {
       label: "In Progress",
-      color: "bg-red-500 text-blue-800 border-blue-200",
+      color: "bg-orange-100 text-orange-800 border-orange-200",
+      bgGradient: "from-orange-50 to-amber-50",
     },
     completed: {
       label: "Completed",
-      color: "bg-emerald-500 text-emerald-800 border-emerald-200",
+      color: "bg-emerald-100 text-emerald-800 border-emerald-200",
+      bgGradient: "from-emerald-50 to-green-50",
     },
     cancelled: {
       label: "Cancelled",
-      color: "bg-rose-500 text-rose-800 border-rose-200",
+      color: "bg-rose-100 text-rose-800 border-rose-200",
+      bgGradient: "from-rose-50 to-red-50",
     },
   };
+
+  const currentStatus =
+    statusConfig[status as keyof typeof statusConfig] || statusConfig.pending;
 
   return (
     <>
       <Card
         className={cn(
-          "overflow-hidden mb-4 transition-all duration-200 hover:shadow-md",
+          "overflow-hidden shadow-lg border-0 bg-gradient-to-br from-white to-gray-50 transition-all duration-300 hover:shadow-xl",
           className
         )}
       >
         <CardContent className="p-0">
-          {/* Card Header with Restaurant Name */}
-          <div className="p-4 bg-gradient-to-r from-orange-100 to-orange-200 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="h-8 w-8 rounded-full border bg-gradient-to-r from-orange-200 to-primary-400 flex items-center justify-center text-slate-700 font-medium overflow-hidden">
-                {restaurant.charAt(0).toUpperCase()}
-              </div>
-              <div>
-                <h3 className="font-medium text-slate-900">{restaurant}</h3>
-                <span className="text-slate-500 text-xs">
-                  Order #{String(id).slice(-4)}
-                </span>
-              </div>
-            </div>
-            <Badge
-              variant="outline"
-              className={cn(
-                "font-medium",
-                statusConfig[
-                  status as
-                    | "ready"
-                    | "delivering"
-                    | "completed"
-                    | "cancelled"
-                    | "pending"
-                ].color
-              )}
-            >
-              {
-                statusConfig[
-                  status as
-                    | "ready"
-                    | "delivering"
-                    | "completed"
-                    | "cancelled"
-                    | "pending"
-                ].label
-              }
-            </Badge>
-          </div>
-
-          {/* Order Details */}
-          <div className="p-5 space-y-4 ">
-            <div className="flex gap-4">
-              {/* Image Section */}
-              <div className="relative h-20 w-20 rounded-md overflow-hidden border bg-slate-50 flex-shrink-0">
-                <Img
-                  src={imageSrc || "/placeholder.svg"}
-                  alt="Order item"
-                  className="object-cover w-full h-full"
-                  loader={
-                    <div className="w-full h-full bg-slate-100 animate-pulse" />
-                  }
-                  unloader={
-                    <div className="w-full h-full bg-slate-100 flex items-center justify-center text-slate-400 text-xs">
-                      No image
-                    </div>
-                  }
-                />
-              </div>
-
-              {/* Order Info */}
-              <div className="flex-1 space-y-3">
-                <div className="flex justify-between">
-                  <div className="flex items-center gap-1.5 text-slate-600">
-                    {isdriver && (
-                      <>
-                        <Clock size={14} className="text-slate-400" />
-                        <span className="text-sm">{time}</span>
-                      </>
-                    )}
-                    {date && (
-                      <span className="text-sm text-slate-400">• {date}</span>
-                    )}
-                  </div>
-
-                  <div className="flex items-center gap-1.5 font-medium">
-                    <span className="text-slate-900">
-                      ₦{amount.toLocaleString()}
+          {/* Header Section */}
+          <div
+            className={cn(
+              "p-6 bg-gradient-to-r",
+              currentStatus.bgGradient,
+              "border-b border-gray-100"
+            )}
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white font-bold text-lg shadow-lg">
+                  {restaurant.charAt(0).toUpperCase()}
+                </div>
+                <div>
+                  <h3 className="font-bold text-lg text-gray-900">
+                    {restaurant}
+                  </h3>
+                  <div className="flex items-center gap-2 text-gray-600">
+                    <Package className="w-4 h-4" />
+                    <span className="text-sm font-medium">
+                      Order #{String(id).slice(-4)}
                     </span>
                   </div>
                 </div>
-
-                <div className="space-y-1">
-                  <div className="text-sm font-medium text-slate-900">
-                    Items:
-                  </div>
-                  <ul className="text-sm text-slate-600 space-y-1">
-                    {items.map((item) => (
-                      <li key={item.menu_id} className="flex justify-between">
-                        <span>{item.menu_name}</span>
-                        <span className="text-slate-500">x{item.quantity}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
               </div>
+              <Badge
+                className={cn(
+                  "px-3 py-1 font-semibold shadow-sm",
+                  currentStatus.color
+                )}
+              >
+                {currentStatus.label}
+              </Badge>
             </div>
+          </div>
 
-            <Separator className="my-3" />
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              <div className="flex items-start gap-2">
-                <MapPin size={16} className="text-slate-400 mt-0.5" />
-                <div>
-                  <div className="text-sm font-medium text-slate-900">
-                    Delivery Address
-                  </div>
-                  <p className="text-sm text-slate-600">{address}</p>
-                </div>
+          {/* Main Content */}
+          <div className="p-6 space-y-6">
+            {/* Order Items with Images */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h4 className="font-semibold text-gray-900 flex items-center gap-2">
+                  <Package className="w-5 h-5 text-orange-500" />
+                  Order Items
+                </h4>
+                <span className="text-2xl font-bold text-gray-900">
+                  ₦{amount.toLocaleString()}
+                </span>
               </div>
 
-              {/* <div className="flex items-start gap-2">
-                {date !== null && (
-                  <>
-                    <Clock size={16} className="text-slate-400 mt-0.5" />
-                    <div>
-                      <div className="text-sm font-medium text-slate-900">
-                        {format(date, "PPpp")}
+              <div className="grid gap-3">
+                {items &&
+                  items.map((item) => (
+                    <div
+                      key={item.menu_id}
+                      className="flex items-center gap-4 p-3 bg-white rounded-lg border border-gray-100 shadow-sm"
+                    >
+                      <div className="w-16 h-16 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
+                        <img
+                          src={
+                            "image" in item && item.image
+                              ? item.image
+                              : "/placeholder.svg?height=64&width=64"
+                          }
+                          alt={item.menu_name}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.src = "/placeholder.svg?height=64&width=64";
+                          }}
+                        />
+                      </div>
+                      <div className="flex-1">
+                        <h5 className="font-medium text-gray-900">
+                          {item.menu_name}
+                        </h5>
+                        <div className="flex items-center justify-between mt-1">
+                          <span className="text-sm text-gray-600">
+                            Quantity: {item.quantity}
+                          </span>
+                          <span className="text-sm font-medium text-gray-900">
+                            ₦{item.price.toLocaleString()}
+                          </span>
+                        </div>
                       </div>
                     </div>
-                  </>
-                )}
-              </div> */}
+                  ))}
+              </div>
+            </div>
 
-              {onAccept && (
-                <div className="flex items-start gap-2">
-                  <User size={16} className="text-slate-400 mt-0.5" />
-                  <div>
-                    <div className="text-sm font-medium text-slate-900">
-                      Customer
-                    </div>
-                    <p className="text-sm text-slate-600">{customerName}</p>
-                    <div className="flex items-center gap-1 text-sm text-slate-500">
-                      <Phone size={12} />
-                      <span>{phone_number}</span>
-                      {phone_number_type && (
-                        <span className="text-xs italic">
-                          ({phone_number_type})
-                        </span>
-                      )}
-                    </div>
+            <Separator className="bg-gray-200" />
+
+            {/* Time and Date Info */}
+            {(isdriver || date) && (
+              <div className="flex items-center gap-4 text-sm text-gray-600">
+                <div className="flex items-center gap-2">
+                  <Clock className="w-4 h-4 text-orange-500" />
+                  <span>{time}</span>
+                </div>
+                {date && (
+                  <div className="flex items-center gap-2">
+                    <span>•</span>
+                    <span>{date}</span>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Customer and Address Info */}
+            <div className="grid gap-4">
+              <div className="bg-gray-50 rounded-xl p-4 space-y-3">
+                <div className="flex items-start gap-3">
+                  <MapPin className="w-5 h-5 text-orange-500 mt-0.5 flex-shrink-0" />
+                  <div className="flex-1">
+                    <h5 className="font-semibold text-gray-900 mb-1">
+                      Delivery Address
+                    </h5>
+                    <p className="text-gray-700 leading-relaxed">{address}</p>
                   </div>
                 </div>
-              )}
+
+                {onAccept && (
+                  <div className="flex items-start gap-3 pt-3 border-t border-gray-200">
+                    <User className="w-5 h-5 text-orange-500 mt-0.5 flex-shrink-0" />
+                    <div className="flex-1">
+                      <h5 className="font-semibold text-gray-900 mb-1">
+                        Customer Details
+                      </h5>
+                      <p className="text-gray-700 font-medium">
+                        {customerName}
+                      </p>
+                      <div className="flex items-center gap-2 mt-1">
+                        <Phone className="w-4 h-4 text-gray-500" />
+                        <span className="text-gray-600">{phone_number}</span>
+                        {phone_number_type && (
+                          <span className="text-xs text-gray-500 italic">
+                            ({phone_number_type})
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
 
-            <div className="pt-2 flex justify-end items-center gap-3">
-              {status === "ready" && (
-                <Button
-                  size="sm"
-                  className={`bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white ${
-                    isdriver === false ? " hidden" : ""
-                  }`}
-                  onClick={() => onAccept && onAccept(String(id))}
-                >
-                  Start Order
-                </Button>
-              )}
+            {/* Action Buttons */}
+            {(status === "ready" || status === "delivering") && isdriver && (
+              <div className="flex justify-end pt-2">
+                {status === "ready" && (
+                  <Button
+                    size="lg"
+                    className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-semibold px-8 shadow-lg hover:shadow-xl transition-all duration-200"
+                    onClick={() => onAccept && onAccept(String(id))}
+                  >
+                    Start Delivery
+                  </Button>
+                )}
 
-              {status === "delivering" && (
-                <Button
-                  size="sm"
-                  className={`${
-                    isdriver === false ? "hidden " : ""
-                  }bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white`}
-                  onClick={handleCompleteClick}
-                >
-                  {isPendingForThisItem ? (
-                    <ButtonLoader size="w-8 h-8" />
-                  ) : (
-                    "Complete Delivery"
-                  )}
-                </Button>
-              )}
-            </div>
+                {status === "delivering" && (
+                  <Button
+                    size="lg"
+                    className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold px-8 shadow-lg hover:shadow-xl transition-all duration-200"
+                    onClick={handleCompleteClick}
+                    disabled={isPendingForThisItem}
+                  >
+                    {isPendingForThisItem ? (
+                      <div className="flex items-center gap-2">
+                        <ButtonLoader size="w-5 h-5" />
+                        <span>Processing...</span>
+                      </div>
+                    ) : (
+                      "Complete Delivery"
+                    )}
+                  </Button>
+                )}
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
@@ -316,28 +318,42 @@ export default function OrderCard({
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Enter Delivery Completion Code</DialogTitle>
+            <DialogTitle className="text-xl font-bold text-gray-900">
+              Enter Delivery Completion Code
+            </DialogTitle>
           </DialogHeader>
-          <div className="py-4">
-            <Input
-              placeholder="Enter the verification code"
-              value={completionCode}
-              onChange={(e) => setCompletionCode(e.target.value)}
-              className="mb-2"
-            />
-            <p className="text-sm text-slate-500">
-              Please enter the code provided by the customer to complete this
-              delivery.
-            </p>
+          <div className="py-6 space-y-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700">
+                Verification Code
+              </label>
+              <Input
+                placeholder="Enter the 4-digit code"
+                value={completionCode}
+                onChange={(e) => setCompletionCode(e.target.value)}
+                className="text-center text-lg font-mono tracking-wider"
+                maxLength={4}
+              />
+            </div>
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <p className="text-sm text-blue-800">
+                <strong>Instructions:</strong> Ask the customer for their
+                4-digit delivery confirmation code to complete this order.
+              </p>
+            </div>
           </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+          <DialogFooter className="gap-3">
+            <Button
+              variant="outline"
+              onClick={() => setIsDialogOpen(false)}
+              className="px-6"
+            >
               Cancel
             </Button>
             <Button
-              className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white"
+              className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-6"
               onClick={handleSubmitCode}
-              disabled={!completionCode.trim()}
+              disabled={!completionCode.trim() || completionCode.length !== 4}
             >
               Verify & Complete
             </Button>
