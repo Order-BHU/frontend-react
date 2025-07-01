@@ -134,7 +134,7 @@ const Row = ({ index, style, data }: RowProps) => {
             {/* Order Header */}
             <div className="flex items-start justify-between">
               <div className="flex flex-col">
-                <h3 className="font-semibold text-lg">
+                <h3 className="font-semibold text-md md:text-lg">
                   Order #{order.id}-{order.restaurant.name}
                 </h3>
 
@@ -148,7 +148,7 @@ const Row = ({ index, style, data }: RowProps) => {
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
                   {order.created_at !== null && (
-                    <span className="text-sm italic">
+                    <span className="text-xs md:text-sm italic">
                       {format(order.created_at, "PPpp")}
                     </span>
                   )}
@@ -307,7 +307,7 @@ const OrderList = ({
   <FixedSizeList
     height={400} // Adjust to max-h-[25rem]
     itemCount={orders.length}
-    itemSize={400} // Adjust based on card height
+    itemSize={430} // Adjust based on card height
     width="100%"
     itemData={{ orders, onlineDrivers, onlinedriversRefetch }}
   >
