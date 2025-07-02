@@ -28,7 +28,7 @@ import {
   setRestaurantStatus,
 } from "@/api/adminRoutes";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { Driver } from "@/pages/Admin/adminPageAllOrders";
+import { Driver } from "@/pages/Admin/types";
 
 interface cardProps {
   userDetails: any;

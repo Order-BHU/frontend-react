@@ -12,7 +12,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { dashboard } from "@/api/misc";
 
-import { Driver } from "@/pages/Admin/adminPageAllOrders";
+import { Driver } from "@/pages/Admin/types";
 import RestaurantDriverTab from "./components/restaurantTab";
 import OrderManagement from "./components/orderManagement";
 import { driverList } from "@/api/adminRoutes";

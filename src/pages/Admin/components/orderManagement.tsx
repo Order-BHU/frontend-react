@@ -3,7 +3,7 @@ import { Package } from "lucide-react";
 import ButtonLoader from "@/components/buttonLoader";
 
 import { useQuery } from "@tanstack/react-query";
-import { Order, Driver } from "@/pages/Admin/adminPageAllOrders";
+import { Order, Driver } from "@/pages/Admin/types";
 import { allOrders } from "@/api/adminRoutes";
 
 import OrderList from "./orderItem";

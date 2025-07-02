@@ -14,7 +14,7 @@ import ButtonLoader from "@/components/buttonLoader";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 
-import { Order, Driver } from "@/pages/Admin/adminPageAllOrders";
+import { Order, Driver } from "@/pages/Admin/types";
 import { updateOrder } from "@/api/adminRoutes";
 import { format } from "date-fns";
 import { useState } from "react";
