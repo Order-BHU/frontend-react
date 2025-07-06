@@ -88,7 +88,7 @@ export interface orderHistoryType {
     image: string;
     quantity: number;
     menu_name: string;
-    price: number;
+    menu_price: number;
     is_available: string; // If this should be a boolean, convert it to `boolean` in your code.
     menu_picture: string;
     item_name: string;

@@ -307,5 +307,3 @@ export default function UserDashboardPage() {
     </div>
   );
 }
-
-// StarRating component for displaying ratings

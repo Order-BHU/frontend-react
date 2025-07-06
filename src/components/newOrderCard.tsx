@@ -33,14 +33,14 @@ export interface Order {
         menu_id: number;
         quantity: number;
         menu_name: string;
-        price: number;
+        menu_price: number;
         item_name: string;
       }[]
     | {
         menu_id: number;
         quantity: number;
         menu_name: string;
-        price: number;
+        menu_price: number;
         is_available: string;
         image: string;
       }[];
@@ -213,7 +213,7 @@ export default function OrderCard({
                             Quantity: {item.quantity}
                           </span>
                           <span className="text-sm font-medium text-gray-900">
-                            ₦{item.price.toLocaleString()}
+                            ₦{item.menu_price.toLocaleString()}
                           </span>
                         </div>
                       </div>
