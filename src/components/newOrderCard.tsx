@@ -213,7 +213,7 @@ export default function OrderCard({
                             Quantity: {item.quantity}
                           </span>
                           <span className="text-sm font-medium text-gray-900">
-                            ₦{item.menu_price?.toLocaleString()}
+                            {/* ₦{item.menu_price?.toLocaleString()} */}
                           </span>
                         </div>
                       </div>
