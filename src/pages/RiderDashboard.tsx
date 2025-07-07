@@ -531,6 +531,7 @@ export default function RiderDashboardPage() {
                             .filter((order) => order.status === "delivering")
                             .map((item) => (
                               <OrderCard
+isDriver={true}
                                 key={item.order_id}
                                 order={{
                                   id: item.order_id,
