@@ -74,6 +74,7 @@ export interface orderType {
   driver_name: string;
   driver_profile_photo: string;
   driver_number: string;
+  location: string; //this is for drivers only. Only the drivers' have this field like this
 }
 
 export interface orderHistoryType {

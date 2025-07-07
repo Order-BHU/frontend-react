@@ -477,7 +477,7 @@ export default function RiderDashboardPage() {
                                   amount: item.total,
                                   customerName: item.user_name,
                                   items: item.items,
-                                  address: item.customer_location,
+                                  address: item.location,
                                   phone_number_type: item.phone_number_type,
 
                                   //date: "the date",
@@ -518,7 +518,7 @@ export default function RiderDashboardPage() {
                       {allOrders.some(
                         (order) => order.status === "delivering"
                       ) && (
-                        <div>
+                        <div className="flex flex-col gap-2">
                           <h1 className="text-xl text-black">
                             {`Currently Delivering${
                               userDetails?.delivery_metrics
@@ -531,7 +531,7 @@ export default function RiderDashboardPage() {
                             .filter((order) => order.status === "delivering")
                             .map((item) => (
                               <OrderCard
-isDriver={true}
+                                isdriver={true}
                                 key={item.order_id}
                                 order={{
                                   id: item.order_id,
@@ -542,7 +542,7 @@ isDriver={true}
                                   customerName: item.user_name,
                                   phone_number: item.user_phoneNumber,
                                   items: item.items,
-                                  address: item.customer_location,
+                                  address: item.location,
                                   phone_number_type: item.phone_number_type,
                                 }}
                                 isPendingForThisItem={

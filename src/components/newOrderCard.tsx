@@ -249,7 +249,9 @@ export default function OrderCard({
                     <h5 className="font-semibold text-gray-900 mb-1">
                       Delivery Address
                     </h5>
-                    <p className="text-gray-700 leading-relaxed">{address}</p>
+                    <p className="text-gray-700 leading-relaxed">
+                      {address || "no adress"}
+                    </p>
                   </div>
                 </div>
 
