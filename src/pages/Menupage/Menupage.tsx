@@ -365,7 +365,7 @@ const RestaurantMenuPage = () => {
     }
   }, []);
 
-  if (isAllowedTime) {
+  if (!isAllowedTime) {
     return <ClosedPage />;
   }
 
