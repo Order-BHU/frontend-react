@@ -38,7 +38,6 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
   useEffect(() => {
     setStatus(paymentStatus);
   }, [paymentStatus]);
-
   if (!isOpen) return null;
 
   return (
