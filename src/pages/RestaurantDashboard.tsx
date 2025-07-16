@@ -31,7 +31,7 @@ import {
   // FiX,
   FiMapPin,
   FiUser,
-  FiClock,
+  //FiClock,
   FiTrash,
   FiCheck,
   FiPhone,
@@ -678,20 +678,23 @@ const RestaurantDashboardPage = () => {
                                   </span>
                                 </div>
                               </div>
-                              <div className="border-t border-secondary-200 pt-3 pb-2">
-                                <h4 className="text-sm font-medium text-secondary-600 mb-2">
-                                  Customer Details
-                                </h4>
+                              {order.user && (
+                                <div className="border-t border-secondary-200 pt-3 pb-2">
+                                  <h4 className="text-sm font-medium text-secondary-600 mb-2">
+                                    Customer Details
+                                  </h4>
 
-                                <div className="flex items-center text-sm text-secondary-600">
-                                  <FiUser className="mr-1" />
-                                  <span>{order.user.name}</span>
+                                  <div className="flex items-center text-sm text-secondary-600">
+                                    <FiUser className="mr-1" />
+                                    <span>{order.user?.name}</span>
+                                  </div>
+                                  <div className="flex items-center text-sm text-secondary-600">
+                                    <FiPhone className="mr-1" />
+                                    <span>{order.user?.phone_number}</span>
+                                  </div>
                                 </div>
-                                <div className="flex items-center text-sm text-secondary-600">
-                                  <FiPhone className="mr-1" />
-                                  <span>{order.user.phone_number}</span>
-                                </div>
-                              </div>
+                              )}
+
                               <div className="flex justify-end mt-4 space-x-3">
                                 {/* <button
                                   className="inline-flex items-center justify-center px-4 py-2 rounded-lg text-white bg-red-500 hover:bg-red-600 transition-colors text-sm"
@@ -778,32 +781,33 @@ const RestaurantDashboardPage = () => {
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
                                   <div className="flex items-center text-secondary-600">
                                     <FiMapPin className="mr-1" />
-                                    <span>
-                                      Delivery to: {order.customer_location}
-                                    </span>
+                                    <span>Delivery to: {order.location}</span>
                                   </div>
-                                  <div className="flex items-center text-secondary-600">
+                                  {/* <div className="flex items-center text-secondary-600">
                                     <FiClock className="mr-1" />
-                                    {/* <span>
+                                     <span>
                                       Estimated delivery: soon enough {":)"}
-                                    </span> */}
+                                    </span> 
+                                  </div> */}
+                                </div>
+                              </div>
+                              {order.user && (
+                                <div className="border-t border-secondary-200 pt-3 pb-2">
+                                  <h4 className="text-sm font-medium text-secondary-600 mb-2">
+                                    Customer Details
+                                  </h4>
+
+                                  <div className="flex items-center text-sm text-secondary-600">
+                                    <FiUser className="mr-1" />
+                                    <span>{order.user?.name}</span>
+                                  </div>
+                                  <div className="flex items-center text-sm text-secondary-600">
+                                    <FiPhone className="mr-1" />
+                                    <span>{order.user?.phone_number}</span>
                                   </div>
                                 </div>
-                              </div>
-                              <div className="border-t border-secondary-200 pt-3 pb-2">
-                                <h4 className="text-sm font-medium text-secondary-600 mb-2">
-                                  Customer Details
-                                </h4>
+                              )}
 
-                                <div className="flex items-center text-sm text-secondary-600">
-                                  <FiUser className="mr-1" />
-                                  <span>{order.user.name}</span>
-                                </div>
-                                <div className="flex items-center text-sm text-secondary-600">
-                                  <FiPhone className="mr-1" />
-                                  <span>{order.user.phone_number}</span>
-                                </div>
-                              </div>
                               <div className="flex justify-end mt-4">
                                 <button
                                   className="inline-flex items-center justify-center px-4 py-2 rounded-lg text-white bg-green-600 hover:bg-green-700 shadow-sm transition-colors text-sm"
