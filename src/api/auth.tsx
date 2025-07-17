@@ -76,8 +76,13 @@ export async function verifyAccount(code: Otp) {
 }
 
 export async function getOtp(email: email) {
+  const token = localStorage.getItem("BHUO-token");
   return api
-    .post("/get-otp", email)
+    .post("/get-otp", email, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
     .then((response: AxiosResponse<apiResponse>) => response.data)
     .catch((error: AxiosError) => {
       if (error.code === "ERR_NETWORK") {

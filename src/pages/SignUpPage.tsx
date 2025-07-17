@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
-import { createUser } from "@/api/auth";
+import { createUser, loginUser } from "@/api/auth";
 import { useMutation } from "@tanstack/react-query";
 import UseAuthStore from "@/stores/useAuthStore";
 import ButtonLoader from "@/components/buttonLoader";
@@ -19,13 +19,54 @@ export default function SignUpPage() {
     password: "",
     confirmPassword: "",
   });
+  const { status: loginStatus, mutate: loginMutate } = useMutation({
+    mutationFn: loginUser,
+    onSuccess: (data) => {
+      if (data.account_type === "restaurant") {
+        localStorage.setItem("name", data?.restaurant_name);
+        localStorage.setItem("restaurant_id", data?.restaurant_id);
+      }
+
+      if (data?.account_type != "restaurant") {
+        localStorage.setItem("name", data?.name);
+      }
+      localStorage.setItem("BHUO-token", data?.token ?? "undefined");
+      localStorage.setItem("accountType", data?.account_type ?? "undefined");
+
+      if (
+        localStorage.getItem("accountType") !== "undefined" &&
+        localStorage.getItem("BHUO-token") !== "undefined"
+      ) {
+        //I want it to check to see if the accountType actually exists before using the login function. doing this because the driver account thing is weird and it messes with the logic. When drivers get "logged in" they aren't assigned a token or an account type, so they get logged in to the frontend and can't really do anything
+        logIn(`${localStorage.getItem("accountType")}`);
+        navigate(`/${data.account_type}-dashboard/`);
+        toast({
+          title: "success!",
+          description: data?.message,
+        });
+      } else {
+        throw new Error("can't log in!!");
+      }
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+      if (error.message.includes("verified")) {
+        const source = "/login";
+
+        navigate("/verify-otp/", { state: { formData, source } });
+      }
+      return;
+    },
+  });
 
   const { status, mutate } = useMutation({
     mutationFn: createUser,
     onSuccess: (data) => {
-      navigate("/verify-otp/", {
-        state: { formData },
-      });
+      loginMutate({ email: formData.email, password: formData.password });
 
       toast({
         title: "Sign-up successful!",
@@ -66,9 +107,6 @@ export default function SignUpPage() {
       });
       return;
     }
-    //if (status === "error") {
-
-    //}
     mutate({
       name: formData.name,
       email: formData.email,
@@ -338,7 +376,7 @@ export default function SignUpPage() {
             <button
               type="submit"
               className="w-full px-4 py-3 rounded-lg bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold hover:from-orange-600 hover:to-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-colors shadow-md hover:shadow-lg transform hover:-translate-y-0.5 active:translate-y-0"
-              disabled={status === "pending"}
+              disabled={status === "pending" || loginStatus === "pending"}
             >
               {status === "pending" ? (
                 <ButtonLoader color="border-white" size="h-8 w-8" />
