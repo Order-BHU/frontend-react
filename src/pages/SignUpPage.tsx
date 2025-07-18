@@ -126,7 +126,7 @@ export default function SignUpPage() {
       phone_number: formData.phone,
       phone_number_type: formData.phoneType as "whatsapp" | "sms" | "both",
       account_type: "customer",
-      "g-reCAPTCHA-response": captchaToken,
+      "g-recaptcha-response": captchaToken,
     });
   };
   const { logIn } = UseAuthStore();
