@@ -104,7 +104,9 @@ export default function SignUpPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     if (!captchaToken) {
-      alert("Please verify the CAPTCHA");
+      toast({
+        title: "Please verify captcha",
+      });
       return;
     }
     e.preventDefault();
