@@ -23,6 +23,7 @@ export type User = {
   phone_number: string;
   phone_number_type: "whatsapp" | "sms" | "both";
   account_type: "customer";
+  "g-reCAPTCHA-response": string;
 };
 
 export type existingUser = {

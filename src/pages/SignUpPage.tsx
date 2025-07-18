@@ -5,8 +5,14 @@ import { createUser, loginUser } from "@/api/auth";
 import { useMutation } from "@tanstack/react-query";
 import UseAuthStore from "@/stores/useAuthStore";
 import ButtonLoader from "@/components/buttonLoader";
+import ReCAPTCHA from "react-google-recaptcha";
 
 export default function SignUpPage() {
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+
+  const handleCaptchaChange = (token: string | null) => {
+    setCaptchaToken(token);
+  };
   const { toast } = useToast();
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
@@ -97,6 +103,10 @@ export default function SignUpPage() {
   };
 
   const handleSubmit = (e: React.FormEvent) => {
+    if (!captchaToken) {
+      alert("Please verify the CAPTCHA");
+      return;
+    }
     e.preventDefault();
     if (formData.password !== formData.confirmPassword) {
       toast({
@@ -114,6 +124,7 @@ export default function SignUpPage() {
       phone_number: formData.phone,
       phone_number_type: formData.phoneType as "whatsapp" | "sms" | "both",
       account_type: "customer",
+      "g-reCAPTCHA-response": captchaToken,
     });
   };
   const { logIn } = UseAuthStore();
@@ -384,6 +395,10 @@ export default function SignUpPage() {
                 "Submit"
               )}
             </button>
+            <ReCAPTCHA
+              sitekey="6LcJBIcrAAAAAJYJ873FguvvB7vWPF4YuwMfRs0k"
+              onChange={handleCaptchaChange}
+            />
           </form>
 
           {/* Social Login Options */}
