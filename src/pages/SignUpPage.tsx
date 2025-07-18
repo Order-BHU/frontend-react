@@ -398,7 +398,7 @@ export default function SignUpPage() {
               )}
             </button>
             <ReCAPTCHA
-              sitekey="6LcJBIcrAAAAAJYJ873FguvvB7vWPF4YuwMfRs0k"
+              sitekey="6LdV2YcrAAAAAO9nAUap4_QRdlu4WJRCMBs_E6rO"
               onChange={handleCaptchaChange}
             />
           </form>
