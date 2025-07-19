@@ -76,11 +76,10 @@ export async function verifyAccount(code: Otp) {
 }
 
 export async function getOtp(email: email) {
-  const token = localStorage.getItem("BHUO-token");
   return api
     .post("/get-otp", email, {
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${process.env.ACCESS_TOKEN}`,
       },
     })
     .then((response: AxiosResponse<apiResponse>) => response.data)
