@@ -31,6 +31,7 @@ export default function RestaurantsPage() {
       });
     }
   }, [status, error, toast]);
+
   return (
     <div className="min-h-screen flex flex-col ">
       <main className="flex-grow bg-gray-50 py-12 dark:bg-cbg-dark">

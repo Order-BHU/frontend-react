@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { getRestaurants } from "@/api/restaurant";
 import { useToast } from "@/hooks/use-toast";
 import { Img } from "react-image";
+import DownTime from "./ClosedPage/downtime";
 
 // Fade-in animation variants
 const fadeIn = {
@@ -22,81 +23,6 @@ interface restaurant {
   name: string;
   logo: string;
 }
-
-// Restaurant data
-// const restaurants = [
-//   {
-//     id: 1,
-//     name: 'Munchbox',
-//     image: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1674&q=80',
-//     rating: 4.8,
-//     deliveryTime: '20-30 min',
-//     priceRange: '$$',
-//     cuisine: 'Fast Food',
-//     location: 'Campus Center'
-//   },
-//   {
-//     id: 2,
-//     name: 'Nabiss',
-//     image: 'https://images.unsplash.com/photo-1559925393-8be0ec4767c8?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1741&q=80',
-//     rating: 4.5,
-//     deliveryTime: '25-35 min',
-//     priceRange: '$',
-//     cuisine: 'Indian',
-//     location: 'North Campus'
-//   },
-//   {
-//     id: 3,
-//     name: 'ETC',
-//     image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1740&q=80',
-//     rating: 4.7,
-//     deliveryTime: '15-25 min',
-//     priceRange: '$$$',
-//     cuisine: 'Fusion',
-//     location: 'Student Center'
-//   },
-//   {
-//     id: 4,
-//     name: 'Dannys Dine',
-//     image: 'https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1740&q=80',
-//     rating: 4.3,
-//     deliveryTime: '30-40 min',
-//     priceRange: '$$',
-//     cuisine: 'American',
-//     location: 'East Campus'
-//   },
-//   {
-//     id: 5,
-//     name: 'Sushi Express',
-//     image: 'https://images.unsplash.com/photo-1579871494447-9811cf80d66c?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1740&q=80',
-//     rating: 4.9,
-//     deliveryTime: '25-35 min',
-//     priceRange: '$$$',
-//     cuisine: 'Japanese',
-//     location: 'University Plaza'
-//   },
-//   {
-//     id: 6,
-//     name: 'Pizza Palace',
-//     image: 'https://images.unsplash.com/photo-1593504049359-74330189a345?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1665&q=80',
-//     rating: 4.6,
-//     deliveryTime: '20-30 min',
-//     priceRange: '$$',
-//     cuisine: 'Italian',
-//     location: 'South Campus'
-//   }
-// ];
-
-// Cuisine filter options
-// const cuisineOptions = [
-//   "All",
-//   "Fast Food",
-//   "Indian",
-//   "Fusion",
-//   "American",
-//   "Japanese",
-//   "Italian",
-// ];
 
 const RestaurantsPage = () => {
   const { toast } = useToast();
@@ -126,6 +52,10 @@ const RestaurantsPage = () => {
 
     return matchesSearch;
   });
+  const closed = 1;
+  if (closed === 1) {
+    return <DownTime />;
+  }
 
   return (
     <div className="bg-secondary-50 min-h-screen pt-24 pb-20">
