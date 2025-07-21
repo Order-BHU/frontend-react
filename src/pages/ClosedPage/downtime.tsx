@@ -20,7 +20,7 @@ const DownTime = () => {
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-4 tracking-tight">
             <span className="block">BHUORDER</span>
             <span className="block text-2xl md:text-4xl lg:text-5xl text-orange-200 font-normal">
-              We're Closed For Now
+              We're Closed For Exams
             </span>
           </h1>
 
@@ -47,7 +47,7 @@ const DownTime = () => {
           <div className="inline-block bg-white/20 backdrop-blur-sm rounded-2xl px-6 py-4 border border-white/30">
             <p className="text-orange-200 text-sm md:text-base font-medium mb-1"></p>
             <p className="text-white text-xl md:text-2xl font-bold">
-              Orders will be back in a while...
+              Orders will be back eventually 
             </p>
           </div>
         </div>
