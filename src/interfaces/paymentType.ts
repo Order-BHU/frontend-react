@@ -1,9 +1,7 @@
-export interface subaccount {
-  business_name: string;
-  settlement_bank: string;
-  account_number: string;
-  percentage_charge: number;
-}
+// Re-export shared payment types
+export type {
+  Subaccount as subaccount,
+} from "@/types/shared";
 
 export interface bankType {
   //for the bank list in the admin page

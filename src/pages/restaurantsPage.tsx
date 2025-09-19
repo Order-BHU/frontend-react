@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { FiStar, FiSearch } from "react-icons/fi";
-import { useState } from "react";
+import { useState, memo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { getRestaurants } from "@/api/restaurant";
@@ -153,9 +153,8 @@ const RestaurantsPage = () => {
             ))
           ) : (
             <div
-              className={`col-span-full text-center py-16 ${
-                status === "pending" ? " hidden" : ""
-              }`}
+              className={`col-span-full text-center py-16 ${status === "pending" ? " hidden" : ""
+                }`}
             >
               <h3 className="text-xl font-medium text-secondary-600">
                 No restaurants found matching your search
@@ -181,7 +180,7 @@ interface RestaurantCardProps {
   index: number;
 }
 
-const RestaurantCard = ({ restaurant, index }: RestaurantCardProps) => {
+const RestaurantCard = memo(function RestaurantCard({ restaurant, index }: RestaurantCardProps) {
   const navigate = useNavigate();
   return (
     <motion.div
@@ -250,6 +249,6 @@ const RestaurantCard = ({ restaurant, index }: RestaurantCardProps) => {
       </div>
     </motion.div>
   );
-};
+});
 
 export default RestaurantsPage;

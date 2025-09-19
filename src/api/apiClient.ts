@@ -2,6 +2,7 @@
 instance instead of creating a new instance for every api call. So now they all use this*/
 import axios, { AxiosError } from "axios";
 import useAuthStore from "@/stores/useAuthStore"; // Import auth store
+import { handleApiError } from "@/utils/errorHandling";
 
 const api = axios.create({
   baseURL: "https://bhuorder.com.ng/api",
@@ -25,11 +26,7 @@ api.interceptors.response.use(
 );
 
 export function handleError(error: AxiosError) {
-  if (error.code === "ERR_NETWORK") {
-    throw new Error("Network error: Unable to reach the server.");
-  }
-
-  throw error.response?.data;
+  return handleApiError(error);
 }
 
 export default api;

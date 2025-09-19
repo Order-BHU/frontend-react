@@ -1,6 +1,14 @@
-export interface apiResponse {
-  message: string;
-}
+// Re-export shared types for backward compatibility
+export type {
+  BaseApiResponse as apiResponse,
+  User,
+  LoginCredentials as existingUser,
+  SignupData,
+  OwnerSignupData as Owner,
+  DriverSignupData as Driver,
+  OtpVerification as Otp,
+} from "@/types/shared";
+
 export interface loginResponse {
   message: string;
   token: string;
@@ -15,52 +23,6 @@ export interface loginResponse {
 export interface email {
   email: string;
 }
-
-export type User = {
-  name: string;
-  email: string;
-  password: string;
-  phone_number: string;
-  phone_number_type: "whatsapp" | "sms" | "both";
-  account_type: "customer";
-  "g-recaptcha-response": string;
-};
-
-export type existingUser = {
-  email: string;
-  password: string;
-};
-
-export type Owner = {
-  email: string;
-  name?: string;
-  password: string;
-  phone_number: string;
-  phone_number_type: "whatsapp" | "sms" | "both";
-  account_type: "restaurant" | "driver";
-  owners_name?: string;
-  restaurant_name?: string;
-  account_no: string;
-  bank_code: string;
-  bank_name: string;
-};
-
-export type Driver = {
-  email: string;
-  password: string;
-  phone_number: string;
-  phone_number_type: "whatsapp" | "sms" | "both";
-  account_type: "driver";
-  name: string;
-  account_no: string;
-  bank_code: string;
-  bank_name: string;
-};
-
-export type Otp = {
-  email: string;
-  otp: string;
-};
 
 export type bankResolveResponse = {
   //this is used for the response we get if a bank gets resolved

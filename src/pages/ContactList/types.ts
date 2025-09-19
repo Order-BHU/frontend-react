@@ -1,14 +1,5 @@
-export interface Contact {
-  id: number;
-  user_id: string;
-  name: string;
-  email: string;
-  subject: string;
-  message: string;
-  status: "unattended" | "sorted";
-  created_at: string;
-  updated_at: string;
-}
+// Re-export shared contact type
+export type { Contact } from "@/types/shared";
 
 export interface ContactsResponse {
   contacts: {

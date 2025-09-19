@@ -3,7 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Clock, MapPin, Phone, User, Package } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
+import { useState, memo } from "react";
 import { Input } from "@/components/ui/input";
 import {
   Dialog,
@@ -28,22 +28,22 @@ export interface Order {
   date?: string | null;
   phone_number_type?: string;
   items:
-    | {
-        image: string;
-        menu_id: number;
-        quantity: number;
-        menu_name: string;
-        menu_price: number;
-        item_name: string;
-      }[]
-    | {
-        menu_id: number;
-        quantity: number;
-        menu_name: string;
-        menu_price: number;
-        is_available: string;
-        image: string;
-      }[];
+  | {
+    image: string;
+    menu_id: number;
+    quantity: number;
+    menu_name: string;
+    menu_price: number;
+    item_name: string;
+  }[]
+  | {
+    menu_id: number;
+    quantity: number;
+    menu_name: string;
+    menu_price: number;
+    is_available: string;
+    image: string;
+  }[];
 }
 
 // Props for the OrderCard component
@@ -57,7 +57,7 @@ interface OrderCardProps {
   isdriver?: boolean;
 }
 
-export default function OrderCard({
+const OrderCard = memo(function OrderCard({
   order,
   isPendingForThisItem,
   className,
@@ -364,4 +364,6 @@ export default function OrderCard({
       </Dialog>
     </>
   );
-}
+});
+
+export default OrderCard;

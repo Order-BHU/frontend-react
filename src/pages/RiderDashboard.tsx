@@ -1,3 +1,4 @@
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
@@ -53,58 +54,50 @@ export default function RiderDashboardPage() {
   } = useQuery({
     queryKey: ["activeOrders"],
     queryFn: () => myOrders("ready"),
+    staleTime: 30000, // 30 seconds
+    refetchOnWindowFocus: false,
   });
 
   const { data: deliveringOrders, refetch: refetchDelivering } = useQuery({
     queryKey: ["deliveringOrders"],
     queryFn: () => myOrders("delivering"),
+    staleTime: 30000, // 30 seconds
+    refetchOnWindowFocus: false,
   });
 
-  useEffect(() => {
-    if (pendingOrders) {
-      //since I'm adding them one by one, I'll have to make sure the items I'm adding don't exist so we dont' have duplicates
-      setAllOrders((prev) => {
-        const newOrders = pendingOrders.orders
-          .map((item: orderType) => ({
-            ...item,
-            status: "ready",
-          }))
-          .filter(
-            (newItem: orderType) =>
-              !prev.some(
-                (existingItem) => existingItem.order_id === newItem.order_id
-              )
-          ); // Check for duplicates
+  // Memoize the combined orders to prevent unnecessary re-renders
+  const combinedOrders = useMemo(() => {
+    const orders: orderType[] = [];
 
-        return [...prev, ...newOrders];
-      });
+    if (pendingOrders?.orders) {
+      const pendingWithStatus = pendingOrders.orders.map((item: orderType) => ({
+        ...item,
+        status: "ready",
+      }));
+      orders.push(...pendingWithStatus);
     }
-  }, [pendingOrders]);
 
-  useEffect(() => {
-    if (deliveringOrders) {
-      //since I'm adding them one by one, I'll have to make sure the items I'm adding don't exist so we dont' have duplicates
-      setAllOrders((prev) => {
-        const newOrders = deliveringOrders.orders
-          .map((item: orderType) => ({
-            ...item,
-            status: "delivering",
-          }))
-          .filter(
-            (newItem: orderType) =>
-              !prev.some(
-                (existingItem) => existingItem.order_id === newItem.order_id
-              )
-          ); // Check for duplicates
-
-        return [...prev, ...newOrders];
-      });
+    if (deliveringOrders?.orders) {
+      const deliveringWithStatus = deliveringOrders.orders.map((item: orderType) => ({
+        ...item,
+        status: "delivering",
+      }));
+      orders.push(...deliveringWithStatus);
     }
-  }, [deliveringOrders]);
+
+    return orders;
+  }, [pendingOrders, deliveringOrders]);
+
+  // Update allOrders state only when combinedOrders changes
+  useEffect(() => {
+    setAllOrders(combinedOrders);
+  }, [combinedOrders]);
 
   const { data: orderHistory, status: historyStatus } = useQuery({
     queryFn: () => myOrders("history"),
     queryKey: ["history"],
+    staleTime: 300000, // 5 minutes - order history doesn't change often
+    refetchOnWindowFocus: false,
   });
   const { status: logoutStatus, mutate: logoutMutate } = useMutation({
     mutationFn: logOut,
@@ -519,58 +512,57 @@ export default function RiderDashboardPage() {
                       {allOrders.some(
                         (order) => order.status === "delivering"
                       ) && (
-                        <div className="flex flex-col gap-2">
-                          <h1 className="text-xl text-black">
-                            {`Currently Delivering${
-                              userDetails?.delivery_metrics
-                                ?.delivering_deliveries
-                                ? `(${userDetails?.delivery_metrics?.delivering_deliveries})`
-                                : ""
-                            }`}
-                          </h1>
-                          {allOrders
-                            .filter((order) => order.status === "delivering")
-                            .map((item) => (
-                              <OrderCard
-                                isdriver={true}
-                                key={item.order_id}
-                                order={{
-                                  id: item.order_id,
-                                  restaurant: item.restaurant_name,
-                                  status: item.status,
-                                  time: "30 min",
-                                  amount: item.total,
-                                  customerName: item.user_name,
-                                  phone_number: item.user_phoneNumber,
-                                  items: item.items,
-                                  address: item.location,
-                                  phone_number_type: item.phone_number_type,
-                                }}
-                                isPendingForThisItem={
-                                  item.order_id === pendingId
-                                }
-                                onAccept={() => {
-                                  allOrders.map((leorder) =>
-                                    leorder.order_id === item.order_id
-                                      ? { ...leorder, status: "delivering" }
-                                      : leorder
-                                  );
-                                  handlecategoryStatusChange(
-                                    item.order_id,
-                                    "delivering"
-                                  );
-                                }}
-                                onComplete={(code) =>
-                                  handlecategoryStatusChange(
-                                    item.order_id,
-                                    "completed",
-                                    code
-                                  )
-                                }
-                              />
-                            ))}
-                        </div>
-                      )}
+                          <div className="flex flex-col gap-2">
+                            <h1 className="text-xl text-black">
+                              {`Currently Delivering${userDetails?.delivery_metrics
+                                  ?.delivering_deliveries
+                                  ? `(${userDetails?.delivery_metrics?.delivering_deliveries})`
+                                  : ""
+                                }`}
+                            </h1>
+                            {allOrders
+                              .filter((order) => order.status === "delivering")
+                              .map((item) => (
+                                <OrderCard
+                                  isdriver={true}
+                                  key={item.order_id}
+                                  order={{
+                                    id: item.order_id,
+                                    restaurant: item.restaurant_name,
+                                    status: item.status,
+                                    time: "30 min",
+                                    amount: item.total,
+                                    customerName: item.user_name,
+                                    phone_number: item.user_phoneNumber,
+                                    items: item.items,
+                                    address: item.location,
+                                    phone_number_type: item.phone_number_type,
+                                  }}
+                                  isPendingForThisItem={
+                                    item.order_id === pendingId
+                                  }
+                                  onAccept={() => {
+                                    allOrders.map((leorder) =>
+                                      leorder.order_id === item.order_id
+                                        ? { ...leorder, status: "delivering" }
+                                        : leorder
+                                    );
+                                    handlecategoryStatusChange(
+                                      item.order_id,
+                                      "delivering"
+                                    );
+                                  }}
+                                  onComplete={(code) =>
+                                    handlecategoryStatusChange(
+                                      item.order_id,
+                                      "completed",
+                                      code
+                                    )
+                                  }
+                                />
+                              ))}
+                          </div>
+                        )}
                     </>
                   )}
                 </TabsContent>
