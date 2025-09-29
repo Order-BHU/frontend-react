@@ -94,7 +94,7 @@ export interface MenuItem {
   category: string;
   price: number;
   image: File | null | string;
-  is_available: "1" | "0";
+  is_available: 1 | 0;
   restaurant_id: string;
 }
 
@@ -318,7 +318,12 @@ export interface UsePaymentModalReturn {
 }
 
 // Status Types
-export type OrderStatus = "pending" | "delivering" | "accepted" | "ready" | "history";
+export type OrderStatus =
+  | "pending"
+  | "delivering"
+  | "accepted"
+  | "ready"
+  | "history";
 export type UserRole = "customer" | "restaurant" | "driver" | "admin";
 export type PhoneType = "whatsapp" | "sms" | "both";
 export type ContactStatus = "unattended" | "sorted";

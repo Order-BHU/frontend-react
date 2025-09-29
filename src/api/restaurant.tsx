@@ -181,7 +181,7 @@ export async function deleteMenuItem(menuid: number) {
 
 export async function updateItemAvailability(data: {
   menuid: number;
-  value: "1" | "0";
+  value: 1 | 0;
 }) {
   const token = localStorage.getItem("BHUO-token");
   return api

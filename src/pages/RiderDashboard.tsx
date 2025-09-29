@@ -22,7 +22,6 @@ import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import UseAuthStore from "@/stores/useAuthStore";
 import { FiCreditCard, /*FiDollarSign,*/ FiShoppingBag } from "react-icons/fi";
-import { useState, useEffect } from "react";
 import OrderCard from "@/components/newOrderCard";
 
 const fadeIn = {
@@ -78,10 +77,12 @@ export default function RiderDashboardPage() {
     }
 
     if (deliveringOrders?.orders) {
-      const deliveringWithStatus = deliveringOrders.orders.map((item: orderType) => ({
-        ...item,
-        status: "delivering",
-      }));
+      const deliveringWithStatus = deliveringOrders.orders.map(
+        (item: orderType) => ({
+          ...item,
+          status: "delivering",
+        })
+      );
       orders.push(...deliveringWithStatus);
     }
 
@@ -512,57 +513,58 @@ export default function RiderDashboardPage() {
                       {allOrders.some(
                         (order) => order.status === "delivering"
                       ) && (
-                          <div className="flex flex-col gap-2">
-                            <h1 className="text-xl text-black">
-                              {`Currently Delivering${userDetails?.delivery_metrics
-                                  ?.delivering_deliveries
-                                  ? `(${userDetails?.delivery_metrics?.delivering_deliveries})`
-                                  : ""
-                                }`}
-                            </h1>
-                            {allOrders
-                              .filter((order) => order.status === "delivering")
-                              .map((item) => (
-                                <OrderCard
-                                  isdriver={true}
-                                  key={item.order_id}
-                                  order={{
-                                    id: item.order_id,
-                                    restaurant: item.restaurant_name,
-                                    status: item.status,
-                                    time: "30 min",
-                                    amount: item.total,
-                                    customerName: item.user_name,
-                                    phone_number: item.user_phoneNumber,
-                                    items: item.items,
-                                    address: item.location,
-                                    phone_number_type: item.phone_number_type,
-                                  }}
-                                  isPendingForThisItem={
-                                    item.order_id === pendingId
-                                  }
-                                  onAccept={() => {
-                                    allOrders.map((leorder) =>
-                                      leorder.order_id === item.order_id
-                                        ? { ...leorder, status: "delivering" }
-                                        : leorder
-                                    );
-                                    handlecategoryStatusChange(
-                                      item.order_id,
-                                      "delivering"
-                                    );
-                                  }}
-                                  onComplete={(code) =>
-                                    handlecategoryStatusChange(
-                                      item.order_id,
-                                      "completed",
-                                      code
-                                    )
-                                  }
-                                />
-                              ))}
-                          </div>
-                        )}
+                        <div className="flex flex-col gap-2">
+                          <h1 className="text-xl text-black">
+                            {`Currently Delivering${
+                              userDetails?.delivery_metrics
+                                ?.delivering_deliveries
+                                ? `(${userDetails?.delivery_metrics?.delivering_deliveries})`
+                                : ""
+                            }`}
+                          </h1>
+                          {allOrders
+                            .filter((order) => order.status === "delivering")
+                            .map((item) => (
+                              <OrderCard
+                                isdriver={true}
+                                key={item.order_id}
+                                order={{
+                                  id: item.order_id,
+                                  restaurant: item.restaurant_name,
+                                  status: item.status,
+                                  time: "30 min",
+                                  amount: item.total,
+                                  customerName: item.user_name,
+                                  phone_number: item.user_phoneNumber,
+                                  items: item.items,
+                                  address: item.location,
+                                  phone_number_type: item.phone_number_type,
+                                }}
+                                isPendingForThisItem={
+                                  item.order_id === pendingId
+                                }
+                                onAccept={() => {
+                                  allOrders.map((leorder) =>
+                                    leorder.order_id === item.order_id
+                                      ? { ...leorder, status: "delivering" }
+                                      : leorder
+                                  );
+                                  handlecategoryStatusChange(
+                                    item.order_id,
+                                    "delivering"
+                                  );
+                                }}
+                                onComplete={(code) =>
+                                  handlecategoryStatusChange(
+                                    item.order_id,
+                                    "completed",
+                                    code
+                                  )
+                                }
+                              />
+                            ))}
+                        </div>
+                      )}
                     </>
                   )}
                 </TabsContent>
