@@ -1,9 +1,9 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Clock, DollarSign, Package } from "lucide-react";
+import { Clock, MapPin, Phone, User, Package } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
+import { useState, memo } from "react";
 import { Input } from "@/components/ui/input";
 import {
   Dialog,
@@ -12,6 +12,8 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
+import { Separator } from "@/components/ui/separator";
+import ButtonLoader from "@/components/buttonLoader";
 
 // Order type definition
 export interface Order {
@@ -26,42 +28,42 @@ export interface Order {
   date?: string | null;
   phone_number_type?: string;
   items:
-    | {
-        menu_id: number;
-        quantity: number;
-        menu_name: string;
-        menu_price: number;
-        item_name: string;
-      }[]
-    | {
-        menu_id: number; //this is here to accomodate orderHistoryType as it has two extra fields
-        quantity: number;
-        menu_name: string;
-        menu_price: number;
-        is_available: string;
-        menu_picture: string;
-      }[];
+  | {
+    image: string;
+    menu_id: number;
+    quantity: number;
+    menu_name: string;
+    menu_price: number;
+    item_name: string;
+  }[]
+  | {
+    menu_id: number;
+    quantity: number;
+    menu_name: string;
+    menu_price: number;
+    is_available: string;
+    image: string;
+  }[];
 }
 
 // Props for the OrderCard component
 interface OrderCardProps {
   order: Order;
-
+  isPendingForThisItem: boolean;
   className?: string;
-  onViewDetails?: (id: string) => void;
   onAccept?: (id: string) => void;
   onReject?: (id: string) => void;
   onComplete?: (code: string) => void;
+  isdriver?: boolean;
 }
 
-export function OrderCard({
+const OrderCard = memo(function OrderCard({
   order,
-
+  isPendingForThisItem,
   className,
-  //onViewDetails,
   onAccept,
-  //onReject,
   onComplete,
+  isdriver,
 }: OrderCardProps) {
   const {
     id,
@@ -74,8 +76,9 @@ export function OrderCard({
     address,
     phone_number,
     date = "",
-    phone_number_type = "", //default values for the optional mandem
+    phone_number_type = "",
   } = order;
+
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [completionCode, setCompletionCode] = useState("");
 
@@ -86,129 +89,229 @@ export function OrderCard({
   const handleSubmitCode = () => {
     onComplete && onComplete(completionCode);
     setIsDialogOpen(false);
-    setCompletionCode(""); // Reset code after submission
+    setCompletionCode("");
   };
 
   const statusConfig = {
     ready: {
-      label: "ready",
-      color: "bg-yellow-100 text-yellow-800 border-yellow-200",
+      label: "Ready for Pickup",
+      color: "bg-amber-100 text-amber-800 border-amber-200",
+      bgGradient: "from-amber-50 to-orange-50",
+    },
+    pending: {
+      label: "Waiting to be accepted",
+      color: "bg-blue-100 text-blue-800 border-blue-200",
+      bgGradient: "from-blue-50 to-indigo-50",
     },
     delivering: {
       label: "In Progress",
-      color: "bg-orange-400 text-black border-blue-200",
+      color: "bg-orange-100 text-orange-800 border-orange-200",
+      bgGradient: "from-orange-50 to-amber-50",
     },
     completed: {
-      label: "completed",
-      color: "bg-green-500 text-green-800 border-green-200",
+      label: "Completed",
+      color: "bg-emerald-100 text-emerald-800 border-emerald-200",
+      bgGradient: "from-emerald-50 to-green-50",
     },
     cancelled: {
       label: "Cancelled",
-      color: "bg-red-100 text-red-800 border-red-200",
+      color: "bg-rose-100 text-rose-800 border-rose-200",
+      bgGradient: "from-rose-50 to-red-50",
     },
   };
+
+  const currentStatus =
+    statusConfig[status as keyof typeof statusConfig] || statusConfig.pending;
 
   return (
     <>
       <Card
         className={cn(
-          "animate-scale overflow-hidden mb-4 shadow-soft-md",
+          "overflow-hidden shadow-lg border-0 bg-gradient-to-br from-white to-gray-50 transition-all duration-300 hover:shadow-xl",
           className
         )}
       >
         <CardContent className="p-0">
-          {/* Card Header with Restaurant Name */}
-          <div className="p-4 bg-gray-50 border-b flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <h3 className="font-medium text-black">{restaurant}</h3>
-              <span className="text-gray-400 text-sm">
-                #{String(id).slice(-4)}
-              </span>
+          {/* Header Section */}
+          <div
+            className={cn(
+              "p-6 bg-gradient-to-r",
+              currentStatus.bgGradient,
+              "border-b border-gray-100"
+            )}
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white font-bold text-lg shadow-lg">
+                  {restaurant.charAt(0).toUpperCase()}
+                </div>
+                <div>
+                  <h3 className="font-bold text-lg text-gray-900">
+                    {restaurant}
+                  </h3>
+                  <div className="flex items-center gap-2 text-gray-600">
+                    <Package className="w-4 h-4" />
+                    <span className="text-sm font-medium">
+                      Order #{String(id).slice(-4)}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <Badge
+                className={cn(
+                  "px-3 py-1 font-semibold shadow-sm",
+                  currentStatus.color
+                )}
+              >
+                {currentStatus.label}
+              </Badge>
             </div>
-            <Badge
-              variant="outline"
-              className={cn(
-                "font-medium",
-                statusConfig[
-                  status as "ready" | "delivering" | "completed" | "cancelled"
-                ].color
-              )}
-            >
-              {
-                statusConfig[
-                  status as "ready" | "delivering" | "completed" | "cancelled"
-                ].label
-              }
-            </Badge>
           </div>
 
-          {/* Order Details */}
-          <div className="p-4 space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="flex items-center gap-2">
-                <Clock size={16} className="text-gray-500" />
-                <span className="text-sm">{time}</span>
+          {/* Main Content */}
+          <div className="p-6 space-y-6">
+            {/* Order Items with Images */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h4 className="font-semibold text-gray-900 flex items-center gap-2">
+                  <Package className="w-5 h-5 text-orange-500" />
+                  Order Items
+                </h4>
+                <span className="text-2xl font-bold text-gray-900">
+                  ₦{amount.toLocaleString()}
+                </span>
               </div>
 
-              <div className="flex items-center gap-2">
-                <DollarSign size={16} className="text-gray-500" />
-                <span className="text-sm font-medium">{amount}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Package size={16} className="text-gray-500" />
-                <ul>
-                  {items.map((item) => (
-                    <li
+              <div className="grid gap-3">
+                {items &&
+                  items.map((item) => (
+                    <div
                       key={item.menu_id}
-                    >{`${item.menu_name} x${item.quantity}`}</li>
+                      className="flex items-center gap-4 p-3 bg-white rounded-lg border border-gray-100 shadow-sm"
+                    >
+                      <div className="w-16 h-16 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
+                        <img
+                          src={
+                            "image" in item && item.image
+                              ? item.image
+                              : "/placeholder.svg?height=64&width=64"
+                          }
+                          alt={item.menu_name}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.src = "/placeholder.svg?height=64&width=64";
+                          }}
+                        />
+                      </div>
+                      <div className="flex-1">
+                        <h5 className="font-medium text-gray-900">
+                          {item.menu_name}
+                        </h5>
+                        <div className="flex items-center justify-between mt-1">
+                          <span className="text-sm text-gray-600">
+                            Quantity: {item.quantity}
+                          </span>
+                          <span className="text-sm font-medium text-gray-900">
+                            {/* ₦{item.menu_price?.toLocaleString()} */}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
                   ))}
-                </ul>
               </div>
             </div>
 
-            {
-              <div className="space-y-1">
-                <span className="text-sm font-medium">Delivery Address:</span>
-                <p className="text-sm text-gray-500">
-                  {address}
-                  {date && `•${date}`}
-                </p>
-              </div>
-            }
+            <Separator className="bg-gray-200" />
 
-            <div className="border-t pt-3 flex justify-between items-center">
-              <div className="text-sm">
-                <span className="font-medium">Customer:</span>{" "}
-                {`${customerName} •${" "}
-                ${phone_number} •`}
-                {phone_number_type && (
-                  <span className="italic">{phone_number_type}</span>
+            {/* Time and Date Info */}
+            {(isdriver || date) && (
+              <div className="flex items-center gap-4 text-sm text-gray-600">
+                <div className="flex items-center gap-2">
+                  <Clock className="w-4 h-4 text-orange-500" />
+                  <span>{time}</span>
+                </div>
+                {date && (
+                  <div className="flex items-center gap-2">
+                    <span>•</span>
+                    <span>{date}</span>
+                  </div>
                 )}
               </div>
+            )}
 
-              <div className="flex gap-2 items-center">
+            {/* Customer and Address Info */}
+            <div className="grid gap-4">
+              <div className="bg-gray-50 rounded-xl p-4 space-y-3">
+                <div className="flex items-start gap-3">
+                  <MapPin className="w-5 h-5 text-orange-500 mt-0.5 flex-shrink-0" />
+                  <div className="flex-1">
+                    <h5 className="font-semibold text-gray-900 mb-1">
+                      Delivery Address
+                    </h5>
+                    <p className="text-gray-700 leading-relaxed">
+                      {address || "no adress"}
+                    </p>
+                  </div>
+                </div>
+
+                {onAccept && (
+                  <div className="flex items-start gap-3 pt-3 border-t border-gray-200">
+                    <User className="w-5 h-5 text-orange-500 mt-0.5 flex-shrink-0" />
+                    <div className="flex-1">
+                      <h5 className="font-semibold text-gray-900 mb-1">
+                        Customer Details
+                      </h5>
+                      <p className="text-gray-700 font-medium">
+                        {customerName}
+                      </p>
+                      <div className="flex items-center gap-2 mt-1">
+                        <Phone className="w-4 h-4 text-gray-500" />
+                        <span className="text-gray-600">{phone_number}</span>
+                        {phone_number_type && (
+                          <span className="text-xs text-gray-500 italic">
+                            ({phone_number_type})
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            {(status === "ready" || status === "delivering") && isdriver && (
+              <div className="flex justify-end pt-2">
                 {status === "ready" && (
                   <Button
-                    size="sm"
-                    variant="orange"
+                    size="lg"
+                    className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-semibold px-8 shadow-lg hover:shadow-xl transition-all duration-200"
                     onClick={() => onAccept && onAccept(String(id))}
                   >
-                    Start Order
+                    Start Delivery
                   </Button>
                 )}
 
                 {status === "delivering" && (
                   <Button
-                    size="sm"
-                    variant="green"
-                    className="bg-green-600 hover:bg-green-700 text-white"
+                    size="lg"
+                    className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold px-8 shadow-lg hover:shadow-xl transition-all duration-200"
                     onClick={handleCompleteClick}
+                    disabled={isPendingForThisItem}
                   >
-                    Complete Delivery
+                    {isPendingForThisItem ? (
+                      <div className="flex items-center gap-2">
+                        <ButtonLoader size="w-5 h-5" />
+                        <span>Processing...</span>
+                      </div>
+                    ) : (
+                      "Complete Delivery"
+                    )}
                   </Button>
                 )}
               </div>
-            </div>
+            )}
           </div>
         </CardContent>
       </Card>
@@ -217,29 +320,42 @@ export function OrderCard({
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Enter Delivery Completion Code</DialogTitle>
+            <DialogTitle className="text-xl font-bold text-gray-900">
+              Enter Delivery Completion Code
+            </DialogTitle>
           </DialogHeader>
-          <div className="py-4">
-            <Input
-              placeholder="Enter the verification code"
-              value={completionCode}
-              onChange={(e) => setCompletionCode(e.target.value)}
-              className="mb-2"
-            />
-            <p className="text-sm text-gray-500">
-              Please enter the code provided by the customer to complete this
-              delivery.
-            </p>
+          <div className="py-6 space-y-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700">
+                Verification Code
+              </label>
+              <Input
+                placeholder="Enter the 4-digit code"
+                value={completionCode}
+                onChange={(e) => setCompletionCode(e.target.value)}
+                className="text-center text-lg font-mono tracking-wider"
+                maxLength={4}
+              />
+            </div>
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <p className="text-sm text-blue-800">
+                <strong>Instructions:</strong> Ask the customer for their
+                4-digit delivery confirmation code to complete this order.
+              </p>
+            </div>
           </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+          <DialogFooter className="gap-3">
+            <Button
+              variant="outline"
+              onClick={() => setIsDialogOpen(false)}
+              className="px-6"
+            >
               Cancel
             </Button>
             <Button
-              variant="green"
-              className="bg-green-600 hover:bg-green-700 text-white"
+              className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-6"
               onClick={handleSubmitCode}
-              disabled={!completionCode.trim()}
+              disabled={!completionCode.trim() || completionCode.length !== 4}
             >
               Verify & Complete
             </Button>
@@ -248,4 +364,6 @@ export function OrderCard({
       </Dialog>
     </>
   );
-}
+});
+
+export default OrderCard;

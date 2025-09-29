@@ -22,7 +22,7 @@ import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import UseAuthStore from "@/stores/useAuthStore";
 import { FiCreditCard, /*FiDollarSign,*/ FiShoppingBag } from "react-icons/fi";
-import OrderCard from "@/components/newOrderCard";
+import OrderCard from "@/components/driverOrderCar";
 
 const fadeIn = {
   hidden: { opacity: 0, y: 20 },
@@ -406,20 +406,6 @@ export default function RiderDashboardPage() {
             </p> */}
               </div>
             )}
-
-            {/* Total Earnings */}
-            {/* <div className="bg-white rounded-2xl shadow-soft-md p-6">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-sm font-medium text-secondary-500">
-                  Total Earnings
-                </h3>
-                <div className="w-8 h-8 flex items-center justify-center rounded-full bg-primary-100 text-primary-600">
-                  <FiDollarSign />
-                </div>
-              </div>
-              <div className="text-2xl font-bold text-secondary-900">...</div>
-              <p className="text-xs text-green-600 mt-1">+50%</p>
-            </div> */}
           </motion.div>
 
           {/* Orders Section */}

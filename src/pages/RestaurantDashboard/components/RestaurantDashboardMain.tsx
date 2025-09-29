@@ -46,11 +46,11 @@ const RestaurantDashboardMain: React.FC = () => {
     queryFn: dashboard,
     refetchOnWindowFocus: false,
   });
-  //   useEffect(() => {
-  //     if (userDetails) {
-  //       console.log("userdeets:", userDetails);
-  //     }
-  //   }, [userDetails]);
+  // useEffect(() => {
+  //   if (userDetails) {
+  //     console.log("userdeets:", userDetails);
+  //   }
+  // }, [userDetails]);
 
   // Logout mutation
   const { status: logoutStatus, mutate: logoutMutate } = useMutation({
@@ -71,6 +71,16 @@ const RestaurantDashboardMain: React.FC = () => {
       });
     },
   });
+  function cutOffAtFirstSpace(str: string) {
+    const spaceIndex = str.indexOf(" ");
+    if (spaceIndex === -1) {
+      // No space found, return the full string
+      return str;
+    } else {
+      // Cut off the string at the first space
+      return str.slice(0, spaceIndex);
+    }
+  }
 
   const handleLogout = () => {
     const token = localStorage.getItem("BHUO-token");
@@ -98,7 +108,10 @@ const RestaurantDashboardMain: React.FC = () => {
               </Avatar>
               <div>
                 <h1 className="text-2xl font-bold text-secondary-900">
-                  Welcome back, {userDetails?.name || "Restaurant Owner"}
+                  Welcome back,{" "}
+                  {(userDetails &&
+                    cutOffAtFirstSpace(userDetails?.user.name)) ||
+                    "Restaurant Owner"}
                 </h1>
                 <p className="text-secondary-600">
                   {userDetails?.restaurant_name || "Restaurant Dashboard"}

@@ -72,17 +72,12 @@ const RestaurantMenuTab: React.FC<RestaurantMenuTabProps> = ({
   });
   useEffect(() => {
     if (menuData) {
-      console.log("menu data:", menuData);
       const allItems = menuData.menu?.flatMap(
         (category: any) => category.menus
       );
       setmenuItemArray(allItems);
     }
   }, [menuData]);
-
-  useEffect(() => {
-    console.log("menu state: ", menuItemArrayState);
-  }, [menuItemArrayState]);
 
   // Fetch categories
   const { data: categories, status: categoryStatus } = useQuery({
