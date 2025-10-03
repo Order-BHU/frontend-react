@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
@@ -17,12 +17,12 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { myOrders, updateOrderStatus, setDriverStatus } from "@/api/restaurant";
 import { orderHistoryType, orderType } from "@/interfaces/restaurantType";
 import Loader from "@/components/loaderAnimation";
-import EditProfileModal from "@/components/editProfileModal";
+import EditProfileModal from "@/components/EditRestaurantProfleModal";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import UseAuthStore from "@/stores/useAuthStore";
 import { FiCreditCard, /*FiDollarSign,*/ FiShoppingBag } from "react-icons/fi";
-import OrderCard from "@/components/driverOrderCar";
+import OrderCard from "@/components/driverOrderCard";
 
 const fadeIn = {
   hidden: { opacity: 0, y: 20 },
@@ -458,7 +458,7 @@ export default function RiderDashboardPage() {
                                   amount: item.total,
                                   customerName: item.user_name,
                                   items: item.items,
-                                  address: item.location,
+                                  address: item.customer_location,
                                   phone_number_type: item.phone_number_type,
 
                                   //date: "the date",
@@ -523,7 +523,7 @@ export default function RiderDashboardPage() {
                                   customerName: item.user_name,
                                   phone_number: item.user_phoneNumber,
                                   items: item.items,
-                                  address: item.location,
+                                  address: item.customer_location,
                                   phone_number_type: item.phone_number_type,
                                 }}
                                 isPendingForThisItem={

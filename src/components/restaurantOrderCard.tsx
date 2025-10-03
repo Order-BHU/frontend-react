@@ -3,9 +3,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Clock, MapPin, Phone, User, Package } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useState, memo } from "react";
+import { memo } from "react";
 import { Separator } from "@/components/ui/separator";
-import ButtonLoader from "@/components/buttonLoader";
 
 // Order type definition
 export interface Order {

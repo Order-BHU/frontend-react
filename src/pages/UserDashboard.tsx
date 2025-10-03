@@ -16,12 +16,12 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { myOrders, trackOrder } from "@/api/restaurant";
 import { orderHistoryType } from "@/interfaces/restaurantType";
 import Loader from "@/components/loaderAnimation";
-import EditProfileModal from "@/components/editProfileModal";
+import EditProfileModal from "@/components/EditUserProfileModal";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import UseAuthStore from "@/stores/useAuthStore";
 import { useEffect } from "react";
-import OrderCard from "@/components/driverOrderCar";
+import OrderCard from "@/components/driverOrderCard";
 import OrderTrackingCard from "@/components/trackOrderCard";
 
 export default function UserDashboardPage() {
@@ -35,7 +35,7 @@ export default function UserDashboardPage() {
   });
 
   const { data: trackedOrder, status: trackedStatus } = useQuery({
-    queryFn: () => trackOrder(),
+    queryFn: trackOrder,
     queryKey: ["trackedorders"], // Ensure key changes when userOrder changes
     staleTime: 30000,
   });
@@ -44,6 +44,9 @@ export default function UserDashboardPage() {
     queryKey: ["history"],
     staleTime: 300000,
   });
+  useEffect(() => {
+    console.log("tracked: ", trackedOrder);
+  }, [trackedOrder]);
   const { status: logoutStatus, mutate: logoutMutate } = useMutation({
     mutationFn: logOut,
     onSuccess: (data) => {

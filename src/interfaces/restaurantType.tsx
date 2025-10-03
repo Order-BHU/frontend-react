@@ -1,3 +1,4 @@
+import { MenuItem } from "@/types/shared";
 // Re-export shared types for backward compatibility
 export type {
   MenuItem as menuItem,

@@ -98,7 +98,6 @@ export async function paymentVerify(verifyItems: paymentVerifyType) {
       }
     )
     .then((response: AxiosResponse) => {
-      console.log(response.data);
       return response.data;
     })
     .catch(handleError);
@@ -215,7 +214,6 @@ export async function initializeCheckout(data: {
       { headers: { Authorization: `Bearer ${token}` } }
     )
     .then((response: AxiosResponse) => {
-      console.log(response.data);
       return response.data;
     })
     .catch(handleError);

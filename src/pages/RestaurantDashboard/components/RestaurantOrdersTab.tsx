@@ -31,7 +31,7 @@ const RestaurantOrdersTab = () => {
   } = useQuery({
     queryFn: () => myOrders("pending"),
     queryKey: ["pendingOrders"],
-    refetchInterval: 10000,
+    //refetchInterval: 10000,
   });
 
   // Fetch accepted orders
@@ -42,7 +42,7 @@ const RestaurantOrdersTab = () => {
   } = useQuery({
     queryFn: () => myOrders("accepted"),
     queryKey: ["acceptedOrders"],
-    refetchInterval: 10000,
+    //refetchInterval: 10000,
   });
   useEffect(() => console.log("accepted: ", acceptedOrders), [acceptedOrders]);
   useEffect(() => console.log("pending: ", pendingOrders), [pendingOrders]);
@@ -94,6 +94,14 @@ const RestaurantOrdersTab = () => {
     return (
       <div className="flex justify-center items-center h-64">
         <ButtonLoader color="border-primary-500" />
+      </div>
+    );
+  }
+
+  if (pendingStatus === "error" || acceptedStatus === "error") {
+    return (
+      <div className="text-center py-8 text-secondary-500">
+        Something went wrong. Please try again
       </div>
     );
   }

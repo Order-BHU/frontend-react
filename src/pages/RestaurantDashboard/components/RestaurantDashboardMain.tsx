@@ -1,27 +1,20 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { LogOut, ChevronRight } from "lucide-react";
+import { LogOut } from "lucide-react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { dashboard } from "@/api/misc";
 import { logOut } from "@/api/auth";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import UseAuthStore from "@/stores/useAuthStore";
-import EditProfileModal from "@/components/editProfileModal";
+import EditProfileModal from "@/components/EditRestaurantProfleModal";
 import RestaurantOrdersTab from "./RestaurantOrdersTab";
 import RestaurantMenuTab from "./RestaurantMenuTab";
 import RestaurantFinancialTab from "./RestaurantFinancialTab";
-import { orderType } from "@/interfaces/restaurantType";
 
 const fadeIn = {
   hidden: { opacity: 0, y: 20 },
@@ -121,7 +114,7 @@ const RestaurantDashboardMain: React.FC = () => {
             <div className="flex items-center gap-2">
               <EditProfileModal
                 userDetails={userDetails}
-                refetchDetails={refetchDetails}
+                successFn={refetchDetails}
               />
               <Button
                 variant="outline"
@@ -191,9 +184,7 @@ const RestaurantDashboardMain: React.FC = () => {
 
             <div className="p-6">
               <TabsContent value="orders" className="space-y-6">
-                <RestaurantOrdersTab
-                  restaurantId={userDetails?.restaurant_details.id}
-                />
+                <RestaurantOrdersTab />
               </TabsContent>
 
               <TabsContent value="menu" className="space-y-6">

@@ -21,16 +21,17 @@ import { useMutation } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import ButtonLoader from "@/components/buttonLoader";
 
-interface UserDetails {
-  restaurant_name?: string;
-  name?: string;
-  profile_picture?: File | null;
-  restaurant_logo?: File | null;
-  cover_picture?: File | null;
-  phone_number_type?: "whatsapp" | "sms";
-  phone_number?: string;
-  // Add other user details properties as needed
-}
+// interface UserDetails {
+//   restaurant_name?: string;
+//   name?: string;
+//   profile_picture?: File | null;
+//   restaurant_logo?: File | null;
+//   cover_picture?: File | null;
+//   phone_number_type?: "whatsapp" | "sms";
+//   phone_number?: string;
+//   user:UserType
+//   // Add other user details properties as needed
+// }
 
 interface PasswordState {
   current_password: string;
@@ -39,32 +40,31 @@ interface PasswordState {
 }
 
 interface EditProfileModalProps {
-  userDetails?: UserDetails;
+  userDetails?: any;
   successFn: () => void; //this is the function passed to run onSuccess when mutate is done so it refetches user Data. I don't want to have to query for user details in this modal as well the actual dashboard page
 }
 
 const EditProfileModal: React.FC<EditProfileModalProps> = ({
-  userDetails = {},
+  userDetails,
   successFn,
 }) => {
-  const [formData, setFormData] = useState<UserDetails>({
+  const [formData, setFormData] = useState<any>({
     name: userDetails.name || "",
-    restaurant_name: userDetails.restaurant_name || "",
     profile_picture: null,
     phone_number_type: userDetails.phone_number_type || "sms", // Default valu
-    cover_picture: null,
     phone_number: userDetails.phone_number || "",
   });
 
-  // useEffect(() => {
-  //   //this is here to set the form details whenever we get themfrom the api
-  //   setFormData((prevData) => ({
-  //     ...prevData,
-  //     name: userDetails.name || "",
-  //     restaurant_name: userDetails.restaurant_name || "",
-  //     phone_number: userDetails.phone_number,
-  //   }));
-  // }, [userDetails]);
+  //   useEffect(() => {
+  //     //this is here to set the form details whenever we get themfrom the api
+  //     setFormData((prevData: any) => ({
+  //       ...prevData,
+  //       name: userDetails.name || "",
+  //       phone_number: userDetails.phone_number,
+  //       phone_number_type: userDetails.phone_number_type,
+  //     }));
+  //     console.log("deets: ", userDetails);
+  //   }, [userDetails]);
   const { toast } = useToast();
   const [showEditProfileModal, setShowEditProfileModal] =
     useState<boolean>(false);
@@ -167,80 +167,35 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
           <DialogTitle>Edit Profile</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleEditProfile} className="space-y-4">
-          {userDetails.cover_picture && (
-            <div>
-              <Label htmlFor="coverPhoto" className="dark:text-cfont-dark">
-                Cover Photo
-              </Label>
-              <Input
-                id="photo"
-                type="file"
-                accept="image/*"
-                onChange={(e) => handlePfpImageChange(e, "cover_picture")}
-              />
-            </div>
-          )}
-          {userDetails.restaurant_logo ? (
-            <div>
-              <Label htmlFor="restaurantLogo" className="dark:text-cfont-dark">
-                Restaurant Logo
-              </Label>
-              <Input
-                id="photo"
-                type="file"
-                accept="image/*"
-                onChange={(e) => handlePfpImageChange(e, "profile_picture")}
-              />
-            </div>
-          ) : (
-            <div>
-              <Label htmlFor="profilePhoto" className="dark:text-cfont-dark">
-                Profile Picture
-              </Label>
-              <Input
-                id="photo"
-                type="file"
-                accept="image/*"
-                onChange={(e) => handlePfpImageChange(e, "profile_picture")}
-              />
-            </div>
-          )}
+          <div>
+            <Label htmlFor="profilePhoto" className="dark:text-cfont-dark">
+              Profile Picture
+            </Label>
+            <Input
+              id="photo"
+              type="file"
+              accept="image/*"
+              onChange={(e) => handlePfpImageChange(e, "profile_picture")}
+            />
+          </div>
 
-          {userDetails.restaurant_name ? (
-            <div>
-              <Label htmlFor="restaurantName" className="dark:text-cfont-dark">
-                Restaurant Name
-              </Label>
-              <Input
-                id="restaurantName"
-                value={formData.restaurant_name}
-                className="dark:text-cfont-dark"
-                onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                  setFormData({
-                    ...formData,
-                    restaurant_name: e.target.value,
-                  })
-                }
-              />
-            </div>
-          ) : (
-            <div>
-              <Label htmlFor="Name" className="dark:text-cfont-dark">
-                Name
-              </Label>
-              <Input
-                id="Name"
-                value={formData.name}
-                className="dark:text-cfont-dark"
-                onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                  setFormData({
-                    ...formData,
-                    name: e.target.value,
-                  })
-                }
-              />
-            </div>
-          )}
+          <div>
+            <Label htmlFor="Name" className="dark:text-cfont-dark">
+              Name
+            </Label>
+            <Input
+              id="Name"
+              value={formData.name}
+              className="dark:text-cfont-dark"
+              onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                setFormData({
+                  ...formData,
+                  name: e.target.value,
+                })
+              }
+            />
+          </div>
+
           <div>
             <Label htmlFor="phoneNo" className="dark:text-cfont-dark">
               Phone Number

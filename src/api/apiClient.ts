@@ -5,8 +5,8 @@ import useAuthStore from "@/stores/useAuthStore"; // Import auth store
 import { handleApiError } from "@/utils/errorHandling";
 
 const api = axios.create({
-  //baseURL: "https://bhuorder.com.ng/api",
-  baseURL: "http://157.245.165.32/api",
+  baseURL: "https://bhuorder.com.ng/api",
+  //baseURL: "http://157.245.165.32/api",
   timeout: 90000,
 });
 

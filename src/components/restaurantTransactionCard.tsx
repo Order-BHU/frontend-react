@@ -8,6 +8,7 @@ export interface Transaction {
   reference: string;
   status: string;
   type: string;
+  id: string;
 }
 
 interface TransactionCardProps {

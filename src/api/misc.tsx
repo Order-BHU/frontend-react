@@ -1,20 +1,16 @@
-import { AxiosResponse, AxiosError } from "axios";
+import { AxiosResponse } from "axios";
 import api, { handleError } from "./apiClient";
 
 export async function updatePfp(pfp: { profile_picture: File | null }) {
   const token = localStorage.getItem("BHUO-token");
 
   return api
-    .post(
-      "/update-profile-picture",
-      pfp,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data",
-        },
-      }
-    )
+    .post("/update-profile-picture", pfp, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data",
+      },
+    })
     .then((response: AxiosResponse) => response.data)
     .catch(handleError);
 }
@@ -29,16 +25,12 @@ export async function editProfile(data: {
   const token = localStorage.getItem("BHUO-token");
 
   return api
-    .post(
-      "/edit-profile",
-      data,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    )
+    .post("/edit-profile", data, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${token}`,
+      },
+    })
     .then((response: AxiosResponse) => response.data)
     .catch(handleError);
 }

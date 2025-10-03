@@ -226,7 +226,15 @@ const RestaurantMenuTab: React.FC<RestaurantMenuTabProps> = ({
   if (menuPending || categoryStatus === "pending") {
     return (
       <div className="flex justify-center items-center h-64">
-        <ButtonLoader color="border-orange" />
+        <ButtonLoader color="border-primary-500" />
+      </div>
+    );
+  }
+
+  if (categoryStatus === "error") {
+    return (
+      <div className="text-center py-8 text-secondary-500">
+        Something went wrong. Please try again
       </div>
     );
   }

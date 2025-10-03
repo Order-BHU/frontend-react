@@ -135,16 +135,18 @@ export default function OrderTrackingCard({
               Share this code with your rider
             </h3>
             <div className="flex justify-center items-center gap-3">
-              {trackedOrder.order_code.split("").map((digit, index) => (
-                <div
-                  key={index}
-                  className="w-14 h-14 bg-white rounded-lg border-2 border-orange-300 flex items-center justify-center shadow-sm"
-                >
-                  <span className="text-2xl font-bold text-gray-900">
-                    {digit}
-                  </span>
-                </div>
-              ))}
+              {String(trackedOrder.order_code)
+                .split("")
+                .map((digit, index) => (
+                  <div
+                    key={index}
+                    className="w-14 h-14 bg-white rounded-lg border-2 border-orange-300 flex items-center justify-center shadow-sm"
+                  >
+                    <span className="text-2xl font-bold text-gray-900">
+                      {digit}
+                    </span>
+                  </div>
+                ))}
             </div>
             <p className="text-xs text-orange-600 mt-3 font-medium">
               Show this code to confirm delivery
