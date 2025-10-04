@@ -17,7 +17,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { myOrders, updateOrderStatus, setDriverStatus } from "@/api/restaurant";
 import { orderHistoryType, orderType } from "@/interfaces/restaurantType";
 import Loader from "@/components/loaderAnimation";
-import EditProfileModal from "@/components/EditRestaurantProfleModal";
+import EditProfileModal from "@/components/EditUserProfileModal";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import UseAuthStore from "@/stores/useAuthStore";
@@ -63,6 +63,10 @@ export default function RiderDashboardPage() {
     staleTime: 30000, // 30 seconds
     refetchOnWindowFocus: false,
   });
+
+  useEffect(() => {
+    console.log("orders: ", pendingOrders);
+  }, [pendingOrders]);
 
   // Memoize the combined orders to prevent unnecessary re-renders
   const combinedOrders = useMemo(() => {
@@ -320,9 +324,9 @@ export default function RiderDashboardPage() {
                     <EditProfileModal
                       successFn={refetchDetails}
                       userDetails={{
-                        name: userDetails?.user?.name,
-                        phone_number_type: userDetails?.user?.phone_number_type,
-                        phone_number: userDetails?.user?.phone_number,
+                        name: userDetails?.name,
+                        phone_number_type: userDetails?.phone_number_type,
+                        phone_number: userDetails?.phone_number,
                       }}
                     />
                   )}
