@@ -354,14 +354,14 @@ const RestaurantMenuPage = () => {
 
   //all this shit down here handles rendering a different thing if active hours not active
   const [isAllowedTime, setIsAllowedTime] = useState(false);
-  const closed = 1;
+  const closed: number = 0;
 
   useEffect(() => {
     const now = new Date();
     const hour = now.getHours();
 
     if (hour >= 12 && hour < 18) {
-      setIsAllowedTime(false);
+      setIsAllowedTime(true);
     } else {
       setIsAllowedTime(false);
     }
