@@ -1,4 +1,5 @@
 // Re-export shared contact type
+import { Contact } from "@/types/shared";
 export type { Contact } from "@/types/shared";
 
 export interface ContactsResponse {

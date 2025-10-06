@@ -11,8 +11,12 @@ import {
   bankResolveResponse,
 } from "@/interfaces/user";
 import api from "./apiClient";
-
-export async function createUser(user: User) {
+type UserWithoutId = Omit<User, "id">;
+interface UserLogin extends UserWithoutId {
+  password: string;
+  "g-recaptcha-response": string | null;
+}
+export async function createUser(user: UserLogin) {
   return api
     .post("/register", user)
     .then((response: AxiosResponse<apiResponse>) => response.data)

@@ -46,7 +46,7 @@ export const useStableCallback = <T extends (...args: any[]) => any>(
 ): T => {
   const callbackRef = useRef(callback);
   callbackRef.current = callback;
-  
+
   return useCallback((...args: any[]) => {
     return callbackRef.current(...args);
   }, []) as T;
@@ -74,8 +74,7 @@ export const useIntersectionObserver = (
   callback: () => void,
   options?: IntersectionObserverInit
 ) => {
-  const targetRef = useRef<HTMLElement>(null);
-
+  const targetRef = useRef<HTMLElement | null>(null);
   const observer = useMemo(() => {
     return new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
@@ -86,12 +85,15 @@ export const useIntersectionObserver = (
     }, options);
   }, [callback, options]);
 
-  const observe = useCallback((element: HTMLElement | null) => {
-    if (element) {
-      observer.observe(element);
-      targetRef.current = element;
-    }
-  }, [observer]);
+  const observe = useCallback(
+    (element: HTMLElement | null) => {
+      if (element) {
+        observer.observe(element);
+        targetRef.current = element;
+      }
+    },
+    [observer]
+  );
 
   const unobserve = useCallback(() => {
     if (targetRef.current) {
@@ -114,7 +116,7 @@ export const getVisibleRange = (
     startIndex + Math.ceil(containerHeight / itemHeight) + 1,
     totalItems - 1
   );
-  
+
   return { startIndex, endIndex };
 };
 
@@ -141,7 +143,7 @@ export const lazyImport = <T>(
 export const useCleanup = (cleanupFn: () => void) => {
   const cleanupRef = useRef(cleanupFn);
   cleanupRef.current = cleanupFn;
-  
+
   // Cleanup on unmount
   useMemo(() => {
     return () => {

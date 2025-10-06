@@ -1,5 +1,4 @@
 // Centralized error handling utilities
-import { AxiosError } from "axios";
 import { useToast } from "@/hooks/use-toast";
 
 export interface ApiError {
@@ -11,21 +10,24 @@ export interface ApiError {
 // Error types for better categorization
 export enum ErrorType {
   NETWORK = "NETWORK",
-  VALIDATION = "VALIDATION", 
+  VALIDATION = "VALIDATION",
   AUTHENTICATION = "AUTHENTICATION",
   AUTHORIZATION = "AUTHORIZATION",
   NOT_FOUND = "NOT_FOUND",
   SERVER = "SERVER",
-  UNKNOWN = "UNKNOWN"
+  UNKNOWN = "UNKNOWN",
 }
 
 // Parse error to extract meaningful information
-export const parseError = (error: any): { type: ErrorType; message: string; details?: any } => {
+export const parseError = (
+  error: any
+): { type: ErrorType; message: string; details?: any } => {
   // Network errors
   if (error.code === "ERR_NETWORK" || !error.response) {
     return {
       type: ErrorType.NETWORK,
-      message: "Unable to connect to the server. Please check your internet connection.",
+      message:
+        "Unable to connect to the server. Please check your internet connection.",
     };
   }
 
@@ -39,28 +41,28 @@ export const parseError = (error: any): { type: ErrorType; message: string; deta
         message: "Your session has expired. Please log in again.",
         details: data,
       };
-    
+
     case 403:
       return {
         type: ErrorType.AUTHORIZATION,
         message: "You don't have permission to perform this action.",
         details: data,
       };
-    
+
     case 404:
       return {
         type: ErrorType.NOT_FOUND,
         message: "The requested resource was not found.",
         details: data,
       };
-    
+
     case 422:
       return {
         type: ErrorType.VALIDATION,
         message: data?.message || "Please check your input and try again.",
         details: data,
       };
-    
+
     case 500:
     case 502:
     case 503:
@@ -70,11 +72,12 @@ export const parseError = (error: any): { type: ErrorType; message: string; deta
         message: "Server error occurred. Please try again later.",
         details: data,
       };
-    
+
     default:
       return {
         type: ErrorType.UNKNOWN,
-        message: data?.message || "An unexpected error occurred. Please try again.",
+        message:
+          data?.message || "An unexpected error occurred. Please try again.",
         details: data,
       };
   }
@@ -83,7 +86,7 @@ export const parseError = (error: any): { type: ErrorType; message: string; deta
 // Standardized error handler for API calls
 export const handleApiError = (error: any): never => {
   const parsedError = parseError(error);
-  
+
   // Log error for debugging (in development)
   if (process.env.NODE_ENV === "development") {
     console.error("API Error:", {
@@ -108,7 +111,7 @@ export const useErrorHandler = () => {
 
   const handleError = (error: any, customMessage?: string) => {
     const parsedError = parseError(error);
-    
+
     // Use custom message if provided, otherwise use parsed message
     const message = customMessage || parsedError.message;
 
@@ -121,7 +124,7 @@ export const useErrorHandler = () => {
           variant: "destructive",
         });
         break;
-      
+
       case ErrorType.AUTHENTICATION:
         toast({
           title: "Authentication Required",
@@ -130,7 +133,7 @@ export const useErrorHandler = () => {
         });
         // Could trigger logout here
         break;
-      
+
       case ErrorType.AUTHORIZATION:
         toast({
           title: "Access Denied",
@@ -138,7 +141,7 @@ export const useErrorHandler = () => {
           variant: "destructive",
         });
         break;
-      
+
       case ErrorType.VALIDATION:
         toast({
           title: "Validation Error",
@@ -146,7 +149,7 @@ export const useErrorHandler = () => {
           variant: "destructive",
         });
         break;
-      
+
       case ErrorType.SERVER:
         toast({
           title: "Server Error",
@@ -154,7 +157,7 @@ export const useErrorHandler = () => {
           variant: "destructive",
         });
         break;
-      
+
       default:
         toast({
           title: "Error",
@@ -175,11 +178,13 @@ export const useErrorHandler = () => {
 };
 
 // Validation error formatter
-export const formatValidationErrors = (errors: Record<string, string[]>): string => {
+export const formatValidationErrors = (
+  errors: Record<string, string[]>
+): string => {
   const errorMessages = Object.entries(errors)
     .map(([field, messages]) => `${field}: ${messages.join(", ")}`)
     .join("; ");
-  
+
   return errorMessages || "Please check your input and try again.";
 };
 
@@ -190,30 +195,36 @@ export const withRetry = async <T>(
   delay: number = 1000
 ): Promise<T> => {
   let lastError: any;
-  
+
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
       return await fn();
     } catch (error) {
       lastError = error;
-      
+
       // Don't retry certain error types
       const parsedError = parseError(error);
-      if ([ErrorType.AUTHENTICATION, ErrorType.AUTHORIZATION, ErrorType.VALIDATION].includes(parsedError.type)) {
+      if (
+        [
+          ErrorType.AUTHENTICATION,
+          ErrorType.AUTHORIZATION,
+          ErrorType.VALIDATION,
+        ].includes(parsedError.type)
+      ) {
         throw error;
       }
-      
+
       // Wait before retrying
       if (attempt < maxRetries) {
-        await new Promise(resolve => setTimeout(resolve, delay * attempt));
+        await new Promise((resolve) => setTimeout(resolve, delay * attempt));
       }
     }
   }
-  
+
   throw lastError;
 };
 
 // Error boundary helper for React components
-export const getErrorBoundaryMessage = (error: Error, errorInfo: any): string => {
-  return `Something went wrong: ${error.message}`;
-};
+// export const getErrorBoundaryMessage = (error: Error, errorInfo: any): string => {
+//   return `Something went wrong: ${error.message}`;
+// };

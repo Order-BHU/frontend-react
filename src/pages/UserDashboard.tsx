@@ -21,7 +21,7 @@ import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import UseAuthStore from "@/stores/useAuthStore";
 import { useEffect } from "react";
-import OrderCard from "@/components/driverOrderCard";
+import OrderCard from "@/components/DriverOrderCard";
 import OrderTrackingCard from "@/components/trackOrderCard";
 
 export default function UserDashboardPage() {
