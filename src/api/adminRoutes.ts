@@ -123,8 +123,8 @@ export async function driverList(status: string) {
     )
     .then(function (response: AxiosResponse) {
       return status === "online"
-        ? response.data.onlinedrivers
-        : response.data.offlinedrivers;
+        ? response.data.online_drivers.data
+        : response.data.all_drivers.data;
     })
     .catch(function (error: AxiosError) {
       if (error.code === "ERR_NETWORK") {
