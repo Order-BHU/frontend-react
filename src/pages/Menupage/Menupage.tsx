@@ -523,14 +523,14 @@ const RestaurantMenuPage = () => {
                                         ) : (
                                           <button
                                             disabled={
-                                              menuitem.is_available === "0"
+                                              menuitem.is_available === 0
                                             }
                                             onClick={() =>
                                               handleAddToCart(menuitem)
                                             }
                                             className="inline-flex items-center justify-center p-2 rounded-full bg-primary-100 text-primary-600 hover:bg-primary-600 hover:text-white transition-colors"
                                           >
-                                            {menuitem.is_available === "1" ? (
+                                            {menuitem.is_available === 1 ? (
                                               <FiPlus size={16} />
                                             ) : (
                                               "Item Unavailable"
