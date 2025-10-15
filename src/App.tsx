@@ -11,7 +11,9 @@ const ContactPage = lazy(() => import("./pages/Contact"));
 const LoginPage = lazy(() => import("./pages/Login"));
 const SignUpPage = lazy(() => import("./pages/SignUpPage"));
 const RiderDashboardPage = lazy(() => import("./pages/RiderDashboard"));
-const RestaurantDashboardPage = lazy(() => import("./pages/RestaurantDashboard"));
+const RestaurantDashboardPage = lazy(
+  () => import("./pages/RestaurantDashboard")
+);
 const UserDashboardPage = lazy(() => import("./pages/UserDashboard"));
 const RestaurantMenuPage = lazy(() => import("./pages/Menupage/Menupage"));
 const AdminDashboardPage = lazy(() => import("./pages/Admin/Adminpage"));
@@ -30,6 +32,7 @@ import Header from "./components/header";
 import Footer from "./components/footer";
 import CountDownRedirect from "@/pages/ClosedPage/components/countdownRedirect";
 import ErrorBoundary from "./components/ErrorBoundary";
+import MobileAppDownloadModal from "./components/MobileAppDownloadModal";
 
 function App() {
   waveform.register();
@@ -58,6 +61,7 @@ function App() {
           <QueryClientProvider client={queryClient}>
             <ScrollToTop />
             <Header />
+            <MobileAppDownloadModal />
             <CountDownRedirect>
               <Suspense fallback={<LoadingSpinner />}>
                 <Routes>
@@ -67,12 +71,21 @@ function App() {
                     path="/forgot-password"
                     element={<ForgotPassword />}
                   ></Route>
-                  <Route path="/reset-password" element={<ResetPassword />}></Route>
-                  <Route path="/restaurants" element={<RestaurantsPage />}></Route>
+                  <Route
+                    path="/reset-password"
+                    element={<ResetPassword />}
+                  ></Route>
+                  <Route
+                    path="/restaurants"
+                    element={<RestaurantsPage />}
+                  ></Route>
                   <Route path="/contact" element={<ContactPage />}></Route>
                   <Route path="/login" element={<LoginPage />}></Route>
                   <Route path="/signup" element={<SignUpPage />}></Route>
-                  <Route path="/menu/:id" element={<RestaurantMenuPage />}></Route>
+                  <Route
+                    path="/menu/:id"
+                    element={<RestaurantMenuPage />}
+                  ></Route>
                   <Route path="/verify-otp" element={<VerifyOTPPage />}></Route>
                   <Route
                     path="/driver-dashboard"

@@ -5,6 +5,7 @@ export default {
     extend: {
       colors: {
         primary: {
+          glow: "#8a2c0d",
           50: "#fff8f1",
           100: "#feecdc",
           200: "#fcd9bd",

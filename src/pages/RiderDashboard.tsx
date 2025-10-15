@@ -22,7 +22,7 @@ import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import UseAuthStore from "@/stores/useAuthStore";
 import { FiCreditCard, /*FiDollarSign,*/ FiShoppingBag } from "react-icons/fi";
-import OrderCard from "@/components/DriverOrderCard";
+import OrderCard from "@/components/OrderCard";
 
 const fadeIn = {
   hidden: { opacity: 0, y: 20 },

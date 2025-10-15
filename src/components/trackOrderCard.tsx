@@ -7,7 +7,9 @@ import {
 } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { Clock, MapPin, User } from "lucide-react";
+import { AlertCircle, Clock, MapPin, Phone, User } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Button } from "./ui/button";
 
 interface OrderItem {
   menu_id: number;
@@ -24,6 +26,7 @@ interface TrackedOrder {
   items: OrderItem[];
   restaurant_name: string;
   total: number;
+  order_date: string;
 }
 
 interface OrderTrackingCardProps {
@@ -52,10 +55,59 @@ const getStatusColor = (status: string) => {
   return colorMap[status as keyof typeof colorMap] || colorMap.pending;
 };
 
+const getExpectedTime = (status: string) => {
+  const timeMap = {
+    pending: 1,
+    accepted: 1,
+    ready: 1,
+    delivering: 1,
+    completed: 0,
+  };
+  return timeMap[status as keyof typeof timeMap] || 1;
+};
+
+const formatTime = (seconds: number) => {
+  const mins = Math.floor(seconds / 60);
+  const secs = seconds % 60;
+  return `${mins}:${secs.toString().padStart(2, "0")}`;
+};
+
 export default function OrderTrackingCard({
   trackedOrder,
 }: OrderTrackingCardProps) {
+  const totalOrderTime = 1500000;
   const progressData = getProgressData(trackedOrder.status);
+  const currentDate = new Date();
+  const supportNumber = "+234";
+  const initialOrderTime = new Date(trackedOrder?.order_date);
+  const [elapsedTime, setelapsedTime] = useState(
+    (Number(currentDate) - Number(initialOrderTime)) / (1000 * 60)
+  );
+  const [showSupport, setShowSupport] = useState(false);
+
+  useEffect(() => {
+    console.log("le time: ", initialOrderTime);
+    console.log("minutes: ", elapsedTime);
+  }, [trackedOrder]);
+
+  useEffect(() => {
+    if (trackedOrder.status === "completed") {
+      setelapsedTime(0);
+      return;
+    }
+
+    const timer = setInterval(() => {
+      setelapsedTime((prev) => {
+        if (totalOrderTime - prev <= 0) {
+          setShowSupport(true);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [trackedOrder.status]);
 
   return (
     <Card className="w-full max-w-2xl mx-auto shadow-lg border-0 bg-gradient-to-br from-white to-gray-50">
@@ -84,6 +136,51 @@ export default function OrderTrackingCard({
       </CardHeader>
 
       <CardContent className="space-y-6">
+        {/* Timer section */}
+        {trackedOrder.status !== "completed" && elapsedTime > 0 && (
+          <div className="rounded-xl p-4 border-2 transition-all duration-300 bg-blue-50 border-blue-200">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Clock className="w-5 h-5 text-blue-600" />
+                <span className="text-sm font-medium text-blue-700">
+                  Expected Time
+                </span>
+              </div>
+              <div className="text-2xl font-bold text-blue-600">
+                {formatTime(elapsedTime)}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Support Section - Shows when timer hits zero */}
+        {showSupport && (
+          <div className="bg-gradient-to-r from-red-50 to-orange-50 rounded-xl p-6 border-2 border-red-300 shadow-lg animate-in slide-in-from-top duration-500">
+            <div className="flex items-start gap-4">
+              <div className="bg-red-100 p-3 rounded-full">
+                <AlertCircle className="w-6 h-6 text-red-600" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-lg font-bold text-gray-900 mb-1">
+                  Order Taking Longer Than Expected?
+                </h3>
+                <p className="text-sm text-gray-600 mb-4">
+                  We're here to help! Contact our support team for immediate
+                  assistance.
+                </p>
+                <Button
+                  className="w-full sm:w-auto bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold shadow-md"
+                  onClick={() =>
+                    (window.location.href = `tel:${supportNumber}`)
+                  }
+                >
+                  <Phone className="w-4 h-4 mr-2" />
+                  Call Support: {supportNumber}
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
         {/* Order Details */}
         <div className="bg-white rounded-xl p-6 border border-gray-100 shadow-sm">
           <div className="flex justify-between items-start mb-4">

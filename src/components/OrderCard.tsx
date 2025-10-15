@@ -28,22 +28,22 @@ export interface Order {
   date?: string | null;
   phone_number_type?: string;
   items:
-  | {
-    image: string;
-    menu_id: number;
-    quantity: number;
-    menu_name: string;
-    menu_price: number;
-    item_name: string;
-  }[]
-  | {
-    menu_id: number;
-    quantity: number;
-    menu_name: string;
-    menu_price: number;
-    is_available: string;
-    image: string;
-  }[];
+    | {
+        image: string;
+        menu_id: number;
+        quantity: number;
+        menu_name: string;
+        menu_price: number;
+        item_name: string;
+      }[]
+    | {
+        menu_id: number;
+        quantity: number;
+        menu_name: string;
+        menu_price: number;
+        is_available: string;
+        image: string;
+      }[];
 }
 
 // Props for the OrderCard component
