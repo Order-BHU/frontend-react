@@ -172,7 +172,9 @@ const MobileAppDownloadModal = () => {
   const initialTimesShown = sessionStorage.getItem("BHU-appModalDismissed");
   const [isOpen, setIsOpen] = useState(false);
   const [timesShown, setTimesShown] = useState(Number(initialTimesShown) || 0);
-
+  const [randomIndex, setRandomIndex] = useState<number>(
+    Math.floor(Math.random() * 4)
+  );
   const timerRef = useRef<NodeJS.Timeout>();
   useEffect(() => console.log(timesShown), [timesShown]);
   useEffect(() => {
@@ -185,6 +187,11 @@ const MobileAppDownloadModal = () => {
       }
     };
   }, []);
+  useEffect(() => {
+    if (isOpen) {
+      setRandomIndex(Math.floor(Math.random() * 4));
+    }
+  }, [isOpen]);
   const handleDismiss = () => {
     const newCount = timesShown + 1;
 
@@ -211,7 +218,6 @@ const MobileAppDownloadModal = () => {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogContent className="sm:max-w-md border-0 p-0 gap-0 overflow-hidden bg-gradient-to-br from-primary-200 via-accent to-primary-glow animate-slide-up">
-        {/* Sneaky close button - small and in the corner */}
         <button
           onClick={handleDismiss}
           className="absolute right-3 top-3 z-50 rounded-full bg-background/20 p-1 backdrop-blur-sm transition-all hover:bg-background/40 hover:rotate-90"
@@ -227,9 +233,8 @@ const MobileAppDownloadModal = () => {
 
             <DialogTitle className="text-3xl text-center font-bold tracking-tight text-white">
               {timesShown != 0
-                ? (popupMessages as any)[Math.min(8, timesShown)][
-                    Math.floor(Math.random() * 4)
-                  ].title
+                ? (popupMessages as any)[Math.min(8, timesShown)][randomIndex!]
+                    .title
                 : popupMessages[0].title}
             </DialogTitle>
 
@@ -270,9 +275,8 @@ const MobileAppDownloadModal = () => {
           {/* Cheeky footer text */}
           <p className="mt-6 text-center text-sm text-white/60 italic">
             {timesShown != 0
-              ? (popupMessages as any)[Math.min(8, timesShown)][
-                  Math.floor(Math.random() * 4)
-                ].description
+              ? (popupMessages as any)[Math.min(8, timesShown)][randomIndex!]
+                  .description
               : popupMessages[0].description}
           </p>
         </div>

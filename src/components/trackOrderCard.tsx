@@ -55,17 +55,6 @@ const getStatusColor = (status: string) => {
   return colorMap[status as keyof typeof colorMap] || colorMap.pending;
 };
 
-const getExpectedTime = (status: string) => {
-  const timeMap = {
-    pending: 1,
-    accepted: 1,
-    ready: 1,
-    delivering: 1,
-    completed: 0,
-  };
-  return timeMap[status as keyof typeof timeMap] || 1;
-};
-
 const formatTime = (seconds: number) => {
   const mins = Math.floor(seconds / 60);
   const secs = seconds % 60;
@@ -77,12 +66,13 @@ export default function OrderTrackingCard({
 }: OrderTrackingCardProps) {
   const totalOrderTime = 1500000;
   const progressData = getProgressData(trackedOrder.status);
-  const currentDate = new Date();
-  const supportNumber = "+234";
   const initialOrderTime = new Date(trackedOrder?.order_date);
+  const currentDate = new Date();
   const [elapsedTime, setelapsedTime] = useState(
-    (Number(currentDate) - Number(initialOrderTime)) / (1000 * 60)
+    Number(currentDate) - Number(initialOrderTime)
   );
+  const supportNumber = "07063322540";
+
   const [showSupport, setShowSupport] = useState(false);
 
   useEffect(() => {
@@ -107,7 +97,7 @@ export default function OrderTrackingCard({
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [trackedOrder.status]);
+  }, []);
 
   return (
     <Card className="w-full max-w-2xl mx-auto shadow-lg border-0 bg-gradient-to-br from-white to-gray-50">
