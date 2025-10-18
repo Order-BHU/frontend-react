@@ -11,7 +11,7 @@ import {
 
 const popupMessages = {
   0: {
-    title: "Order is now on Mobile!!🎉",
+    title: "Order is now on Mobile!!",
     description: "It's fast, free and convenient",
   },
   1: [
@@ -217,7 +217,7 @@ const MobileAppDownloadModal = () => {
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogContent className="sm:max-w-md border-0 p-0 gap-0 overflow-hidden bg-gradient-to-br from-primary-200 via-accent to-primary-glow animate-slide-up">
+      <DialogContent className="max-w-[85%] rounded-xl sm:max-w-md border-0 p-0 gap-0 overflow-hidden bg-gradient-to-br from-primary-200 via-accent to-primary-glow animate-slide-up">
         <button
           onClick={handleDismiss}
           className="absolute right-3 top-3 z-50 rounded-full bg-background/20 p-1 backdrop-blur-sm transition-all hover:bg-background/40 hover:rotate-90"
