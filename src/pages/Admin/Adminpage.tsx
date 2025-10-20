@@ -10,7 +10,7 @@ import { Utensils, Bike, DollarSign } from "lucide-react";
 import { PageWrapper } from "@/components/pagewrapper";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
-import { dashboard } from "@/api/misc";
+import { dashboard } from "@/api/profile";
 
 import { Driver } from "@/pages/Admin/types";
 import RestaurantDriverTab from "./components/restaurantTab";

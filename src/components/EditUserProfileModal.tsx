@@ -16,7 +16,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { editProfile, changePassword } from "@/api/misc";
+import { editProfile, changePassword } from "@/api/profile";
 import { useMutation } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import ButtonLoader from "@/components/buttonLoader";

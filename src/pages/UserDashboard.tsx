@@ -11,7 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { User, LogOut, ChevronRight } from "lucide-react";
 import { logOut } from "@/api/auth";
-import { dashboard } from "@/api/misc";
+import { dashboard } from "@/api/profile";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { myOrders, trackOrder } from "@/api/restaurant";
 import { orderHistoryType } from "@/interfaces/restaurantType";

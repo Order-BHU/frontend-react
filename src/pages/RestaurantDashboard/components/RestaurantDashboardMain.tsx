@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LogOut } from "lucide-react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { dashboard } from "@/api/misc";
+import { dashboard } from "@/api/profile";
 import { logOut } from "@/api/auth";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";

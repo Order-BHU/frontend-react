@@ -12,9 +12,9 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { User, LogOut, ChevronRight } from "lucide-react";
 import { logOut } from "@/api/auth";
-import { dashboard } from "@/api/misc";
+import { dashboard } from "@/api/profile";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { myOrders, updateOrderStatus, setDriverStatus } from "@/api/restaurant";
+import { updateOrderStatus, setDriverStatus } from "@/api/restaurant";
 import { orderHistoryType, orderType } from "@/interfaces/restaurantType";
 import Loader from "@/components/loaderAnimation";
 import EditProfileModal from "@/components/EditUserProfileModal";
@@ -23,6 +23,7 @@ import { useToast } from "@/hooks/use-toast";
 import UseAuthStore from "@/stores/useAuthStore";
 import { FiCreditCard, /*FiDollarSign,*/ FiShoppingBag } from "react-icons/fi";
 import OrderCard from "@/components/OrderCard";
+import { myOrders } from "@/api/misc";
 
 const fadeIn = {
   hidden: { opacity: 0, y: 20 },

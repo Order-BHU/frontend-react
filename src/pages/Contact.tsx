@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { useState, FormEvent } from "react";
 import { FiMail, FiPhone, FiSend, FiCoffee } from "react-icons/fi";
 import { FaWhatsapp } from "react-icons/fa";
-import { contact } from "@/api/misc";
+import { contact } from "@/api/profile";
 import { useMutation } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import useAuthStore from "@/stores/useAuthStore";

@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
-import { transactions } from "@/api/misc";
+import { transactions } from "@/api/profile";
 import { FiDollarSign, FiCreditCard, FiTrendingUp } from "react-icons/fi";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import TransactionCard, {
