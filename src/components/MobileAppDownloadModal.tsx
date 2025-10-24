@@ -217,7 +217,7 @@ const MobileAppDownloadModal = () => {
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogContent className="max-w-[85%] rounded-xl sm:max-w-md border-0 p-0 gap-0 overflow-hidden bg-gradient-to-br from-primary-200 via-accent to-primary-glow animate-slide-up">
+      <DialogContent className="max-w-[85%] rounded-xl sm:max-w-md border-0 p-0 gap-0 overflow-hidden shadow-2xl bg-gradient-to-br from-primary-800 via-primary-700 to-primary-500 animate-slide-up">
         <button
           onClick={handleDismiss}
           className="absolute right-3 top-3 z-50 rounded-full bg-background/20 p-1 backdrop-blur-sm transition-all hover:bg-background/40 hover:rotate-90"
@@ -273,7 +273,7 @@ const MobileAppDownloadModal = () => {
           </div>
 
           {/* Cheeky footer text */}
-          <p className="mt-6 text-center text-sm text-white/60 italic">
+          <p className="mt-6 text-center text-sm text-white/80 italic">
             {timesShown != 0
               ? (popupMessages as any)[Math.min(8, timesShown)][randomIndex!]
                   .description
