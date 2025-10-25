@@ -52,7 +52,7 @@ const RestaurantsPage = () => {
 
     return matchesSearch;
   });
-  const closed = 1;
+  const closed: number = 0;
   if (closed === 1) {
     return <DownTime />;
   }
@@ -153,8 +153,9 @@ const RestaurantsPage = () => {
             ))
           ) : (
             <div
-              className={`col-span-full text-center py-16 ${status === "pending" ? " hidden" : ""
-                }`}
+              className={`col-span-full text-center py-16 ${
+                status === "pending" ? " hidden" : ""
+              }`}
             >
               <h3 className="text-xl font-medium text-secondary-600">
                 No restaurants found matching your search
@@ -180,7 +181,10 @@ interface RestaurantCardProps {
   index: number;
 }
 
-const RestaurantCard = memo(function RestaurantCard({ restaurant, index }: RestaurantCardProps) {
+const RestaurantCard = memo(function RestaurantCard({
+  restaurant,
+  index,
+}: RestaurantCardProps) {
   const navigate = useNavigate();
   return (
     <motion.div

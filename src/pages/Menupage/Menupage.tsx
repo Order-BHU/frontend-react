@@ -48,7 +48,6 @@ import { useToast } from "@/hooks/use-toast";
 import ClosedPage from "../ClosedPage/closedPage";
 import ButtonLoader from "@/components/buttonLoader";
 import { usePaymentModal } from "./hooks/usePaymentModal";
-import DownTime from "../ClosedPage/downtime";
 
 // Animation variants
 const fadeIn = {
@@ -354,7 +353,7 @@ const RestaurantMenuPage = () => {
 
   //all this shit down here handles rendering a different thing if active hours not active
   const [isAllowedTime, setIsAllowedTime] = useState(false);
-  const closed: number = 0;
+  //const closed: number = 1;
 
   useEffect(() => {
     const now = new Date();
@@ -367,9 +366,7 @@ const RestaurantMenuPage = () => {
     }
   }, []);
 
-  if (closed === 1) {
-    return <DownTime />;
-  } else if (!isAllowedTime) {
+  if (!isAllowedTime) {
     return <ClosedPage />;
   }
 
