@@ -52,7 +52,7 @@ const RestaurantsPage = () => {
 
     return matchesSearch;
   });
-  const closed: number = 0;
+  const closed: number = 1;
   if (closed === 1) {
     return <DownTime />;
   }
