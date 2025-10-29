@@ -11,6 +11,7 @@ const ContactPage = lazy(() => import("./pages/Contact"));
 const LoginPage = lazy(() => import("./pages/Login"));
 const SignUpPage = lazy(() => import("./pages/SignUpPage"));
 const RiderDashboardPage = lazy(() => import("./pages/RiderDashboard"));
+const DronePitch = lazy(() => import("./pages/Drones/DronePitch"));
 const RestaurantDashboardPage = lazy(
   () => import("./pages/RestaurantDashboard")
 );
@@ -126,6 +127,11 @@ function App() {
                         <ContactList />
                       </ProtectedRoute>
                     }
+                  ></Route>
+
+                  <Route
+                    path="/drone-delivery"
+                    element={<DronePitch />}
                   ></Route>
                 </Routes>
               </Suspense>
