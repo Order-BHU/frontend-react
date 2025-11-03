@@ -49,8 +49,8 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
   successFn,
 }) => {
   const [formData, setFormData] = useState<any>({
-    name: userDetails?.name || "",
-    restaurant_name: userDetails?.restaurant_name || "",
+    name: userDetails?.restaurant_details?.name || "",
+    restaurant_name: userDetails?.restaurant_details?.name || "",
     profile_picture: null,
     phone_number_type: userDetails?.phone_number_type || "sms", // Default valu
     cover_picture: null,
@@ -62,10 +62,9 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
     setFormData((prevData: any) => ({
       ...prevData,
       name: userDetails?.user?.name || "",
-      restaurant_name: userDetails?.restaurant_details?.restaurant_name || "",
+      restaurant_name: userDetails?.restaurant_details?.name || "",
       phone_number: userDetails?.user?.phone_number,
     }));
-    console.log("deets: ", userDetails);
   }, [userDetails]);
   const { toast } = useToast();
   const [showEditProfileModal, setShowEditProfileModal] =
@@ -74,7 +73,11 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
   const { mutate: editProfileMutate, status: editProfileMutateStatus } =
     useMutation({
       mutationFn: editProfile,
+      onMutate: (data) => {
+        console.log("data before sending: ", data);
+      },
       onSuccess: (data) => {
+        console.log("mutate data: ", data);
         successFn();
         toast({
           title: "Success",

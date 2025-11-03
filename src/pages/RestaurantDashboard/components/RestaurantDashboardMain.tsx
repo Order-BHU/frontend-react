@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -39,11 +39,11 @@ const RestaurantDashboardMain: React.FC = () => {
     queryFn: dashboard,
     refetchOnWindowFocus: false,
   });
-  // useEffect(() => {
-  //   if (userDetails) {
-  //     console.log("userdeets:", userDetails);
-  //   }
-  // }, [userDetails]);
+  useEffect(() => {
+    if (userDetails) {
+      console.log("userdeets:", userDetails);
+    }
+  }, [userDetails]);
 
   // Logout mutation
   const { status: logoutStatus, mutate: logoutMutate } = useMutation({
@@ -103,7 +103,7 @@ const RestaurantDashboardMain: React.FC = () => {
                 <h1 className="text-2xl font-bold text-secondary-900">
                   Welcome back,{" "}
                   {(userDetails &&
-                    cutOffAtFirstSpace(userDetails?.user.name)) ||
+                    cutOffAtFirstSpace(userDetails?.user?.name)) ||
                     "Restaurant Owner"}
                 </h1>
                 <p className="text-secondary-600">
@@ -189,7 +189,7 @@ const RestaurantDashboardMain: React.FC = () => {
 
               <TabsContent value="menu" className="space-y-6">
                 <RestaurantMenuTab
-                  restaurantId={userDetails?.restaurant_details.id}
+                  restaurantId={userDetails?.restaurant_details?.id}
                 />
               </TabsContent>
 
