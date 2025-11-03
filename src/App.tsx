@@ -33,7 +33,7 @@ import Header from "./components/header";
 import Footer from "./components/footer";
 import CountDownRedirect from "@/pages/ClosedPage/components/countdownRedirect";
 import ErrorBoundary from "./components/ErrorBoundary";
-import MobileAppDownloadModal from "./components/MobileAppDownloadModal";
+//import MobileAppDownloadModal from "./components/MobileAppDownloadModal";
 
 function App() {
   waveform.register();
@@ -62,7 +62,7 @@ function App() {
           <QueryClientProvider client={queryClient}>
             <ScrollToTop />
             <Header />
-            <MobileAppDownloadModal />
+            {/* <MobileAppDownloadModal /> */}
             <CountDownRedirect>
               <Suspense fallback={<LoadingSpinner />}>
                 <Routes>
