@@ -67,7 +67,7 @@ export interface CartItem {
   menu_name: string;
   price: number;
   quantity: number;
-  image: File | null | string;
+  image: File | null | string | undefined;
 }
 
 const RestaurantMenuPage = () => {

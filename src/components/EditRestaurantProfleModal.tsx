@@ -51,9 +51,9 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
   const [formData, setFormData] = useState<any>({
     name: userDetails?.restaurant_details?.name || "",
     restaurant_name: userDetails?.restaurant_details?.name || "",
-    profile_picture: null,
+    profile_picture: undefined,
     phone_number_type: userDetails?.phone_number_type || "sms", // Default valu
-    cover_picture: null,
+    cover_picture: undefined,
     phone_number: userDetails?.phone_number || "",
   });
 
@@ -119,6 +119,7 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
   };
 
   const handleEditProfile = (e: React.FormEvent) => {
+    console.log("filtered: ", filteredData);
     e.preventDefault();
     editProfileMutate(filteredData);
   };

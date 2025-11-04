@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LogOut } from "lucide-react";
 import { useQuery, useMutation } from "@tanstack/react-query";
@@ -127,39 +126,6 @@ const RestaurantDashboardMain: React.FC = () => {
               </Button>
             </div>
           </div>
-        </motion.div>
-
-        {/* Quick Stats Cards */}
-        <motion.div
-          initial="hidden"
-          animate="visible"
-          variants={fadeIn}
-          custom={2}
-          className="grid gap-6 md:grid-cols-4 mb-8"
-        >
-          {/* <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Menu Items</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {menuItemArrayState.length}
-              </div>
-              <p className="text-xs text-muted-foreground">Available items</p>
-            </CardContent>
-          </Card> */}
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Status</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-green-600">
-                {userDetails?.status === "online" ? "Online" : "Offline"}
-              </div>
-              <p className="text-xs text-muted-foreground">Restaurant status</p>
-            </CardContent>
-          </Card>
         </motion.div>
 
         {/* Main Content Tabs */}
