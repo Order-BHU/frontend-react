@@ -93,7 +93,7 @@ export interface MenuItem {
   category_id: number;
   category: string;
   price: number;
-  image: File | null | string;
+  image: File | null | string | undefined;
   is_available: 1 | 0;
   restaurant_id: string;
 }

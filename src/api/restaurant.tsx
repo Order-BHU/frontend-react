@@ -42,6 +42,7 @@ export async function addMenu(menu: menuItem) {
 
 export async function editMenu(menu: menuItem) {
   const token = localStorage.getItem("BHUO-token");
+
   return api
     .post(`/${menu.id}/edit-menu`, menu, {
       headers: {
@@ -49,7 +50,10 @@ export async function editMenu(menu: menuItem) {
         Authorization: `Bearer ${token}`,
       },
     })
-    .then((response: AxiosResponse) => response.data)
+    .then((response: AxiosResponse) => {
+      console.log("resposn: ", response.data);
+      return response.data;
+    })
     .catch(handleError);
 }
 

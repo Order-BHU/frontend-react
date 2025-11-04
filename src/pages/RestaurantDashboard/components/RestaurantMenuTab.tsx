@@ -57,7 +57,7 @@ const RestaurantMenuTab: React.FC<RestaurantMenuTabProps> = ({
     description: "",
     price: "",
     category_id: "",
-    image: null as File | null,
+    image: undefined as File | undefined,
   });
   const [menuItemArrayState, setmenuItemArray] = useState<menuItem[]>([]);
 
@@ -99,7 +99,7 @@ const RestaurantMenuTab: React.FC<RestaurantMenuTabProps> = ({
         description: "",
         price: "",
         category_id: "",
-        image: null,
+        image: undefined,
       });
       refetchMenu();
     },
@@ -198,7 +198,7 @@ const RestaurantMenuTab: React.FC<RestaurantMenuTabProps> = ({
     if (!editingItem) return;
 
     const menuData = {
-      id: restaurantId, // Restaurant ID
+      id: editingItem.id,
       menu_id: editingItem.id,
       name: editingItem.name,
       description: editingItem.description,
@@ -218,9 +218,13 @@ const RestaurantMenuTab: React.FC<RestaurantMenuTabProps> = ({
     updateAvailability({ menuid: menuId, value: newValue });
   };
 
-  const handleEditClick = (item: menuItem) => {
-    setEditingItem(item);
-    setIsEditDialogOpen(true);
+  const handleEditClick = async (item: menuItem) => {
+    try {
+      setEditingItem({ ...item, image: undefined });
+      setIsEditDialogOpen(true);
+    } catch {
+      return;
+    }
   };
 
   if (menuPending || categoryStatus === "pending") {
@@ -333,7 +337,7 @@ const RestaurantMenuTab: React.FC<RestaurantMenuTabProps> = ({
                   onChange={(e) =>
                     setNewMenuItem({
                       ...newMenuItem,
-                      image: e.target.files?.[0] || null,
+                      image: e.target.files?.[0] || undefined,
                     })
                   }
                 />
@@ -462,7 +466,7 @@ const RestaurantMenuTab: React.FC<RestaurantMenuTabProps> = ({
                   onChange={(e) =>
                     setEditingItem({
                       ...editingItem,
-                      image: e.target.files?.[0] || editingItem.image,
+                      image: e.target.files?.[0] || undefined,
                     })
                   }
                 />
@@ -472,7 +476,11 @@ const RestaurantMenuTab: React.FC<RestaurantMenuTabProps> = ({
                 disabled={isEditing}
                 className="w-full"
               >
-                {isEditing ? <ButtonLoader /> : "Update Item"}
+                {isEditing ? (
+                  <ButtonLoader size="h-[20px] w-[20px]" />
+                ) : (
+                  "Update Item"
+                )}
               </Button>
             </div>
           )}
