@@ -42,6 +42,7 @@ interface formDataType {
   bank_code: string;
   bank_name: string;
   name: string;
+  payment_type: string;
 }
 
 export default function CreateUserModal({ isDriver, className }: createProps) {
@@ -72,6 +73,7 @@ export default function CreateUserModal({ isDriver, className }: createProps) {
     bank_code: "",
     bank_name: "",
     name: "", //for driver
+    payment_type: "",
   });
   const { data: bankList, status: bankListStatus } = useQuery({
     queryKey: ["bankList"],
@@ -93,10 +95,11 @@ export default function CreateUserModal({ isDriver, className }: createProps) {
         variant: "destructive",
       });
     }
-
+    console.log("data: ", formData);
     mutate({ ...formData, account_type: isDriver ? "driver" : "restaurant" });
   };
 
+  useEffect(() => console.log(formData), [formData]);
   const { status, mutate } = useMutation({
     mutationFn: createNewAccount,
     onSuccess: () => {
@@ -331,6 +334,25 @@ export default function CreateUserModal({ isDriver, className }: createProps) {
                   maxLength={12}
                 />
               </div>
+
+              {isDriver && (
+                <div>
+                  <Label htmlFor="payment_type">Payment</Label>
+                  <Select
+                    onValueChange={(e) =>
+                      setformData((prev) => ({ ...prev, payment_type: e }))
+                    }
+                  >
+                    <SelectTrigger className="w-[180px]">
+                      <SelectValue placeholder="Payment Type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="one_off">One-off</SelectItem>
+                      <SelectItem value="monthly">Monthly</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
 
               <div>
                 <Label htmlFor="bank">Bank</Label>
