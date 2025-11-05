@@ -253,7 +253,7 @@ const RestaurantMenuTab: React.FC<RestaurantMenuTabProps> = ({
         custom={1}
         className="flex justify-between items-center"
       >
-        <h3 className="text-2xl font-bold text-secondary-900">
+        <h3 className="text-lg md:text-2xl font-bold text-secondary-900">
           Menu Management
         </h3>
         <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
@@ -368,6 +368,12 @@ const RestaurantMenuTab: React.FC<RestaurantMenuTabProps> = ({
               key={item.id}
               className="bg-white rounded-lg border p-4 space-y-3"
             >
+              <div className="min-w-[70px] h-auto overflow-hidden rounded-2xl">
+                <img
+                  src={item.image ? String(item.image) : "/placeholder.svg"}
+                  className="object-cover"
+                />
+              </div>
               <div className="flex justify-between items-start">
                 <h4 className="font-semibold text-lg">{item.name}</h4>
                 <Button
