@@ -103,13 +103,14 @@ export default function SignUpPage() {
   };
 
   const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
     if (!captchaToken) {
       toast({
         title: "Please verify captcha",
       });
       return;
     }
-    e.preventDefault();
+
     if (formData.password !== formData.confirmPassword) {
       toast({
         title: "Password Mismatch",

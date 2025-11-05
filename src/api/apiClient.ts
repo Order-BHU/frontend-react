@@ -19,7 +19,10 @@ api.interceptors.response.use(
       logout(); // Clear session
       if (window.location.pathname !== "/login") {
         // Redirect to login page only if we aren't already in the login page
-        window.location.href = "/login";
+        console.log("redirecting auth...");
+        setTimeout(() => {
+          window.location.href = "/login";
+        }, 1000000);
       }
     }
     return Promise.reject(error);
