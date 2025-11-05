@@ -476,6 +476,14 @@ const RestaurantMenuTab: React.FC<RestaurantMenuTabProps> = ({
                     })
                   }
                 />
+                {editingItem.image instanceof File && (
+                  <div className="max-h-[200px] w-auto overflow-hidden rounded-2xl">
+                    <img
+                      src={URL.createObjectURL(editingItem.image)}
+                      className="object-cover"
+                    />
+                  </div>
+                )}
               </div>
               <Button
                 onClick={handleEditMenuItem}
