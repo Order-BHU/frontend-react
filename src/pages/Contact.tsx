@@ -105,7 +105,7 @@ const ContactPage = () => {
                         href="mailto:support@bhuorder.com.ng"
                         className="hover:text-primary-600 transition-colors"
                       >
-                        support@bhuorder.com.ng
+                        bhuorder@gmail.com
                       </a>
                     </p>
                     <p className="text-secondary-500 text-sm mt-1">
@@ -123,10 +123,10 @@ const ContactPage = () => {
                       Call Us
                     </h3>
                     <Link
-                      to="tel:+2349032497799"
+                      to="tel:+2347063322540"
                       className="text-secondary-600"
                     >
-                      +234 903 249 7799
+                      07063322540
                     </Link>
                     <p className="text-secondary-500 text-sm mt-1">
                       Mon-Fri from 12pm to 6pm

@@ -32,7 +32,6 @@ import { waveform, orbit } from "ldrs";
 import Header from "./components/header";
 import Footer from "./components/footer";
 import CountDownRedirect from "@/pages/ClosedPage/components/countdownRedirect";
-import ErrorBoundary from "./components/ErrorBoundary";
 //import MobileAppDownloadModal from "./components/MobileAppDownloadModal";
 
 function App() {
@@ -52,97 +51,92 @@ function App() {
   };
 
   return (
-    <ErrorBoundary>
-      <div className="app">
-        <ToastAutoDismiss />
+    <div className="app">
+      <ToastAutoDismiss />
 
-        <Toaster />
-        {/* <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme"> */}
-        <BrowserRouter future={{ v7_relativeSplatPath: true }}>
-          <QueryClientProvider client={queryClient}>
-            <ScrollToTop />
-            <Header />
-            {/* <MobileAppDownloadModal /> */}
-            <CountDownRedirect>
-              <Suspense fallback={<LoadingSpinner />}>
-                <Routes>
-                  <Route path="*" element={<NotFound />}></Route>
-                  <Route path="/" element={<LandingPage />}></Route>
-                  <Route
-                    path="/forgot-password"
-                    element={<ForgotPassword />}
-                  ></Route>
-                  <Route
-                    path="/reset-password"
-                    element={<ResetPassword />}
-                  ></Route>
-                  <Route
-                    path="/restaurants"
-                    element={<RestaurantsPage />}
-                  ></Route>
-                  <Route path="/contact" element={<ContactPage />}></Route>
-                  <Route path="/login" element={<LoginPage />}></Route>
-                  <Route path="/signup" element={<SignUpPage />}></Route>
-                  <Route
-                    path="/menu/:id"
-                    element={<RestaurantMenuPage />}
-                  ></Route>
-                  <Route path="/verify-otp" element={<VerifyOTPPage />}></Route>
-                  <Route
-                    path="/driver-dashboard"
-                    element={
-                      <ProtectedRoute allowedRoles={["driver"]}>
-                        <RiderDashboardPage />
-                      </ProtectedRoute>
-                    }
-                  ></Route>
-                  <Route
-                    path="/restaurant-dashboard"
-                    element={
-                      <ProtectedRoute allowedRoles={["restaurant"]}>
-                        <RestaurantDashboardPage />
-                      </ProtectedRoute>
-                    }
-                  ></Route>
-                  <Route
-                    path="/customer-dashboard"
-                    element={
-                      <ProtectedRoute allowedRoles={["customer"]}>
-                        <UserDashboardPage />
-                      </ProtectedRoute>
-                    }
-                  ></Route>
-                  <Route
-                    path="/admin-dashboard"
-                    element={
-                      <ProtectedRoute allowedRoles={["admin"]}>
-                        <AdminDashboardPage />
-                      </ProtectedRoute>
-                    }
-                  ></Route>
-                  <Route
-                    path="/admin/contact"
-                    element={
-                      <ProtectedRoute allowedRoles={["admin"]}>
-                        <ContactList />
-                      </ProtectedRoute>
-                    }
-                  ></Route>
+      <Toaster />
+      {/* <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme"> */}
+      <BrowserRouter future={{ v7_relativeSplatPath: true }}>
+        <QueryClientProvider client={queryClient}>
+          <ScrollToTop />
+          <Header />
+          {/* <MobileAppDownloadModal /> */}
+          <CountDownRedirect>
+            <Suspense fallback={<LoadingSpinner />}>
+              <Routes>
+                <Route path="*" element={<NotFound />}></Route>
+                <Route path="/" element={<LandingPage />}></Route>
+                <Route
+                  path="/forgot-password"
+                  element={<ForgotPassword />}
+                ></Route>
+                <Route
+                  path="/reset-password"
+                  element={<ResetPassword />}
+                ></Route>
+                <Route
+                  path="/restaurants"
+                  element={<RestaurantsPage />}
+                ></Route>
+                <Route path="/contact" element={<ContactPage />}></Route>
+                <Route path="/login" element={<LoginPage />}></Route>
+                <Route path="/signup" element={<SignUpPage />}></Route>
+                <Route
+                  path="/menu/:id"
+                  element={<RestaurantMenuPage />}
+                ></Route>
+                <Route path="/verify-otp" element={<VerifyOTPPage />}></Route>
+                <Route
+                  path="/driver-dashboard"
+                  element={
+                    <ProtectedRoute allowedRoles={["driver"]}>
+                      <RiderDashboardPage />
+                    </ProtectedRoute>
+                  }
+                ></Route>
+                <Route
+                  path="/restaurant-dashboard"
+                  element={
+                    <ProtectedRoute allowedRoles={["restaurant"]}>
+                      <RestaurantDashboardPage />
+                    </ProtectedRoute>
+                  }
+                ></Route>
+                <Route
+                  path="/customer-dashboard"
+                  element={
+                    <ProtectedRoute allowedRoles={["customer"]}>
+                      <UserDashboardPage />
+                    </ProtectedRoute>
+                  }
+                ></Route>
+                <Route
+                  path="/admin-dashboard"
+                  element={
+                    <ProtectedRoute allowedRoles={["admin"]}>
+                      <AdminDashboardPage />
+                    </ProtectedRoute>
+                  }
+                ></Route>
+                <Route
+                  path="/admin/contact"
+                  element={
+                    <ProtectedRoute allowedRoles={["admin"]}>
+                      <ContactList />
+                    </ProtectedRoute>
+                  }
+                ></Route>
 
-                  <Route
-                    path="/drone-delivery"
-                    element={<DronePitch />}
-                  ></Route>
-                </Routes>
-              </Suspense>
-            </CountDownRedirect>
-            <ReactQueryDevtools />
-          </QueryClientProvider>
-          <Footer />
-        </BrowserRouter>
-        {/* </ThemeProvider> */}
-      </div>
-    </ErrorBoundary>
+                <Route path="/drone-delivery" element={<DronePitch />}></Route>
+              </Routes>
+            </Suspense>
+          </CountDownRedirect>
+          <ReactQueryDevtools />
+        </QueryClientProvider>
+        <Footer />
+      </BrowserRouter>
+      {/* </ThemeProvider> */}
+    </div>
   );
 }
 
