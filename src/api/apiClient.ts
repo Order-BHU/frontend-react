@@ -17,13 +17,13 @@ api.interceptors.response.use(
     if (error.response && error.response.status === 401) {
       const { logout } = useAuthStore.getState(); // Get logout function
       logout(); // Clear session
-      if (window.location.pathname !== "/login") {
-        // Redirect to login page only if we aren't already in the login page
-        console.log("redirecting auth...");
-        setTimeout(() => {
-          window.location.href = "/login";
-        }, 1000000);
+      if (
+        window.location.pathname === "/login" ||
+        window.location.pathname === "/verify-otp"
+      ) {
+        return;
       }
+      window.location.href = "/login";
     }
     return Promise.reject(error);
   }
