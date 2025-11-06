@@ -19,7 +19,8 @@ api.interceptors.response.use(
       logout(); // Clear session
       if (
         window.location.pathname === "/login" ||
-        window.location.pathname === "/verify-otp"
+        window.location.pathname === "/verify-otp" ||
+        window.location.pathname === "/signup"
       ) {
         return;
       }
