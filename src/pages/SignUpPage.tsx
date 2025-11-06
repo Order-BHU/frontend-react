@@ -387,6 +387,10 @@ export default function SignUpPage() {
             </div>
 
             {/* Signup Button */}
+            <ReCAPTCHA
+              sitekey="6LdV2YcrAAAAAO9nAUap4_QRdlu4WJRCMBs_E6rO"
+              onChange={handleCaptchaChange}
+            />
             <button
               type="submit"
               className="w-full px-4 py-3 rounded-lg bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold hover:from-orange-600 hover:to-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-colors shadow-md hover:shadow-lg transform hover:-translate-y-0.5 active:translate-y-0"
@@ -398,10 +402,6 @@ export default function SignUpPage() {
                 "Submit"
               )}
             </button>
-            <ReCAPTCHA
-              sitekey="6LdV2YcrAAAAAO9nAUap4_QRdlu4WJRCMBs_E6rO"
-              onChange={handleCaptchaChange}
-            />
           </form>
 
           {/* Social Login Options */}
