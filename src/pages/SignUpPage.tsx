@@ -78,7 +78,7 @@ export default function SignUpPage() {
         title: "Sign-up successful!",
         description: data.message,
       });
-      const source = "/login";
+      const source = "/signup";
       navigate("/verify-otp/", { state: { formData, source } });
     },
     onError: (error) => {
