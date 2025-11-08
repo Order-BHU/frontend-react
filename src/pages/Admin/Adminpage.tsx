@@ -17,6 +17,7 @@ import RestaurantDriverTab from "./components/restaurantTab";
 import OrderManagement from "./components/orderManagement";
 import { driverList } from "@/api/adminRoutes";
 import RevenueTab from "./components/revenueTab";
+import { useEffect } from "react";
 
 export default function AdminDashboardPage() {
   const { toast } = useToast();
@@ -62,6 +63,7 @@ export default function AdminDashboardPage() {
     queryKey: ["alldrivers", "online"],
     queryFn: () => driverList("online"),
   });
+  useEffect(() => console.log("oneeline: ", onlineDrivers), [onlineDrivers]);
 
   const handleLogout = () => {
     const usertoken = localStorage.getItem("BHUO-token");

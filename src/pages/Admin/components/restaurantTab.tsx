@@ -307,7 +307,7 @@ export default function RestaurantDriverTab({
                               {driver.name}
                             </TableCell>
                             <TableCell>null rn</TableCell>
-                            <TableCell>null run</TableCell>
+                            <TableCell>null rn</TableCell>
 
                             <TableCell>
                               <Select

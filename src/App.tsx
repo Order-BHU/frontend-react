@@ -2,10 +2,10 @@ import "./App.css";
 import "./index.css";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { useEffect, Suspense, lazy } from "react";
+import LandingPage from "./pages/Landingpage";
 import { LoadingSpinner } from "./components/LazyWrapper";
 
 // Lazy load pages for better performance
-const LandingPage = lazy(() => import("./pages/Landingpage"));
 const RestaurantsPage = lazy(() => import("./pages/restaurantsPage"));
 const ContactPage = lazy(() => import("./pages/Contact"));
 const LoginPage = lazy(() => import("./pages/Login"));
