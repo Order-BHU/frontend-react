@@ -57,6 +57,7 @@ export async function updateOrder(data: {
   orderId: string;
 }) {
   const token = localStorage.getItem("BHUO-token");
+  console.log(data.orderId);
   return api
     .post(
       `/update-order/${data.orderId}`,

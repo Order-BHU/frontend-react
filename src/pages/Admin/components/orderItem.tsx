@@ -17,7 +17,7 @@ import { Button } from "@/components/ui/button";
 import { Order, Driver } from "@/pages/Admin/types";
 import { updateOrder } from "@/api/adminRoutes";
 import { format } from "date-fns";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 
 // Define props for the Row component
@@ -71,9 +71,9 @@ const Row = ({ index, style, data }: RowProps) => {
   }>({});
 
   const handleUpdate = (orderId: number) => {
-    //this function updates the details of an order. Status and driver assigned
     const updateData = orderUpdates[orderId] || {};
     if (!updateData.status && !updateData.driver_id) return;
+
     updateOrderMutation.mutate({
       driver_id: updateData.driver_id || "",
       status: updateData.status || "",
@@ -111,11 +111,12 @@ const Row = ({ index, style, data }: RowProps) => {
   };
 
   const getDriverName = (
-    driverId: string | undefined,
+    driverId: string | number | undefined, // Allow number type
     drivers: Driver[] | undefined
   ) => {
     if (!driverId) return "Select driver";
-    const driver = drivers?.find((d) => String(d.id) === driverId);
+    const driverIdString = String(driverId); // Convert to string for comparison
+    const driver = drivers?.find((d) => String(d.id) === driverIdString);
     return driver ? `${driver.name} (${driver.phone_number})` : "Select driver";
   };
 
@@ -248,7 +249,9 @@ const Row = ({ index, style, data }: RowProps) => {
                   </label>
                   <Select
                     value={
-                      orderUpdates[order.id]?.driver_id || order.driver_id || ""
+                      orderUpdates[order.id]?.driver_id ||
+                      (order.driver_id ? String(order.driver_id) : "") ||
+                      ""
                     }
                     onValueChange={(value) =>
                       handleInputChange(order.id, "driver_id", value)
@@ -257,7 +260,8 @@ const Row = ({ index, style, data }: RowProps) => {
                     <SelectTrigger className="w-full">
                       <SelectValue>
                         {getDriverName(
-                          orderUpdates[order.id]?.driver_id || order.driver_id,
+                          orderUpdates[order.id]?.driver_id ||
+                            (order.driver_id ? String(order.driver_id) : ""),
                           onlineDrivers
                         )}
                       </SelectValue>
