@@ -184,7 +184,7 @@ const Row = ({ index, style, data }: RowProps) => {
                 <DollarSign className="h-4 w-4 text-gray-500" />
                 <span className="text-gray-600">Total:</span>
                 <span className="font-semibold text-green-600">
-                  ₦{Number.parseFloat(order.total.toLocaleString()).toFixed(2)}
+                  ₦{Number(order.total).toLocaleString()}
                 </span>
               </div>
 

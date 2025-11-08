@@ -7,6 +7,7 @@ import { Order, Driver } from "@/pages/Admin/types";
 import { allOrders } from "@/api/adminRoutes";
 
 import OrderList from "./orderItem";
+import { useEffect } from "react";
 interface managementProps {
   driversError: Error | null;
   driversLoading: boolean;
@@ -27,6 +28,8 @@ export default function OrderManagement({
     queryKey: ["allorders"],
     queryFn: allOrders,
   });
+
+  useEffect(() => console.log("orders: ", orders), [orders]);
 
   return (
     <Card className="w-full max-h-[25rem] overflow-hidden">

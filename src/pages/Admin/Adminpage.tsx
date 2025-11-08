@@ -27,6 +27,7 @@ export default function AdminDashboardPage() {
     queryFn: () => dashboard(),
     refetchOnWindowFocus: false,
   });
+  useEffect(() => console.log(localStorage.getItem("BHUO-token")), []);
 
   const { status: logoutStatus, mutate: logoutMutate } = useMutation({
     mutationFn: logOut,
