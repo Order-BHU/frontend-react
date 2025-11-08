@@ -17,7 +17,7 @@ import { Button } from "@/components/ui/button";
 import { Order, Driver } from "@/pages/Admin/types";
 import { updateOrder } from "@/api/adminRoutes";
 import { format } from "date-fns";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 
 // Define props for the Row component
