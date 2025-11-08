@@ -151,7 +151,7 @@ export default function OrderTrackingCard({
                 <AlertCircle className="w-6 h-6 text-red-600" />
               </div>
               <div className="flex-1">
-                <h3 className="text-lg font-bold text-gray-900 mb-1">
+                <h3 className="md:text-lg font-bold text-gray-900 mb-1">
                   Order Taking Longer Than Expected?
                 </h3>
                 <p className="text-sm text-gray-600 mb-4">
@@ -159,13 +159,13 @@ export default function OrderTrackingCard({
                   assistance.
                 </p>
                 <Button
-                  className="w-full sm:w-auto bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold shadow-md"
+                  className="text-xs md:text-base w-full sm:w-auto bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold shadow-md"
                   onClick={() =>
                     (window.location.href = `tel:${supportNumber}`)
                   }
                 >
                   <Phone className="w-4 h-4 mr-2" />
-                  Call Support: {supportNumber}
+                  Call Support {/*  {supportNumber} */}
                 </Button>
               </div>
             </div>
