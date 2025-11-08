@@ -22,17 +22,15 @@ import ButtonLoader from "@/components/buttonLoader";
 import { useState } from "react";
 import { restaurantMetric } from "@/interfaces/restaurantType";
 import { useToast } from "@/hooks/use-toast";
-import {
-  adminSetDriverStatus,
-  driverList,
-  setRestaurantStatus,
-} from "@/api/adminRoutes";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { adminSetDriverStatus, setRestaurantStatus } from "@/api/adminRoutes";
+import { useMutation } from "@tanstack/react-query";
 import { Driver } from "@/pages/Admin/types";
 
 interface cardProps {
   userDetails: any;
   onlineDrivers: any;
+  onlineDriversLoading: any;
+  onlineDriversError: any;
   onlinedriversRefetch: () => void;
   detailStatus: string;
 }
@@ -68,24 +66,26 @@ export default function RestaurantDriverTab({
   onlineDrivers,
   onlinedriversRefetch,
   detailStatus,
+  onlineDriversError,
+  onlineDriversLoading,
 }: cardProps) {
   type TimeRange = "day" | "week" | "month" | "year";
   const { toast } = useToast();
   const [restaurantTimeRange, setRestaurantTimeRange] =
     useState<TimeRange>("month");
-  const {
-    data: offlineDrivers,
-    isLoading: offlinedriversLoading,
-    error: offlinedriversError,
-    refetch: offlineDriversRefetch,
-  } = useQuery<Driver[], Error>({
-    queryKey: ["alldrivers", "offline"],
-    queryFn: () => driverList("offline"),
-  });
+  // const {
+  //   data: offlineDrivers,
+  //   isLoading: offlinedriversLoading,
+  //   error: offlinedriversError,
+  //   refetch: offlineDriversRefetch,
+  // } = useQuery<Driver[], Error>({
+  //   queryKey: ["alldrivers", "offline"],
+  //   queryFn: () => driverList("offline"),
+  // });
   const { mutate: driverStatusMutate } = useMutation({
     mutationFn: adminSetDriverStatus,
     onSuccess: () => {
-      offlineDriversRefetch();
+      //offlineDriversRefetch();
       onlinedriversRefetch();
       toast({
         title: "Status updated",
@@ -267,9 +267,9 @@ export default function RestaurantDriverTab({
       </TabsContent>
       <TabsContent value="drivers">
         <PageWrapper>
-          {offlinedriversLoading ? (
+          {onlineDriversLoading ? (
             <ButtonLoader color="border-primary-600" className="py-7" />
-          ) : offlinedriversError ? (
+          ) : onlineDriversError ? (
             <div className="text-center">
               <p>Error Loading Drivers</p>
             </div>
@@ -302,38 +302,6 @@ export default function RestaurantDriverTab({
                     <TableBody>
                       {onlineDrivers && onlineDrivers.length > 0 ? (
                         onlineDrivers.map((driver: Driver) => (
-                          <TableRow key={driver.id}>
-                            <TableCell className="whitespace-nowrap">
-                              {driver.name}
-                            </TableCell>
-                            <TableCell>null rn</TableCell>
-                            <TableCell>null rn</TableCell>
-
-                            <TableCell>
-                              <Select
-                                value={driver.status}
-                                onValueChange={(value) =>
-                                  handleDriverStatusChange(driver.id, value)
-                                }
-                              >
-                                <SelectTrigger className="max-w-full mt-3 sm:mt-0">
-                                  <SelectValue>{driver.status}</SelectValue>
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="online">Online</SelectItem>
-                                  <SelectItem value="offline">
-                                    Offline
-                                  </SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </TableCell>
-                          </TableRow>
-                        ))
-                      ) : (
-                        <></>
-                      )}
-                      {offlineDrivers && offlineDrivers.length > 0 ? (
-                        offlineDrivers.map((driver) => (
                           <TableRow key={driver.id}>
                             <TableCell className="whitespace-nowrap">
                               {driver.name}

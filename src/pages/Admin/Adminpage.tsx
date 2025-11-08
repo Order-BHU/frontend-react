@@ -3,15 +3,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LogOut, ChevronRight } from "lucide-react";
 import { logOut } from "@/api/auth";
 import UseAuthStore from "@/stores/useAuthStore";
-
 import { Button } from "@/components/ui/button";
-
 import { Utensils, Bike, DollarSign } from "lucide-react";
 import { PageWrapper } from "@/components/pagewrapper";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { dashboard } from "@/api/misc";
-
 import { Driver } from "@/pages/Admin/types";
 import RestaurantDriverTab from "./components/restaurantTab";
 import OrderManagement from "./components/orderManagement";
@@ -211,6 +208,8 @@ export default function AdminDashboardPage() {
 
         <PageWrapper>
           <RestaurantDriverTab
+            onlineDriversError={driversError}
+            onlineDriversLoading={driversLoading}
             userDetails={userDetails && userDetails}
             onlineDrivers={onlineDrivers}
             onlinedriversRefetch={onlinedriversRefetch}
