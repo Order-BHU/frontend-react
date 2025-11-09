@@ -227,10 +227,13 @@ const OrderCard = memo(function OrderCard({
             {/* Time and Date Info */}
             {(isdriver || date) && (
               <div className="flex items-center gap-4 text-sm text-gray-600">
-                <div className="flex items-center gap-2">
-                  <Clock className="w-4 h-4 text-orange-500" />
-                  <span>{time}</span>
-                </div>
+                {time && (
+                  <div className="flex items-center gap-2">
+                    <Clock className="w-4 h-4 text-orange-500" />
+                    <span>{time}</span>
+                  </div>
+                )}
+
                 {date && (
                   <div className="flex items-center gap-2">
                     <span>•</span>

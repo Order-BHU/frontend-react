@@ -64,40 +64,46 @@ const formatTime = (seconds: number) => {
 export default function OrderTrackingCard({
   trackedOrder,
 }: OrderTrackingCardProps) {
-  const totalOrderTime = 1500000;
+  // 25 minutes in seconds (25 * 60 = 1500)
+  const totalOrderTime = 1500; // Changed from 1500000 to 1500 seconds (25 minutes)
   const progressData = getProgressData(trackedOrder.status);
-  const initialOrderTime = new Date(trackedOrder?.order_date);
+
+  // Calculate initial remaining time
+  const initialOrderTime = new Date(trackedOrder.order_date);
   const currentDate = new Date();
-  const [elapsedTime, setelapsedTime] = useState(
-    Number(currentDate) - Number(initialOrderTime)
+  const initialElapsedSeconds = Math.floor(
+    (currentDate.getTime() - initialOrderTime.getTime()) / 1000
   );
+  const initialRemainingTime = Math.max(
+    0,
+    totalOrderTime - initialElapsedSeconds
+  );
+
+  const [remainingTime, setRemainingTime] = useState(initialRemainingTime);
+  const [showSupport, setShowSupport] = useState(remainingTime <= 0);
   const supportNumber = "07063322540";
 
-  const [showSupport, setShowSupport] = useState(false);
-
   useEffect(() => {
-    console.log("le time: ", initialOrderTime);
-    console.log("minutes: ", elapsedTime);
-  }, [trackedOrder]);
-
-  useEffect(() => {
-    if (trackedOrder.status === "completed") {
-      setelapsedTime(0);
+    if (trackedOrder.status === "completed" || remainingTime <= 0) {
+      if (remainingTime <= 0) {
+        setShowSupport(true);
+      }
       return;
     }
 
     const timer = setInterval(() => {
-      setelapsedTime((prev) => {
-        if (totalOrderTime - prev <= 0) {
+      setRemainingTime((prev) => {
+        const newTime = prev - 1;
+        if (newTime <= 0) {
           setShowSupport(true);
           return 0;
         }
-        return prev - 1;
+        return newTime;
       });
     }, 1000);
 
     return () => clearInterval(timer);
-  }, []);
+  }, [trackedOrder.status, remainingTime]);
 
   return (
     <Card className="w-full max-w-2xl mx-auto shadow-lg border-0 bg-gradient-to-br from-white to-gray-50">
@@ -127,7 +133,7 @@ export default function OrderTrackingCard({
 
       <CardContent className="space-y-6">
         {/* Timer section */}
-        {trackedOrder.status !== "completed" && elapsedTime > 0 && (
+        {trackedOrder.status !== "completed" && remainingTime > 0 && (
           <div className="rounded-xl p-4 border-2 transition-all duration-300 bg-blue-50 border-blue-200">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -137,14 +143,14 @@ export default function OrderTrackingCard({
                 </span>
               </div>
               <div className="text-2xl font-bold text-blue-600">
-                {formatTime(elapsedTime)}
+                {formatTime(remainingTime)}
               </div>
             </div>
           </div>
         )}
 
         {/* Support Section - Shows when timer hits zero */}
-        {showSupport && (
+        {showSupport && trackedOrder.status !== "completed" && (
           <div className="bg-gradient-to-r from-red-50 to-orange-50 rounded-xl p-6 border-2 border-red-300 shadow-lg animate-in slide-in-from-top duration-500">
             <div className="flex items-start gap-4">
               <div className="bg-red-100 p-3 rounded-full">
@@ -165,12 +171,13 @@ export default function OrderTrackingCard({
                   }
                 >
                   <Phone className="w-4 h-4 mr-2" />
-                  Call Support {/*  {supportNumber} */}
+                  Call Support
                 </Button>
               </div>
             </div>
           </div>
         )}
+
         {/* Order Details */}
         <div className="bg-white rounded-xl p-6 border border-gray-100 shadow-sm">
           <div className="flex justify-between items-start mb-4">
@@ -208,8 +215,7 @@ export default function OrderTrackingCard({
           </div>
         </div>
 
-        {/* Delivery Code Section - Prominent when delivering */}
-
+        {/* Delivery Code Section */}
         <div className="bg-gradient-to-r from-orange-50 to-amber-50 rounded-xl p-6 border-2 border-orange-200 shadow-sm">
           <div className="text-center">
             <div className="flex items-center justify-center gap-2 mb-2">
@@ -240,8 +246,6 @@ export default function OrderTrackingCard({
             </p>
           </div>
         </div>
-
-        {/* Regular Code Display for other statuses */}
 
         {/* Progress Section */}
         <div className="space-y-4">

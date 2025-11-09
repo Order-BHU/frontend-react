@@ -34,7 +34,7 @@ const fadeIn = {
 };
 
 export default function RiderDashboardPage() {
-  const [allOrders, setAllOrders] = useState<orderType[]>([]); //I'll place all orders(pending and delivering) in the same array so it's better for a responsive UI and not redundant
+  const [allOrders, setAllOrders] = useState<any[]>([]); //I'll place all orders(pending and delivering) in the same array so it's better for a responsive UI and not redundant
   const navigate = useNavigate();
   const { logout } = UseAuthStore();
   const { toast } = useToast();
@@ -63,6 +63,9 @@ export default function RiderDashboardPage() {
     staleTime: 30000, // 30 seconds
     refetchOnWindowFocus: false,
   });
+
+  useEffect(() => console.log(pendingOrders), [pendingOrders]);
+  useEffect(() => console.log(deliveringOrders), [deliveringOrders]);
 
   useEffect(() => {
     console.log("orders: ", allOrders);
@@ -453,12 +456,12 @@ export default function RiderDashboardPage() {
                                   id: item.order_id,
                                   restaurant: item.restaurant_name,
                                   status: item.status,
-                                  time: "30 min",
+                                  time: "",
                                   phone_number: item.user_phoneNumber,
                                   amount: item.total,
                                   customerName: item.user_name,
                                   items: item.items,
-                                  address: item.customer_location,
+                                  address: item.location,
                                   phone_number_type: item.phone_number_type,
 
                                   //date: "the date",
@@ -518,12 +521,12 @@ export default function RiderDashboardPage() {
                                   id: item.order_id,
                                   restaurant: item.restaurant_name,
                                   status: item.status,
-                                  time: "30 min",
+                                  time: "",
                                   amount: item.total,
                                   customerName: item.user_name,
                                   phone_number: item.user_phoneNumber,
                                   items: item.items,
-                                  address: item.customer_location,
+                                  address: item.location,
                                   phone_number_type: item.phone_number_type,
                                 }}
                                 isPendingForThisItem={

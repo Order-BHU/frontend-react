@@ -14,7 +14,6 @@ import RestaurantDriverTab from "./components/restaurantTab";
 import OrderManagement from "./components/orderManagement";
 import { driverList } from "@/api/adminRoutes";
 import RevenueTab from "./components/revenueTab";
-import { useEffect } from "react";
 
 export default function AdminDashboardPage() {
   const { toast } = useToast();
@@ -27,7 +26,6 @@ export default function AdminDashboardPage() {
     queryFn: () => dashboard(),
     refetchOnWindowFocus: false,
   });
-  useEffect(() => console.log(localStorage.getItem("BHUO-token")), []);
 
   const { status: logoutStatus, mutate: logoutMutate } = useMutation({
     mutationFn: logOut,
@@ -59,9 +57,8 @@ export default function AdminDashboardPage() {
     refetch: onlinedriversRefetch,
   } = useQuery<Driver[], Error>({
     queryKey: ["alldrivers", "online"],
-    queryFn: () => driverList("online"),
+    queryFn: () => driverList("null"), //we'll just return all drivers
   });
-  useEffect(() => console.log("oneeline: ", onlineDrivers), [onlineDrivers]);
 
   const handleLogout = () => {
     const usertoken = localStorage.getItem("BHUO-token");
