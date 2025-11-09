@@ -65,8 +65,8 @@ export default function RiderDashboardPage() {
   });
 
   useEffect(() => {
-    console.log("userdeets: ", userDetails);
-  }, [userDetails]);
+    console.log("orders: ", allOrders);
+  }, [allOrders]);
 
   // Memoize the combined orders to prevent unnecessary re-renders
   const combinedOrders = useMemo(() => {
