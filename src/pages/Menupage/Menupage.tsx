@@ -77,6 +77,7 @@ const RestaurantMenuPage = () => {
   const { id } = useParams<{ id: string }>();
   const { toast } = useToast();
   const deliveryFee = 300; //this is the delivery fee variable
+  const [takeawayFee, setTakeawayFee] = useState<number>(0);
   const { data: cartItems, refetch } = useQuery({
     queryFn: viewCart,
     queryKey: ["cartItems"],
@@ -130,6 +131,12 @@ const RestaurantMenuPage = () => {
         }))
       );
   }, [cartItems]);
+
+  useEffect(() => {
+    if (menuItems && menuItems.restaurant.takeaway_fee) {
+      setTakeawayFee(Number(menuItems.restaurant.takeaway_fee));
+    }
+  }, [menuItems]);
 
   const queryParams = new URLSearchParams(window.location.search);
   useEffect(() => {
@@ -342,6 +349,8 @@ const RestaurantMenuPage = () => {
       element.scrollIntoView({ behavior: "smooth" });
     }
   };
+
+  useEffect(() => console.log(menuItems), [menuItems]);
 
   //   if (!restaurant) {
   //     return (
@@ -653,10 +662,25 @@ const RestaurantMenuPage = () => {
                             {deliveryFee}
                           </span>
                         </div>
+                        {takeawayFee > 0 && (
+                          <div className="flex justify-between mb-2">
+                            <span className="text-secondary-600">
+                              Takeaway Fee
+                            </span>
+                            <span className="text-secondary-900 font-medium">
+                              {takeawayFee}
+                            </span>
+                          </div>
+                        )}
                         <div className="flex justify-between font-bold text-lg mt-4">
                           <span className="text-secondary-900">Total</span>
                           <span className="text-primary-600">
-                            ₦{(calculateTotal() + deliveryFee).toLocaleString()}
+                            ₦
+                            {(
+                              calculateTotal() +
+                              deliveryFee +
+                              takeawayFee
+                            ).toLocaleString()}
                           </span>
                         </div>
                         <Select onValueChange={(value) => setLocation(value)}>
@@ -782,10 +806,23 @@ const RestaurantMenuPage = () => {
                       {deliveryFee}
                     </span>
                   </div>
+                  {takeawayFee > 0 && (
+                    <div className="flex justify-between mb-2">
+                      <span className="text-secondary-600">Takeaway Fee</span>
+                      <span className="text-secondary-900 font-medium">
+                        {takeawayFee}
+                      </span>
+                    </div>
+                  )}
                   <div className="flex justify-between font-bold text-lg mt-4">
                     <span className="text-secondary-900">Total</span>
                     <span className="text-primary-600">
-                      ₦{(calculateTotal() + deliveryFee).toLocaleString()}
+                      ₦
+                      {(
+                        calculateTotal() +
+                        deliveryFee +
+                        takeawayFee
+                      ).toLocaleString()}
                     </span>
                   </div>
                   <Select onValueChange={(value) => setLocation(value)}>

@@ -10,7 +10,7 @@ import { logOut } from "@/api/auth";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import UseAuthStore from "@/stores/useAuthStore";
-import EditProfileModal from "@/components/EditRestaurantProfleModal";
+import EditProfileModal from "@/components/EditRestaurantProfileModal";
 import RestaurantOrdersTab from "./RestaurantOrdersTab";
 import RestaurantMenuTab from "./RestaurantMenuTab";
 import RestaurantFinancialTab from "./RestaurantFinancialTab";

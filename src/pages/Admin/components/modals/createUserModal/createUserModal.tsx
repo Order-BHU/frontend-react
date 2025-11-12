@@ -43,6 +43,7 @@ interface formDataType {
   bank_name: string;
   name: string;
   payment_type: string;
+  takeaway_fee: number;
 }
 
 export default function CreateUserModal({ isDriver, className }: createProps) {
@@ -74,6 +75,7 @@ export default function CreateUserModal({ isDriver, className }: createProps) {
     bank_name: "",
     name: "", //for driver
     payment_type: "",
+    takeaway_fee: 0,
   });
   const { data: bankList, status: bankListStatus } = useQuery({
     queryKey: ["bankList"],
@@ -287,6 +289,26 @@ export default function CreateUserModal({ isDriver, className }: createProps) {
                   onChange={handleChange}
                   required
                 />
+
+                {!isDriver && (
+                  <div>
+                    <Label
+                      htmlFor="takeaway_fee"
+                      className="dark:text-cfont-dark"
+                    >
+                      Takeaway fee
+                    </Label>
+                    <Input
+                      type="tel"
+                      id="takeaway_fee"
+                      name="takeaway_fee"
+                      className="dark:text-cfont-dark"
+                      value={formData.takeaway_fee}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+                )}
                 <div className="flex space-x-2 mt-2">
                   <Button
                     type="button"

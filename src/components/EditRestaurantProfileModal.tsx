@@ -30,7 +30,7 @@ import ButtonLoader from "@/components/buttonLoader";
 //   phone_number_type?: "whatsapp" | "sms";
 //   phone_number?: string;
 //   user:UserType
-//   // Add other user details properties as needed
+//   // other user details properties as needed
 // }
 
 interface PasswordState {
@@ -55,6 +55,7 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
     phone_number_type: userDetails?.phone_number_type || "sms", // Default valu
     cover_picture: undefined,
     phone_number: userDetails?.phone_number || "",
+    takeaway_fee: userDetails?.restaurant_details?.takeaway_fee || 0,
   });
 
   useEffect(() => {
@@ -227,6 +228,24 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
                 setFormData({
                   ...formData,
                   phone_number: e.target.value,
+                })
+              }
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="takeawayFee" className="dark:text-cfont-dark">
+              Takeaway fee
+            </Label>
+            <Input
+              id="takeaway_fee"
+              type="number"
+              value={formData.takeaway_fee}
+              className="dark:text-cfont-dark no-spinner"
+              onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                setFormData({
+                  ...formData,
+                  takeaway_fee: e.target.value,
                 })
               }
             />
