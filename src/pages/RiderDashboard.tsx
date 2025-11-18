@@ -13,7 +13,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { User, LogOut, ChevronRight } from "lucide-react";
 import { logOut } from "@/api/auth";
 import { dashboard } from "@/api/misc";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { myOrders, updateOrderStatus, setDriverStatus } from "@/api/restaurant";
 import { orderHistoryType, orderType } from "@/interfaces/restaurantType";
 import Loader from "@/components/loaderAnimation";
@@ -34,6 +34,7 @@ const fadeIn = {
 };
 
 export default function RiderDashboardPage() {
+  const queryClient = useQueryClient();
   const [allOrders, setAllOrders] = useState<any[]>([]); //I'll place all orders(pending and delivering) in the same array so it's better for a responsive UI and not redundant
   const navigate = useNavigate();
   const { logout } = UseAuthStore();
@@ -111,6 +112,7 @@ export default function RiderDashboardPage() {
     mutationFn: logOut,
     onSuccess: (data) => {
       logout();
+      queryClient.clear();
       navigate("/login/");
       toast({
         title: "success!",

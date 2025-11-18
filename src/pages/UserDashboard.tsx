@@ -12,7 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { User, LogOut, ChevronRight } from "lucide-react";
 import { logOut } from "@/api/auth";
 import { dashboard } from "@/api/misc";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { myOrders, trackOrder } from "@/api/restaurant";
 import { orderHistoryType } from "@/interfaces/restaurantType";
 import Loader from "@/components/loaderAnimation";
@@ -25,6 +25,7 @@ import OrderCard from "@/components/OrderCard";
 import OrderTrackingCard from "@/components/trackOrderCard";
 
 export default function UserDashboardPage() {
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
   const { logout } = UseAuthStore();
   const { toast } = useToast();
@@ -51,6 +52,7 @@ export default function UserDashboardPage() {
     mutationFn: logOut,
     onSuccess: (data) => {
       logout();
+      queryClient.clear();
       navigate("/login/");
       toast({
         title: "success!",

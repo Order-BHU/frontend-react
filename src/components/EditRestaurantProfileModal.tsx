@@ -65,6 +65,7 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
       name: userDetails?.user?.name || "",
       restaurant_name: userDetails?.restaurant_details?.name || "",
       phone_number: userDetails?.user?.phone_number,
+      takeaway_fee: userDetails?.restaurant_details?.takeaway_fee,
     }));
   }, [userDetails]);
   const { toast } = useToast();
@@ -86,6 +87,7 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
         });
       },
       onError: (error) => {
+        console.log(error.message);
         toast({
           title: "Error",
           description: error.message,

@@ -4,7 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LogOut } from "lucide-react";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { dashboard } from "@/api/misc";
 import { logOut } from "@/api/auth";
 import { useToast } from "@/hooks/use-toast";
@@ -23,7 +23,6 @@ const fadeIn = {
     transition: { duration: 0.5, delay: custom * 0.1 },
   }),
 };
-
 type TabType = "orders" | "menu" | "financial";
 
 const RestaurantDashboardMain: React.FC = () => {
@@ -32,6 +31,7 @@ const RestaurantDashboardMain: React.FC = () => {
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState<TabType>("orders");
 
+  const queryClient = useQueryClient();
   // Fetch user details
   const { data: userDetails, refetch: refetchDetails } = useQuery({
     queryKey: ["userDetails"],
@@ -49,6 +49,7 @@ const RestaurantDashboardMain: React.FC = () => {
     mutationFn: logOut,
     onSuccess: (data) => {
       logout();
+      queryClient.clear();
       navigate("/login");
       toast({
         title: "Success!",
