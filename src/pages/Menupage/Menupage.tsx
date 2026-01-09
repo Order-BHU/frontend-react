@@ -48,6 +48,7 @@ import { useToast } from "@/hooks/use-toast";
 import ClosedPage from "../ClosedPage/closedPage";
 import ButtonLoader from "@/components/buttonLoader";
 import { usePaymentModal } from "./hooks/usePaymentModal";
+import Whatsapp from "../ClosedPage/Whatsapp";
 
 // Animation variants
 const fadeIn = {
@@ -374,6 +375,15 @@ const RestaurantMenuPage = () => {
       setIsAllowedTime(false);
     }
   }, []);
+
+  const isWhatsappMode = true;
+  if (isWhatsappMode) {
+    return (
+      <div className="min-h-[50vh] py-16 bg-background p-4">
+        <Whatsapp />
+      </div>
+    );
+  }
 
   if (!isAllowedTime) {
     return <ClosedPage />;

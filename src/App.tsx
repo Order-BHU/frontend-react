@@ -23,6 +23,9 @@ const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const VerifyOTPPage = lazy(() => import("./pages/verifyOtpPage"));
 const ContactList = lazy(() => import("./pages/ContactList/ContactList"));
 const NotFound = lazy(() => import("./pages/NotFound"));
+const TermsOfService = lazy(() => import("./pages/TermsOfService"));
+const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
+
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Toaster } from "@/components/ui/toaster";
@@ -102,6 +105,12 @@ function App() {
                     </ProtectedRoute>
                   }
                 ></Route>
+                <Route path="/tos-policy" element={<TermsOfService />}></Route>
+                <Route
+                  path="/privacy-policy"
+                  element={<PrivacyPolicy />}
+                ></Route>
+
                 <Route
                   path="/customer-dashboard"
                   element={

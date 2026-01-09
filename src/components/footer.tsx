@@ -136,13 +136,13 @@ const Footer = () => {
             </p>
             <div className="flex space-x-4 mt-1 md:mt-0">
               <Link
-                to="/privacy"
+                to="/privacy-policy"
                 className="text-xs text-gray-500 hover:text-blue-600"
               >
                 Privacy
               </Link>
               <Link
-                to="/terms"
+                to="/tos-policy"
                 className="text-xs text-gray-500 hover:text-blue-600"
               >
                 Terms

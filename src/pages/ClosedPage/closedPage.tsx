@@ -10,13 +10,7 @@ const ClosedPage = () => {
     const timer = setInterval(() => {
       const now = new Date();
       setCurrentTime(now);
-
-      // Check if current time is between 12pm and 8pm
-      //const hours = now.getHours();
     }, 1000); // Update every second instead of every minute
-
-    // Initial check
-    //const hours = currentTime.getHours();
 
     return () => clearInterval(timer);
   }, []);
@@ -54,16 +48,6 @@ const ClosedPage = () => {
     }
   };
 
-  // Format current time for display
-  // const formatCurrentTime = () => {
-  //   return currentTime.toLocaleTimeString("en-US", {
-  //     hour: "2-digit",
-  //     minute: "2-digit",
-  //     second: "2-digit",
-  //     hour12: true,
-  //   });
-  // };
-
   return (
     <div className="min-h-screen bg-peach-100 flex flex-col">
       {/* Main Content */}
@@ -76,14 +60,6 @@ const ClosedPage = () => {
           </h2>
 
           <div className="bg-white p-8 rounded-xl shadow-md">
-            {/*
-              <div className="flex items-center justify-center gap-3 text-gray-700 mb-4">
-                <span className="font-medium text-xl">
-                  Deliveries are clogged at the moment
-                </span>
-              </div>
-            */}
-
             <div className="flex items-center justify-center gap-3 text-2xl font-semibold text-orange-600 mb-4">
               <Clock className="text-orange-600" size={24} />
               {getTimeMessage()}
@@ -93,20 +69,7 @@ const ClosedPage = () => {
               We're active daily from{" "}
               <span className="font-semibold">12:00 PM</span>
             </p>
-
-            {/* <div className="flex items-center justify-center gap-2 mt-2">
-              <AlertCircle className={"text-orange-600"} size={22} />
-              <span className={`font-medium text-lg ${"text-orange-600"}`}>
-                {getTimeMessage()}
-              </span>
-            </div> */}
           </div>
-
-          {/* {isOpen && (
-            <button className="bg-orange-600 text-white px-8 py-4 rounded-full hover:bg-orange-700 transition-colors flex items-center gap-2 mx-auto text-lg">
-              Order Now <ChevronRight size={20} />
-            </button>
-          )} */}
         </div>
       </main>
     </div>
