@@ -136,7 +136,7 @@ const Row = ({ index, style, data }: RowProps) => {
             <div className="flex items-start justify-between">
               <div className="flex flex-col">
                 <h3 className="font-semibold text-md md:text-lg">
-                  Order #{order.id}-{order.restaurant.name}
+                  Order #{order.id}-{order.restaurant?.name}
                 </h3>
 
                 <Badge

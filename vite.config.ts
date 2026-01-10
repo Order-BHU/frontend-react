@@ -19,5 +19,12 @@ export default defineConfig({
   },
   build: {
     sourcemap: true,
+    minify: "terser",
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true,
+      },
+    },
   },
 });
