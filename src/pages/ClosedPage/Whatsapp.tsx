@@ -2,7 +2,7 @@ import { WifiOff, MessageCircle, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const Whatsapp = () => {
-  const whatsappLink = "https://wa.me/YOUR_WHATSAPP_NUMBER"; // Replace with actual WhatsApp bot link
+  const whatsappLink = "https://wa.me/message/37C2FWTVJS4EK1"; // Replace with actual WhatsApp bot link
 
   const handleWhatsAppClick = () => {
     window.open(whatsappLink, "_blank");
