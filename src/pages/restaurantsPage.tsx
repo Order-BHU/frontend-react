@@ -7,7 +7,7 @@ import { getRestaurants } from "@/api/restaurant";
 import { useToast } from "@/hooks/use-toast";
 import { Img } from "react-image";
 import DownTime from "./ClosedPage/downtime";
-import { IS_WHATSAPP_ONLY } from "@/constants/bools";
+import { DOWNTIME, IS_WHATSAPP_ONLY } from "@/constants/bools";
 import Whatsapp from "./ClosedPage/Whatsapp";
 
 // Fade-in animation variants
@@ -54,8 +54,7 @@ const RestaurantsPage = () => {
 
     return matchesSearch;
   });
-  const closed: number = 0;
-  if (closed === 1) {
+  if (DOWNTIME) {
     return <DownTime />;
   }
 
