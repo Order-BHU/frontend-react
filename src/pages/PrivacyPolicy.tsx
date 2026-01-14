@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 
 export default function PrivacyPolicy() {
   const fadeIn = {
@@ -316,8 +317,14 @@ export default function PrivacyPolicy() {
             </h2>
             <p className="text-gray-700 leading-relaxed">
               If you have questions about this Privacy Policy or our privacy
-              practices, please contact us using the contact form available on
-              our platform or through our support channels.
+              practices, please contact us using the{" "}
+              <Link
+                className="underline hover:text-pink-600 text-pink-400 transition-colors"
+                to={"/contact"}
+              >
+                contact form
+              </Link>{" "}
+              available on our platform or through our support channels.
             </p>
           </section>
         </div>

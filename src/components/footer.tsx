@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { FiInstagram, FiMail } from "react-icons/fi";
 import { FaWhatsapp } from "react-icons/fa";
+import { GMAIL, WHATSAPP_LINK } from "@/constants/links";
 
 const Footer = () => {
   const navigate = useNavigate();
@@ -96,10 +97,10 @@ const Footer = () => {
             <h3 className="font-semibold text-gray-800 mb-1 text-sm">
               Contact Us
             </h3>
-            <p className="text-gray-600 mb-1">Email: bhuorder@gmail.com</p>
+            <p className="text-gray-600 mb-1">{`Email: ${GMAIL}`}</p>
             <div className="flex space-x-3">
               <a
-                href="https://whatsapp.com/channel/0029VbAikJF84Om30J1VPC45"
+                href={WHATSAPP_LINK}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-gray-500 hover:text-green-600 transition-colors"
@@ -108,7 +109,7 @@ const Footer = () => {
                 <FaWhatsapp size={16} />
               </a>
               <a
-                href="mailto:support.bhuorder.com.ng"
+                href={`mailto:${GMAIL}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-gray-500 hover:text-blue-600 transition-colors"

@@ -7,6 +7,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import useAuthStore from "@/stores/useAuthStore";
 import { Link } from "react-router-dom";
+import { GMAIL, WHATSAPP_LINK } from "@/constants/links";
 
 // Animation variants
 const fadeIn = {
@@ -102,10 +103,10 @@ const ContactPage = () => {
                     </h3>
                     <p className="text-secondary-600">
                       <a
-                        href="mailto:support@bhuorder.com.ng"
+                        href={`mailto:${GMAIL}`}
                         className="hover:text-primary-600 transition-colors"
                       >
-                        bhuorder@gmail.com
+                        {GMAIL}
                       </a>
                     </p>
                     <p className="text-secondary-500 text-sm mt-1">
@@ -143,7 +144,7 @@ const ContactPage = () => {
                       Message on Whatsapp
                     </h3>
                     <Link
-                      to="https://wa.me/2348091803206"
+                      to={WHATSAPP_LINK}
                       className="text-secondary-600 underline"
                       target="_blank"
                     >
@@ -176,7 +177,7 @@ const ContactPage = () => {
                 </h3>
                 <div className="flex space-x-4">
                   <a
-                    href="https://whatsapp.com/channel/0029VbAikJF84Om30J1VPC45" // Replace with your actual WhatsApp number
+                    href={WHATSAPP_LINK} // Replace with your actual WhatsApp number
                     target="_blank"
                     rel="noopener noreferrer"
                     className="w-10 h-10 flex items-center justify-center rounded-full bg-secondary-100 text-secondary-600 hover:bg-primary-100 hover:text-primary-600 transition-colors"
@@ -193,7 +194,7 @@ const ContactPage = () => {
                   </a>
 
                   <a
-                    href="mailto:support.bhuorder.com.ng" // Replace with your actual email
+                    href={`mailto:${GMAIL}`} // Replace with your actual email
                     target="_blank"
                     rel="noopener noreferrer"
                     className="w-10 h-10 flex items-center justify-center rounded-full bg-secondary-100 text-secondary-600 hover:bg-primary-100 hover:text-primary-600 transition-colors"
