@@ -7,6 +7,8 @@ import { getRestaurants } from "@/api/restaurant";
 import { useToast } from "@/hooks/use-toast";
 import { Img } from "react-image";
 import DownTime from "./ClosedPage/downtime";
+import { IS_WHATSAPP_ONLY } from "@/constants/bools";
+import Whatsapp from "./ClosedPage/Whatsapp";
 
 // Fade-in animation variants
 const fadeIn = {
@@ -55,6 +57,14 @@ const RestaurantsPage = () => {
   const closed: number = 0;
   if (closed === 1) {
     return <DownTime />;
+  }
+
+  if (IS_WHATSAPP_ONLY) {
+    return (
+      <div className="min-h-[50vh] py-16 bg-background p-4">
+        <Whatsapp />
+      </div>
+    );
   }
 
   return (

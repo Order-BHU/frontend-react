@@ -49,6 +49,7 @@ import ClosedPage from "../ClosedPage/closedPage";
 import ButtonLoader from "@/components/buttonLoader";
 import { usePaymentModal } from "./hooks/usePaymentModal";
 import Whatsapp from "../ClosedPage/Whatsapp";
+import { IS_WHATSAPP_ONLY } from "@/constants/bools";
 
 // Animation variants
 const fadeIn = {
@@ -376,8 +377,7 @@ const RestaurantMenuPage = () => {
     }
   }, []);
 
-  const isWhatsappMode = true;
-  if (isWhatsappMode) {
+  if (IS_WHATSAPP_ONLY) {
     return (
       <div className="min-h-[50vh] py-16 bg-background p-4">
         <Whatsapp />
