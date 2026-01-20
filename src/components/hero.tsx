@@ -55,7 +55,15 @@ const Hero = () => {
               >
                 Order Food
               </Link>
-              <div className="relative inline-block w-full sm:w-auto">
+
+              <Link
+                to="/restaurants"
+                className="w-full inline-flex items-center flex-col justify-center px-4 py-3 sm:px-6 md:px-8 rounded-lg text-primary-600 bg-gray-100 border border-gray-200 text-base md:text-2xl font-medium shadow-md hover:-translate-y-1 sm:w-auto hover:shadow-xl transition-all"
+                title="Coming Soon"
+              >
+                Deliver Parcel
+              </Link>
+              {/* <div className="relative inline-block w-full sm:w-auto">
                 <div
                   className="w-full inline-flex items-center flex-col justify-center px-4 py-3 sm:px-6 md:px-8 rounded-lg text-gray-400 bg-gray-100 shadow-sm cursor-not-allowed border border-gray-200 text-base md:text-2xl font-medium"
                   title="Coming Soon"
@@ -65,7 +73,7 @@ const Hero = () => {
                 <span className="absolute top-0 right-0 -mt-2 -mr-2 bg-yellow-300 text-xs text-gray-800 font-semibold px-1.5 py-0.5 rounded shadow">
                   Coming Soon
                 </span>
-              </div>
+              </div> */}
             </motion.div>
           </motion.div>
 
