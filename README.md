@@ -1,58 +1,19 @@
-# React + TypeScript + Vite
+# BHU ORDER
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A food delivery app and restaurant management system for students and restaurant owners in Bingham University. Order helps students find available restaurants and helps restaurants manage their restaurants.
+Site live link -> https://bhuorder.com/
+<img width="1884" height="896" alt="image" src="https://github.com/user-attachments/assets/621b8636-4429-4fae-a503-2b29c4b4f9a1" />
 
-Currently, two official plugins are available:
+Trying to juggle school with work, a social life and - if you're ambitious - a hobby is a pain when you're in university. It would be nice to remove one thing that takes up valuable time from your day. That one thing for us was walking all the way to restaurants just to get food and then walk all the way back to our dorms. Order's foundation is students trying to be ~lazy~ as efficient as possible with time management.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+To get started with order just check out the live link https://bhuorder.com/ and:
+- make an account(it's really easy with google login)
+- start ordering!!
+- extra third step: you'd also want to be enrolled as a student or staff in Bingham university
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
-
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ["./tsconfig.node.json", "./tsconfig.app.json"],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-});
-```
-
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
-
-```js
-// eslint.config.js
-import react from "eslint-plugin-react";
-
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: "18.3" } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs["jsx-runtime"].rules,
-  },
-});
-```
-
-In the authstore component, you can manually change the roles to access the specific dashboard. There are currently four roles:
-
-1. user(default right now)
-2. owner
-3. rider
-4. admin
-   You can access the dashboards by clicking on the profile picture.
+### Features
+- Secure payment integration with Paystack
+- Intuitive onboarding process with Google's OAuth
+- Refunds
+- Order process tracking
+- Restaurant management(add, edit, and delete menu items)
