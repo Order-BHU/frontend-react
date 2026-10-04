@@ -385,9 +385,9 @@ const RestaurantMenuPage = () => {
     );
   }
 
-  if (!isAllowedTime) {
-    return <ClosedPage />;
-  }
+  // if (!isAllowedTime) {
+  //   return <ClosedPage />;
+  // }
 
   return (
     <div className="bg-secondary-50 min-h-screen pb-20">
