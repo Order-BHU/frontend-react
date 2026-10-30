@@ -363,7 +363,7 @@ const RestaurantMenuPage = () => {
   //   }
 
   //all this shit down here handles rendering a different thing if active hours not active
-  const [isAllowedTime, setIsAllowedTime] = useState(false);
+  const [isAllowedTime, setIsAllowedTime] = useState(true);
   //const closed: number = 1;
 
   useEffect(() => {
