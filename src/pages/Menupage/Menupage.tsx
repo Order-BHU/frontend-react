@@ -371,7 +371,7 @@ const RestaurantMenuPage = () => {
     const hour = now.getHours();
 
     if (hour >= 12 && hour < 20) {
-      setIsAllowedTime(true);
+      setIsAllowedTime(false);
     } else {
       setIsAllowedTime(false);
     }
@@ -385,9 +385,9 @@ const RestaurantMenuPage = () => {
     );
   }
 
-  // if (!isAllowedTime) {
-  //   return <ClosedPage />;
-  // }
+  if (!isAllowedTime) {
+    return <ClosedPage />;
+  }
 
   return (
     <div className="bg-secondary-50 min-h-screen pb-20">
